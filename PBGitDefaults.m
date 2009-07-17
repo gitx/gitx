@@ -15,6 +15,7 @@
 #define kConfirmPublicGists @"PBConfirmPublicGists"
 #define kPublicGist @"PBGistPublic"
 #define kShowWhitespaceDifferences @"PBShowWhitespaceDifferences"
+#define kRefreshAutomatically @"PBRefreshAutomatically"
 
 @implementation PBGitDefaults
 
@@ -24,15 +25,18 @@
 	[defaultValues setObject:[NSNumber numberWithInt:kDefaultVerticalLineLength]
                       forKey:kCommitMessageViewVerticalLineLength];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kEnableGist];
+					  forKey:kEnableGist];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kEnableGravatar];
+					  forKey:kEnableGravatar];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kConfirmPublicGists];
+					  forKey:kConfirmPublicGists];
 	[defaultValues setObject:[NSNumber numberWithBool:NO]
-			  forKey:kPublicGist];
+					  forKey:kPublicGist];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kShowWhitespaceDifferences];
+					  forKey:kShowWhitespaceDifferences];
+	[defaultValues setObject:[NSNumber numberWithBool:YES]
+					  forKey:kRefreshAutomatically];
+							  
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
 }
 
@@ -61,9 +65,13 @@
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kPublicGist];
 }
 
-
-+ (BOOL)showWhitespaceDifferences
++ (BOOL) showWhitespaceDifferences
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kShowWhitespaceDifferences];
+}
+							  
++ (BOOL) refreshAutomatically
+{
+	return [[NSUserDefaults standardUserDefaults] boolForKey:kRefreshAutomatically];
 }
 @end
