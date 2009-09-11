@@ -16,6 +16,9 @@
 #define kPublicGist @"PBGistPublic"
 #define kShowWhitespaceDifferences @"PBShowWhitespaceDifferences"
 #define kRefreshAutomatically @"PBRefreshAutomatically"
+#define kOpenCurDirOnLaunch @"PBOpenCurDirOnLaunch"
+#define kShowOpenPanelOnLaunch @"PBShowOpenPanelOnLaunch"
+
 
 @implementation PBGitDefaults
 
@@ -36,7 +39,11 @@
 					  forKey:kShowWhitespaceDifferences];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
 					  forKey:kRefreshAutomatically];
-							  
+	[defaultValues setObject:[NSNumber numberWithBool:YES]
+					  forKey:kOpenCurDirOnLaunch];
+	[defaultValues setObject:[NSNumber numberWithBool:YES]
+					  forKey:kShowOpenPanelOnLaunch];
+
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
 }
 
@@ -74,4 +81,15 @@
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kRefreshAutomatically];
 }
+
++ (BOOL)openCurDirOnLaunch
+{
+	return [[NSUserDefaults standardUserDefaults] boolForKey:kOpenCurDirOnLaunch];
+}
+
++ (BOOL)showOpenPanelOnLaunch
+{
+	return [[NSUserDefaults standardUserDefaults] boolForKey:kShowOpenPanelOnLaunch];
+}
+
 @end
