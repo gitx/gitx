@@ -23,7 +23,7 @@ using namespace std;
 @implementation PBGitRevList
 
 @synthesize commits;
-- initWithRepository: (id) repo
+- (id)initWithRepository:(PBGitRepository *)repo
 {
 	repository = repo;
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:nil];
@@ -74,23 +74,21 @@ using namespace std;
 	PBGitGrapher* g = [[PBGitGrapher alloc] initWithRepository: repository];
 	std::map<string, NSStringEncoding> encodingMap;
 
-	NSMutableArray* arguments;
+	NSString *formatString = @"--pretty=format:%H\01%e\01%an\01%s\01%P\01%at";
 	BOOL showSign = [rev hasLeftRight];
 
 	if (showSign)
-		arguments = [NSMutableArray arrayWithObjects:@"log", @"-z", @"--early-output", @"--topo-order", @"--pretty=format:%H\01%e\01%an\01%s\01%P\01%at\01%m", nil];
-	else
-		arguments = [NSMutableArray arrayWithObjects:@"log", @"-z",  @"--early-output", @"--topo-order", @"--pretty=format:%H\01%e\01%an\01%s\01%P\01%at", nil];
+		formatString = [formatString stringByAppendingString:@"\01%m"];
+	
+	NSMutableArray *arguments = [NSMutableArray arrayWithObjects:@"log", @"-z", @"--early-output", @"--topo-order", @"--children", formatString, nil];
 
 	if (!rev)
 		[arguments addObject:@"HEAD"];
 	else
 		[arguments addObjectsFromArray:[rev parameters]];
 
-	if ([rev hasPathLimiter])
-		[arguments insertObject:@"--children" atIndex:1];
-
-	NSTask *task = [PBEasyPipe taskForCommand:[PBGitBinary path] withArgs:arguments inDir:[repository fileURL].path];
+	NSString *directory = rev.workingDirectory ? rev.workingDirectory.path : repository.fileURL.path;
+	NSTask *task = [PBEasyPipe taskForCommand:[PBGitBinary path] withArgs:arguments inDir:directory];
 	[task launch];
 	NSFileHandle* handle = [task.standardOutput fileHandleForReading];
 	
