@@ -35,19 +35,23 @@
 {
 }
 
-// This is called when the view is displayed again; it 
-// should be updated to show the most recent information
-- (void) updateView
-{
-}
-
 - (NSResponder *)firstResponder;
 {
 	return nil;
+}
+
+// The next methods should be implemented in the subclass if necessary
+- (void)updateView
+{
 }
 
 - (IBAction) refresh:(id)sender
 {
 	return;
 }
+
+- (void)viewLoaded
+{
+}
+
 @end
