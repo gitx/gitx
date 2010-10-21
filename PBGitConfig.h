@@ -16,4 +16,8 @@
 
 - init;
 - initWithRepositoryPath:(NSString *)path;
+
+// get config data: `git config -l`
+- (NSDictionary*) listConfigValuesInDir:(NSString*)inDir;
+
 @end

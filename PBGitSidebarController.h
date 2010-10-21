@@ -20,6 +20,10 @@
 	IBOutlet NSPopUpButton *actionButton;
 	IBOutlet NSSegmentedControl *remoteControls;
 
+    IBOutlet NSButton* svnFetchButton;
+    IBOutlet NSButton* svnRebaseButton;
+    IBOutlet NSButton* svnDcommitButton;
+    
 	NSMutableArray *items;
 
 	/* Specific things */
@@ -37,6 +41,9 @@
 - (NSMenu *) menuForRow:(NSInteger)row;
 
 - (IBAction) fetchPullPushAction:(id)sender;
+- (IBAction) svnFetch:(id)sender;
+- (IBAction) svnRebase:(id)sender;
+- (IBAction) svnDcommit:(id)sender;
 
 - (void)setHistorySearch:(NSString *)searchString mode:(NSInteger)mode;
 

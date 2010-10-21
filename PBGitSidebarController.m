@@ -371,6 +371,12 @@ enum  {
 	[remoteControls setEnabled:hasRemote forSegment:kFetchSegment];
 	[remoteControls setEnabled:hasRemote forSegment:kPullSegment];
 	[remoteControls setEnabled:hasRemote forSegment:kPushSegment];
+    
+    // get config
+    BOOL hasSVN = [repository hasSvnRemote];
+    [svnFetchButton setEnabled:hasSVN];
+    [svnRebaseButton setEnabled:hasSVN];
+    [svnDcommitButton setEnabled:hasSVN];
 }
 
 - (IBAction) fetchPullPushAction:(id)sender
@@ -408,5 +414,21 @@ enum  {
 	}
 }
 
+- (IBAction) svnFetch:(id)sender
+{
+    [repository svnFetch:nil];
+}
+
+- (IBAction) svnRebase:(id)sender
+{
+    printf("git svn rebase");
+    [repository svnRebase:nil];
+}
+
+- (IBAction) svnDcommit:(id)sender
+{
+    printf("git svn dcommit");
+    [repository svnDcommit:nil];
+}
 
 @end

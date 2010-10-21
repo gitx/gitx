@@ -885,6 +885,50 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return YES;
 }
 
+#pragma mark git svn commands
+
+/**
+ determines if the current repository has a git-svn configured remote
+ */
+- (BOOL) hasSvnRemote
+{
+    NSDictionary* configValues = [config listConfigValuesInDir:[self workingDirectory]];
+    
+    for (NSString* key in configValues) {
+        if ([key hasPrefix:@"svn-remote."]) return YES;
+    }
+    return NO;
+}
+
+/**
+ call `git svn fetch` with an optional remote name
+ 
+ remoteName can be NULL
+ */
+- (BOOL) svnFetch:(NSString*)remoteName
+{
+	return YES;
+}
+
+/**
+ call `git svn rebase` with an optional remote name
+ 
+ remoteName can be NULL
+ */
+- (BOOL) svnRebase:(NSString*)remoteName
+{
+	return YES;
+}
+
+/**
+ call `git svn dcommit` with optional commitURL
+ 
+ commitURL can be NULL
+ */
+- (BOOL) svnDcommit:(NSString*)commitURL
+{
+	return YES;
+}
 
 #pragma mark GitX Scripting
 
