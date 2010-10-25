@@ -892,12 +892,29 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
  */
 - (BOOL) hasSvnRemote
 {
+    NSArray* remotes = [self svnRemotes];
+    return remotes && [remotes count] > 0;
+}
+
+/**
+ get a list of the svn remotes configured on this repository
+ */
+- (NSArray*) svnRemotes
+{
     NSDictionary* configValues = [config listConfigValuesInDir:[self workingDirectory]];
+    NSMutableArray* remotes = [NSMutableArray array];
     
     for (NSString* key in configValues) {
-        if ([key hasPrefix:@"svn-remote."]) return YES;
+        NSArray* components = [key componentsSeparatedByString:@"."];
+        if ([components count] == 3 && 
+            [[components objectAtIndex:0] isEqualToString:@"svn-remote"] &&
+            [[components objectAtIndex:2] isEqualToString:@"url"]) {
+            
+            NSString* remoteName = [components objectAtIndex:1];
+            [remotes addObject:remoteName];
+        }
     }
-    return NO;
+    return [NSArray arrayWithArray:remotes];
 }
 
 /**
@@ -907,7 +924,15 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
  */
 - (BOOL) svnFetch:(NSString*)remoteName
 {
-	return YES;
+    int retval = 1;
+    NSArray* args = [NSArray arrayWithObjects:@"svn", @"fetch", remoteName, nil];
+    
+	NSString *description = [NSString stringWithFormat:@"Fetching all tracking branches from %@", remoteName ? remoteName : @"<default>"];
+	NSString *title = @"Fetching from svn remote";
+	[PBRemoteProgressSheet beginRemoteProgressSheetForArguments:args title:title description:description inRepository:self];
+    retval = 0;
+    
+	return retval == 0;
 }
 
 /**
@@ -917,7 +942,15 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
  */
 - (BOOL) svnRebase:(NSString*)remoteName
 {
-	return YES;
+    int retval = 1;
+    NSArray* args = [NSArray arrayWithObjects:@"svn", @"rebase", remoteName, nil];
+    
+	NSString *description = [NSString stringWithFormat:@"Rebasing all tracking branches from %@", remoteName ? remoteName : @"<default>"];
+	NSString *title = @"Pulling from svn remote (Rebase)";
+	[PBRemoteProgressSheet beginRemoteProgressSheetForArguments:args title:title description:description inRepository:self];
+    retval = 0;
+    
+	return retval == 0;
 }
 
 /**
@@ -927,7 +960,15 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
  */
 - (BOOL) svnDcommit:(NSString*)commitURL
 {
-	return YES;
+    int retval = 1;
+    NSArray* args = [NSArray arrayWithObjects:@"svn", @"dcommit", commitURL, nil];
+    
+	NSString *description = [NSString stringWithFormat:@"Pushing commits to svn remote %@", commitURL ? commitURL : @"<default>"];
+	NSString *title = @"Pushing to svn remote (Dcommit)";
+	[PBRemoteProgressSheet beginRemoteProgressSheetForArguments:args title:title description:description inRepository:self];
+    retval = 0;
+    
+	return retval == 0;
 }
 
 #pragma mark GitX Scripting

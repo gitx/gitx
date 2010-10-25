@@ -70,6 +70,7 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 - (BOOL) deleteRef:(PBGitRef *)ref;
 
 - (BOOL) hasSvnRemote;
+- (NSArray*) svnRemotes;
 - (BOOL) svnFetch:(NSString*)remoteName;
 - (BOOL) svnRebase:(NSString*)remoteName;
 - (BOOL) svnDcommit:(NSString*)commitURL;
