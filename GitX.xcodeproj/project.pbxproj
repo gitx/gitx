@@ -24,6 +24,13 @@
 		02B41A5E123E307200DFC531 /* PBCommitHookFailedSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B41A5D123E307200DFC531 /* PBCommitHookFailedSheet.m */; };
 		02B41A60123E307F00DFC531 /* PBCommitHookFailedSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02B41A5F123E307F00DFC531 /* PBCommitHookFailedSheet.xib */; };
 		056438B70ED0C40B00985397 /* DetailViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 056438B60ED0C40B00985397 /* DetailViewTemplate.png */; };
+		21230CB11284B26A0046E5A1 /* PBGitSVStashItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230CB01284B26A0046E5A1 /* PBGitSVStashItem.m */; };
+		21230D351284C5080046E5A1 /* PBGitStash.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230D341284C5080046E5A1 /* PBGitStash.m */; };
+		21230D821284D1CC0046E5A1 /* stash-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 21230D811284D1CC0046E5A1 /* stash-icon.png */; };
+		21230D9C128552720046E5A1 /* PBCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230D9B128552720046E5A1 /* PBCommand.m */; };
+		21230D9F128552FA0046E5A1 /* PBStashCommandFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230D9E128552FA0046E5A1 /* PBStashCommandFactory.m */; };
+		21230DAA1285550B0046E5A1 /* PBCommandMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230DA91285550B0046E5A1 /* PBCommandMenuItem.m */; };
+		21230DEE12855A990046E5A1 /* PBStashCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230DED12855A990046E5A1 /* PBStashCommand.m */; };
 		3BC07F4C0ED5A5C5009A7768 /* HistoryViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4A0ED5A5C5009A7768 /* HistoryViewTemplate.png */; };
 		3BC07F4D0ED5A5C5009A7768 /* CommitViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4B0ED5A5C5009A7768 /* CommitViewTemplate.png */; };
 		47DBDB580E94EDE700671A1E /* DBPrefsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DBDB570E94EDE700671A1E /* DBPrefsWindowController.m */; };
@@ -245,6 +252,21 @@
 		056438B60ED0C40B00985397 /* DetailViewTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = DetailViewTemplate.png; path = Images/DetailViewTemplate.png; sourceTree = "<group>"; };
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		21230CAF1284B26A0046E5A1 /* PBGitSVStashItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitSVStashItem.h; sourceTree = "<group>"; };
+		21230CB01284B26A0046E5A1 /* PBGitSVStashItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitSVStashItem.m; sourceTree = "<group>"; };
+		21230D331284C5080046E5A1 /* PBGitStash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitStash.h; sourceTree = "<group>"; };
+		21230D341284C5080046E5A1 /* PBGitStash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitStash.m; sourceTree = "<group>"; };
+		21230D4D1284C92E0046E5A1 /* PBPresentable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBPresentable.h; sourceTree = "<group>"; };
+		21230D811284D1CC0046E5A1 /* stash-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stash-icon.png"; sourceTree = "<group>"; };
+		21230D9A128552720046E5A1 /* PBCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBCommand.h; sourceTree = "<group>"; };
+		21230D9B128552720046E5A1 /* PBCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBCommand.m; sourceTree = "<group>"; };
+		21230D9D128552FA0046E5A1 /* PBStashCommandFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBStashCommandFactory.h; sourceTree = "<group>"; };
+		21230D9E128552FA0046E5A1 /* PBStashCommandFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBStashCommandFactory.m; sourceTree = "<group>"; };
+		21230DA0128553120046E5A1 /* PBCommandFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBCommandFactory.h; sourceTree = "<group>"; };
+		21230DA81285550B0046E5A1 /* PBCommandMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBCommandMenuItem.h; sourceTree = "<group>"; };
+		21230DA91285550B0046E5A1 /* PBCommandMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBCommandMenuItem.m; sourceTree = "<group>"; };
+		21230DEC12855A990046E5A1 /* PBStashCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBStashCommand.h; sourceTree = "<group>"; };
+		21230DED12855A990046E5A1 /* PBStashCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBStashCommand.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -527,6 +549,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				21230D991285524C0046E5A1 /* Commands */,
+				21230D321284C4F10046E5A1 /* Model */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -565,6 +589,30 @@
 				551BF111112F371800265053 /* gitx_askpasswd */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		21230D321284C4F10046E5A1 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				21230D331284C5080046E5A1 /* PBGitStash.h */,
+				21230D341284C5080046E5A1 /* PBGitStash.m */,
+				21230D4D1284C92E0046E5A1 /* PBPresentable.h */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		21230D991285524C0046E5A1 /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				21230D9A128552720046E5A1 /* PBCommand.h */,
+				21230D9B128552720046E5A1 /* PBCommand.m */,
+				21230DEC12855A990046E5A1 /* PBStashCommand.h */,
+				21230DED12855A990046E5A1 /* PBStashCommand.m */,
+				21230D9D128552FA0046E5A1 /* PBStashCommandFactory.h */,
+				21230D9E128552FA0046E5A1 /* PBStashCommandFactory.m */,
+				21230DA0128553120046E5A1 /* PBCommandFactory.h */,
+			);
+			path = Commands;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* GitTest */ = {
@@ -612,6 +660,7 @@
 				F56ADDD70ED19F9E002AC78F /* AddBranchTemplate.png */,
 				F56ADDD80ED19F9E002AC78F /* AddLabelTemplate.png */,
 				056438B60ED0C40B00985397 /* DetailViewTemplate.png */,
+				21230D811284D1CC0046E5A1 /* stash-icon.png */,
 				F57240BA0E9678EA00D8EE66 /* deleted_file.png */,
 				F5E92A1A0E88550E00056E75 /* empty_file.png */,
 				32CA4F630368D1EE00C91783 /* GitX_Prefix.pch */,
@@ -744,6 +793,8 @@
 				D8FDDA63114335E8005647F6 /* PBGitSVRemoteBranchItem.m */,
 				D8FDDA68114335E8005647F6 /* PBGitSVTagItem.h */,
 				D8FDDA69114335E8005647F6 /* PBGitSVTagItem.m */,
+				21230CAF1284B26A0046E5A1 /* PBGitSVStashItem.h */,
+				21230CB01284B26A0046E5A1 /* PBGitSVStashItem.m */,
 				D8FDDA60114335E8005647F6 /* PBGitSVOtherRevItem.h */,
 				D8FDDA61114335E8005647F6 /* PBGitSVOtherRevItem.m */,
 				D8FDDA5E114335E8005647F6 /* PBGitSVFolderItem.h */,
@@ -938,6 +989,8 @@
 				F5FC43C30EBD050800191D80 /* PBRefContextDelegate.h */,
 				F5FC43FC0EBD08EE00191D80 /* PBRefMenuItem.h */,
 				F5FC43FD0EBD08EE00191D80 /* PBRefMenuItem.m */,
+				21230DA81285550B0046E5A1 /* PBCommandMenuItem.h */,
+				21230DA91285550B0046E5A1 /* PBCommandMenuItem.m */,
 			);
 			name = History;
 			sourceTree = "<group>";
@@ -1114,7 +1167,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 26FC0A880875C7B200E6366F /* Build configuration list for PBXProject "GitX" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* GitTest */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1181,6 +1241,7 @@
 				D8F01C4B12182F19007F729F /* GitX.sdef in Resources */,
 				D8F4AB7912298CE200D6D53C /* rewindImage.pdf in Resources */,
 				02B41A60123E307F00DFC531 /* PBCommitHookFailedSheet.xib in Resources */,
+				21230D821284D1CC0046E5A1 /* stash-icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1331,6 +1392,12 @@
 				D8B4DC571220D1E4004166D6 /* PBHistorySearchController.m in Sources */,
 				D8712A00122B14EC00012334 /* GitXTextFieldCell.m in Sources */,
 				02B41A5E123E307200DFC531 /* PBCommitHookFailedSheet.m in Sources */,
+				21230CB11284B26A0046E5A1 /* PBGitSVStashItem.m in Sources */,
+				21230D351284C5080046E5A1 /* PBGitStash.m in Sources */,
+				21230D9C128552720046E5A1 /* PBCommand.m in Sources */,
+				21230D9F128552FA0046E5A1 /* PBStashCommandFactory.m in Sources */,
+				21230DAA1285550B0046E5A1 /* PBCommandMenuItem.m in Sources */,
+				21230DEE12855A990046E5A1 /* PBStashCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
