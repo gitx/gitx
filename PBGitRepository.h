@@ -54,6 +54,7 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 	PBGitSHA* _headSha;
 	
 	NSArray *stashes;
+	NSArray *submodules;
 }
 
 - (void) cloneRepositoryToPath:(NSString *)path bare:(BOOL)isBare;
@@ -140,4 +141,6 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 @property (assign) PBGitRevSpecifier *currentBranch;
 @property (assign) NSInteger currentBranchFilter;
 @property (retain) NSMutableDictionary* refs;
+@property (readonly) NSArray *stashes;
+@property (readonly) NSArray *submodules;
 @end

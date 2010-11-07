@@ -16,12 +16,16 @@
 #import "PBAddRemoteSheet.h"
 #import "PBGitDefaults.h"
 #import "PBHistorySearchController.h"
-#import "PBGitSVStashItem.h"
+#import "PBGitMenuItem.h"
 
 #import "PBStashCommandFactory.h"
+#import "PBRemoteCommandFactory.h"
 #import "PBCommandMenuItem.h"
+#import "PBGitStash.h"
+#import "PBGitSubmodule.h"
 
 static NSString * const kObservingContextStashes = @"stashesChanged";
+static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 
 @interface PBGitSidebarController ()
 
@@ -57,7 +61,9 @@ static NSString * const kObservingContextStashes = @"stashesChanged";
 
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
 	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
-	[repository addObserver:self forKeyPath:@"stashes" options:NSKeyValueObservingOptionNew context:@"stashesChanged"];
+	[repository addObserver:self forKeyPath:@"stashes" options:NSKeyValueObservingOptionNew context:kObservingContextStashes];
+	[repository addObserver:self forKeyPath:@"submodules" options:NSKeyValueObservingOptionNew context:kObservingContextSubmodules];
+
 
 	[self menuNeedsUpdate:[actionButton menu]];
 
@@ -75,6 +81,7 @@ static NSString * const kObservingContextStashes = @"stashesChanged";
 	[repository removeObserver:self forKeyPath:@"currentBranch"];
 	[repository removeObserver:self forKeyPath:@"branches"];
 	[repository removeObserver:self forKeyPath:@"stashes"];
+	[repository removeObserver:self forKeyPath:@"submodules"];
 
 	[super closeView];
 }
@@ -100,14 +107,39 @@ static NSString * const kObservingContextStashes = @"stashesChanged";
 			for (PBGitRevSpecifier *rev in removedRevSpecs)
 				[self removeRevSpec:rev];
 		}
-	} else if ([@"stashesChanged" isEqualToString:context]) {		// isEqualToString: is not needed here
+	} else if ([kObservingContextStashes isEqualToString:context]) {		// isEqualToString: is not needed here
 		[stashes.children removeAllObjects];
 		NSArray *newStashes = [change objectForKey:NSKeyValueChangeNewKey];
 		
+		PBGitMenuItem *lastItem = nil;
 		for (PBGitStash *stash in newStashes) {
-			PBGitSVStashItem *item = [[PBGitSVStashItem alloc] initWithStash:stash];
+			PBGitMenuItem *item = [[PBGitMenuItem alloc] initWithSourceObject:stash];
 			[stashes addChild:item];
 			[item release];
+			lastItem = item;
+		}
+		if (lastItem) {
+			[sourceView PBExpandItem:lastItem expandParents:YES];
+		}
+		[sourceView reloadData];
+	} else if ([kObservingContextSubmodules isEqualToString:context]) {
+		[submodules.children removeAllObjects];
+		NSArray *newSubmodules = [change objectForKey:NSKeyValueChangeNewKey];
+		
+		for (PBGitSubmodule *submodule in newSubmodules) {
+			PBGitMenuItem *item = [[PBGitMenuItem alloc] initWithSourceObject:submodule];
+			
+			BOOL added = NO;
+			for (PBGitMenuItem *addedItems in [submodules children]) {
+				if ([[submodule path] hasPrefix:[(id)[addedItems sourceObject] path]]) {
+					[addedItems addChild:item];
+					added = YES;
+				}
+			}
+			if (!added) {
+				[submodules addChild:item];
+			}
+			[sourceView PBExpandItem:item expandParents:YES];
 		}
 		[sourceView reloadData];
 	} else {
@@ -268,6 +300,7 @@ static NSString * const kObservingContextStashes = @"stashesChanged";
 	tags = [PBSourceViewItem groupItemWithTitle:@"Tags"];
 	others = [PBSourceViewItem groupItemWithTitle:@"Other"];
 	stashes = [PBSourceViewItem groupItemWithTitle:@"Stashes"];
+	submodules = [PBSourceViewItem groupItemWithTitle:@"Submodules"];
 
 	for (PBGitRevSpecifier *rev in repository.branches)
 		[self addRevSpec:rev];
@@ -278,12 +311,14 @@ static NSString * const kObservingContextStashes = @"stashesChanged";
 	[items addObject:tags];
 	[items addObject:others];
 	[items addObject:stashes];
+	[items addObject:submodules];
 
 	[sourceView reloadData];
 	[sourceView expandItem:project];
 	[sourceView expandItem:branches expandChildren:YES];
 	[sourceView expandItem:remotes];
-
+	//[sourceView expandItem:submodules expandChildren:YES];
+	
 	[sourceView reloadItem:nil reloadChildren:YES];
 }
 
@@ -345,9 +380,11 @@ static NSString * const kObservingContextStashes = @"stashesChanged";
 - (NSMenu *) menuForRow:(NSInteger)row
 {
 	PBSourceViewItem *viewItem = [sourceView itemAtRow:row];
-	if ([viewItem isKindOfClass:[PBGitSVStashItem class]]) {
-		PBGitSVStashItem *stashItem = (PBGitSVStashItem *) viewItem;
-		NSArray *commands = [PBStashCommandFactory commandsForObject:[stashItem stash] repository:historyViewController.repository];
+	if ([viewItem isKindOfClass:[PBGitMenuItem class]]) {
+		PBGitMenuItem *stashItem = (PBGitMenuItem *) viewItem;
+		NSMutableArray *commands = [[NSMutableArray alloc] init];
+		[commands addObjectsFromArray:[PBStashCommandFactory commandsForObject:[stashItem sourceObject] repository:historyViewController.repository]];
+		[commands addObjectsFromArray:[PBRemoteCommandFactory commandsForObject:[stashItem sourceObject] repository:historyViewController.repository]];
 		if (!commands) {
 			return nil;
 		}

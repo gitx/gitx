@@ -22,17 +22,20 @@
 #import "PBHistorySearchController.h"
 
 #import "PBGitStash.h"
+#import "PBGitSubmodule.h"
 
 NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 
 @interface PBGitRepository()
 @property (nonatomic, retain) NSArray *stashes;
+@property (nonatomic, retain) NSArray *submodules;
 @end
 
 
 
 @implementation PBGitRepository
 @synthesize stashes;
+@synthesize submodules;
 @synthesize revisionList, branches, currentBranch, refs, hasChanged, config;
 @synthesize currentBranchFilter;
 
@@ -260,9 +263,11 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	NSString *output = [self outputInWorkdirForArguments:arguments];
 	NSArray *lines = [output componentsSeparatedByString:@"\n"];
 	
-	NSMutableArray *loadedStashes = [[NSMutableArray alloc] init];
+	NSMutableArray *loadedStashes = [[NSMutableArray alloc] initWithCapacity:[lines count]];
 	
 	for (NSString *stashLine in lines) {
+		if ([stashLine length] == 0)
+			continue;
 		PBGitStash *stash = [[PBGitStash alloc] initWithRawStashLine:stashLine];
 		[loadedStashes addObject:stash];
 		[stash release];
@@ -270,6 +275,23 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	
 	self.stashes = loadedStashes;
 	[loadedStashes release];
+}
+
+- (void) reloadSubmodules {
+	
+	NSArray *arguments = [NSArray arrayWithObjects:@"submodule", @"status", @"--recursive", nil];
+	NSString *output = [self outputInWorkdirForArguments:arguments];
+	NSArray *lines = [output componentsSeparatedByString:@"\n"];
+	
+	NSMutableArray *loadedSubmodules = [[NSMutableArray alloc] initWithCapacity:[lines count]];
+	
+	for (NSString *submoduleLine in lines) {
+		if ([submoduleLine length] == 0)
+			continue;
+		PBGitSubmodule *submodule = [[PBGitSubmodule alloc] initWithRawSubmoduleStatusString:submoduleLine];
+		[loadedSubmodules addObject:submodule];
+	}
+	self.submodules = loadedSubmodules;
 }
 
 - (void) reloadRefs
@@ -307,6 +329,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	[self didChangeValueForKey:@"refs"];
 	
 	[self reloadStashes];
+	[self reloadSubmodules];
 
 	[[[self windowController] window] setTitle:[self displayName]];
 }
@@ -1164,11 +1187,6 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		return ref;
 
 	return nil;
-}
-
-- (void) dealloc {
-	[stashes release];
-	[super dealloc];
 }
 
 - (void) finalize

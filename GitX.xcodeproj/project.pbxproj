@@ -24,13 +24,22 @@
 		02B41A5E123E307200DFC531 /* PBCommitHookFailedSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B41A5D123E307200DFC531 /* PBCommitHookFailedSheet.m */; };
 		02B41A60123E307F00DFC531 /* PBCommitHookFailedSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02B41A5F123E307F00DFC531 /* PBCommitHookFailedSheet.xib */; };
 		056438B70ED0C40B00985397 /* DetailViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 056438B60ED0C40B00985397 /* DetailViewTemplate.png */; };
-		21230CB11284B26A0046E5A1 /* PBGitSVStashItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230CB01284B26A0046E5A1 /* PBGitSVStashItem.m */; };
+		21230CB11284B26A0046E5A1 /* PBGitMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230CB01284B26A0046E5A1 /* PBGitMenuItem.m */; };
 		21230D351284C5080046E5A1 /* PBGitStash.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230D341284C5080046E5A1 /* PBGitStash.m */; };
 		21230D821284D1CC0046E5A1 /* stash-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 21230D811284D1CC0046E5A1 /* stash-icon.png */; };
 		21230D9C128552720046E5A1 /* PBCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230D9B128552720046E5A1 /* PBCommand.m */; };
 		21230D9F128552FA0046E5A1 /* PBStashCommandFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230D9E128552FA0046E5A1 /* PBStashCommandFactory.m */; };
 		21230DAA1285550B0046E5A1 /* PBCommandMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230DA91285550B0046E5A1 /* PBCommandMenuItem.m */; };
-		21230DEE12855A990046E5A1 /* PBStashCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230DED12855A990046E5A1 /* PBStashCommand.m */; };
+		21230ED21285EB5A0046E5A1 /* PBArgumentPicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 21230ED11285EB5A0046E5A1 /* PBArgumentPicker.xib */; };
+		21230ED91285EDAF0046E5A1 /* PBArgumentPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230ED81285EDAF0046E5A1 /* PBArgumentPicker.m */; };
+		21230EE21285EFB20046E5A1 /* PBArgumentPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230EE11285EFB20046E5A1 /* PBArgumentPickerController.m */; };
+		21230F7D1285FC6A0046E5A1 /* PBCommandWithParameter.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230F7C1285FC6A0046E5A1 /* PBCommandWithParameter.m */; };
+		212311DD12872BF20046E5A1 /* PBGitSubmodule.m in Sources */ = {isa = PBXBuildFile; fileRef = 212311DC12872BF20046E5A1 /* PBGitSubmodule.m */; };
+		2123121E128735E90046E5A1 /* submodule-notmatching-index.png in Resources */ = {isa = PBXBuildFile; fileRef = 2123121B128735E90046E5A1 /* submodule-notmatching-index.png */; };
+		2123121F128735E90046E5A1 /* submodule-matching-index.png in Resources */ = {isa = PBXBuildFile; fileRef = 2123121C128735E90046E5A1 /* submodule-matching-index.png */; };
+		21231220128735E90046E5A1 /* submodule-empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 2123121D128735E90046E5A1 /* submodule-empty.png */; };
+		2123138A128756ED0046E5A1 /* PBRemoteCommandFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 21231389128756ED0046E5A1 /* PBRemoteCommandFactory.m */; };
+		212313B5128759C00046E5A1 /* PBOpenDocumentCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 212313B4128759C00046E5A1 /* PBOpenDocumentCommand.m */; };
 		3BC07F4C0ED5A5C5009A7768 /* HistoryViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4A0ED5A5C5009A7768 /* HistoryViewTemplate.png */; };
 		3BC07F4D0ED5A5C5009A7768 /* CommitViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4B0ED5A5C5009A7768 /* CommitViewTemplate.png */; };
 		47DBDB580E94EDE700671A1E /* DBPrefsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DBDB570E94EDE700671A1E /* DBPrefsWindowController.m */; };
@@ -252,8 +261,8 @@
 		056438B60ED0C40B00985397 /* DetailViewTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = DetailViewTemplate.png; path = Images/DetailViewTemplate.png; sourceTree = "<group>"; };
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		21230CAF1284B26A0046E5A1 /* PBGitSVStashItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitSVStashItem.h; sourceTree = "<group>"; };
-		21230CB01284B26A0046E5A1 /* PBGitSVStashItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitSVStashItem.m; sourceTree = "<group>"; };
+		21230CAF1284B26A0046E5A1 /* PBGitMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitMenuItem.h; sourceTree = "<group>"; };
+		21230CB01284B26A0046E5A1 /* PBGitMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitMenuItem.m; sourceTree = "<group>"; };
 		21230D331284C5080046E5A1 /* PBGitStash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitStash.h; sourceTree = "<group>"; };
 		21230D341284C5080046E5A1 /* PBGitStash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitStash.m; sourceTree = "<group>"; };
 		21230D4D1284C92E0046E5A1 /* PBPresentable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBPresentable.h; sourceTree = "<group>"; };
@@ -265,8 +274,22 @@
 		21230DA0128553120046E5A1 /* PBCommandFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBCommandFactory.h; sourceTree = "<group>"; };
 		21230DA81285550B0046E5A1 /* PBCommandMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBCommandMenuItem.h; sourceTree = "<group>"; };
 		21230DA91285550B0046E5A1 /* PBCommandMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBCommandMenuItem.m; sourceTree = "<group>"; };
-		21230DEC12855A990046E5A1 /* PBStashCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBStashCommand.h; sourceTree = "<group>"; };
-		21230DED12855A990046E5A1 /* PBStashCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBStashCommand.m; sourceTree = "<group>"; };
+		21230ED11285EB5A0046E5A1 /* PBArgumentPicker.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PBArgumentPicker.xib; sourceTree = "<group>"; };
+		21230ED71285EDAF0046E5A1 /* PBArgumentPicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBArgumentPicker.h; sourceTree = "<group>"; };
+		21230ED81285EDAF0046E5A1 /* PBArgumentPicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBArgumentPicker.m; sourceTree = "<group>"; };
+		21230EE01285EFB20046E5A1 /* PBArgumentPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBArgumentPickerController.h; sourceTree = "<group>"; };
+		21230EE11285EFB20046E5A1 /* PBArgumentPickerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBArgumentPickerController.m; sourceTree = "<group>"; };
+		21230F7B1285FC6A0046E5A1 /* PBCommandWithParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBCommandWithParameter.h; sourceTree = "<group>"; };
+		21230F7C1285FC6A0046E5A1 /* PBCommandWithParameter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBCommandWithParameter.m; sourceTree = "<group>"; };
+		212311DB12872BF20046E5A1 /* PBGitSubmodule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitSubmodule.h; sourceTree = "<group>"; };
+		212311DC12872BF20046E5A1 /* PBGitSubmodule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitSubmodule.m; sourceTree = "<group>"; };
+		2123121B128735E90046E5A1 /* submodule-notmatching-index.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "submodule-notmatching-index.png"; sourceTree = "<group>"; };
+		2123121C128735E90046E5A1 /* submodule-matching-index.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "submodule-matching-index.png"; sourceTree = "<group>"; };
+		2123121D128735E90046E5A1 /* submodule-empty.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "submodule-empty.png"; sourceTree = "<group>"; };
+		21231388128756ED0046E5A1 /* PBRemoteCommandFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBRemoteCommandFactory.h; sourceTree = "<group>"; };
+		21231389128756ED0046E5A1 /* PBRemoteCommandFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBRemoteCommandFactory.m; sourceTree = "<group>"; };
+		212313B3128759C00046E5A1 /* PBOpenDocumentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBOpenDocumentCommand.h; sourceTree = "<group>"; };
+		212313B4128759C00046E5A1 /* PBOpenDocumentCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBOpenDocumentCommand.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -549,6 +572,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				21230EDF1285EF880046E5A1 /* Controller */,
+				21230ED41285ED760046E5A1 /* View */,
 				21230D991285524C0046E5A1 /* Commands */,
 				21230D321284C4F10046E5A1 /* Model */,
 			);
@@ -597,6 +622,8 @@
 				21230D331284C5080046E5A1 /* PBGitStash.h */,
 				21230D341284C5080046E5A1 /* PBGitStash.m */,
 				21230D4D1284C92E0046E5A1 /* PBPresentable.h */,
+				212311DB12872BF20046E5A1 /* PBGitSubmodule.h */,
+				212311DC12872BF20046E5A1 /* PBGitSubmodule.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -606,13 +633,35 @@
 			children = (
 				21230D9A128552720046E5A1 /* PBCommand.h */,
 				21230D9B128552720046E5A1 /* PBCommand.m */,
-				21230DEC12855A990046E5A1 /* PBStashCommand.h */,
-				21230DED12855A990046E5A1 /* PBStashCommand.m */,
 				21230D9D128552FA0046E5A1 /* PBStashCommandFactory.h */,
 				21230D9E128552FA0046E5A1 /* PBStashCommandFactory.m */,
 				21230DA0128553120046E5A1 /* PBCommandFactory.h */,
+				21230F7B1285FC6A0046E5A1 /* PBCommandWithParameter.h */,
+				21230F7C1285FC6A0046E5A1 /* PBCommandWithParameter.m */,
+				21231388128756ED0046E5A1 /* PBRemoteCommandFactory.h */,
+				21231389128756ED0046E5A1 /* PBRemoteCommandFactory.m */,
+				212313B3128759C00046E5A1 /* PBOpenDocumentCommand.h */,
+				212313B4128759C00046E5A1 /* PBOpenDocumentCommand.m */,
 			);
 			path = Commands;
+			sourceTree = "<group>";
+		};
+		21230ED41285ED760046E5A1 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				21230ED71285EDAF0046E5A1 /* PBArgumentPicker.h */,
+				21230ED81285EDAF0046E5A1 /* PBArgumentPicker.m */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		21230EDF1285EF880046E5A1 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				21230EE01285EFB20046E5A1 /* PBArgumentPickerController.h */,
+				21230EE11285EFB20046E5A1 /* PBArgumentPickerController.m */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* GitTest */ = {
@@ -642,6 +691,9 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				2123121B128735E90046E5A1 /* submodule-notmatching-index.png */,
+				2123121C128735E90046E5A1 /* submodule-matching-index.png */,
+				2123121D128735E90046E5A1 /* submodule-empty.png */,
 				D858108011274D28007F254B /* Branch.png */,
 				D858108111274D28007F254B /* RemoteBranch.png */,
 				D858108211274D28007F254B /* Tag.png */,
@@ -695,6 +747,7 @@
 				D8FDD9F511432A12005647F6 /* PBCloneRepositoryPanel.xib */,
 				47DBDB680E94EF6500671A1E /* Preferences.xib */,
 				F569AE920F2CBD7C00C2FFA7 /* Credits.html */,
+				21230ED11285EB5A0046E5A1 /* PBArgumentPicker.xib */,
 				F58DB55F10566E3900CFDF4A /* PBGitSidebarView.xib */,
 				D8022FE711E124A0003C21F6 /* PBGitXMessageSheet.xib */,
 			);
@@ -793,8 +846,8 @@
 				D8FDDA63114335E8005647F6 /* PBGitSVRemoteBranchItem.m */,
 				D8FDDA68114335E8005647F6 /* PBGitSVTagItem.h */,
 				D8FDDA69114335E8005647F6 /* PBGitSVTagItem.m */,
-				21230CAF1284B26A0046E5A1 /* PBGitSVStashItem.h */,
-				21230CB01284B26A0046E5A1 /* PBGitSVStashItem.m */,
+				21230CAF1284B26A0046E5A1 /* PBGitMenuItem.h */,
+				21230CB01284B26A0046E5A1 /* PBGitMenuItem.m */,
 				D8FDDA60114335E8005647F6 /* PBGitSVOtherRevItem.h */,
 				D8FDDA61114335E8005647F6 /* PBGitSVOtherRevItem.m */,
 				D8FDDA5E114335E8005647F6 /* PBGitSVFolderItem.h */,
@@ -1242,6 +1295,10 @@
 				D8F4AB7912298CE200D6D53C /* rewindImage.pdf in Resources */,
 				02B41A60123E307F00DFC531 /* PBCommitHookFailedSheet.xib in Resources */,
 				21230D821284D1CC0046E5A1 /* stash-icon.png in Resources */,
+				21230ED21285EB5A0046E5A1 /* PBArgumentPicker.xib in Resources */,
+				2123121E128735E90046E5A1 /* submodule-notmatching-index.png in Resources */,
+				2123121F128735E90046E5A1 /* submodule-matching-index.png in Resources */,
+				21231220128735E90046E5A1 /* submodule-empty.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1392,12 +1449,17 @@
 				D8B4DC571220D1E4004166D6 /* PBHistorySearchController.m in Sources */,
 				D8712A00122B14EC00012334 /* GitXTextFieldCell.m in Sources */,
 				02B41A5E123E307200DFC531 /* PBCommitHookFailedSheet.m in Sources */,
-				21230CB11284B26A0046E5A1 /* PBGitSVStashItem.m in Sources */,
+				21230CB11284B26A0046E5A1 /* PBGitMenuItem.m in Sources */,
 				21230D351284C5080046E5A1 /* PBGitStash.m in Sources */,
 				21230D9C128552720046E5A1 /* PBCommand.m in Sources */,
 				21230D9F128552FA0046E5A1 /* PBStashCommandFactory.m in Sources */,
 				21230DAA1285550B0046E5A1 /* PBCommandMenuItem.m in Sources */,
-				21230DEE12855A990046E5A1 /* PBStashCommand.m in Sources */,
+				21230ED91285EDAF0046E5A1 /* PBArgumentPicker.m in Sources */,
+				21230EE21285EFB20046E5A1 /* PBArgumentPickerController.m in Sources */,
+				21230F7D1285FC6A0046E5A1 /* PBCommandWithParameter.m in Sources */,
+				212311DD12872BF20046E5A1 /* PBGitSubmodule.m in Sources */,
+				2123138A128756ED0046E5A1 /* PBRemoteCommandFactory.m in Sources */,
+				212313B5128759C00046E5A1 /* PBOpenDocumentCommand.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

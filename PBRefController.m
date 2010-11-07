@@ -14,6 +14,8 @@
 #import "PBGitDefaults.h"
 #import "PBDiffWindowController.h"
 
+#import "PBArgumentPickerController.h"
+
 @implementation PBRefController
 
 - (void)awakeFromNib
@@ -212,7 +214,7 @@
 }
 
 - (void) showTagInfoSheet:(PBRefMenuItem *)sender
-{
+{	
 	if ([[sender refish] refishType] != kGitXTagType)
 		return;
 

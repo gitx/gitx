@@ -113,6 +113,19 @@
 		[ignoreItem setTarget:self];
 		[ignoreItem setRepresentedObject:selectedFiles];
 		[menu addItem:ignoreItem];
+		
+		if ([selectedFiles count] == 1) {
+			NSString *path = [[selectedFiles objectAtIndex:0] path];
+			NSString *extension = [path pathExtension];
+			if ([extension length] > 0) {
+				ignoreText = [NSString stringWithFormat:@"Ignore Files with extension (.%@)", extension];
+				ignoreItem = [[NSMenuItem alloc] initWithTitle:ignoreText action:@selector(ignoreFilesWithExtensionAction:) keyEquivalent:@""];
+				[ignoreItem setTarget:self];
+				[ignoreItem setRepresentedObject:extension];
+				[menu addItem:ignoreItem];
+				[ignoreItem release];
+			}
+		}
 	}
 
 	if ([selectedFiles count] == 1) {
@@ -168,6 +181,18 @@
 		return;
 
 	[self ignoreFiles:selectedFiles];
+	[commitController.index refresh];
+}
+
+- (void) ignoreFilesWithExtensionAction:(id) sender {
+	NSString *extension = [sender representedObject];
+	if ([extension length] == 0)
+		return;
+	PBChangedFile *file = [[PBChangedFile alloc] initWithPath:[NSString stringWithFormat:@"*.%@", extension]];
+	
+	
+	[self ignoreFiles:[NSArray arrayWithObject:file]];
+	[file release];
 	[commitController.index refresh];
 }
 
