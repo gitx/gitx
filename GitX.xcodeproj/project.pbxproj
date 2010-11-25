@@ -24,6 +24,9 @@
 		02B41A5E123E307200DFC531 /* PBCommitHookFailedSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 02B41A5D123E307200DFC531 /* PBCommitHookFailedSheet.m */; };
 		02B41A60123E307F00DFC531 /* PBCommitHookFailedSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 02B41A5F123E307F00DFC531 /* PBCommitHookFailedSheet.xib */; };
 		056438B70ED0C40B00985397 /* DetailViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 056438B60ED0C40B00985397 /* DetailViewTemplate.png */; };
+		21025C1212947AB200D87200 /* sourceListAction.png in Resources */ = {isa = PBXBuildFile; fileRef = 21025C1012947AB200D87200 /* sourceListAction.png */; };
+		21025C1312947AB200D87200 /* sourceListActionOver.png in Resources */ = {isa = PBXBuildFile; fileRef = 21025C1112947AB200D87200 /* sourceListActionOver.png */; };
+		21025CA0129487AC00D87200 /* GTScaledButtonControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 21025C0B12947A6200D87200 /* GTScaledButtonControl.m */; };
 		21230CB11284B26A0046E5A1 /* PBGitMenuItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230CB01284B26A0046E5A1 /* PBGitMenuItem.m */; };
 		21230D351284C5080046E5A1 /* PBGitStash.m in Sources */ = {isa = PBXBuildFile; fileRef = 21230D341284C5080046E5A1 /* PBGitStash.m */; };
 		21230D821284D1CC0046E5A1 /* stash-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 21230D811284D1CC0046E5A1 /* stash-icon.png */; };
@@ -40,6 +43,14 @@
 		21231220128735E90046E5A1 /* submodule-empty.png in Resources */ = {isa = PBXBuildFile; fileRef = 2123121D128735E90046E5A1 /* submodule-empty.png */; };
 		2123138A128756ED0046E5A1 /* PBRemoteCommandFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = 21231389128756ED0046E5A1 /* PBRemoteCommandFactory.m */; };
 		212313B5128759C00046E5A1 /* PBOpenDocumentCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 212313B4128759C00046E5A1 /* PBOpenDocumentCommand.m */; };
+		21CF0AE3129C7BE00065B37C /* info-selected.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 21CF0ADD129C7BE00065B37C /* info-selected.tiff */; };
+		21CF0AE4129C7BE00065B37C /* info-selected-mouse.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 21CF0ADE129C7BE00065B37C /* info-selected-mouse.tiff */; };
+		21CF0AE5129C7BE00065B37C /* info-selected-hovered.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 21CF0ADF129C7BE00065B37C /* info-selected-hovered.tiff */; };
+		21CF0AE6129C7BE00065B37C /* info-normal.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 21CF0AE0129C7BE00065B37C /* info-normal.tiff */; };
+		21CF0AE7129C7BE00065B37C /* info-normal-mouse.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 21CF0AE1129C7BE00065B37C /* info-normal-mouse.tiff */; };
+		21CF0AE8129C7BE00065B37C /* info-normal-hovered.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 21CF0AE2129C7BE00065B37C /* info-normal-hovered.tiff */; };
+		21CF0B24129C7ED90065B37C /* TrackableOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 21CF0B23129C7ED90065B37C /* TrackableOutlineView.m */; };
+		21E331E4129DBFB100C3BA6F /* GTOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 21E331E3129DBFB100C3BA6F /* GTOutlineView.m */; };
 		3BC07F4C0ED5A5C5009A7768 /* HistoryViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4A0ED5A5C5009A7768 /* HistoryViewTemplate.png */; };
 		3BC07F4D0ED5A5C5009A7768 /* CommitViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4B0ED5A5C5009A7768 /* CommitViewTemplate.png */; };
 		47DBDB580E94EDE700671A1E /* DBPrefsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DBDB570E94EDE700671A1E /* DBPrefsWindowController.m */; };
@@ -261,6 +272,11 @@
 		056438B60ED0C40B00985397 /* DetailViewTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = DetailViewTemplate.png; path = Images/DetailViewTemplate.png; sourceTree = "<group>"; };
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		21025C0A12947A6200D87200 /* GTScaledButtonControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTScaledButtonControl.h; sourceTree = "<group>"; };
+		21025C0B12947A6200D87200 /* GTScaledButtonControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTScaledButtonControl.m; sourceTree = "<group>"; };
+		21025C1012947AB200D87200 /* sourceListAction.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sourceListAction.png; sourceTree = "<group>"; };
+		21025C1112947AB200D87200 /* sourceListActionOver.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sourceListActionOver.png; sourceTree = "<group>"; };
+		21025CA6129487C200D87200 /* defs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defs.h; sourceTree = "<group>"; };
 		21230CAF1284B26A0046E5A1 /* PBGitMenuItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitMenuItem.h; sourceTree = "<group>"; };
 		21230CB01284B26A0046E5A1 /* PBGitMenuItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitMenuItem.m; sourceTree = "<group>"; };
 		21230D331284C5080046E5A1 /* PBGitStash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitStash.h; sourceTree = "<group>"; };
@@ -290,6 +306,17 @@
 		21231389128756ED0046E5A1 /* PBRemoteCommandFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBRemoteCommandFactory.m; sourceTree = "<group>"; };
 		212313B3128759C00046E5A1 /* PBOpenDocumentCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBOpenDocumentCommand.h; sourceTree = "<group>"; };
 		212313B4128759C00046E5A1 /* PBOpenDocumentCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBOpenDocumentCommand.m; sourceTree = "<group>"; };
+		21CF0ADD129C7BE00065B37C /* info-selected.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "info-selected.tiff"; sourceTree = "<group>"; };
+		21CF0ADE129C7BE00065B37C /* info-selected-mouse.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "info-selected-mouse.tiff"; sourceTree = "<group>"; };
+		21CF0ADF129C7BE00065B37C /* info-selected-hovered.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "info-selected-hovered.tiff"; sourceTree = "<group>"; };
+		21CF0AE0129C7BE00065B37C /* info-normal.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "info-normal.tiff"; sourceTree = "<group>"; };
+		21CF0AE1129C7BE00065B37C /* info-normal-mouse.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "info-normal-mouse.tiff"; sourceTree = "<group>"; };
+		21CF0AE2129C7BE00065B37C /* info-normal-hovered.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "info-normal-hovered.tiff"; sourceTree = "<group>"; };
+		21CF0B22129C7ED90065B37C /* TrackableOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackableOutlineView.h; sourceTree = "<group>"; };
+		21CF0B23129C7ED90065B37C /* TrackableOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TrackableOutlineView.m; sourceTree = "<group>"; };
+		21CF0B36129C80100065B37C /* CellTrackingRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CellTrackingRect.h; sourceTree = "<group>"; };
+		21E331E2129DBFB100C3BA6F /* GTOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GTOutlineView.h; path = /Volumes/CORESYSTEMS/git/gitx/GTOutlineView.h; sourceTree = "<absolute>"; };
+		21E331E3129DBFB100C3BA6F /* GTOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = GTOutlineView.m; path = /Volumes/CORESYSTEMS/git/gitx/GTOutlineView.m; sourceTree = "<absolute>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -382,7 +409,7 @@
 		D8E3B38110DD4E2C001096A3 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/PBCreateTagSheet.xib; sourceTree = "<group>"; };
 		D8EB6168122F643E00FCCAF4 /* GitXRelativeDateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitXRelativeDateFormatter.h; sourceTree = "<group>"; };
 		D8EB6169122F643E00FCCAF4 /* GitXRelativeDateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitXRelativeDateFormatter.m; sourceTree = "<group>"; };
-		D8F01C4A12182F19007F729F /* GitX.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.sdef; path = GitX.sdef; sourceTree = "<group>"; };
+		D8F01C4A12182F19007F729F /* GitX.sdef */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = GitX.sdef; sourceTree = "<group>"; };
 		D8F01D511218A164007F729F /* NSApplication+GitXScripting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSApplication+GitXScripting.h"; sourceTree = "<group>"; };
 		D8F01D521218A164007F729F /* NSApplication+GitXScripting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSApplication+GitXScripting.m"; sourceTree = "<group>"; };
 		D8F01D841218A406007F729F /* GitX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitX.h; sourceTree = "<group>"; };
@@ -649,8 +676,20 @@
 		21230ED41285ED760046E5A1 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				21CF0ADD129C7BE00065B37C /* info-selected.tiff */,
+				21CF0ADE129C7BE00065B37C /* info-selected-mouse.tiff */,
+				21CF0ADF129C7BE00065B37C /* info-selected-hovered.tiff */,
+				21CF0AE0129C7BE00065B37C /* info-normal.tiff */,
+				21CF0AE1129C7BE00065B37C /* info-normal-mouse.tiff */,
+				21CF0AE2129C7BE00065B37C /* info-normal-hovered.tiff */,
+				21025CA6129487C200D87200 /* defs.h */,
+				21025C0A12947A6200D87200 /* GTScaledButtonControl.h */,
+				21025C0B12947A6200D87200 /* GTScaledButtonControl.m */,
 				21230ED71285EDAF0046E5A1 /* PBArgumentPicker.h */,
 				21230ED81285EDAF0046E5A1 /* PBArgumentPicker.m */,
+				21CF0B22129C7ED90065B37C /* TrackableOutlineView.h */,
+				21CF0B23129C7ED90065B37C /* TrackableOutlineView.m */,
+				21CF0B36129C80100065B37C /* CellTrackingRect.h */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -667,6 +706,8 @@
 		29B97314FDCFA39411CA2CEA /* GitTest */ = {
 			isa = PBXGroup;
 			children = (
+				21E331E2129DBFB100C3BA6F /* GTOutlineView.h */,
+				21E331E3129DBFB100C3BA6F /* GTOutlineView.m */,
 				F5886A080ED5D26B0066E74C /* SpeedTest */,
 				913D5E420E5563FD00CECEA2 /* cli */,
 				D89E9B4C1218C22A0097A90B /* GitXScripting */,
@@ -726,6 +767,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				21025C1012947AB200D87200 /* sourceListAction.png */,
+				21025C1112947AB200D87200 /* sourceListActionOver.png */,
 				02B41A5F123E307F00DFC531 /* PBCommitHookFailedSheet.xib */,
 				F5F7D0641062E7940072C81C /* UpdateKey.pem */,
 				F50A41130EBB872D00208746 /* Widgets */,
@@ -1299,6 +1342,14 @@
 				2123121E128735E90046E5A1 /* submodule-notmatching-index.png in Resources */,
 				2123121F128735E90046E5A1 /* submodule-matching-index.png in Resources */,
 				21231220128735E90046E5A1 /* submodule-empty.png in Resources */,
+				21025C1212947AB200D87200 /* sourceListAction.png in Resources */,
+				21025C1312947AB200D87200 /* sourceListActionOver.png in Resources */,
+				21CF0AE3129C7BE00065B37C /* info-selected.tiff in Resources */,
+				21CF0AE4129C7BE00065B37C /* info-selected-mouse.tiff in Resources */,
+				21CF0AE5129C7BE00065B37C /* info-selected-hovered.tiff in Resources */,
+				21CF0AE6129C7BE00065B37C /* info-normal.tiff in Resources */,
+				21CF0AE7129C7BE00065B37C /* info-normal-mouse.tiff in Resources */,
+				21CF0AE8129C7BE00065B37C /* info-normal-hovered.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1460,6 +1511,9 @@
 				212311DD12872BF20046E5A1 /* PBGitSubmodule.m in Sources */,
 				2123138A128756ED0046E5A1 /* PBRemoteCommandFactory.m in Sources */,
 				212313B5128759C00046E5A1 /* PBOpenDocumentCommand.m in Sources */,
+				21025CA0129487AC00D87200 /* GTScaledButtonControl.m in Sources */,
+				21CF0B24129C7ED90065B37C /* TrackableOutlineView.m in Sources */,
+				21E331E4129DBFB100C3BA6F /* GTOutlineView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -269,13 +269,24 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(PBSourceViewCell *)cell forTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem *)item
 {
 	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
-
+	BOOL showsActionButton = NO;
+	if ([item respondsToSelector:@selector(showsActionButton)]) {
+		showsActionButton = [item showsActionButton];
+		[cell setTarget:self];
+		cell.iInfoButtonAction = @selector(infoButtonAction:);
+	}
+	cell.showsActionButton = showsActionButton;
+	
 	[cell setImage:[item icon]];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
 	return ![item isGroupItem];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldTrackCell:(NSCell *)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+	return [item isGroupItem];
 }
 
 //
@@ -295,12 +306,17 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	stage = [PBGitSVStageItem stageItem];
 	[project addChild:stage];
 	
+	
 	branches = [PBSourceViewItem groupItemWithTitle:@"Branches"];
+	branches.showsActionButton = YES;
 	remotes = [PBSourceViewItem groupItemWithTitle:@"Remotes"];
+	remotes.showsActionButton = YES;
 	tags = [PBSourceViewItem groupItemWithTitle:@"Tags"];
 	others = [PBSourceViewItem groupItemWithTitle:@"Other"];
 	stashes = [PBSourceViewItem groupItemWithTitle:@"Stashes"];
+	stashes.showsActionButton = YES;
 	submodules = [PBSourceViewItem groupItemWithTitle:@"Submodules"];
+	submodules.showsActionButton = YES;
 
 	for (PBGitRevSpecifier *rev in repository.branches)
 		[self addRevSpec:rev];
@@ -380,21 +396,25 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 - (NSMenu *) menuForRow:(NSInteger)row
 {
 	PBSourceViewItem *viewItem = [sourceView itemAtRow:row];
-	if ([viewItem isKindOfClass:[PBGitMenuItem class]]) {
-		PBGitMenuItem *stashItem = (PBGitMenuItem *) viewItem;
+	if ([viewItem isKindOfClass:[PBGitMenuItem class]] || [[viewItem title] isEqualToString:@"STASHES"]) {
+		PBGitMenuItem *stashItem = nil;//(PBGitMenuItem *) viewItem;
 		NSMutableArray *commands = [[NSMutableArray alloc] init];
 		[commands addObjectsFromArray:[PBStashCommandFactory commandsForObject:[stashItem sourceObject] repository:historyViewController.repository]];
 		[commands addObjectsFromArray:[PBRemoteCommandFactory commandsForObject:[stashItem sourceObject] repository:historyViewController.repository]];
-		if (!commands) {
-			return nil;
-		}
 		NSMenu *menu = [[NSMenu alloc] init];
+		[menu setAutoenablesItems:NO];
 		for (PBCommand *command in commands) {
 			PBCommandMenuItem *item = [[PBCommandMenuItem alloc] initWithCommand:command];
-			[item setEnabled:YES];
 			[menu addItem:item];
 			[item release];
 		}
+        [menu addItem:[[NSMenuItem alloc] initWithTitle:@"hello" action:@selector(hello:) keyEquivalent:@""]];
+        if ([[viewItem title] isEqualToString:@"STASHES"]){
+            NSEvent *mouseEvent = [NSEvent mouseEventWithType:NSLeftMouseDown location:[NSEvent mouseLocation] modifierFlags:0 timestamp:[NSDate timeIntervalSinceReferenceDate] windowNumber:0 context:nil eventNumber:0 clickCount:1 pressure:0.1];
+            NSPoint conv = [sourceView convertPoint:[mouseEvent locationInWindow] fromView:nil];
+            [menu popUpMenuPositioningItem:nil atLocation:conv inView:sourceView];
+            return nil;
+        }
 		return menu;
 	}
 	
