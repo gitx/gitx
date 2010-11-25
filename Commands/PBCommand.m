@@ -18,6 +18,7 @@
 @synthesize commandDescription;
 @synthesize commandTitle;
 @synthesize repository;
+@synthesize canBeFired;
 
 - (id) initWithDisplayName:(NSString *) aDisplayName parameters:(NSArray *) params {
 	return [self initWithDisplayName:aDisplayName parameters:params repository:nil];
@@ -33,6 +34,7 @@
 		self.commandTitle = @"";
 		self.commandDescription = @"";
 		self.repository = repo;
+		self.canBeFired = YES;
 	}
 	return self;
 }

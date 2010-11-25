@@ -19,7 +19,9 @@
 	NSString *commandDescription;
 	
 	NSMutableArray *parameters;
+	BOOL canBeFired;
 }
+@property (nonatomic) BOOL canBeFired;
 @property (nonatomic, retain, readonly) PBGitRepository *repository;
 @property (nonatomic, retain) NSString *commandTitle;
 @property (nonatomic, retain) NSString *commandDescription;
