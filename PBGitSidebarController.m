@@ -61,8 +61,8 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
 	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
-	[repository addObserver:self forKeyPath:@"stashes" options:NSKeyValueObservingOptionNew context:kObservingContextStashes];
-	[repository addObserver:self forKeyPath:@"submodules" options:NSKeyValueObservingOptionNew context:kObservingContextSubmodules];
+	[repository addObserver:self forKeyPath:@"stashController.stashes" options:NSKeyValueObservingOptionNew context:kObservingContextStashes];
+	[repository addObserver:self forKeyPath:@"submoduleController.submodules" options:NSKeyValueObservingOptionNew context:kObservingContextSubmodules];
 
 
 	[self menuNeedsUpdate:[actionButton menu]];
@@ -80,8 +80,8 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 
 	[repository removeObserver:self forKeyPath:@"currentBranch"];
 	[repository removeObserver:self forKeyPath:@"branches"];
-	[repository removeObserver:self forKeyPath:@"stashes"];
-	[repository removeObserver:self forKeyPath:@"submodules"];
+	[repository removeObserver:self forKeyPath:@"stashController.stashes"];
+	[repository removeObserver:self forKeyPath:@"submoduleController.submodules"];
 
 	[super closeView];
 }
@@ -301,6 +301,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 - (void)populateList
 {
 	PBSourceViewItem *project = [PBSourceViewItem groupItemWithTitle:[repository projectName]];
+	project.showsActionButton = YES;
 	project.isUncollapsible = YES;
 
 	stage = [PBGitSVStageItem stageItem];
@@ -308,15 +309,11 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	
 	
 	branches = [PBSourceViewItem groupItemWithTitle:@"Branches"];
-	branches.showsActionButton = YES;
 	remotes = [PBSourceViewItem groupItemWithTitle:@"Remotes"];
-	remotes.showsActionButton = YES;
 	tags = [PBSourceViewItem groupItemWithTitle:@"Tags"];
 	others = [PBSourceViewItem groupItemWithTitle:@"Other"];
 	stashes = [PBSourceViewItem groupItemWithTitle:@"Stashes"];
-	stashes.showsActionButton = YES;
 	submodules = [PBSourceViewItem groupItemWithTitle:@"Submodules"];
-	submodules.showsActionButton = YES;
 
 	for (PBGitRevSpecifier *rev in repository.branches)
 		[self addRevSpec:rev];
@@ -395,12 +392,18 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 
 - (NSMenu *) menuForRow:(NSInteger)row
 {
+	if (row == 0) {
+		return [historyViewController.repository menu];
+	}
 	PBSourceViewItem *viewItem = [sourceView itemAtRow:row];
 	if ([viewItem isKindOfClass:[PBGitMenuItem class]] || [[viewItem title] isEqualToString:@"STASHES"]) {
-		PBGitMenuItem *stashItem = nil;//(PBGitMenuItem *) viewItem;
+		PBGitMenuItem *stashItem = (PBGitMenuItem *) viewItem;
 		NSMutableArray *commands = [[NSMutableArray alloc] init];
 		[commands addObjectsFromArray:[PBStashCommandFactory commandsForObject:[stashItem sourceObject] repository:historyViewController.repository]];
 		[commands addObjectsFromArray:[PBRemoteCommandFactory commandsForObject:[stashItem sourceObject] repository:historyViewController.repository]];
+		if (!commands) {
+			return nil;
+		}
 		NSMenu *menu = [[NSMenu alloc] init];
 		[menu setAutoenablesItems:NO];
 		for (PBCommand *command in commands) {
@@ -408,13 +411,6 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 			[menu addItem:item];
 			[item release];
 		}
-        [menu addItem:[[NSMenuItem alloc] initWithTitle:@"hello" action:@selector(hello:) keyEquivalent:@""]];
-        if ([[viewItem title] isEqualToString:@"STASHES"]){
-            NSEvent *mouseEvent = [NSEvent mouseEventWithType:NSLeftMouseDown location:[NSEvent mouseLocation] modifierFlags:0 timestamp:[NSDate timeIntervalSinceReferenceDate] windowNumber:0 context:nil eventNumber:0 clickCount:1 pressure:0.1];
-            NSPoint conv = [sourceView convertPoint:[mouseEvent locationInWindow] fromView:nil];
-            [menu popUpMenuPositioningItem:nil atLocation:conv inView:sourceView];
-            return nil;
-        }
 		return menu;
 	}
 	

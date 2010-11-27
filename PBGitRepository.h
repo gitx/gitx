@@ -12,6 +12,10 @@
 #import "PBGitConfig.h"
 #import "PBGitRefish.h"
 
+#import "PBStashController.h"
+#import "PBGitResetController.h"
+#import "PBSubmoduleController.h"
+
 extern NSString* PBGitRepositoryErrorDomain;
 typedef enum branchFilterTypes {
 	kGitXAllBranchesFilter = 0,
@@ -53,9 +57,13 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 	PBGitRevSpecifier *_headRef; // Caching
 	PBGitSHA* _headSha;
 	
-	NSArray *stashes;
-	NSArray *submodules;
+	PBStashController *stashController;
+	PBSubmoduleController *submoduleController;
+	PBGitResetController *resetController;
 }
+@property (nonatomic, retain, readonly) PBStashController *stashController;
+@property (nonatomic, retain, readonly) PBSubmoduleController *submoduleController;
+@property (nonatomic, retain, readonly) PBGitResetController *resetController;
 
 - (void) cloneRepositoryToPath:(NSString *)path bare:(BOOL)isBare;
 - (void) beginAddRemote:(NSString *)remoteName forURL:(NSString *)remoteURL;
@@ -93,7 +101,6 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 - (NSString *)gitIgnoreFilename;
 - (BOOL)isBareRepository;
 
-- (void) reloadStashes;
 - (void) reloadRefs;
 - (void) addRef:(PBGitRef *)ref fromParameters:(NSArray *)params;
 - (void) lazyReload;
@@ -132,6 +139,7 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 // for the scripting bridge
 - (void)findInModeScriptCommand:(NSScriptCommand *)command;
 
+- (NSMenu *) menu;
 
 @property (assign) BOOL hasChanged;
 @property (readonly) PBGitWindowController *windowController;
@@ -141,6 +149,4 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 @property (assign) PBGitRevSpecifier *currentBranch;
 @property (assign) NSInteger currentBranchFilter;
 @property (retain) NSMutableDictionary* refs;
-@property (readonly) NSArray *stashes;
-@property (readonly) NSArray *submodules;
 @end

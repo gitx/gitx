@@ -27,17 +27,33 @@
 NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 
 @interface PBGitRepository()
-@property (nonatomic, retain) NSArray *stashes;
-@property (nonatomic, retain) NSArray *submodules;
 @end
 
 
 
 @implementation PBGitRepository
-@synthesize stashes;
-@synthesize submodules;
+@synthesize stashController;
+@synthesize submoduleController;
+@synthesize resetController;
 @synthesize revisionList, branches, currentBranch, refs, hasChanged, config;
 @synthesize currentBranchFilter;
+
+- (NSMenu *) menu {
+	NSMenu *menu = [[NSMenu alloc] init];
+	NSMutableArray *items = [[NSMutableArray alloc] init];
+	[items addObjectsFromArray:[self.submoduleController menuItems]];
+	[items addObject:[NSMenuItem separatorItem]];
+	[items addObjectsFromArray:[self.stashController menu]];
+	[items addObject:[NSMenuItem separatorItem]];
+	[items addObjectsFromArray:[self.resetController menuItems]];
+	
+	for (NSMenuItem *item in items) {
+		[menu addItem:item];
+	}
+	
+	[menu setAutoenablesItems:YES];
+	return menu;
+}
 
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError
 {
@@ -146,6 +162,10 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	[self reloadRefs];
 	currentBranchFilter = [PBGitDefaults branchFilter];
 	revisionList = [[PBGitHistoryList alloc] initWithRepository:self];
+	
+	resetController = [[PBGitResetController alloc] initWithRepository:self];
+	stashController = [[PBStashController alloc] initWithRepository:self];
+	submoduleController = [[PBSubmoduleController alloc] initWithRepository:self];
 }
 
 - (void)close
@@ -258,42 +278,6 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		[refs setObject:[NSMutableArray arrayWithObject:ref] forKey:sha];
 }
 
-- (void) reloadStashes {
-	NSArray *arguments = [NSArray arrayWithObjects:@"stash", @"list", nil];
-	NSString *output = [self outputInWorkdirForArguments:arguments];
-	NSArray *lines = [output componentsSeparatedByString:@"\n"];
-	
-	NSMutableArray *loadedStashes = [[NSMutableArray alloc] initWithCapacity:[lines count]];
-	
-	for (NSString *stashLine in lines) {
-		if ([stashLine length] == 0)
-			continue;
-		PBGitStash *stash = [[PBGitStash alloc] initWithRawStashLine:stashLine];
-		[loadedStashes addObject:stash];
-		[stash release];
-	}
-	
-	self.stashes = loadedStashes;
-	[loadedStashes release];
-}
-
-- (void) reloadSubmodules {
-	
-	NSArray *arguments = [NSArray arrayWithObjects:@"submodule", @"status", @"--recursive", nil];
-	NSString *output = [self outputInWorkdirForArguments:arguments];
-	NSArray *lines = [output componentsSeparatedByString:@"\n"];
-	
-	NSMutableArray *loadedSubmodules = [[NSMutableArray alloc] initWithCapacity:[lines count]];
-	
-	for (NSString *submoduleLine in lines) {
-		if ([submoduleLine length] == 0)
-			continue;
-		PBGitSubmodule *submodule = [[PBGitSubmodule alloc] initWithRawSubmoduleStatusString:submoduleLine];
-		[loadedSubmodules addObject:submodule];
-	}
-	self.submodules = loadedSubmodules;
-}
-
 - (void) reloadRefs
 {
 	_headRef = nil;
@@ -328,8 +312,8 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	[self willChangeValueForKey:@"refs"];
 	[self didChangeValueForKey:@"refs"];
 	
-	[self reloadStashes];
-	[self reloadSubmodules];
+	[self.stashController reload];
+	[self.submoduleController reload];
 
 	[[[self windowController] window] setTitle:[self displayName]];
 }
