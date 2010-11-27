@@ -9,7 +9,6 @@
 #import "PBSourceViewCell.h"
 #import "PBGitSidebarController.h"
 #import "PBSourceViewBadge.h"
-#import "GTScaledButtonControl.h"
 
 @interface PBSourceViewCell()
 - (NSRect)infoButtonRectForBounds:(NSRect)bounds;
@@ -33,11 +32,6 @@
 - (NSMenu *) menuForEvent:(NSEvent *)event inRect:(NSRect)rect ofView:(NSOutlineView *)view
 {
     NSPoint point = [self.controlView convertPoint:[event locationInWindow] fromView:nil];
-    NSRect infoButtonRect = [self infoButtonRectForBounds:self.controlView.frame];
-    if (showsActionButton && NSMouseInRect(point, infoButtonRect, [self.controlView isFlipped])){
-        NSLog(@"elo elo");
-        return nil;
-    }
 	NSInteger row = [view rowAtPoint:point];
 
 	PBGitSidebarController *controller = [view delegate];
@@ -99,51 +93,51 @@
 }
 
 
-- (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView {
-	if (showsActionButton) {
-		NSPoint point = [controlView convertPoint:[event locationInWindow] fromView:nil];
-		//	
-		//    NSRect titleRect = [self titleRectForBounds:cellFrame];
-		//    if (NSMouseInRect(point, titleRect, [controlView isFlipped])) {
-		//        return NSCellHitContentArea | NSCellHitEditableTextArea;
-		//    } 
-		//    
-		//    NSRect imageRect = [self imageRectForBounds:cellFrame];
-		//    if (NSMouseInRect(point, imageRect, [controlView isFlipped])) {
-		//        return NSCellHitContentArea;
-		//    }
-		//	
-		//    // Did we hit the sub title?
-		//    NSAttributedString *attributedSubTitle = [self attributedSubTitle];
-		//    if ([attributedSubTitle length] > 0) {
-		//        NSRect attributedSubTitleRect = [self rectForSubTitleBasedOnTitleRect:titleRect inBounds:cellFrame];
-		//        if (NSMouseInRect(point, attributedSubTitleRect, [controlView isFlipped])) {
-		//            // Notice that this text isn't an editable area. Clicking on it won't begin an editing session.
-		//            return NSCellHitContentArea;
-		//        }
-		//    }
-		
-		// How about the info button?
-		NSRect infoButtonRect = [self infoButtonRectForBounds:cellFrame];
-		if (NSMouseInRect(point, infoButtonRect, [controlView isFlipped])) {
-			return NSCellHitContentArea | NSCellHitTrackableArea;
-		} 
-	}
-	
-    return [super hitTestForEvent:event inRect:cellFrame ofView:controlView];
-}
+//- (NSUInteger)hitTestForEvent:(NSEvent *)event inRect:(NSRect)cellFrame ofView:(NSView *)controlView {
+//	if (showsActionButton) {
+//		NSPoint point = [controlView convertPoint:[event locationInWindow] fromView:nil];
+//		//	
+//		//    NSRect titleRect = [self titleRectForBounds:cellFrame];
+//		//    if (NSMouseInRect(point, titleRect, [controlView isFlipped])) {
+//		//        return NSCellHitContentArea | NSCellHitEditableTextArea;
+//		//    } 
+//		//    
+//		//    NSRect imageRect = [self imageRectForBounds:cellFrame];
+//		//    if (NSMouseInRect(point, imageRect, [controlView isFlipped])) {
+//		//        return NSCellHitContentArea;
+//		//    }
+//		//	
+//		//    // Did we hit the sub title?
+//		//    NSAttributedString *attributedSubTitle = [self attributedSubTitle];
+//		//    if ([attributedSubTitle length] > 0) {
+//		//        NSRect attributedSubTitleRect = [self rectForSubTitleBasedOnTitleRect:titleRect inBounds:cellFrame];
+//		//        if (NSMouseInRect(point, attributedSubTitleRect, [controlView isFlipped])) {
+//		//            // Notice that this text isn't an editable area. Clicking on it won't begin an editing session.
+//		//            return NSCellHitContentArea;
+//		//        }
+//		//    }
+//		
+//		// How about the info button?
+//		NSRect infoButtonRect = [self infoButtonRectForBounds:cellFrame];
+//		if (NSMouseInRect(point, infoButtonRect, [controlView isFlipped])) {
+//			return NSCellHitContentArea | NSCellHitTrackableArea;
+//		} 
+//	}
+//	
+//    return [super hitTestForEvent:event inRect:cellFrame ofView:controlView];
+//}
 
-+ (BOOL)prefersTrackingUntilMouseUp {
-    // NSCell returns NO for this by default. If you want to have trackMouse:inRect:ofView:untilMouseUp: always track until the mouse is up, then you MUST return YES. Otherwise, strange things will happen.
-    return YES;
-}
+//+ (BOOL)prefersTrackingUntilMouseUp {
+//    // NSCell returns NO for this by default. If you want to have trackMouse:inRect:ofView:untilMouseUp: always track until the mouse is up, then you MUST return YES. Otherwise, strange things will happen.
+//    return YES;
+//}
 
 // Mouse tracking -- the only part we want to track is the "info" button
 - (BOOL)trackMouse:(NSEvent *)theEvent inRect:(NSRect)cellFrame ofView:(NSView *)controlView untilMouseUp:(BOOL)flag {
-    [self setControlView:controlView];
-	
+//    [self setControlView:controlView];
+//	
     NSRect infoButtonRect = [self infoButtonRectForBounds:cellFrame];
-    while ([theEvent type] != NSLeftMouseUp) {
+    if ([theEvent type] != NSLeftMouseUp) {
         // This is VERY simple event tracking. We simply check to see if the mouse is in the "i" button or not and dispatch entered/exited mouse events
         NSPoint point = [controlView convertPoint:[theEvent locationInWindow] fromView:nil];
         BOOL mouseInButton = NSMouseInRect(point, infoButtonRect, [controlView isFlipped]);
@@ -160,18 +154,34 @@
 	
     // Another way of implementing the above code would be to keep an NSButtonCell as an ivar, and simply call trackMouse:inRect:ofView:untilMouseUp: on it, if the tracking area was inside of it. 
 	
-    if (iMouseDownInInfoButton) {
-        // Send the action, and redisplay
-        iMouseDownInInfoButton = NO;
-        [controlView setNeedsDisplayInRect:cellFrame];
-		NSLog(@"fired");
-        if (iInfoButtonAction) {
-            [NSApp sendAction:iInfoButtonAction to:[self target] from:[self controlView]];
+    NSLog(@"mouse tracking; %@", theEvent);
+    NSPoint locationOfTouch = [controlView convertPoint:[theEvent locationInWindow] fromView:nil];
+    
+    BOOL mouseInButton = NSMouseInRect(locationOfTouch, [self infoButtonRectForBounds:cellFrame], [controlView isFlipped]);
+    if (mouseInButton) {
+        // show menu
+        NSMenu *menu = [self menuForEvent:theEvent inRect:cellFrame ofView:controlView];
+        if (menu){
+            [NSMenu popUpContextMenu:menu withEvent:theEvent forView:controlView];
         }
     }
-	
-    // We return YES since the mouse was released while we were tracking. Not returning YES when you processed the mouse up is an easy way to introduce bugs!
-    return YES;
+    
+        if (iMouseDownInInfoButton) {
+            // Send the action, and redisplay
+            iMouseDownInInfoButton = NO;
+            [controlView setNeedsDisplayInRect:cellFrame];
+    //		NSLog(@"fired");
+    //        if (iInfoButtonAction) {
+    //            [NSApp sendAction:iInfoButtonAction to:[self target] from:[self controlView]];
+    //        }
+        }
+    
+    return [super trackMouse:theEvent inRect:cellFrame ofView:controlView untilMouseUp:flag];
+    
+    
+//	
+//    // We return YES since the mouse was released while we were tracking. Not returning YES when you processed the mouse up is an easy way to introduce bugs!
+//    return YES;
 }
  
 
