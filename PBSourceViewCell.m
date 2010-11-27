@@ -154,7 +154,6 @@
 	
     // Another way of implementing the above code would be to keep an NSButtonCell as an ivar, and simply call trackMouse:inRect:ofView:untilMouseUp: on it, if the tracking area was inside of it. 
 	
-    NSLog(@"mouse tracking; %@", theEvent);
     NSPoint locationOfTouch = [controlView convertPoint:[theEvent locationInWindow] fromView:nil];
     
     BOOL mouseInButton = NSMouseInRect(locationOfTouch, [self infoButtonRectForBounds:cellFrame], [controlView isFlipped]);
@@ -170,10 +169,6 @@
             // Send the action, and redisplay
             iMouseDownInInfoButton = NO;
             [controlView setNeedsDisplayInRect:cellFrame];
-    //		NSLog(@"fired");
-    //        if (iInfoButtonAction) {
-    //            [NSApp sendAction:iInfoButtonAction to:[self target] from:[self controlView]];
-    //        }
         }
     
     return [super trackMouse:theEvent inRect:cellFrame ofView:controlView untilMouseUp:flag];
