@@ -21,7 +21,10 @@ typedef enum {
 	NSString *checkedOutCommit;
 
 	PBGitSubmoduleState submoduleState;
+	
+	NSMutableArray *submodules;
 }
+@property (nonatomic, retain, readonly) NSMutableArray *submodules;
 @property (nonatomic, assign, readonly) PBGitSubmoduleState submoduleState;
 @property (nonatomic, retain, readonly) NSString *name;
 @property (nonatomic, retain, readonly) NSString *path;
@@ -31,4 +34,6 @@ typedef enum {
 
 + (NSImage *) imageForSubmoduleState:(PBGitSubmoduleState) state;
 + (PBGitSubmoduleState) submoduleStateFromCharacter:(unichar) character;
+
+- (void) addSubmodule:(PBGitSubmodule *) submodule;
 @end

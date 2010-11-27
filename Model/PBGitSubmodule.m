@@ -20,6 +20,14 @@
 @synthesize path;
 @synthesize checkedOutCommit;
 @synthesize submoduleState;
+@synthesize submodules;
+
+- (NSMutableArray *) submodules {
+	if (!submodules) {
+		submodules = [[NSMutableArray alloc] init];
+	}
+	return submodules;
+}
 
 - (id) initWithRawSubmoduleStatusString:(NSString *) submoduleStatusString {
 	NSParameterAssert([submoduleStatusString length] > 0);
@@ -51,10 +59,15 @@
 }
 
 - (void) dealloc {
+	[submodules release];
 	[name release];
 	[path release];
 	[checkedOutCommit release];
 	[super dealloc];
+}
+
+- (void) addSubmodule:(PBGitSubmodule *) submodule {
+	[self.submodules addObject:submodule];
 }
 
 #pragma mark -
