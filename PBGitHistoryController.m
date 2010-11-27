@@ -24,6 +24,7 @@
 #define QLPreviewPanel NSClassFromString(@"QLPreviewPanel")
 #import "PBQLTextView.h"
 
+#import "PBSourceViewCell.h"
 
 #define kHistorySelectedDetailIndexKey @"PBHistorySelectedDetailIndex"
 #define kHistoryDetailViewIndex 0
@@ -83,8 +84,10 @@
 				  bottomColor:[NSColor colorWithCalibratedHue:0.579 saturation:0.119 brightness:0.765 alpha:1.000]];
 	//[scopeBarView setTopShade:207/255.0 bottomShade:180/255.0];
 	[self updateBranchFilterMatrix];
+    
 
 	[super awakeFromNib];
+    [fileBrowser setDelegate:self];
 }
 
 - (void)updateKeys
@@ -753,6 +756,17 @@
     iconRect.origin = [[fileBrowser window] convertBaseToScreen:iconRect.origin];
 
     return iconRect;
+}
+
+- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(PBSourceViewCell *)cell forTableColumn:(NSTableColumn *)tableColumn item:(id)item 
+{
+    NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+    PBGitTree *object = [item representedObject];
+    NSString *workingDirectory = [[repository workingDirectory] stringByAppendingString:@"/"];
+    NSString *path = [workingDirectory stringByAppendingPathComponent:[object fullPath]];
+    NSImage *image = [workspace iconForFile:path];
+    [image setSize:NSMakeSize(15, 15)];
+    [cell setImage:image];
 }
 
 @end
