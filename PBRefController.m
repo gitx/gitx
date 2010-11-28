@@ -16,6 +16,12 @@
 
 #import "PBArgumentPickerController.h"
 
+#define kDialogAcceptDroppedRef @"Accept Dropped Ref"
+#define kDialogConfirmPush @"Confirm Push"
+#define kDialogDeleteRef @"Delete Ref"
+
+
+
 @implementation PBRefController
 
 - (void)awakeFromNib
@@ -47,12 +53,17 @@
 
 #pragma mark Push
 
-- (void) showConfirmPushRefSheet:(PBGitRef *)ref remote:(PBGitRef *)remoteRef
+- (void)showConfirmPushRefSheet:(PBGitRef *)ref remote:(PBGitRef *)remoteRef
 {
 	if ((!ref && !remoteRef)
 		|| (ref && ![ref isBranch] && ![ref isRemoteBranch])
 		|| (remoteRef && !([remoteRef refishType] == kGitXRemoteType)))
 		return;
+
+	if ([PBGitDefaults isDialogWarningSuppressedForDialog:kDialogConfirmPush]) {
+		[historyController.repository beginPushRef:ref toRemote:remoteRef];
+		return;
+	}
 
 	NSString *description = nil;
 	if (ref && remoteRef)
@@ -68,6 +79,7 @@
 								   alternateButton:@"Cancel"
 									   otherButton:nil
 						 informativeTextWithFormat:@"Are you sure you want to %@?", sdesc];
+    [alert setShowsSuppressionButton:YES];
 
 	NSMutableDictionary *info = [NSMutableDictionary dictionary];
 	if (ref)
@@ -81,9 +93,12 @@
 						contextInfo:info];
 }
 
-- (void) confirmPushRefSheetDidEnd:(NSAlert *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+- (void)confirmPushRefSheetDidEnd:(NSAlert *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
     [[sheet window] orderOut:nil];
+
+	if ([[sheet suppressionButton] state] == NSOnState)
+        [PBGitDefaults suppressDialogWarningForDialog:kDialogConfirmPush];
 
 	if (returnCode == NSAlertDefaultReturn) {
 		PBGitRef *ref = [(NSDictionary *)contextInfo objectForKey:kGitXBranchType];
@@ -232,12 +247,18 @@
 
 #pragma mark Remove a branch, remote or tag
 
-- (void) showDeleteRefSheet:(PBRefMenuItem *)sender
+- (void)showDeleteRefSheet:(PBRefMenuItem *)sender
 {
 	if ([[sender refish] refishType] == kGitXCommitType)
 		return;
 
 	PBGitRef *ref = (PBGitRef *)[sender refish];
+
+	if ([PBGitDefaults isDialogWarningSuppressedForDialog:kDialogDeleteRef]) {
+		[historyController.repository deleteRef:ref];
+		return;
+	}
+
 	NSString *ref_desc = [NSString stringWithFormat:@"%@ '%@'", [ref refishType], [ref shortName]];
 
 	NSAlert *alert = [NSAlert alertWithMessageText:[NSString stringWithFormat:@"Delete %@?", ref_desc]
@@ -245,6 +266,7 @@
 								   alternateButton:@"Cancel"
 									   otherButton:nil
 						 informativeTextWithFormat:@"Are you sure you want to remove the %@?", ref_desc];
+    [alert setShowsSuppressionButton:YES];
 	
 	[alert beginSheetModalForWindow:[historyController.repository.windowController window]
 					  modalDelegate:self
@@ -252,9 +274,12 @@
 						contextInfo:ref];
 }
 
-- (void) deleteRefSheetDidEnd:(NSAlert *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo
+- (void)deleteRefSheetDidEnd:(NSAlert *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo
 {
     [[sheet window] orderOut:nil];
+
+	if ([[sheet suppressionButton] state] == NSOnState)
+        [PBGitDefaults suppressDialogWarningForDialog:kDialogDeleteRef];
 
 	if (returnCode == NSAlertDefaultReturn) {
 		PBGitRef *ref = (PBGitRef *)contextInfo;
@@ -349,6 +374,7 @@
 
 	[dropCommit addRef:ref];
 	[oldCommit removeRef:ref];
+	[historyController.commitList reloadData];
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView
@@ -381,7 +407,7 @@
 							  dropCommit, @"dropCommit",
 							  nil];
 
-	if ([PBGitDefaults suppressAcceptDropRef]) {
+	if ([PBGitDefaults isDialogWarningSuppressedForDialog:kDialogAcceptDroppedRef]) {
 		[self dropRef:dropInfo];
 		return YES;
 	}
@@ -406,7 +432,7 @@
 	return YES;
 }
 
-- (void) acceptDropInfoAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+- (void)acceptDropInfoAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     [[alert window] orderOut:nil];
 
@@ -414,7 +440,7 @@
 		[self dropRef:contextInfo];
 
 	if ([[alert suppressionButton] state] == NSOnState)
-        [PBGitDefaults setSuppressAcceptDropRef:YES];
+        [PBGitDefaults suppressDialogWarningForDialog:kDialogAcceptDroppedRef];
 }
 
 @end
