@@ -141,16 +141,6 @@
 		[item setTarget:target];
 		[item setRefish:ref];
 	}
-	
-	NSArray *cmds = [PBStashCommandFactory commandsForObject:ref repository:repo];
-	if ([cmds count] > 0) {
-		for (PBCommand *cmd in cmds) {
-			PBCommandMenuItem *item = [[PBCommandMenuItem alloc] initWithCommand:cmd];
-			[item setEnabled:YES];
-			[items addObject:item];
-			[item release];
-		}
-	}
 
 	return items;
 }
