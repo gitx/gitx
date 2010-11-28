@@ -9,6 +9,7 @@
 #import "PBRemoteCommandFactory.h"
 #import "PBOpenDocumentCommand.h"
 #import "PBGitSubmodule.h"
+#import "PBRevealWithFinderCommand.h"
 
 
 @implementation PBRemoteCommandFactory
@@ -19,14 +20,6 @@
 	NSString *repoPath = [repository workingDirectory];
 	NSString *path = [repoPath stringByAppendingPathComponent:[submodule path]];
 	NSString *submodulePath = [submodule path];
-	
-	if ([submodule submoduleState] != PBGitSubmoduleStateNotInitialized) {
-		// open
-		PBOpenDocumentCommand *command = [[PBOpenDocumentCommand alloc] initWithDocumentAbsolutePath:path];
-		command.commandTitle = command.displayName;
-		command.commandDescription = @"Opening document";
-		[commands addObject:command];
-	}
 	
 	if ([submodule submoduleState] == PBGitSubmoduleStateNotInitialized) {
 		NSArray *params = [NSArray arrayWithObjects:@"submodule", @"init", submodulePath, nil];
@@ -50,6 +43,16 @@
 		updateRecursively.commandTitle = updateRecursively.displayName;
 		updateRecursively.commandDescription = [NSString stringWithFormat:@"Updating submodule %@ (recursively)", submodulePath];
 		[commands addObject:updateRecursively];
+	}
+	
+	if ([submodule submoduleState] != PBGitSubmoduleStateNotInitialized) {
+		// open
+		PBOpenDocumentCommand *command = [[PBOpenDocumentCommand alloc] initWithDocumentAbsolutePath:path];
+		command.commandTitle = command.displayName;
+		command.commandDescription = @"Opening document";
+		[commands addObject:command];
+		
+		[commands addObject:[[PBRevealWithFinderCommand alloc] initWithDocumentAbsolutePath:path]];
 	}
 	
 	return commands;
