@@ -251,7 +251,13 @@
 - (void)tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex
 {
 	id controller = [tableView tag] == 0 ? unstagedFilesController : stagedFilesController;
-	[[tableColumn dataCell] setImage:[[[controller arrangedObjects] objectAtIndex:rowIndex] icon]];
+	PBChangedFile *changedFile = [[controller arrangedObjects] objectAtIndex:rowIndex];
+	PBChangedFileStatus status = [changedFile status];
+	NSImage *imageToSet = [changedFile icon];
+	if (controller == stagedFilesController && status == NEW) {
+		imageToSet = [PBChangedFile iconForStatus:ADDED];
+	}
+	[[tableColumn dataCell] setImage:imageToSet];
 }
 
 - (void) tableClicked:(NSTableView *) tableView
