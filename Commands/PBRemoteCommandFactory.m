@@ -18,6 +18,7 @@
 	
 	NSString *repoPath = [repository workingDirectory];
 	NSString *path = [repoPath stringByAppendingPathComponent:[submodule path]];
+	NSString *submodulePath = [submodule path];
 	
 	if ([submodule submoduleState] != PBGitSubmoduleStateNotInitialized) {
 		// open
@@ -27,8 +28,15 @@
 		[commands addObject:command];
 	}
 	
+	if ([submodule submoduleState] == PBGitSubmoduleStateNotInitialized) {
+		NSArray *params = [NSArray arrayWithObjects:@"submodule", @"init", submodulePath, nil];
+		PBCommand *initCmd = [[PBCommand alloc] initWithDisplayName:@"Init" parameters:params repository:repository];
+		initCmd.commandTitle = initCmd.displayName;
+		initCmd.commandDescription = [NSString stringWithFormat:@"Initializing submodule %@", submodulePath];
+		[commands addObject:initCmd];
+	}
+	
 	// update
-	NSString *submodulePath = [submodule path];
 	NSArray *params = [NSArray arrayWithObjects:@"submodule", @"update", submodulePath, nil];
 	PBCommand *updateCmd = [[PBCommand alloc] initWithDisplayName:@"Update" parameters:params repository:repository];
 	updateCmd.commandTitle = updateCmd.displayName;
