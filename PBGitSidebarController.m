@@ -71,6 +71,9 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 		[self selectStage];
 	else
 		[self selectCurrentBranch];
+	
+	[sourceView setDoubleAction:@selector(outlineDoubleClicked)];
+	[sourceView setTarget:self];
 }
 
 - (void)closeView
@@ -188,6 +191,17 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	NSIndexSet *index = [NSIndexSet indexSetWithIndex:[sourceView rowForItem:item]];
 	
 	[sourceView selectRowIndexes:index byExtendingSelection:NO];
+}
+
+- (void) outlineDoubleClicked {
+	PBSourceViewItem *item = [self selectedItem];
+	if ([item isKindOfClass:[PBGitMenuItem class]]) {
+		PBGitMenuItem *sidebarItem = (PBGitMenuItem *) item;
+		NSObject *sourceObject = [sidebarItem sourceObject];
+		if ([sourceObject isKindOfClass:[PBGitSubmodule class]]) {
+			[[repository.submoduleController defaultCommandForSubmodule:(id)sourceObject] invoke];
+		}
+	}
 }
 
 - (PBSourceViewItem *) itemForRev:(PBGitRevSpecifier *)rev
@@ -396,7 +410,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 		return [historyViewController.repository menu];
 	}
 	PBSourceViewItem *viewItem = [sourceView itemAtRow:row];
-	if ([viewItem isKindOfClass:[PBGitMenuItem class]] || [[viewItem title] isEqualToString:@"STASHES"]) {
+	if ([viewItem isKindOfClass:[PBGitMenuItem class]]) {
 		PBGitMenuItem *stashItem = (PBGitMenuItem *) viewItem;
 		NSMutableArray *commands = [[NSMutableArray alloc] init];
 		[commands addObjectsFromArray:[PBStashCommandFactory commandsForObject:[stashItem sourceObject] repository:historyViewController.repository]];
