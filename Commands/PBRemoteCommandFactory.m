@@ -19,27 +19,30 @@
 	NSString *repoPath = [repository workingDirectory];
 	NSString *path = [repoPath stringByAppendingPathComponent:[submodule path]];
 	
-	// open
-	PBOpenDocumentCommand *command = [[PBOpenDocumentCommand alloc] initWithDocumentAbsolutePath:path];
-	command.commandTitle = command.displayName;
-	command.commandDescription = @"Opening document";
-	command.canBeFired = ([submodule path] && [submodule submoduleState] != PBGitSubmoduleStateNotInitialized);
-	[commands addObject:command];
+	if ([submodule submoduleState] != PBGitSubmoduleStateNotInitialized) {
+		// open
+		PBOpenDocumentCommand *command = [[PBOpenDocumentCommand alloc] initWithDocumentAbsolutePath:path];
+		command.commandTitle = command.displayName;
+		command.commandDescription = @"Opening document";
+		[commands addObject:command];
+	}
 	
 	// update
 	NSString *submodulePath = [submodule path];
-	NSArray *params = [NSArray arrayWithObjects:@"submodule", @"update", nil];
-	PBCommand *updateCmd = [[PBCommand alloc] initWithDisplayName:@"Update submodule" parameters:params repository:repository];
+	NSArray *params = [NSArray arrayWithObjects:@"submodule", @"update", submodulePath, nil];
+	PBCommand *updateCmd = [[PBCommand alloc] initWithDisplayName:@"Update" parameters:params repository:repository];
 	updateCmd.commandTitle = updateCmd.displayName;
-	updateCmd.commandDescription = @"Updating submodule";
+ 	updateCmd.commandDescription = [NSString stringWithFormat:@"Updating submodule %@", submodulePath];
 	[commands addObject:updateCmd];
 	
-	// update recursively
-	NSArray *recursiveUpdate = [NSArray arrayWithObjects:@"submodule", @"update", @"--recursive", nil];
-	PBCommand *updateRecursively = [[PBCommand alloc] initWithDisplayName:@"Update submodule recursively" parameters:recursiveUpdate repository:repository];
-	updateRecursively.commandTitle = updateRecursively.displayName;
-	updateRecursively.commandDescription = [NSString stringWithFormat:@"Updating submodule %@ (recursively)", submodulePath];
-	[commands addObject:updateRecursively];
+	if ([[submodule submodules] count] > 0) {
+		// update recursively
+		NSArray *recursiveUpdate = [NSArray arrayWithObjects:@"submodule", @"update", @"--recursive", submodulePath, nil];
+		PBCommand *updateRecursively = [[PBCommand alloc] initWithDisplayName:@"Update recursively" parameters:recursiveUpdate repository:repository];
+		updateRecursively.commandTitle = updateRecursively.displayName;
+		updateRecursively.commandDescription = [NSString stringWithFormat:@"Updating submodule %@ (recursively)", submodulePath];
+		[commands addObject:updateRecursively];
+	}
 	
 	return commands;
 }
