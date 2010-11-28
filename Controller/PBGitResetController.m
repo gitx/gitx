@@ -10,6 +10,8 @@
 #import "PBGitRepository.h"
 #import "PBCommand.h"
 
+static NSString * const kCommandKey = @"command";
+
 @implementation PBGitResetController
 
 - (id) initWithRepository:(PBGitRepository *) repo {
@@ -20,11 +22,23 @@
 }
 
 - (void) resetHardToHead {
+	NSAlert *alert = [NSAlert alertWithMessageText:@"Reseting working copy and index"
+									 defaultButton:@"Cancel"
+								   alternateButton:nil
+									   otherButton:@"Reset"
+						 informativeTextWithFormat:@"Are you sure you want to reset your working copy and index? All changes to them will be gone!"];
+	
 	NSArray *arguments = [NSArray arrayWithObjects:@"reset", @"--hard", @"HEAD", nil];
 	PBCommand *cmd = [[PBCommand alloc] initWithDisplayName:@"Reset hard to HEAD" parameters:arguments repository:repository];
 	cmd.commandTitle = cmd.displayName;
 	cmd.commandDescription = @"Reseting head";
-	[cmd invoke];
+	
+	NSMutableDictionary *info = [NSMutableDictionary dictionaryWithObject:cmd forKey:kCommandKey];
+	
+	[alert beginSheetModalForWindow:[repository.windowController window]
+					  modalDelegate:self
+					 didEndSelector:@selector(confirmResetSheetDidEnd:returnCode:contextInfo:)
+						contextInfo:info];
 }
 
 - (void) reset {
@@ -54,6 +68,19 @@
 - (void) dealloc {
 	[repository release];
 	[super dealloc];
+}
+
+#pragma mark -
+#pragma mark Confirm Window
+
+- (void) confirmResetSheetDidEnd:(NSAlert *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
+{
+    [[sheet window] orderOut:nil];
+	
+	if (returnCode != NSAlertDefaultReturn) {
+		PBCommand *cmd = [(NSDictionary *)contextInfo objectForKey:kCommandKey];
+		[cmd invoke];
+	}
 }
 
 
