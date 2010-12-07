@@ -82,7 +82,7 @@
 - (NSString *)string
 {
 	if (!string) {
-		char *hex = git_oid_mkhex(&oid);
+		char *hex = git_oid_allocfmt(&oid);
 		if (hex == NULL)
 			return nil;
 		string = [NSString stringWithUTF8String:hex];
