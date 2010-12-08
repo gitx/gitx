@@ -6,3 +6,11 @@ var setMessage = function(message) {
 	$("diff").style.display = "none";
 }
 
+var showDiff = function(diff) {
+	highlightDiff(diff, $("diff"));
+}
+
+var showFile = function(txt) {
+	showDiff(txt);
+	return;
+}

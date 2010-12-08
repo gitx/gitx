@@ -53,14 +53,40 @@
 					   @"log", ITEM_IDENTIFIER, 
 					   @"History", ITEM_NAME, 
 					   nil], 
+					  [NSDictionary dictionaryWithObjectsAndKeys:
+					   @"diff", ITEM_IDENTIFIER, 
+					   @"Diff", ITEM_NAME, 
+					   nil], 
 					  nil];
 	[self.groups addObject:[NSDictionary dictionaryWithObjectsAndKeys:
 							[NSNumber numberWithBool:NO], GROUP_SEPARATOR, 
 							[NSNumber numberWithInt:MGRadioSelectionMode], GROUP_SELECTION_MODE, // single selection group.
 							items, GROUP_ITEMS, 
 							nil]];
+	
+	NSArray *difft = [NSArray arrayWithObjects:
+					  [NSDictionary dictionaryWithObjectsAndKeys:
+					   @"l", ITEM_IDENTIFIER, 
+					   @"Local", ITEM_NAME, 
+					   nil], 
+					  [NSDictionary dictionaryWithObjectsAndKeys:
+					   @"h", ITEM_IDENTIFIER, 
+					   @"HEAD", ITEM_NAME, 
+					   nil], 
+					  [NSDictionary dictionaryWithObjectsAndKeys:
+					   @"p", ITEM_IDENTIFIER, 
+					   @"Previous", ITEM_NAME, 
+					   nil], 
+					  nil];
+	[self.groups addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+							[NSNumber numberWithBool:NO], GROUP_SEPARATOR, 
+							[NSNumber numberWithInt:MGRadioSelectionMode], GROUP_SELECTION_MODE, // single selection group.
+							difft, GROUP_ITEMS, 
+							@"Diff with:",GROUP_LABEL,
+							nil]]; 
+	
 	[typeBar reloadData];
-
+	
 	[fileListSplitView setHidden:YES];
 	[self performSelector:@selector(restoreSplitViewPositiion) withObject:nil afterDelay:0];
 }
@@ -76,18 +102,20 @@
 	NSArray *files=[historyController.treeController selectedObjects];
 	if ([files count]>0) {
 		PBGitTree *file=[files objectAtIndex:0];
-
+		
 		NSString *fileTxt = @"";
 		if(startFile==@"fileview")
 			fileTxt=[self parseHTML:[file textContents]];
 		else if(startFile==@"blame")
 			fileTxt=[self parseBlame:[file blame]];
 		else if(startFile==@"log")
-			fileTxt=[file log:logFormat];
-
+			fileTxt=[file log:logFormat];		
+		else if(startFile==@"diff")
+			fileTxt=[file diff:diffType];
+		
 		id script = [view windowScriptObject];
 		NSString *filePath = [file fullPath];
-    [script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
+		[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
 	}
 	
 #if 0
@@ -146,11 +174,18 @@
 
 - (void)scopeBar:(MGScopeBar *)theScopeBar selectedStateChanged:(BOOL)selected forItem:(NSString *)identifier inGroup:(int)groupNumber
 {
-	startFile=identifier;
-	NSString *path = [NSString stringWithFormat:@"html/views/%@", identifier];
-	NSString *html = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
-	NSURLRequest * request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:html]];
-	[[view mainFrame] loadRequest:request];
+	if(groupNumber==0){
+		NSString *path = [NSString stringWithFormat:@"html/views/%@", identifier];
+		NSString *html = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
+		NSURLRequest * request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:html]];
+		[[view mainFrame] loadRequest:request];
+		startFile=identifier;
+	}else if(groupNumber==1){
+		diffType=identifier;
+		if(startFile==@"diff"){
+			[[view mainFrame] reload];
+		}
+	}
 }
 
 - (NSView *)accessoryViewForScopeBar:(MGScopeBar *)scopeBar
@@ -167,7 +202,7 @@
 {
 	[historyController.treeController removeObserver:self forKeyPath:@"selection"];
 	[self saveSplitViewPosition];
-
+	
 	[super closeView];
 }
 
@@ -277,23 +312,23 @@
 - (void)splitView:(NSSplitView *)splitView resizeSubviewsWithOldSize:(NSSize)oldSize
 {
 	NSRect newFrame = [splitView frame];
-
+	
 	float dividerThickness = [splitView dividerThickness];
-
+	
 	NSView *leftView = [[splitView subviews] objectAtIndex:0];
 	NSRect leftFrame = [leftView frame];
 	leftFrame.size.height = newFrame.size.height;
-
+	
 	if ((newFrame.size.width - leftFrame.size.width - dividerThickness) < kFileListSplitViewRightMin) {
 		leftFrame.size.width = newFrame.size.width - kFileListSplitViewRightMin - dividerThickness;
 	}
-
+	
 	NSView *rightView = [[splitView subviews] objectAtIndex:1];
 	NSRect rightFrame = [rightView frame];
 	rightFrame.origin.x = leftFrame.size.width + dividerThickness;
 	rightFrame.size.width = newFrame.size.width - rightFrame.origin.x;
 	rightFrame.size.height = newFrame.size.height;
-
+	
 	[leftView setFrame:leftFrame];
 	[rightView setFrame:rightFrame];
 }
@@ -312,7 +347,7 @@
 	float position = [[NSUserDefaults standardUserDefaults] floatForKey:kHFileListSplitViewPositionDefault];
 	if (position < 1.0)
 		position = 200;
-
+	
 	[fileListSplitView setPosition:position ofDividerAtIndex:0];
 	[fileListSplitView setHidden:NO];
 }

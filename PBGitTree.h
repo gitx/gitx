@@ -11,14 +11,14 @@
 
 @interface PBGitTree : NSObject {
 	long long _fileSize;
-
+	
 	NSString* sha;
 	NSString* path;
 	PBGitRepository* repository;
 	__weak PBGitTree* parent;
 	NSArray* children;
 	BOOL leaf;
-
+	
 	NSString* localFileName;
 	NSDate* localMtime;
 }
@@ -29,6 +29,7 @@
 - (NSString *)textContents;
 - (NSString *)blame;
 - (NSString *) log:(NSString *)format;
+- (NSString *) diff:(NSString *)format;
 
 - (NSString*) tmpFileNameForContents;
 - (long long)fileSize;
