@@ -145,8 +145,37 @@
 	
 	if ([self fileSize] > 52428800) // ~50MB
 		return [NSString stringWithFormat:@"%@ is too big to be displayed (%d bytes)", [self fullPath], [self fileSize]];
-
+	
 	NSString *contents=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"log", [NSString stringWithFormat:@"--pretty=format:%@",format], @"--", [self fullPath], nil]];
+	
+	if ([self hasBinaryHeader:contents])
+		return [NSString stringWithFormat:@"%@ appears to be a binary file of %d bytes", [self fullPath], [self fileSize]];
+	
+	
+	return contents;
+}
+
+- (NSString *) diff:(NSString *)format
+{
+	if (!leaf)
+		return [NSString stringWithFormat:@"This is a tree with path %@", [self fullPath]];
+	
+	if ([self hasBinaryAttributes])
+		return [NSString stringWithFormat:@"%@ appears to be a binary file of %d bytes", [self fullPath], [self fileSize]];
+	
+	if ([self fileSize] > 52428800) // ~50MB
+		return [NSString stringWithFormat:@"%@ is too big to be displayed (%d bytes)", [self fullPath], [self fileSize]];
+	
+	NSString *contents=@"";
+	if(format==@"p") {
+		contents=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff", sha, [NSString stringWithFormat:@"%@^",sha],[self fullPath], nil]];
+	}else if(format==@"h") {
+		contents=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff", sha, @"HEAD",[self fullPath], nil]];
+	}else if(format==@"l") {
+		contents=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff", sha, @"--",[self fullPath], nil]];
+	}
+			   
+			   
 	
 	if ([self hasBinaryHeader:contents])
 		return [NSString stringWithFormat:@"%@ appears to be a binary file of %d bytes", [self fullPath], [self fileSize]];
