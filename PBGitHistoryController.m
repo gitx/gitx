@@ -228,46 +228,31 @@
 {
     if ([(NSString *)context isEqualToString: @"commitChange"]) {
 		[self updateKeys];
-		[self restoreFileBrowserSelection];
-		return;
-	}
-
-	if ([(NSString *)context isEqualToString: @"treeChange"]) {
+		//[self restoreFileBrowserSelection];
+	}else if ([(NSString *)context isEqualToString: @"treeChange"]) {
 		[self updateQuicklookForce: NO];
 		[self saveFileBrowserSelection];
-		return;
-	}
-
-	if([(NSString *)context isEqualToString:@"branchChange"]) {
+	}else if([(NSString *)context isEqualToString:@"branchChange"]) {
 		// Reset the sorting
 		if ([[commitController sortDescriptors] count])
 			[commitController setSortDescriptors:[NSArray array]];
 		[self updateBranchFilterMatrix];
-		return;
-	}
-
-	if([(NSString *)context isEqualToString:@"updateRefs"]) {
+	}else if([(NSString *)context isEqualToString:@"updateRefs"]) {
 		[commitController rearrangeObjects];
-		return;
-	}
-
-	if ([(NSString *)context isEqualToString:@"branchFilterChange"]) {
+	}else if ([(NSString *)context isEqualToString:@"branchFilterChange"]) {
 		[PBGitDefaults setBranchFilter:repository.currentBranchFilter];
 		[self updateBranchFilterMatrix];
-		return;
-	}
-
-	if([(NSString *)context isEqualToString:@"updateCommitCount"] || [(NSString *)context isEqualToString:@"revisionListUpdating"]) {
+	}else if([(NSString *)context isEqualToString:@"updateCommitCount"] || [(NSString *)context isEqualToString:@"revisionListUpdating"]) {
 		[self updateStatus];
 
 		if ([repository.currentBranch isSimpleRef])
 			[self selectCommit:[repository shaForRef:[repository.currentBranch ref]]];
 		else
 			[self selectCommit:[[self firstCommit] sha]];
-		return;
+	}else{
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	}
 
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (IBAction) openSelectedFile:(id)sender

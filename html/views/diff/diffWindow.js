@@ -6,7 +6,13 @@ var setMessage = function(message) {
 	$("diff").style.display = "none";
 }
 
+var hideMessage = function() {
+	$("message").style.display = "none";
+	$("diff").style.display = "";
+}
+
 var showDiff = function(diff) {
+	hideMessage();
 	highlightDiff(diff, $("diff"));
 }
 

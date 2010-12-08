@@ -73,10 +73,6 @@
 					   @"h", ITEM_IDENTIFIER, 
 					   @"HEAD", ITEM_NAME, 
 					   nil], 
-					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   @"p", ITEM_IDENTIFIER, 
-					   @"Previous", ITEM_NAME, 
-					   nil], 
 					  nil];
 	[self.groups addObject:[NSDictionary dictionaryWithObjectsAndKeys:
 							[NSNumber numberWithBool:NO], GROUP_SEPARATOR, 
@@ -93,29 +89,34 @@
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	//NSLog(@"keyPath=%@ change=%@ context=%@ object=%@ \n %@",keyPath,change,context,object,[historyController.treeController selectedObjects]);
 	[self showFile];
 }
 
 - (void) showFile
 {
+	NSError *theError = nil;
 	NSArray *files=[historyController.treeController selectedObjects];
 	if ([files count]>0) {
 		PBGitTree *file=[files objectAtIndex:0];
-		
+
 		NSString *fileTxt = @"";
-		if(startFile==@"fileview")
-			fileTxt=[self parseHTML:[file textContents]];
-		else if(startFile==@"blame")
-			fileTxt=[self parseBlame:[file blame]];
-		else if(startFile==@"log")
-			fileTxt=[file log:logFormat];		
-		else if(startFile==@"diff")
-			fileTxt=[file diff:diffType];
+		if(startFile==@"fileview"){
+			fileTxt=[self parseHTML:[file textContents:&theError]];
+		}else if(startFile==@"blame"){
+			fileTxt=[self parseBlame:[file blame:&theError]];
+		}else if(startFile==@"log"){
+			fileTxt=[file log:logFormat error:&theError];		
+		}else if(startFile==@"diff"){
+			fileTxt=[file diff:diffType error:&theError];
+		}
 		
 		id script = [view windowScriptObject];
-		NSString *filePath = [file fullPath];
-		[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
+		if(theError==nil){
+			NSString *filePath = [file fullPath];
+			[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
+		}else{
+			[script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObjects:[theError localizedDescription], nil]];
+		}
 	}
 	
 #if 0
@@ -174,7 +175,8 @@
 
 - (void)scopeBar:(MGScopeBar *)theScopeBar selectedStateChanged:(BOOL)selected forItem:(NSString *)identifier inGroup:(int)groupNumber
 {
-	if(groupNumber==0){
+	NSLog(@"startFile=%@ identifier=%@ groupNumber=%d",startFile,identifier,groupNumber);
+	if((groupNumber==0) && (startFile!=identifier)){
 		NSString *path = [NSString stringWithFormat:@"html/views/%@", identifier];
 		NSString *html = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
 		NSURLRequest * request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:html]];
