@@ -101,17 +101,23 @@
 
 		NSString *fileTxt = @"";
 		if(startFile==@"fileview"){
-			fileTxt=[self parseHTML:[file textContents:&theError]];
+			fileTxt=[file textContents:&theError];
+			if(!theError)
+				fileTxt=[self parseHTML:fileTxt];
 		}else if(startFile==@"blame"){
-			fileTxt=[self parseBlame:[file blame:&theError]];
+			fileTxt=[file blame:&theError];
+			if(!theError)
+				fileTxt=[self parseBlame:fileTxt];
 		}else if(startFile==@"log"){
 			fileTxt=[file log:logFormat error:&theError];		
 		}else if(startFile==@"diff"){
 			fileTxt=[file diff:diffType error:&theError];
+			if(!theError)
+				fileTxt=[self parseDiff:fileTxt];
 		}
 		
 		id script = [view windowScriptObject];
-		if(theError==nil){
+		if(!theError){
 			NSString *filePath = [file fullPath];
 			[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
 		}else{
@@ -119,7 +125,7 @@
 		}
 	}
 	
-#if 0
+#if 1
 	NSString *dom=[[[[view mainFrame] DOMDocument] documentElement] outerHTML];
 	NSString *tmpFile=@"~/tmp/test.html";
 	[dom writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
@@ -215,6 +221,59 @@
 	txt=[txt stringByReplacingOccurrencesOfString:@">" withString:@"&gt;"];
 	
 	return txt;
+}
+
+- (NSString *) parseDiff:(NSString *)txt
+{
+	txt=[self parseHTML:txt];
+	
+	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
+	NSString *line;
+	NSMutableString *res=[NSMutableString string];
+	
+	[res appendString:@"<table class='diff'>"];
+	int i=0;
+	while(i<[lines count]){
+		line=[lines objectAtIndex:i];
+		if([[line substringToIndex:2] isEqualToString:@"@@"]){
+
+			int l_int,l_count,l_line;
+			int r_int,r_count,r_line;
+			
+			NSString *header=[line substringFromIndex:3];
+			NSRange hr = NSMakeRange(0, [header rangeOfString:@" @@"].location);
+			header=[header substringWithRange:hr];
+			
+			NSArray *pos=[header componentsSeparatedByString:@" "];
+			NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
+			NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
+			l_line=l_int=abs([[pos_l objectAtIndex:0]integerValue]);
+			l_count=[[pos_l objectAtIndex:1]integerValue];
+			r_line=r_int=[[pos_r objectAtIndex:0]integerValue];
+			r_count=[[pos_r objectAtIndex:1]integerValue];
+			
+			[res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan=3>%@</td></tr>",line]];
+			
+			do{
+				line=[lines objectAtIndex:++i];
+				NSString *s=[line substringToIndex:1];
+				line=[line substringFromIndex:1];
+				
+				if([s isEqualToString:@" "]){
+					[res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
+				}else if([s isEqualToString:@"-"]){
+					[res appendString:[NSString stringWithFormat:@"<tr class='l'><td class='l'>%d</td><td class='r'></td>",l_line++]];
+				}else if([s isEqualToString:@"+"]){
+					[res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
+				}
+				[res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",line]];							   
+			}while(l_line<(l_int+l_count) && r_line<(r_int+r_count));
+
+		}
+		i++;
+	}
+	[res appendString:@"</table>"];
+	return res;
 }
 
 - (NSString *) parseBlame:(NSString *)txt

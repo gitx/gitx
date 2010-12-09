@@ -1,14 +1,45 @@
-#message {
-	margin-left: 20px;
-	margin-right: 20px;
-	margin-top: 40px;
-	text-align: center;
-	font-size: 200%;
-	padding: 20px;
-	width: auto;
-
-	background-color: #B4D7FF;
-	border: 2px solid #45A1FE;
-
-	-webkit-border-radius: 10px;
+table.diff{
+	border: 1px solid #8f8f8f;
+	width: 100%;
+	border-collapse: collapse;
+	margin-left: 5px;
+	margin-right: 5px;
 }
+table.diff tr td{
+	font-family: Menlo, Consolas, 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+	font-size: 11px;
+	white-space: pre;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+table.diff td.code{
+	width: 100%;
+	border-left: 2px solid #d0d0d0;
+}
+
+table.diff tr.header td{
+	border: 1px solid #8f8f8f;
+	padding: 5px;
+}
+
+table.diff tr td.r{
+	border-left: 1px solid #909090;
+}
+
+table.diff tr.r{
+	background-color: rgba(0,255,0,0.1);
+}
+
+table.diff tr.l{
+	background-color: rgba(255,0,0,0.1);
+}
+
+table.diff tr.r td.code{
+	border-left-color: rgba(0,255,0,0.2);
+}
+
+table.diff tr.l td.code{
+	border-left-color: rgba(255,0,0,0.2);
+}
+

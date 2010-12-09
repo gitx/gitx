@@ -3,8 +3,14 @@ var selectCommit = function(a) {
 	return false;
 }
 
+var setMessage = function(message) {
+	$("message").style.display = "";
+	$("message").innerHTML = message.escapeHTML();
+	$("log").style.display = "none";
+}
+
 var showFile = function(txt) {
+	$("log").innerHTML = txt;
 	$("log").style.display = "";
-	$("log").innerHTML=txt;
-	return;
+	$("message").style.display = "none";
 }
