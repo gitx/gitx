@@ -226,16 +226,17 @@
 - (NSString *) parseDiff:(NSString *)txt
 {
 	txt=[self parseHTML:txt];
-	
+	  
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSString *line;
 	NSMutableString *res=[NSMutableString string];
 	
-	[res appendString:@"<table class='diff'>"];
+	[res appendString:@"<table class='diff'><thead><tr><td colspan='3'>"];
 	int i=0;
 	while(i<[lines count]){
 		line=[lines objectAtIndex:i];
 		if([[line substringToIndex:2] isEqualToString:@"@@"]){
+			[res appendString:@"</td></tr></thead><tbody>"];
 
 			int l_int,l_count,l_line;
 			int r_int,r_count,r_line;
@@ -252,12 +253,11 @@
 			r_line=r_int=[[pos_r objectAtIndex:0]integerValue];
 			r_count=[[pos_r objectAtIndex:1]integerValue];
 			
-			[res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan=3>%@</td></tr>",line]];
+			[res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
 			
 			do{
 				line=[lines objectAtIndex:++i];
 				NSString *s=[line substringToIndex:1];
-				line=[line substringFromIndex:1];
 				
 				if([s isEqualToString:@" "]){
 					[res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
@@ -269,10 +269,12 @@
 				[res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",line]];							   
 			}while(l_line<(l_int+l_count) && r_line<(r_int+r_count));
 
+		}else{
+			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];							   
 		}
 		i++;
 	}
-	[res appendString:@"</table>"];
+	[res appendString:@"</tbody></table>"];
 	return res;
 }
 
