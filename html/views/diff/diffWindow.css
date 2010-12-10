@@ -3,8 +3,7 @@ table.diff {
 	border: 1px solid #8f8f8f;
 	width: 100%;
 	border-collapse: collapse;
-	margin-right: 5px;
-	margin-left: 5px;
+	margin-bottom: 10px;
 }
 
 table.diff tr td {
@@ -48,17 +47,14 @@ table.diff thead tr td p {
 	margin: 0;
 }
 
-#diff table.diff thead {
-	background-image: -webkit-gradient(linear,left top,left bottom, color-stop(0, rgba(244, 244, 244,1)), color-stop(1, rgba(215,215,215,1)));
+table.diff thead {
+	background-image: -webkit-gradient(linear,left top,left bottom, color-stop(0, rgba(206,206,206,1)), color-stop(1, rgba(166,166,166,1)));
 }
 
-#diff table.diff thead tr td {
+table.diff thead tr td {
 	padding: 5px;
 }
 
-#diff table.diff tbody tr.header {
-	background-image: -webkit-gradient(linear,left top,left bottom, color-stop(0, rgba(206,206,206,1)), color-stop(1, rgba(166,166,166,1)));
-/* Saf4
-
-+, Chrome */
+table.diff tbody tr.header {
+	background-image: -webkit-gradient(linear,left top,left bottom, color-stop(0, rgba(244, 244, 244,1)), color-stop(1, rgba(215,215,215,1)));
 }

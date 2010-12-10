@@ -226,19 +226,22 @@
 + (NSString *) parseDiff:(NSString *)txt
 {
 	txt=[self parseHTML:txt];
-	  
+	
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSString *line;
 	NSMutableString *res=[NSMutableString string];
 	BOOL inDiff=FALSE;
-	int i=0;
-	line=[lines objectAtIndex:i++];
-	while(i<[lines count]){
+	BOOL inBlock=FALSE;
+	
+	int l_int,l_line,l_end;
+	int r_int,r_line,r_end;
+	int i;
+	for (i=0; i<[lines count]; i++) {
+		line=[lines objectAtIndex:i];
+		
 		if([GLFileView isStartBlock:line]){
-
-			int l_int,l_line,l_end;
-			int r_int,r_line,r_end;
-			
+			[res appendString:@"</td></tr></thead><tbody>"];
+			inDiff=FALSE;
 			NSString *header=[line substringFromIndex:3];
 			NSRange hr = NSMakeRange(0, [header rangeOfString:@" @@"].location);
 			header=[header substringWithRange:hr];
@@ -254,34 +257,27 @@
 			r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
 			
 			[res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
-			
-			do{
-				line=[lines objectAtIndex:i++];
-				NSString *s=[line substringToIndex:1];
-				
-				if([s isEqualToString:@" "]){
-					[res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
-				}else if([s isEqualToString:@"-"]){
-					[res appendString:[NSString stringWithFormat:@"<tr class='l'><td class='l'>%d</td><td class='r'></td>",l_line++]];
-				}else if([s isEqualToString:@"+"]){
-					[res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
-				}
-				[res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",line]];		
-				//NSLog(@"%@ %d(%d)-%d(%d)",s,l_line,(l_int+l_count),r_line,(r_int+r_count));
-			}while((l_line<l_end) || (r_line<r_end));
-			
+			inBlock=TRUE;
+		}else if(inBlock){
+			NSString *s=[line substringToIndex:1];
+			if([s isEqualToString:@" "]){
+				[res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
+			}else if([s isEqualToString:@"-"]){
+				[res appendString:[NSString stringWithFormat:@"<tr class='l'><td class='l'>%d</td><td class='r'></td>",l_line++]];
+			}else if([s isEqualToString:@"+"]){
+				[res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
+			}
+			[res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:1]]];		
+			if(!(l_line<l_end) && !(r_line<r_end))
+				inBlock=FALSE;
 		}else if([GLFileView isStartDiff:line]){
 			if(inDiff)
 				[res appendString:@"</tbody></table>"];
 			inDiff=TRUE;
 			[res appendString:@"<table class='diff'><thead><tr><td colspan='3'>"];
-			do{
-				[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
-				line=[lines objectAtIndex:i++];
-			}while(![GLFileView isStartBlock:line]);
-			[res appendString:@"</td></tr></thead><tbody>"];
-		}else{
-			line=[lines objectAtIndex:i++];
+			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
+		}else if(inDiff){
+			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
 		}
 	}
 	if(inDiff)
