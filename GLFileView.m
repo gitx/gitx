@@ -103,7 +103,7 @@
 		if(startFile==@"fileview"){
 			fileTxt=[file textContents:&theError];
 			if(!theError)
-				fileTxt=[self parseHTML:fileTxt];
+				fileTxt=[GLFileView parseHTML:fileTxt];
 		}else if(startFile==@"blame"){
 			fileTxt=[file blame:&theError];
 			if(!theError)
@@ -113,7 +113,7 @@
 		}else if(startFile==@"diff"){
 			fileTxt=[file diff:diffType error:&theError];
 			if(!theError)
-				fileTxt=[self parseDiff:fileTxt];
+				fileTxt=[GLFileView parseDiff:fileTxt];
 		}
 		
 		id script = [view windowScriptObject];
@@ -214,7 +214,7 @@
 	[super closeView];
 }
 
-- (NSString *) parseHTML:(NSString *)txt
++ (NSString *) parseHTML:(NSString *)txt
 {
 	txt=[txt stringByReplacingOccurrencesOfString:@"&" withString:@"&amp;"];
 	txt=[txt stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
@@ -223,23 +223,21 @@
 	return txt;
 }
 
-- (NSString *) parseDiff:(NSString *)txt
++ (NSString *) parseDiff:(NSString *)txt
 {
 	txt=[self parseHTML:txt];
 	  
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSString *line;
 	NSMutableString *res=[NSMutableString string];
-	
-	[res appendString:@"<table class='diff'><thead><tr><td colspan='3'>"];
+	BOOL inDiff=FALSE;
 	int i=0;
+	line=[lines objectAtIndex:i++];
 	while(i<[lines count]){
-		line=[lines objectAtIndex:i];
-		if([[line substringToIndex:2] isEqualToString:@"@@"]){
-			[res appendString:@"</td></tr></thead><tbody>"];
+		if([GLFileView isStartBlock:line]){
 
-			int l_int,l_count,l_line;
-			int r_int,r_count,r_line;
+			int l_int,l_line,l_end;
+			int r_int,r_line,r_end;
 			
 			NSString *header=[line substringFromIndex:3];
 			NSRange hr = NSMakeRange(0, [header rangeOfString:@" @@"].location);
@@ -248,15 +246,17 @@
 			NSArray *pos=[header componentsSeparatedByString:@" "];
 			NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
 			NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
+			
 			l_line=l_int=abs([[pos_l objectAtIndex:0]integerValue]);
-			l_count=[[pos_l objectAtIndex:1]integerValue];
+			l_end=l_line+[[pos_l objectAtIndex:1]integerValue];
+			
 			r_line=r_int=[[pos_r objectAtIndex:0]integerValue];
-			r_count=[[pos_r objectAtIndex:1]integerValue];
+			r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
 			
 			[res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
 			
 			do{
-				line=[lines objectAtIndex:++i];
+				line=[lines objectAtIndex:i++];
 				NSString *s=[line substringToIndex:1];
 				
 				if([s isEqualToString:@" "]){
@@ -266,21 +266,42 @@
 				}else if([s isEqualToString:@"+"]){
 					[res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
 				}
-				[res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",line]];							   
-			}while(l_line<(l_int+l_count) && r_line<(r_int+r_count));
-
+				[res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",line]];		
+				//NSLog(@"%@ %d(%d)-%d(%d)",s,l_line,(l_int+l_count),r_line,(r_int+r_count));
+			}while((l_line<l_end) || (r_line<r_end));
+			
+		}else if([GLFileView isStartDiff:line]){
+			if(inDiff)
+				[res appendString:@"</tbody></table>"];
+			inDiff=TRUE;
+			[res appendString:@"<table class='diff'><thead><tr><td colspan='3'>"];
+			do{
+				[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
+				line=[lines objectAtIndex:i++];
+			}while(![GLFileView isStartBlock:line]);
+			[res appendString:@"</td></tr></thead><tbody>"];
 		}else{
-			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];							   
+			line=[lines objectAtIndex:i++];
 		}
-		i++;
 	}
-	[res appendString:@"</tbody></table>"];
+	if(inDiff)
+		[res appendString:@"</tbody></table>"];
 	return res;
+}
+
++(BOOL)isStartDiff:(NSString *)line
+{
+	return (([line length]>10) && [[line substringToIndex:10] isEqualToString:@"diff --git"]);
+}
+
++(BOOL)isStartBlock:(NSString *)line
+{
+	return (([line length]>2) && [[line substringToIndex:2] isEqualToString:@"@@"]);
 }
 
 - (NSString *) parseBlame:(NSString *)txt
 {
-	txt=[self parseHTML:txt];
+	txt=[GLFileView parseHTML:txt];
 	
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSString *line;

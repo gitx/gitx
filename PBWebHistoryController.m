@@ -96,7 +96,13 @@
 	if (!details)
 		return;
 
-	[[view windowScriptObject] callWebScriptMethod:@"loadCommitDetails" withArguments:[NSArray arrayWithObject:details]];
+	NSRange range = [details rangeOfString:@"diff --git"];
+	NSString *commitDetails=[details substringToIndex:range.location];
+	NSString *diffs=[details substringFromIndex:range.location];
+	NSString *pd=[GLFileView parseDiff:diffs];
+	
+	[[view windowScriptObject] callWebScriptMethod:@"loadCommitDetails" withArguments:[NSArray arrayWithObject:commitDetails]];	
+	[[view windowScriptObject] callWebScriptMethod:@"newStyle" withArguments:[NSArray arrayWithObject:pd]];
 }
 
 - (void)selectCommit:(NSString *)sha

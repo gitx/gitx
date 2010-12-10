@@ -28,7 +28,10 @@
 - (void)showFile;
 - (void)didLoad;
 - (NSString *)parseBlame:(NSString *)txt;
-- (NSString *)parseHTML:(NSString *)txt;
++ (NSString *)parseHTML:(NSString *)txt;
++ (NSString *) parseDiff:(NSString *)txt;
++(BOOL)isStartDiff:(NSString *)line;
++(BOOL)isStartBlock:(NSString *)line;
 
 @property(retain) NSMutableArray *groups;
 @property(retain) NSString *logFormat;
