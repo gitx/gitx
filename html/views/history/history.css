@@ -1,5 +1,32 @@
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+.clearfix {
+	display: inline-block;
+}
+
+/* start commented backslash hack \*/
+
+* html .clearfix {
+	height: 1%;
+}
+
+.clearfix {
+	display: block;
+}
+
+/* close commented backslash hack */
+
 body {
 	font-family: 'Lucida Grande';
+	margin: 0px;
+	padding: 0px;
 }
 
 #commit_header {
@@ -10,7 +37,7 @@ body {
 }
 
 #commit_header tr {
-        vertical-align: top;
+	vertical-align: top;
 }
 
 #authorTable {
@@ -18,8 +45,10 @@ body {
 }
 
 #rightcontent {
-	float: right;
+	float: none;
 	margin: 5px;
+	position: absolute;
+	right: 0;
 }
 
 #buttons {
@@ -27,25 +56,21 @@ body {
 }
 
 a.servicebutton {
-    display: block;
-    width: 80px;
-    padding: 2px;
-    margin-bottom: 4px;
-
-    border: 1px solid #3465a4;
-    background-color: #cce5ff;
-    color: #204a87;
-
-    font-size: 65%;
-    text-decoration: none;
-    text-align: center;
-
-    -webkit-border-radius: 2px;
+	display: block;
+	width: 80px;
+	padding: 2px;
+	margin-bottom: 4px;
+	border: 1px solid #3465a4;
+	background-color: #cce5ff;
+	color: #204a87;
+	font-size: 65%;
+	text-decoration: none;
+	text-align: center;
+	-webkit-border-radius: 2px;
 }
 
 .gravatar {
 	padding: 0.1em;
-
 	border: solid gray 1px;
 	-webkit-border-radius: 2px;
 }
@@ -59,11 +84,10 @@ a.servicebutton {
 
 .property_name {
 	width: 6em;
-	color:#7F7F7F;
+	color: #7F7F7F;
 	text-align: right;
 	font-weight: bold;
 }
-
 
 #message_files {
 	margin: 5px;
@@ -71,10 +95,11 @@ a.servicebutton {
 	width: auto;
 }
 
-#message {
+#header p.subject {
+	font-size: 15px;
+	padding: 5px;
+	float: none;
 	font-family: Menlo, Monaco;
-	white-space: pre-wrap;
-	padding-top: 10px;
 }
 
 #files {
@@ -104,12 +129,12 @@ a.servicebutton {
 }
 
 .clear_both {
-	clear:both;
-	display:block;
-	height:1px;
-	line-height:0;
-	margin:1em;
-	visibility:hidden;
+	clear: both;
+	display: block;
+	height: 1px;
+	line-height: 0;
+	margin: 1em;
+	visibility: hidden;
 }
 
 #details {
@@ -118,6 +143,7 @@ a.servicebutton {
 	overflow: hidden;
 	width: 600px;
 }
+
 hr {
 	border: 0;
 	height: 1px;
@@ -159,6 +185,91 @@ a.showdiff {
 .refs.currentBranch {
 	background-color: #fca64f;
 }
+
+#diff ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 10px 0;
+}
+
+#diff ul a {
+	margin-left: 10px;
+	padding-left: 20px;
+	text-decoration: none;
+}
+
+#diff ul a:hover {
+	text-decoration: underline;
+}
+
+#diff ul a.A {
+	background: url(../../images/added.png) no-repeat 0 center;
+}
+
+#diff ul a.D {
+	background: url(../../images/removed.png) no-repeat 0 center;
+}
+
+#diff ul a.M {
+	background: url(../../images/modified.png) no-repeat 0 center;
+}
+
+#diff ul a.R,#diff ul a.C {
+	background: url(../../images/renamed.png) no-repeat 0 center;
+}
+
+#header {
+	font-size: 13px;
+	background-image: -webkit-gradient(linear,left top,left bottom, color-stop(.7, #EAF2f6), color-stop(1, #e3ebf3));
+}
+
+#header table.references  a {
+	font-family: Menlo, Consolas, 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+}
+
+#header p.time {
+	margin-top: 2px;
+}
+
+#header p.name {
+	font-size: 15px;
+	white-space: nowrap;
+}
+
+#header span.rol,p.time {
+	color: gray;
+}
+
+#header img.avatar {
+	float: left;
+	padding: 2px;
+	border: 1px solid black;
+	margin: 0 5px 5px;
+}
+
+#header table.references {
+	float: right;
+	font-size: 12px;
+	margin: 5px;
+}
+
+#header div.user {
+	float: left;
+	clear: left;
+}
+
+#header p {
+	margin: 0;
+}
+
+#header div#badges {
+	clear: left;
+	float: left;
+	margin: 5px;
+	padding-bottom: 5px;
+}
+
+
 
 /*
 div.button

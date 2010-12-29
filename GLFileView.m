@@ -223,7 +223,31 @@
 	return txt;
 }
 
-+ (NSString *) parseDiff:(NSString *)txt
++ (NSString *)parseDiffTree:(NSString *)txt
+{
+	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
+	NSMutableString *res=[NSMutableString string];
+	[res appendString:@"<ul>"];
+	int i;
+	for (i=1; i<[lines count]; i++) {
+		NSString *line=[lines objectAtIndex:i];
+		NSArray *fields=[line componentsSeparatedByString:@" "];
+		NSArray *fileStatus=[[fields objectAtIndex:4] componentsSeparatedByString:@"\t"];
+		NSString *status=[[fileStatus objectAtIndex:0] substringToIndex:1]; // ignore the score
+		NSString *file=[fileStatus objectAtIndex:1];
+		NSString *txt=file;
+		NSString *fileName=file;
+		if([status isEqualToString:@"C"] || [status isEqualToString:@"R"]){
+			txt=[NSString stringWithFormat:@"%@ -&gt; %@",file,[fileStatus objectAtIndex:2]];
+			fileName=[fileStatus objectAtIndex:2];
+		}
+		[res appendString:[NSString stringWithFormat:@"<li><a class='%@' href='#%@' representedFile='%@'>%@</a></li>",status,file,fileName,txt]];
+	}
+	[res appendString:@"</ul>"];
+	return res;
+}
+
++ (NSString *)parseDiff:(NSString *)txt
 {
 	txt=[self parseHTML:txt];
 	
@@ -250,11 +274,15 @@
 			NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
 			NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
 			
-			l_line=l_int=abs([[pos_l objectAtIndex:0]integerValue]);
-			l_end=l_line+[[pos_l objectAtIndex:1]integerValue];
+			l_end=l_line=l_int=abs([[pos_l objectAtIndex:0]integerValue]);
+			if ([pos_l count]>1) {
+				l_end=l_line+[[pos_l objectAtIndex:1]integerValue];				
+			}
 			
-			r_line=r_int=[[pos_r objectAtIndex:0]integerValue];
-			r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
+			r_end=r_line=r_int=[[pos_r objectAtIndex:0]integerValue];
+			if ([pos_r count]>1) {
+				r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
+			}
 			
 			[res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
 			inBlock=TRUE;
@@ -274,7 +302,8 @@
 			if(inDiff)
 				[res appendString:@"</tbody></table>"];
 			inDiff=TRUE;
-			[res appendString:@"<table class='diff'><thead><tr><td colspan='3'>"];
+			NSString *fileName=[self getFileName:line];
+			[res appendString:[NSString stringWithFormat:@"<table id='%@' class='diff'><thead><tr><td colspan='3'>",fileName]];
 			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
 		}else if(inDiff){
 			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
@@ -285,6 +314,12 @@
 	return res;
 }
 
++(NSString *)getFileName:(NSString *)line{
+	NSRange b = [line rangeOfString:@"b/"];
+	NSString *file=[line substringFromIndex:b.location+2];
+	return file;
+}
+
 +(BOOL)isStartDiff:(NSString *)line
 {
 	return (([line length]>10) && [[line substringToIndex:10] isEqualToString:@"diff --git"]);
@@ -292,7 +327,7 @@
 
 +(BOOL)isStartBlock:(NSString *)line
 {
-	return (([line length]>2) && [[line substringToIndex:2] isEqualToString:@"@@"]);
+	return (([line length]>3) && [[line substringToIndex:3] isEqualToString:@"@@ "]);
 }
 
 - (NSString *) parseBlame:(NSString *)txt
