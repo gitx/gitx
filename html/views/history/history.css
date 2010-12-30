@@ -229,6 +229,8 @@ a.showdiff {
 
 #header p.time {
 	margin-top: 2px;
+	font-size: 11px;
+	white-space: nowrap;
 }
 
 #header p.name {

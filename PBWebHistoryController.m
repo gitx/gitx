@@ -156,8 +156,14 @@
 					NSString *rol=[line substringToIndex:r_name_i.location];
 					NSString *name=[line substringWithRange:NSMakeRange(r_name_i.location,(r_email_i.location-r_name_i.location))];
 					NSString *email=[line substringWithRange:NSMakeRange(r_email_i.location+1,((r_email_e.location-1)-r_email_i.location))];
-					NSString *time=[line substringFromIndex:r_email_e.location+2];
 					
+					NSArray *t=[[line substringFromIndex:r_email_e.location+2] componentsSeparatedByString:@" "];
+					NSDate *date=[NSDate dateWithTimeIntervalSince1970:[[t objectAtIndex:0] doubleValue]];
+					NSDateFormatter* theDateFormatter = [[NSDateFormatter alloc] init];  
+					[theDateFormatter setDateStyle:NSDateFormatterMediumStyle];  
+					[theDateFormatter setTimeStyle:NSDateFormatterMediumStyle];  
+					NSString *dateString=[theDateFormatter stringForObjectValue:date];
+										
 					if(![email isEqualToString:last_mail]){
 						[auths appendString:[NSString stringWithFormat:@"<div class='user %@ clearfix'>",rol]];
 						if([self isFeatureEnabled:@"gravatar"]){
@@ -165,7 +171,7 @@
 							[auths appendString:[NSString stringWithFormat:@"<img class='avatar' src='http://www.gravatar.com/avatar/%@?d=wavatar&s=30'/>",hash]];
 						}
 						[auths appendString:[NSString stringWithFormat:@"<p class='name'>%@ <span class='rol'>(%@)</span></p>",name,rol]];
-						[auths appendString:[NSString stringWithFormat:@"<p class='time'>%@</p></div>",time]];
+						[auths appendString:[NSString stringWithFormat:@"<p class='time'>%@</p></div>",dateString]];
 					}
 					last_mail=email;
 				}
