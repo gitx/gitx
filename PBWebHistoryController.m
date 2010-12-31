@@ -134,7 +134,6 @@
 		if([line length]==0){
 			black++;
 		}else if(black==2){
-			NSLog(@"l=%@",line);
 			NSArray *file=[line componentsSeparatedByString:@"\t"];
 			if([file count]==3){
 				[stats setObject:file forKey:[file objectAtIndex:2]];
