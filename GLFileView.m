@@ -98,7 +98,7 @@
 	NSArray *files=[historyController.treeController selectedObjects];
 	if ([files count]>0) {
 		PBGitTree *file=[files objectAtIndex:0];
-
+		
 		NSString *fileTxt = @"";
 		if(startFile==@"fileview"){
 			fileTxt=[file textContents:&theError];
@@ -223,11 +223,21 @@
 	return txt;
 }
 
-+ (NSString *)parseDiffTree:(NSString *)txt
++ (NSString *)parseDiffTree:(NSString *)txt withStats:(NSMutableDictionary *)stats
 {
+	NSInteger granTotal=0;
+	for(NSArray *stat in [stats allValues]){
+		NSInteger add=[[stat objectAtIndex:0] integerValue];
+		NSInteger rem=[[stat objectAtIndex:1] integerValue];
+		NSInteger tot=add+rem;
+		if(tot>granTotal)
+			granTotal=tot;
+		[stats setObject:[NSArray arrayWithObjects:[NSNumber numberWithInteger:add],[NSNumber numberWithInteger:rem],[NSNumber numberWithInteger:tot],nil] forKey:[stat objectAtIndex:2]];
+	}
+	
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSMutableString *res=[NSMutableString string];
-	[res appendString:@"<ul>"];
+	[res appendString:@"<table id='filelist'>"];
 	int i;
 	for (i=1; i<[lines count]; i++) {
 		NSString *line=[lines objectAtIndex:i];
@@ -241,9 +251,22 @@
 			txt=[NSString stringWithFormat:@"%@ -&gt; %@",file,[fileStatus objectAtIndex:2]];
 			fileName=[fileStatus objectAtIndex:2];
 		}
-		[res appendString:[NSString stringWithFormat:@"<li><a class='%@' href='#%@' representedFile='%@'>%@</a></li>",status,file,fileName,txt]];
+		
+		NSArray *stat=[stats objectForKey:fileName];
+		NSInteger add=[[stat objectAtIndex:0] integerValue];
+		NSInteger rem=[[stat objectAtIndex:1] integerValue];
+		NSInteger tot=add+rem;
+		
+		[res appendString:@"<tr><td class='name'>"];
+		[res appendString:[NSString stringWithFormat:@"<a class='%@' href='#%@' representedFile='%@'>%@</a>",status,file,fileName,txt]];
+		[res appendString:@"</td><td class='bar'>"];
+		[res appendString:@"<div>"];
+		[res appendString:[NSString stringWithFormat:@"<span class='add' style='width:%d%%'></span>",((add*100)/granTotal)]];
+		[res appendString:[NSString stringWithFormat:@"<span class='rem' style='width:%d%%'></span>",((rem*100)/granTotal)]];
+		[res appendString:@"</div>"];
+		[res appendString:[NSString stringWithFormat:@"</td><td class='add'>+ %d</td><td class='rem'>- %d</td></tr>",add,rem]];
 	}
-	[res appendString:@"</ul>"];
+	[res appendString:@"</table>"];
 	return res;
 }
 

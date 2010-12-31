@@ -57,7 +57,7 @@
 	// but this caused some funny behaviour because NSTask's and NSThread's don't really
 	// like each other. Instead, just do it async.
 	
-	NSMutableArray *taskArguments = [NSMutableArray arrayWithObjects:@"show", @"--summary", @"--pretty=raw", [currentSha string], nil];
+	NSMutableArray *taskArguments = [NSMutableArray arrayWithObjects:@"show", @"--numstat", @"--summary", @"--pretty=raw", [currentSha string], nil];
 	if (![PBGitDefaults showWhitespaceDifferences])
 		[taskArguments insertObject:@"-w" atIndex:1];
 	
@@ -102,10 +102,13 @@
 	
 	// Header
 	NSString *header=[self parseHeader:details withRefs:refs];
-	
+
+	// File Stats
+	NSMutableDictionary *stats=[self parseStats:details];
+
 	// File list
 	NSString *dt=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"-r", @"-C90%", @"-M90%", [currentSha string], nil]];
-	NSString *fileList=[GLFileView parseDiffTree:dt];
+	NSString *fileList=[GLFileView parseDiffTree:dt withStats:stats];
 	
 	// Diffs list
 	NSString *d=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--cc", @"-C90%", @"-M90%", [currentSha string], nil]];
@@ -120,6 +123,25 @@
 	NSString *tmpFile=@"~/tmp/test2.html";
 	[dom writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
 #endif 
+}
+
+- (NSMutableDictionary *)parseStats:(NSString *)txt
+{
+	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
+	NSMutableDictionary *stats=[NSMutableDictionary dictionary];
+	int black=0;
+	for(NSString *line in lines){
+		if([line length]==0){
+			black++;
+		}else if(black==2){
+			NSLog(@"l=%@",line);
+			NSArray *file=[line componentsSeparatedByString:@"\t"];
+			if([file count]==3){
+				[stats setObject:file forKey:[file objectAtIndex:2]];
+			}
+		}
+	}
+	return stats;
 }
 
 - (NSString *)parseHeader:(NSString *)txt withRefs:(NSString *)badges

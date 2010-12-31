@@ -19,7 +19,7 @@
 @interface PBWebHistoryController : PBWebController {
 	IBOutlet PBGitHistoryController* historyController;
 	IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
-
+	
 	PBGitSHA* currentSha;
 	NSString* diff;
 }
@@ -27,6 +27,7 @@
 - (void) changeContentTo: (PBGitCommit *) content;
 - (void) sendKey: (NSString*) key;
 - (NSString *)parseHeader:(NSString *)txt withRefs:(NSString *)badges;
+- (NSMutableDictionary *)parseStats:(NSString *)txt;
 - (NSString *) someMethodThatReturnsSomeHashForSomeString:(NSString*)concat;
 
 @property (readonly) NSString* diff;

@@ -30,7 +30,7 @@
 - (NSString *)parseBlame:(NSString *)txt;
 + (NSString *)parseHTML:(NSString *)txt;
 + (NSString *)parseDiff:(NSString *)txt;
-+ (NSString *)parseDiffTree:(NSString *)txt;
++ (NSString *)parseDiffTree:(NSString *)txt withStats:(NSMutableDictionary *)stats;
 +(BOOL)isStartDiff:(NSString *)line;
 +(BOOL)isStartBlock:(NSString *)line;
 

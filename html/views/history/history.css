@@ -186,36 +186,65 @@ a.showdiff {
 	background-color: #fca64f;
 }
 
-#diff ul {
-	list-style-type: none;
-	margin: 0;
-	padding: 10px 0;
+#filelist {
+	font-size: 13px;
 }
 
-#diff ul a {
+#filelist a {
 	margin-left: 10px;
 	padding-left: 20px;
 	text-decoration: none;
 }
 
-#diff ul a:hover {
+#filelist a:hover {
 	text-decoration: underline;
 }
 
-#diff ul a.A {
+#filelist a.A {
 	background: url(../../images/added.png) no-repeat 0 center;
 }
 
-#diff ul a.D {
+#filelist a.D {
 	background: url(../../images/removed.png) no-repeat 0 center;
 }
 
-#diff ul a.M {
+#filelist a.M {
 	background: url(../../images/modified.png) no-repeat 0 center;
 }
 
-#diff ul a.R,#diff ul a.C {
+#filelist a.R,#filelist a.C {
 	background: url(../../images/renamed.png) no-repeat 0 center;
+}
+
+#filelist{
+	white-space: nowrap;
+	width: 100%;
+}
+#filelist span.add,#filelist span.rem {
+	display: block;
+	height: 10px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	float: right;
+	clear: both;
+}
+
+#filelist span.add{
+	background-color: green;
+}
+
+#filelist span.rem {
+	background-color: red;
+}
+
+#filelist td.bar {
+	width: 50%;
+	display: block;
+}
+
+#filelist td.add,#filelist td.rem {
+	width: 1%;
+	text-align: right;
 }
 
 #header {
@@ -270,8 +299,6 @@ a.showdiff {
 	margin: 5px;
 	padding-bottom: 5px;
 }
-
-
 
 /*
 div.button
