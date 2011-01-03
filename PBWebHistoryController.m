@@ -114,9 +114,9 @@
 	NSString *d=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--cc", @"-C90%", @"-M90%", [currentSha string], nil]];
 	NSString *diffs=[GLFileView parseDiff:d];
 	
-	NSString *html=[NSString stringWithFormat:@"%@%@%@",header,fileList,diffs];
+	NSString *html=[NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
 	
-	[[view windowScriptObject] callWebScriptMethod:@"showDiff" withArguments:[NSArray arrayWithObject:html]];
+	[[view windowScriptObject] callWebScriptMethod:@"showCommit" withArguments:[NSArray arrayWithObject:html]];
 	
 #if 1
 	NSString *dom=[[[[view mainFrame] DOMDocument] documentElement] outerHTML];

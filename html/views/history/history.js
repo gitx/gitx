@@ -8,7 +8,7 @@ var showImage = function(element, filename)
 	return false;
 }
 
-var showDiff = function(data){
-	$("diff").innerHTML=data;
+var showCommit = function(data){
+	$("commit").innerHTML=data;
 }
 

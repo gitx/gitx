@@ -24,6 +24,7 @@
 /* close commented backslash hack */
 
 body {
+	background-color: #f2f2f2;
 	font-family: 'Lucida Grande';
 	margin: 0px;
 	padding: 0px;
@@ -188,6 +189,14 @@ a.showdiff {
 
 #filelist {
 	font-size: 13px;
+	white-space: nowrap;
+	width: 100%;
+	padding: 10px 20px;
+	border-collapse: collapse;
+}
+
+#filelist tr td {
+	border-bottom: 1px solid #ccc;
 }
 
 #filelist a {
@@ -216,10 +225,6 @@ a.showdiff {
 	background: url(../../images/renamed.png) no-repeat 0 center;
 }
 
-#filelist{
-	white-space: nowrap;
-	width: 100%;
-}
 #filelist span.add,#filelist span.rem {
 	display: block;
 	height: 10px;
@@ -229,7 +234,7 @@ a.showdiff {
 	clear: both;
 }
 
-#filelist span.add{
+#filelist span.add {
 	background-color: green;
 }
 
@@ -300,47 +305,16 @@ a.showdiff {
 	padding-bottom: 5px;
 }
 
-/*
-div.button
-{
-	color: #666666;
-
-	font-size: 60%;
-	text-align: center;
-
-	width: 70px;
-
-	margin-right: 10px;
-
-	padding: 2px;
-
-	float: left;
-	clear: both;
-
-	border: 1px solid;
-	-webkit-border-radius: 3px;
+#diffs {
+	-webkit-box-shadow: inset 0px 5px 5px #ccc;
+	width: 100%;
+	display: block;
+	padding-top: 20px;
+	overflow: auto;
 }
 
-div.created
-{
-	background-color: #ccffcc;
-	border-color: #66ff66;
+#diffs table.diff {
+	-webkit-box-shadow: 5px 5px 5px #ccc;
+	width: 98%;
+	margin: auto auto 20px 1%;
 }
-
-div.changed
-{
-	background-color: #ffcc99;
-	border-color: #ff9933;
-}
-
-div.deleted
-{
-	background-color: #ffcccc;
-	border-color: #ff6666;
-}
-
-div.renamed
-{
-	// No colour needed right now.
-}
-*/
