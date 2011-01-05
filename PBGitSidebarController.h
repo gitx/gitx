@@ -29,7 +29,7 @@
 	/* Specific things */
 	PBSourceViewItem *stage;
 
-	PBSourceViewItem *branches, *remotes, *tags, *others;
+	PBSourceViewItem *branches, *remotes, *tags, *others, *stashes;
 
 	PBGitHistoryController *historyViewController;
 	PBGitCommitController *commitViewController;

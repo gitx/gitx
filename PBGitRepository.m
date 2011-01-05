@@ -21,10 +21,18 @@
 #import "GitXScriptingConstants.h"
 #import "PBHistorySearchController.h"
 
+#import "PBGitStash.h"
+
 NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 
-@implementation PBGitRepository
+@interface PBGitRepository()
+@property (nonatomic, retain) NSArray *stashes;
+@end
 
+
+
+@implementation PBGitRepository
+@synthesize stashes;
 @synthesize revisionList, branches, currentBranch, refs, hasChanged, config;
 @synthesize currentBranchFilter;
 
@@ -247,6 +255,23 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		[refs setObject:[NSMutableArray arrayWithObject:ref] forKey:sha];
 }
 
+- (void) reloadStashes {
+	NSArray *arguments = [NSArray arrayWithObjects:@"stash", @"list", nil];
+	NSString *output = [self outputInWorkdirForArguments:arguments];
+	NSArray *lines = [output componentsSeparatedByString:@"\n"];
+	
+	NSMutableArray *loadedStashes = [[NSMutableArray alloc] init];
+	
+	for (NSString *stashLine in lines) {
+		PBGitStash *stash = [[PBGitStash alloc] initWithRawStashLine:stashLine];
+		[loadedStashes addObject:stash];
+		[stash release];
+	}
+	
+	self.stashes = loadedStashes;
+	[loadedStashes release];
+}
+
 - (void) reloadRefs
 {
 	_headRef = nil;
@@ -280,6 +305,8 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 
 	[self willChangeValueForKey:@"refs"];
 	[self didChangeValueForKey:@"refs"];
+	
+	[self reloadStashes];
 
 	[[[self windowController] window] setTitle:[self displayName]];
 }
@@ -1146,7 +1173,8 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 
 - (NSString*) outputInWorkdirForArguments:(NSArray*) arguments
 {
-	return [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:arguments inDir: [self workingDirectory]];
+	NSString *output = [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:arguments inDir: [self workingDirectory]];
+	return [output length] > 0 ? output : nil;
 }
 
 - (NSString*) outputInWorkdirForArguments:(NSArray *)arguments retValue:(int *)ret
@@ -1221,6 +1249,11 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		return ref;
 
 	return nil;
+}
+
+- (void) dealloc {
+	[stashes release];
+	[super dealloc];
 }
 
 - (void) finalize

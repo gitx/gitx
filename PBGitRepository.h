@@ -52,6 +52,8 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 
 	PBGitRevSpecifier *_headRef; // Caching
 	PBGitSHA* _headSha;
+	
+	NSArray *stashes;
 }
 
 - (void) cloneRepositoryToPath:(NSString *)path bare:(BOOL)isBare;
@@ -96,6 +98,7 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 - (NSString *)gitIgnoreFilename;
 - (BOOL)isBareRepository;
 
+- (void) reloadStashes;
 - (void) reloadRefs;
 - (void) addRef:(PBGitRef *)ref fromParameters:(NSArray *)params;
 - (void) lazyReload;
