@@ -41,11 +41,15 @@
 #pragma mark Presentable
 
 - (NSString *) displayDescription {
-	return self.name;
+	return [NSString stringWithFormat:@"%@ (%@)", self.message, self.name];
 }
 
 - (NSString *) popupDescription {
 	return [self description];
+}
+
+- (NSImage *) icon {
+	return [NSImage imageNamed:@"stash-icon.png"];
 }
 
 @end

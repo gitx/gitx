@@ -7,7 +7,8 @@
 //
 
 
-@protocol PBPresentable
+@protocol PBPresentable<NSObject>
+- (NSImage *) icon;
 - (NSString *) displayDescription;
 - (NSString *) popupDescription;
 @end

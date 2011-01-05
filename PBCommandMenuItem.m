@@ -23,6 +23,7 @@
 		super.title = [aCommand displayName];
 		[self setTarget:aCommand];
 		[self setAction:@selector(invoke)];
+		[self setEnabled:[aCommand canBeFired]];
 	}
 	return self;
 }

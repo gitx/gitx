@@ -29,7 +29,7 @@
 	/* Specific things */
 	PBSourceViewItem *stage;
 
-	PBSourceViewItem *branches, *remotes, *tags, *others, *stashes;
+	PBSourceViewItem *branches, *remotes, *tags, *others, *stashes, *submodules;
 
 	PBGitHistoryController *historyViewController;
 	PBGitCommitController *commitViewController;
@@ -49,4 +49,7 @@
 
 @property(readonly) NSMutableArray *items;
 @property(readonly) NSView *sourceListControlsView;
+@property(readonly) PBGitHistoryController *historyViewController;
+@property(readonly) PBGitCommitController *commitViewController;
+
 @end

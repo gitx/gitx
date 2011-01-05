@@ -3,7 +3,7 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
 		<string key="IBDocument.SystemVersion">10F569</string>
-		<string key="IBDocument.InterfaceBuilderVersion">804</string>
+		<string key="IBDocument.InterfaceBuilderVersion">1222</string>
 		<string key="IBDocument.AppKitVersion">1038.29</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
@@ -12,8 +12,19 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="38"/>
-			<integer value="36"/>
+			<string>NSSegmentedControl</string>
+			<string>NSPopUpButton</string>
+			<string>NSScroller</string>
+			<string>NSMenuItem</string>
+			<string>NSMenu</string>
+			<string>NSTextFieldCell</string>
+			<string>NSScrollView</string>
+			<string>NSOutlineView</string>
+			<string>NSCustomView</string>
+			<string>NSCustomObject</string>
+			<string>NSPopUpButtonCell</string>
+			<string>NSTableColumn</string>
+			<string>NSSegmentedCell</string>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -59,6 +70,8 @@
 										<int key="NSvFlags">4352</int>
 										<string key="NSFrameSize">{153, 354}</string>
 										<reference key="NSSuperview" ref="973377808"/>
+										<reference key="NSWindow"/>
+										<reference key="NSNextKeyView" ref="636071848"/>
 										<bool key="NSEnabled">YES</bool>
 										<object class="_NSCornerView" key="NSCornerView">
 											<nil key="NSNextResponder"/>
@@ -78,7 +91,7 @@
 													<object class="NSFont" key="NSSupport">
 														<string key="NSName">LucidaGrande</string>
 														<double key="NSSize">11</double>
-														<int key="NSfFlags">3100</int>
+														<int key="NSfFlags">3088</int>
 													</object>
 													<object class="NSColor" key="NSBackgroundColor">
 														<int key="NSColorSpace">3</int>
@@ -161,6 +174,7 @@
 								</object>
 								<string key="NSFrameSize">{153, 354}</string>
 								<reference key="NSSuperview" ref="631607481"/>
+								<reference key="NSWindow"/>
 								<reference key="NSNextKeyView" ref="971239525"/>
 								<reference key="NSDocView" ref="971239525"/>
 								<reference key="NSBGColor" ref="272980874"/>
@@ -171,6 +185,8 @@
 								<int key="NSvFlags">-2147483392</int>
 								<string key="NSFrame">{{137, 1}, {15, 338}}</string>
 								<reference key="NSSuperview" ref="631607481"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView"/>
 								<reference key="NSTarget" ref="631607481"/>
 								<string key="NSAction">_doScroller:</string>
 								<double key="NSPercent">0.99698790000000004</double>
@@ -180,6 +196,8 @@
 								<int key="NSvFlags">-2147483392</int>
 								<string key="NSFrame">{{-100, -100}, {196, 15}}</string>
 								<reference key="NSSuperview" ref="631607481"/>
+								<reference key="NSWindow"/>
+								<reference key="NSNextKeyView" ref="973377808"/>
 								<int key="NSsFlags">1</int>
 								<reference key="NSTarget" ref="631607481"/>
 								<string key="NSAction">_doScroller:</string>
@@ -188,7 +206,8 @@
 						</object>
 						<string key="NSFrameSize">{153, 354}</string>
 						<reference key="NSSuperview" ref="694945622"/>
-						<reference key="NSNextKeyView" ref="973377808"/>
+						<reference key="NSWindow"/>
+						<reference key="NSNextKeyView" ref="46429660"/>
 						<int key="NSsFlags">528</int>
 						<reference key="NSVScroller" ref="636071848"/>
 						<reference key="NSHScroller" ref="46429660"/>
@@ -198,10 +217,12 @@
 				</object>
 				<string key="NSFrameSize">{153, 354}</string>
 				<reference key="NSSuperview"/>
+				<reference key="NSWindow"/>
+				<reference key="NSNextKeyView" ref="631607481"/>
 				<string key="NSClassName">NSView</string>
 			</object>
 			<object class="NSCustomView" id="790712736">
-				<reference key="NSNextResponder"/>
+				<nil key="NSNextResponder"/>
 				<int key="NSvFlags">268</int>
 				<object class="NSMutableArray" key="NSSubviews">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -419,7 +440,7 @@
 			</object>
 		</object>
 		<object class="IBObjectContainer" key="IBDocument.Objects">
-			<object class="NSMutableArray" key="connectionRecords">
+			<object class="NSArray" key="connectionRecords">
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -745,6 +766,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>-3.IBPluginDependency</string>
 					<string>10.IBPluginDependency</string>
+					<string>11.CustomClassName</string>
 					<string>11.IBPluginDependency</string>
 					<string>13.IBPluginDependency</string>
 					<string>16.CustomClassName</string>
@@ -782,6 +804,7 @@
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>TrackableOutlineView</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>PBSourceViewCell</string>
@@ -1003,7 +1026,7 @@
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">PBGitSidebarController.h</string>
+						<string key="minorKey">./classes-xjh84/PBGitSidebarController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1011,7 +1034,7 @@
 					<string key="superclassName">NSTextFieldCell</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">PBIconAndTextCell.h</string>
+						<string key="minorKey">./classes-xjh84/PBIconAndTextCell.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1019,7 +1042,7 @@
 					<string key="superclassName">PBIconAndTextCell</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">PBSourceViewCell.h</string>
+						<string key="minorKey">./classes-xjh84/PBSourceViewCell.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
@@ -1652,35 +1675,32 @@
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSDrawer.h</string>
 					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">NSWindow</string>
-					<string key="superclassName">NSResponder</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBFrameworkSource</string>
-						<string key="minorKey">AppKit.framework/Headers/NSWindow.h</string>
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./classes-xjh84/PBViewController.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
-					<string key="className">NSWindow</string>
+					<string key="className">TrackableOutlineView</string>
+					<string key="superclassName">NSOutlineView</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBFrameworkSource</string>
-						<string key="minorKey">AppKit.framework/Headers/NSWindowScripting.h</string>
+						<string key="majorKey">IBProjectSource</string>
+						<string key="minorKey">./classes-xjh84/TrackableOutlineView.h</string>
 					</object>
 				</object>
 			</object>
 		</object>
 		<int key="IBDocument.localizationMode">0</int>
 		<string key="IBDocument.TargetRuntimeIdentifier">IBCocoaFramework</string>
-		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencies">
+		<object class="NSDictionary" key="IBDocument.PluginDeclaredDependencies">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin.macosx</string>
 			<integer value="1050" key="NS.object.0"/>
 		</object>
-		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDependencyDefaults">
+		<object class="NSDictionary" key="IBDocument.PluginDeclaredDependencyDefaults">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin.macosx</string>
 			<integer value="1050" key="NS.object.0"/>
 		</object>
-		<object class="NSMutableDictionary" key="IBDocument.PluginDeclaredDevelopmentDependencies">
+		<object class="NSDictionary" key="IBDocument.PluginDeclaredDevelopmentDependencies">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin.InterfaceBuilder3</string>
 			<integer value="3000" key="NS.object.0"/>
 		</object>

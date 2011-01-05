@@ -31,22 +31,29 @@
 		return [NSString stringWithFormat:@"%@ %@\t%@\0", self.commitBlobMode, self.commitBlobSHA, self.path];
 }
 
-- (NSImage *) icon
-{
++ (NSImage *) iconForStatus:(PBChangedFileStatus) aStatus {
 	NSString *filename;
-	switch (status) {
+	switch (aStatus) {
 		case NEW:
-			filename = @"new_file";
+			filename = @"unversioned_file";
 			break;
 		case DELETED:
 			filename = @"deleted_file";
 			break;
+		case ADDED:
+			filename = @"added_file";
+			break;
 		default:
-			filename = @"empty_file";
+			filename = @"modified_file";
 			break;
 	}
 	NSString *p = [[NSBundle mainBundle] pathForResource:filename ofType:@"png"];
 	return [[NSImage alloc] initByReferencingFile: p];
+}
+
+- (NSImage *) icon
+{
+	return [PBChangedFile iconForStatus:status];
 }
 
 + (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector

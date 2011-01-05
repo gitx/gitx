@@ -12,8 +12,14 @@
 
 @interface PBSourceViewCell : PBIconAndTextCell {
 	BOOL isCheckedOut;
+	BOOL showsActionButton;
+	
+	BOOL iMouseDownInInfoButton;
+    BOOL iMouseHoveredInInfoButton;
+    SEL iInfoButtonAction;
 }
-
+@property (nonatomic) BOOL showsActionButton;
+@property (nonatomic) SEL iInfoButtonAction;
 @property (assign) BOOL isCheckedOut;
 
 @end
