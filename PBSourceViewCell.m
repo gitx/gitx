@@ -16,6 +16,7 @@
 @implementation PBSourceViewCell
 
 @synthesize isCheckedOut;
+@synthesize behind;
 
 # pragma mark context menu delegate methods
 
@@ -23,9 +24,9 @@
 {
 	NSPoint point = [view convertPoint:[event locationInWindow] fromView:nil];
 	NSInteger row = [view rowAtPoint:point];
-
+	
 	PBGitSidebarController *controller = [view delegate];
-
+	
 	return [controller menuForRow:row];
 }
 
@@ -34,21 +35,21 @@
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)outlineView
 {
-	if (isCheckedOut) {
-		NSImage *checkedOutImage = [PBSourceViewBadge checkedOutBadgeForCell:self];
+	if(behind){
+		NSImage *checkedOutImage = [PBSourceViewBadge badge:[NSString stringWithFormat:@"%@-%@",(isCheckedOut?@"✔ ":@""),behind] forCell:self];
 		NSSize imageSize = [checkedOutImage size];
 		NSRect imageFrame;
 		NSDivideRect(cellFrame, &imageFrame, &cellFrame, imageSize.width + 3, NSMaxXEdge);
 		imageFrame.size = imageSize;
-
+		
 		if ([outlineView isFlipped])
 			imageFrame.origin.y += floor((cellFrame.size.height + imageFrame.size.height) / 2);
 		else
 			imageFrame.origin.y += ceil((cellFrame.size.height - imageFrame.size.height) / 2);
-
+		
 		[checkedOutImage compositeToPoint:imageFrame.origin operation:NSCompositeSourceOver];
 	}
-
+	
 	[super drawWithFrame:cellFrame inView:outlineView];
 }
 

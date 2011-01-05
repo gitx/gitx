@@ -12,8 +12,10 @@
 
 @interface PBSourceViewCell : PBIconAndTextCell {
 	BOOL isCheckedOut;
+	NSNumber *behind;
 }
 
 @property (assign) BOOL isCheckedOut;
+@property (assign) NSNumber *behind;
 
 @end
