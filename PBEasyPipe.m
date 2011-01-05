@@ -18,9 +18,17 @@
 
 + (NSTask *) taskForCommand:(NSString *)cmd withArgs:(NSArray *)args inDir:(NSString *)dir
 {
+	NSMutableArray *filteredArguments = [[NSMutableArray alloc] init];
+	for (NSString *param in args) {
+		if ([param length] > 0) {
+			[filteredArguments addObject:param];
+		}
+	}
+	
 	NSTask* task = [[NSTask alloc] init];
 	[task setLaunchPath:cmd];
-	[task setArguments:args];
+	[task setArguments:filteredArguments];
+	[filteredArguments release];
 	if (dir)
 		[task setCurrentDirectoryPath:dir];
 

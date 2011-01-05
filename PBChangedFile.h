@@ -12,7 +12,8 @@
 typedef enum {
 	NEW,
 	MODIFIED,
-	DELETED
+	DELETED,
+	ADDED
 } PBChangedFileStatus;
 
 @interface PBChangedFile : NSObject {
@@ -35,5 +36,6 @@ typedef enum {
 - (NSImage *)icon;
 - (NSString *)indexInfo;
 
++ (NSImage *) iconForStatus:(PBChangedFileStatus) aStatus;
 - (id) initWithPath:(NSString *)p;
 @end

@@ -14,8 +14,14 @@
 	BOOL isCheckedOut;
 	NSNumber *behind;
 	NSNumber *ahead;
+	BOOL showsActionButton;
+	
+	BOOL iMouseDownInInfoButton;
+    BOOL iMouseHoveredInInfoButton;
+    SEL iInfoButtonAction;
 }
-
+@property (nonatomic) BOOL showsActionButton;
+@property (nonatomic) SEL iInfoButtonAction;
 @property (assign) BOOL isCheckedOut;
 @property (assign) NSNumber *behind;
 @property (assign) NSNumber *ahead;

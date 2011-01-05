@@ -8,6 +8,9 @@
 
 #import "PBRefMenuItem.h"
 
+#import "PBStashCommandFactory.h"
+#import "PBCommandMenuItem.h"
+
 
 @implementation PBRefMenuItem
 @synthesize refish;
@@ -133,7 +136,7 @@
 	[items addObject:[PBRefMenuItem separatorItem]];
 	NSString *deleteTitle = [NSString stringWithFormat:@"Delete %@…", targetRefName];
 	[items addObject:[PBRefMenuItem itemWithTitle:deleteTitle action:@selector(showDeleteRefSheet:) enabled:!isDetachedHead]];
-
+	
 	for (PBRefMenuItem *item in items) {
 		[item setTarget:target];
 		[item setRefish:ref];
