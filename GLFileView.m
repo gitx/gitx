@@ -225,7 +225,7 @@
 
 + (NSString *)parseDiffTree:(NSString *)txt withStats:(NSMutableDictionary *)stats
 {
-	NSInteger granTotal=0;
+	NSInteger granTotal=1;
 	for(NSArray *stat in [stats allValues]){
 		NSInteger add=[[stat objectAtIndex:0] integerValue];
 		NSInteger rem=[[stat objectAtIndex:1] integerValue];
@@ -330,6 +330,20 @@
 			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
 		}else if(inDiff){
 			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
+			if([self isBinaryFile:line]){
+				NSLog(@"line='%@'",line);
+				[res appendString:@"</td></tr></thead><tbody>"];
+				NSArray *files=[self getFilesNames:line];
+				NSLog(@"files='%@'",files);
+				if(![[files objectAtIndex:0] isAbsolutePath]){
+					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'>%@</td></tr>",[files objectAtIndex:0]]];
+					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'><img src='GitX://{SHA}:/prev/%@'/></td></tr>",[files objectAtIndex:0]]];
+				}
+				if(![[files objectAtIndex:1] isAbsolutePath]){
+					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'>%@</td></tr>",[files objectAtIndex:1]]];
+					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'><img src='GitX://{SHA}/%@'/></td></tr>",[files objectAtIndex:1]]];
+				}
+			}
 		}
 	}
 	if(inDiff)
@@ -337,10 +351,37 @@
 	return res;
 }
 
-+(NSString *)getFileName:(NSString *)line{
++(NSString *)getFileName:(NSString *)line
+{
 	NSRange b = [line rangeOfString:@"b/"];
 	NSString *file=[line substringFromIndex:b.location+2];
 	return file;
+}
+
++(NSArray *)getFilesNames:(NSString *)line
+{
+	NSString *a;
+	NSString *b;
+	NSLog(@"line='%@'",line);
+	NSScanner *scanner=[NSScanner scannerWithString:line];
+	if([scanner scanString:@"Binary files " intoString:NULL]){
+		[scanner scanUpToString:@" and" intoString:&a];
+		[scanner scanString:@"and" intoString:NULL];
+		[scanner scanUpToString:@" differ" intoString:&b];
+	}
+	if (![a isAbsolutePath]) {
+		a=[a substringFromIndex:2];
+	}
+	if (![b isAbsolutePath]) {
+		b=[b substringFromIndex:2];
+	}
+
+	return [NSArray arrayWithObjects:a,b,nil];
+}
+
++(BOOL)isBinaryFile:(NSString *)line
+{
+	return (([line length]>12) && [[line substringToIndex:12] isEqualToString:@"Binary files"]);
 }
 
 +(BOOL)isStartDiff:(NSString *)line

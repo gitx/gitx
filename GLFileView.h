@@ -31,6 +31,8 @@
 + (NSString *)parseHTML:(NSString *)txt;
 + (NSString *)parseDiff:(NSString *)txt;
 + (NSString *)parseDiffTree:(NSString *)txt withStats:(NSMutableDictionary *)stats;
++ (NSString *)getFileName:(NSString *)line;
+
 +(BOOL)isStartDiff:(NSString *)line;
 +(BOOL)isStartBlock:(NSString *)line;
 

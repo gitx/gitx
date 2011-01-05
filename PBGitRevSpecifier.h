@@ -14,6 +14,8 @@
 	NSArray *parameters;
 	NSURL *workingDirectory;
 	BOOL isSimpleRef;
+	NSNumber *behind;
+	NSNumber *ahead;
 }
 
 - (id) initWithParameters:(NSArray *)params description:(NSString *)descrip;
@@ -37,5 +39,7 @@
 @property(readonly) NSArray *parameters;
 @property(retain)   NSURL *workingDirectory;
 @property(readonly) BOOL isSimpleRef;
+@property(assign) NSNumber *behind;
+@property(assign) NSNumber *ahead;
 
 @end
