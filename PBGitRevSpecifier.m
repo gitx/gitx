@@ -13,6 +13,7 @@
 
 @synthesize parameters, description, workingDirectory;
 @synthesize isSimpleRef;
+@synthesize behind,ahead;
 
 
 // internal designated init

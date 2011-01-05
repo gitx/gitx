@@ -223,8 +223,14 @@
 
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(PBSourceViewCell *)cell forTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem *)item
 {
-	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
-
+	if(item.revSpecifier!=NULL){
+		cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
+		cell.behind=[item.revSpecifier behind];
+		cell.ahead=[item.revSpecifier ahead];
+	}else{
+		cell.behind=nil;
+		cell.ahead=nil;
+	}
 	[cell setImage:[item icon]];
 }
 

@@ -269,6 +269,10 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		PBGitRef *newRef = [PBGitRef refFromString:[components objectAtIndex:0]];
 		PBGitRevSpecifier *revSpec = [[PBGitRevSpecifier alloc] initWithRef:newRef];
 
+		if([PBGitRepository isLocalBranch:[components objectAtIndex:0]]){
+			[revSpec setAhead:[self countCommintsOf:[NSString stringWithFormat:@"origin..%@",[components objectAtIndex:0]]]];
+			[revSpec setBehind:[self countCommintsOf:[NSString stringWithFormat:@"%@..origin",[components objectAtIndex:0]]]];
+		}
 		[self addBranch:revSpec];
 		[self addRef:newRef fromParameters:components];
 		[oldBranches removeObject:revSpec];
@@ -282,6 +286,23 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	[self didChangeValueForKey:@"refs"];
 
 	[[[self windowController] window] setTitle:[self displayName]];
+}
+
++(bool)isLocalBranch:(NSString *)name
+{
+	NSScanner *scanner=[NSScanner scannerWithString:name];
+	return [scanner scanString:@"refs/heads/" intoString:NULL];
+}
+
+-(NSNumber *)countCommintsOf:(NSString *)branchs
+{
+	NSArray *args = [NSArray arrayWithObjects:@"rev-list", branchs, nil];
+	NSString *o = [self outputForArguments:args];
+	if ([o length]==0) {
+		return NULL;
+	}
+	NSArray *commits = [o componentsSeparatedByString:@"\n"];
+	return [NSNumber numberWithInt:[commits count]];
 }
 
 - (void) lazyReload
