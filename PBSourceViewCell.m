@@ -16,7 +16,7 @@
 @implementation PBSourceViewCell
 
 @synthesize isCheckedOut;
-@synthesize behind;
+@synthesize behind,ahead;
 
 # pragma mark context menu delegate methods
 
@@ -35,8 +35,12 @@
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)outlineView
 {
-	if(behind){
-		NSImage *checkedOutImage = [PBSourceViewBadge badge:[NSString stringWithFormat:@"%@-%@",(isCheckedOut?@"✔ ":@""),behind] forCell:self];
+	if(behind || ahead || isCheckedOut){		
+		NSMutableString *badge=[NSMutableString string];
+		if(isCheckedOut) [badge appendString:@"✔ "];
+		if(ahead) [badge appendFormat:@"+%@",ahead];
+		if(behind) [badge appendFormat:@"-%@",behind];
+		NSImage *checkedOutImage = [PBSourceViewBadge badge:badge forCell:self];
 		NSSize imageSize = [checkedOutImage size];
 		NSRect imageFrame;
 		NSDivideRect(cellFrame, &imageFrame, &cellFrame, imageSize.width + 3, NSMaxXEdge);
