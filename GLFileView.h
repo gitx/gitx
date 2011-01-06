@@ -36,6 +36,11 @@
 +(BOOL)isStartDiff:(NSString *)line;
 +(BOOL)isStartBlock:(NSString *)line;
 
++(NSArray *)getFilesNames:(NSString *)line;
++(BOOL)isBinaryFile:(NSString *)line;
++(NSString*)mimeTypeForFileName:(NSString*)file;
++(BOOL)isImage:(NSString*)file;
+
 @property(retain) NSMutableArray *groups;
 @property(retain) NSString *logFormat;
 
