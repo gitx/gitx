@@ -269,9 +269,10 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		PBGitRef *newRef = [PBGitRef refFromString:[components objectAtIndex:0]];
 		PBGitRevSpecifier *revSpec = [[PBGitRevSpecifier alloc] initWithRef:newRef];
 
-		if([PBGitRepository isLocalBranch:[components objectAtIndex:0]]){
-			[revSpec setAhead:[self countCommintsOf:[NSString stringWithFormat:@"origin..%@",[components objectAtIndex:0]]]];
-			[revSpec setBehind:[self countCommintsOf:[NSString stringWithFormat:@"%@..origin",[components objectAtIndex:0]]]];
+		NSString *bName;
+		if([PBGitRepository isLocalBranch:[components objectAtIndex:0] branchNameInto:&bName]){
+			[revSpec setAhead:[self countCommintsOf:[NSString stringWithFormat:@"origin/%@..%@",bName,bName]]];
+			[revSpec setBehind:[self countCommintsOf:[NSString stringWithFormat:@"%@..origin/%@",bName,bName]]];
 		}
 		[self addBranch:revSpec];
 		[self addRef:newRef fromParameters:components];
@@ -288,14 +289,19 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	[[[self windowController] window] setTitle:[self displayName]];
 }
 
-+(bool)isLocalBranch:(NSString *)name
++(bool)isLocalBranch:(NSString *)branch branchNameInto:(NSString **)name
 {
-	NSScanner *scanner=[NSScanner scannerWithString:name];
-	return [scanner scanString:@"refs/heads/" intoString:NULL];
+	NSScanner *scanner=[NSScanner scannerWithString:branch];
+	bool is=[scanner scanString:@"refs/heads/" intoString:NULL];
+	if(is && (name)){
+		*name=[branch substringFromIndex:[scanner scanLocation]];
+	}
+	return is;
 }
 
 -(NSNumber *)countCommintsOf:(NSString *)branchs
 {
+	NSLog(@"branchs:'%@'",branchs);
 	NSArray *args = [NSArray arrayWithObjects:@"rev-list", branchs, nil];
 	NSString *o = [self outputForArguments:args];
 	if ([o length]==0) {
