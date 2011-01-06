@@ -238,11 +238,10 @@
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSMutableString *res=[NSMutableString string];
 	[res appendString:@"<table id='filelist'>"];
-	int i;
-	for (i=1; i<[lines count]; i++) {
-		NSString *line=[lines objectAtIndex:i];
-		NSArray *fields=[line componentsSeparatedByString:@" "];
-		NSArray *fileStatus=[[fields objectAtIndex:4] componentsSeparatedByString:@"\t"];
+	for (NSString *line in lines) {
+		if([line length]<98) continue;
+		line=[line substringFromIndex:97];
+		NSArray *fileStatus=[line componentsSeparatedByString:@"\t"];
 		NSString *status=[[fileStatus objectAtIndex:0] substringToIndex:1]; // ignore the score
 		NSString *file=[fileStatus objectAtIndex:1];
 		NSString *txt=file;
