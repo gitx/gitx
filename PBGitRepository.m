@@ -303,8 +303,9 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 {
 	NSLog(@"branchs:'%@'",branchs);
 	NSArray *args = [NSArray arrayWithObjects:@"rev-list", branchs, nil];
-	NSString *o = [self outputForArguments:args];
-	if ([o length]==0) {
+	int ret;
+	NSString *o = [self outputForArguments:args retValue:&ret];
+	if ((ret!=0) || ([o length]==0)) {
 		return NULL;
 	}
 	NSArray *commits = [o componentsSeparatedByString:@"\n"];
