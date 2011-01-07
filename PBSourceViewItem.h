@@ -26,6 +26,8 @@
 + (id)itemWithRevSpec:(PBGitRevSpecifier *)revSpecifier;
 + (id)itemWithTitle:(NSString *)title;
 
+- (NSString *)badge;
+
 - (void)addChild:(PBSourceViewItem *)child;
 - (void)removeChild:(PBSourceViewItem *)child;
 
