@@ -11,8 +11,10 @@
 
 
 @interface PBGitSVRemoteItem : PBSourceViewItem {
-
+	BOOL alert;
 }
+
+@property (assign) BOOL alert;
 
 + (id)remoteItemWithTitle:(NSString *)title;
 

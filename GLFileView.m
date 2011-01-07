@@ -181,7 +181,6 @@
 
 - (void)scopeBar:(MGScopeBar *)theScopeBar selectedStateChanged:(BOOL)selected forItem:(NSString *)identifier inGroup:(int)groupNumber
 {
-	NSLog(@"startFile=%@ identifier=%@ groupNumber=%d",startFile,identifier,groupNumber);
 	if((groupNumber==0) && (startFile!=identifier)){
 		NSString *path = [NSString stringWithFormat:@"html/views/%@", identifier];
 		NSString *html = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
@@ -238,11 +237,10 @@
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSMutableString *res=[NSMutableString string];
 	[res appendString:@"<table id='filelist'>"];
-	int i;
-	for (i=1; i<[lines count]; i++) {
-		NSString *line=[lines objectAtIndex:i];
-		NSArray *fields=[line componentsSeparatedByString:@" "];
-		NSArray *fileStatus=[[fields objectAtIndex:4] componentsSeparatedByString:@"\t"];
+	for (NSString *line in lines) {
+		if([line length]<98) continue;
+		line=[line substringFromIndex:97];
+		NSArray *fileStatus=[line componentsSeparatedByString:@"\t"];
 		NSString *status=[[fileStatus objectAtIndex:0] substringToIndex:1]; // ignore the score
 		NSString *file=[fileStatus objectAtIndex:1];
 		NSString *txt=file;
@@ -331,17 +329,19 @@
 		}else if(inDiff){
 			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
 			if([self isBinaryFile:line]){
-				NSLog(@"line='%@'",line);
 				[res appendString:@"</td></tr></thead><tbody>"];
 				NSArray *files=[self getFilesNames:line];
-				NSLog(@"files='%@'",files);
 				if(![[files objectAtIndex:0] isAbsolutePath]){
 					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'>%@</td></tr>",[files objectAtIndex:0]]];
-					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'><img src='GitX://{SHA}:/prev/%@'/></td></tr>",[files objectAtIndex:0]]];
+					if([GLFileView isImage:[files objectAtIndex:0]]){
+						[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'><img src='GitX://{SHA}:/prev/%@'/></td></tr>",[files objectAtIndex:0]]];
+					}
 				}
 				if(![[files objectAtIndex:1] isAbsolutePath]){
 					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'>%@</td></tr>",[files objectAtIndex:1]]];
-					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'><img src='GitX://{SHA}/%@'/></td></tr>",[files objectAtIndex:1]]];
+					if([GLFileView isImage:[files objectAtIndex:1]]){
+						[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'><img src='GitX://{SHA}/%@'/></td></tr>",[files objectAtIndex:1]]];
+					}
 				}
 			}
 		}
@@ -362,7 +362,6 @@
 {
 	NSString *a;
 	NSString *b;
-	NSLog(@"line='%@'",line);
 	NSScanner *scanner=[NSScanner scannerWithString:line];
 	if([scanner scanString:@"Binary files " intoString:NULL]){
 		[scanner scanUpToString:@" and" intoString:&a];
@@ -375,8 +374,32 @@
 	if (![b isAbsolutePath]) {
 		b=[b substringFromIndex:2];
 	}
-
+	
 	return [NSArray arrayWithObjects:a,b,nil];
+}
+
++(NSString*)mimeTypeForFileName:(NSString*)name
+{
+    NSString *mimeType = nil;
+	NSInteger i=[name rangeOfString:@"." options:NSBackwardsSearch].location;
+	if(i!=NSNotFound){
+		NSString *ext=[name substringFromIndex:i+1];
+		CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)ext, NULL);
+		if(UTI){
+			CFStringRef registeredType = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
+			if(registeredType){
+				mimeType = NSMakeCollectable(registeredType);
+			}
+			CFRelease(UTI);
+		}
+	}
+    return mimeType;
+}
+
++(BOOL)isImage:(NSString*)file
+{
+	NSString *mimeType=[GLFileView mimeTypeForFileName:file];
+	return (mimeType!=nil) && ([mimeType rangeOfString:@"image/" options:NSCaseInsensitiveSearch].location!=NSNotFound);
 }
 
 +(BOOL)isBinaryFile:(NSString *)line

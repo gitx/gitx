@@ -14,12 +14,10 @@
 - (NSRect)infoButtonRectForBounds:(NSRect)bounds;
 @end
 
-
 @implementation PBSourceViewCell
 @synthesize iInfoButtonAction;
-@synthesize isCheckedOut;
-@synthesize behind,ahead;
 @synthesize showsActionButton;
+@synthesize badge;
 
 # pragma mark context menu delegate methods
 
@@ -45,11 +43,7 @@
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)outlineView
 {
-	if(behind || ahead || isCheckedOut){		
-		NSMutableString *badge=[NSMutableString string];
-		if(isCheckedOut) [badge appendString:@"✔ "];
-		if(ahead) [badge appendFormat:@"+%@",ahead];
-		if(behind) [badge appendFormat:@"-%@",behind];
+	if(badge){		
 		NSImage *checkedOutImage = [PBSourceViewBadge badge:badge forCell:self];
 		NSSize imageSize = [checkedOutImage size];
 		NSRect imageFrame;

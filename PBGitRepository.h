@@ -146,8 +146,7 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 - (void)findInModeScriptCommand:(NSScriptCommand *)command;
 
 -(NSNumber *)countCommintsOf:(NSString *)branchs;
-+(bool)isLocalBranch:(NSString *)name;
-- (NSMenu *) menu;
++(bool)isLocalBranch:(NSString *)branch branchNameInto:(NSString **)name;
 
 @property (assign) BOOL hasChanged;
 @property (readonly) PBGitWindowController *windowController;

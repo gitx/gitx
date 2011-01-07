@@ -9,11 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "PBIconAndTextCell.h"
 
-
 @interface PBSourceViewCell : PBIconAndTextCell {
-	BOOL isCheckedOut;
-	NSNumber *behind;
-	NSNumber *ahead;
+	NSString *badge;
 	BOOL showsActionButton;
 	
 	BOOL iMouseDownInInfoButton;
@@ -22,9 +19,6 @@
 }
 @property (nonatomic) BOOL showsActionButton;
 @property (nonatomic) SEL iInfoButtonAction;
-@property (assign) BOOL isCheckedOut;
-@property (assign) NSNumber *behind;
-@property (assign) NSNumber *ahead;
-
+@property (assign) NSString *badge;
 
 @end
