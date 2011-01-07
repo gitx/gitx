@@ -12,6 +12,7 @@
 
 @implementation PBGitSVRemoteItem
 
+@synthesize alert;
 
 + (id)remoteItemWithTitle:(NSString *)title
 {

@@ -51,6 +51,7 @@
 	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
 
+	[repository addObserver:self forKeyPath:@"refs" options:0 context:@"updateRefs"];
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
 	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
 
@@ -79,9 +80,7 @@
 		[sourceView reloadData];
 		[self selectCurrentBranch];
 		return;
-	}
-
-	if ([@"branchesModified" isEqualToString:context]) {
+	}else if ([@"branchesModified" isEqualToString:context]) {
 		NSInteger changeKind = [(NSNumber *)[change objectForKey:NSKeyValueChangeKindKey] intValue];
 
 		if (changeKind == NSKeyValueChangeInsertion) {
@@ -97,10 +96,22 @@
 			for (PBGitRevSpecifier *rev in removedRevSpecs)
 				[self removeRevSpec:rev];
 		}
-		return;
+	}else if ([@"updateRefs" isEqualToString:context]) {
+		for(PBGitSVRemoteItem* remote in [remotes children]){
+			NSLog(@"remote.title=%@",[remote title]);
+			[remote setAlert:[self remoteNeedFetch:[remote title]]];
+		}
+	}else{
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	}
+}
 
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+-(bool)remoteNeedFetch:(NSString *)remote
+{
+	int ret;
+	NSArray *args = [NSArray arrayWithObjects:@"fetch", @"--dry-run", remote, nil];
+	NSString *o = [repository outputForArguments:args retValue:&ret];
+	return ((ret==0) && ([o length]!=0));
 }
 
 - (PBSourceViewItem *) selectedItem
@@ -230,6 +241,11 @@
 	}else{
 		cell.behind=nil;
 		cell.ahead=nil;
+	}
+	
+	if([item isKindOfClass:[PBGitSVRemoteItem class]]){
+		NSLog(@"title: %@",[item title]);
+		cell.isCheckedOut=[item alert];
 	}
 	[cell setImage:[item icon]];
 }
