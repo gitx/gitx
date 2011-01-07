@@ -101,10 +101,33 @@
 			NSLog(@"remote.title=%@",[remote title]);
 			[remote setAlert:[self remoteNeedFetch:[remote title]]];
 		}
+		
+		for(PBGitSVBranchItem* branch in [branches children]){
+			NSString *bName=[branch title];
+			[branch setAhead:[self countCommintsOf:[NSString stringWithFormat:@"origin/%@..%@",bName,bName]]];
+			[branch setBehind:[self countCommintsOf:[NSString stringWithFormat:@"%@..origin/%@",bName,bName]]];
+			[branch setIsCheckedOut:[branch.revSpecifier isEqual:[repository headRef]]];
+		}
+		
 	}else{
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	}
 }
+
+#pragma mark Badges Methods
+
+-(NSNumber *)countCommintsOf:(NSString *)range
+{
+	NSArray *args = [NSArray arrayWithObjects:@"rev-list", range, nil];
+	int ret;
+	NSString *o = [repository outputForArguments:args retValue:&ret];
+	if ((ret!=0) || ([o length]==0)) {
+		return NULL;
+	}
+	NSArray *commits = [o componentsSeparatedByString:@"\n"];
+	return [NSNumber numberWithInt:[commits count]];
+}
+
 
 -(bool)remoteNeedFetch:(NSString *)remote
 {
@@ -113,6 +136,8 @@
 	NSString *o = [repository outputForArguments:args retValue:&ret];
 	return ((ret==0) && ([o length]!=0));
 }
+
+#pragma mark -----
 
 - (PBSourceViewItem *) selectedItem
 {
@@ -234,19 +259,7 @@
 
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(PBSourceViewCell *)cell forTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem *)item
 {
-	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
-	if(item.revSpecifier!=NULL){
-		cell.behind=[item.revSpecifier behind];
-		cell.ahead=[item.revSpecifier ahead];
-	}else{
-		cell.behind=nil;
-		cell.ahead=nil;
-	}
-	
-	if([item isKindOfClass:[PBGitSVRemoteItem class]]){
-		NSLog(@"title: %@",[item title]);
-		cell.isCheckedOut=[item alert];
-	}
+	[cell setBadge:[item badge]];
 	[cell setImage:[item icon]];
 }
 

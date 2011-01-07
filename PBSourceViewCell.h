@@ -9,16 +9,10 @@
 #import <Cocoa/Cocoa.h>
 #import "PBIconAndTextCell.h"
 
-
 @interface PBSourceViewCell : PBIconAndTextCell {
-	BOOL isCheckedOut;
-	NSNumber *behind;
-	NSNumber *ahead;
+	NSString *badge;
 }
 
-@property (assign) BOOL isCheckedOut;
-@property (assign) NSNumber *behind;
-@property (assign) NSNumber *ahead;
-
+@property (assign) NSString *badge;
 
 @end

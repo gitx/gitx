@@ -11,6 +11,8 @@
 
 @implementation PBGitSVBranchItem
 
+@synthesize isCheckedOut;
+@synthesize behind,ahead;
 
 + (id)branchItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier
 {
@@ -29,5 +31,18 @@
 	
 	return branchImage;
 }
+
+
+- (NSString *) badge{
+	NSMutableString *badge=nil;
+	if(isCheckedOut || ahead || behind){
+		badge=[NSMutableString string];
+		if(isCheckedOut) [badge appendString:@"✔ "];
+		if(ahead) [badge appendFormat:@"+%@",ahead];
+		if(behind) [badge appendFormat:@"-%@",behind];
+	}
+	return badge;
+}
+
 
 @end

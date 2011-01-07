@@ -39,4 +39,8 @@
 	return [PBGitRef refFromString:[kGitXRemoteRefPrefix stringByAppendingString:self.title]];
 }
 
+- (NSString *)badge
+{
+	return (alert ? @"!" : nil);
+}
 @end
