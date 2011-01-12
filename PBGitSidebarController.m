@@ -51,6 +51,7 @@
 	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
 
+	[repository addObserver:self forKeyPath:@"refs" options:0 context:@"updateRefs"];
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
 	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
 
@@ -79,9 +80,7 @@
 		[sourceView reloadData];
 		[self selectCurrentBranch];
 		return;
-	}
-
-	if ([@"branchesModified" isEqualToString:context]) {
+	}else if ([@"branchesModified" isEqualToString:context]) {
 		NSInteger changeKind = [(NSNumber *)[change objectForKey:NSKeyValueChangeKindKey] intValue];
 
 		if (changeKind == NSKeyValueChangeInsertion) {
@@ -97,11 +96,48 @@
 			for (PBGitRevSpecifier *rev in removedRevSpecs)
 				[self removeRevSpec:rev];
 		}
-		return;
+	}else if ([@"updateRefs" isEqualToString:context]) {
+		for(PBGitSVRemoteItem* remote in [remotes children]){
+			NSLog(@"remote.title=%@",[remote title]);
+			[remote setAlert:[self remoteNeedFetch:[remote title]]];
+		}
+		
+		for(PBGitSVBranchItem* branch in [branches children]){
+			NSString *bName=[branch title];
+			[branch setAhead:[self countCommintsOf:[NSString stringWithFormat:@"origin/%@..%@",bName,bName]]];
+			[branch setBehind:[self countCommintsOf:[NSString stringWithFormat:@"%@..origin/%@",bName,bName]]];
+			[branch setIsCheckedOut:[branch.revSpecifier isEqual:[repository headRef]]];
+		}
+		
+	}else{
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	}
-
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
+
+#pragma mark Badges Methods
+
+-(NSNumber *)countCommintsOf:(NSString *)range
+{
+	NSArray *args = [NSArray arrayWithObjects:@"rev-list", range, nil];
+	int ret;
+	NSString *o = [repository outputForArguments:args retValue:&ret];
+	if ((ret!=0) || ([o length]==0)) {
+		return NULL;
+	}
+	NSArray *commits = [o componentsSeparatedByString:@"\n"];
+	return [NSNumber numberWithInt:[commits count]];
+}
+
+
+-(bool)remoteNeedFetch:(NSString *)remote
+{
+	int ret;
+	NSArray *args = [NSArray arrayWithObjects:@"fetch", @"--dry-run", remote, nil];
+	NSString *o = [repository outputForArguments:args retValue:&ret];
+	return ((ret==0) && ([o length]!=0));
+}
+
+#pragma mark -----
 
 - (PBSourceViewItem *) selectedItem
 {
@@ -223,14 +259,7 @@
 
 - (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(PBSourceViewCell *)cell forTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem *)item
 {
-	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
-	if(item.revSpecifier!=NULL){
-		cell.behind=[item.revSpecifier behind];
-		cell.ahead=[item.revSpecifier ahead];
-	}else{
-		cell.behind=nil;
-		cell.ahead=nil;
-	}
+	[cell setBadge:[item badge]];
 	[cell setImage:[item icon]];
 }
 

@@ -12,6 +12,7 @@
 
 @implementation PBGitSVRemoteItem
 
+@synthesize alert;
 
 + (id)remoteItemWithTitle:(NSString *)title
 {
@@ -38,4 +39,8 @@
 	return [PBGitRef refFromString:[kGitXRemoteRefPrefix stringByAppendingString:self.title]];
 }
 
+- (NSString *)badge
+{
+	return (alert ? @"!" : nil);
+}
 @end
