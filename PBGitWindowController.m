@@ -33,7 +33,7 @@
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-	NSLog(@"Window will close!");
+	//NSLog(@"Window will close!");
 
 	if (sidebarController)
 		[sidebarController closeView];
