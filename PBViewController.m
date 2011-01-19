@@ -44,10 +44,6 @@
 	return nil;
 }
 
-- (IBAction) refresh: sender
-{
-}
-
 // The next methods should be implemented in the subclass if necessary
 - (void)updateView
 {
