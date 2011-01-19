@@ -26,4 +26,6 @@
 
 - (WebScriptObject *) script;
 - (void) closeView;
+- (BOOL) isFeatureEnabled:(NSString *)feature;
+
 @end

@@ -15,12 +15,18 @@
 #import "PBEasyPipe.h"
 #import "PBGitRef.h"
 #import "PBGitRevSpecifier.h"
+#import "PBRemoteProgressSheet.h"
+#import "PBGitRevList.h"
+#import "PBGitDefaults.h"
+#import "GitXScriptingConstants.h"
+#import "PBHistorySearchController.h"
 
 NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 
 @implementation PBGitRepository
 
 @synthesize revisionList, branches, currentBranch, refs, hasChanged, config;
+@synthesize currentBranchFilter;
 
 - (BOOL)readFromData:(NSData *)data ofType:(NSString *)typeName error:(NSError **)outError
 {
@@ -37,7 +43,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return [[PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:[NSArray arrayWithObjects:@"rev-parse", @"--is-bare-repository", nil] inDir:path] isEqualToString:@"true"];
 }
 
-+ (NSURL*)gitDirForURL:(NSURL*)repositoryURL;
++ (NSURL *)gitDirForURL:(NSURL *)repositoryURL;
 {
 	if (![PBGitBinary path])
 		return nil;
@@ -47,11 +53,18 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	if ([self isBareRepository:repositoryPath])
 		return repositoryURL;
 
-
 	// Use rev-parse to find the .git dir for the repository being opened
-	NSString* newPath = [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:[NSArray arrayWithObjects:@"rev-parse", @"--git-dir", nil] inDir:repositoryPath];
+	int retValue = 1;
+	NSString *newPath = [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:[NSArray arrayWithObjects:@"rev-parse", @"--git-dir", nil] inDir:repositoryPath retValue:&retValue];
+	if (retValue) {
+		// The current directory does not contain a git repository
+		return nil;
+	}
+
 	if ([newPath isEqualToString:@".git"])
 		return [NSURL fileURLWithPath:[repositoryPath stringByAppendingPathComponent:@".git"]];
+	if ([newPath isEqualToString:@"."])
+		return [NSURL fileURLWithPath:repositoryPath];
 	if ([newPath length] > 0)
 		return [NSURL fileURLWithPath:newPath];
 
@@ -112,16 +125,23 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 
 	[self setFileURL:gitDirURL];
 	[self setup];
-	[self readCurrentBranch];
 	return YES;
 }
 
 - (void) setup
 {
-	config = [[PBGitConfig alloc] initWithRepository:self.fileURL.path];
+	config = [[PBGitConfig alloc] initWithRepositoryPath:[[self fileURL] path]];
 	self.branches = [NSMutableArray array];
 	[self reloadRefs];
-	revisionList = [[PBGitRevList alloc] initWithRepository:self];
+	currentBranchFilter = [PBGitDefaults branchFilter];
+	revisionList = [[PBGitHistoryList alloc] initWithRepository:self];
+}
+
+- (void)close
+{
+	[revisionList cleanup];
+
+	[super close];
 }
 
 - (id) initWithURL: (NSURL*) path
@@ -149,22 +169,34 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return self;
 }
 
+- (void) forceUpdateRevisions
+{
+	[revisionList forceUpdate];
+}
+
+- (BOOL)isDocumentEdited
+{
+	return NO;
+}
+
 // The fileURL the document keeps is to the .git dir, but that’s pretty
 // useless for display in the window title bar, so we show the directory above
-- (NSString*)displayName
+- (NSString *) displayName
 {
-	NSString* dirName = self.fileURL.path.lastPathComponent;
-	if ([dirName isEqualToString:@".git"])
-		dirName = [self.fileURL.path stringByDeletingLastPathComponent].lastPathComponent;
-	NSString* displayName;
-	if (![[PBGitRef refFromString:[[self headRef] simpleRef]] type]) {
-		displayName = [NSString stringWithFormat:@"%@ (detached HEAD)", dirName];
-	} else {
-		displayName = [NSString stringWithFormat:@"%@ (branch: %@)", dirName,
-					 [[self headRef] description]];
-	}
+	if (![[PBGitRef refFromString:[[self headRef] simpleRef]] type])
+		return [NSString stringWithFormat:@"%@ (detached HEAD)", [self projectName]];
 
-	return displayName;
+	return [NSString stringWithFormat:@"%@ (branch: %@)", [self projectName], [[self headRef] description]];
+}
+
+- (NSString *) projectName
+{
+	NSString *projectPath = [[self fileURL] path];
+
+	if ([[projectPath lastPathComponent] isEqualToString:@".git"])
+		projectPath = [projectPath stringByDeletingLastPathComponent];
+
+	return [projectPath lastPathComponent];
 }
 
 // Get the .gitignore file at the root of the repository
@@ -202,60 +234,64 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 {
 	NSString* type = [components objectAtIndex:1];
 
-	NSString* sha;
+	PBGitSHA *sha;
 	if ([type isEqualToString:@"tag"] && [components count] == 4)
-		sha = [components objectAtIndex:3];
+		sha = [PBGitSHA shaWithString:[components objectAtIndex:3]];
 	else
-		sha = [components objectAtIndex:2];
+		sha = [PBGitSHA shaWithString:[components objectAtIndex:2]];
 
 	NSMutableArray* curRefs;
-	if (curRefs = [refs objectForKey:sha])
+	if ( (curRefs = [refs objectForKey:sha]) != nil )
 		[curRefs addObject:ref];
 	else
 		[refs setObject:[NSMutableArray arrayWithObject:ref] forKey:sha];
 }
 
-// reloadRefs: reload all refs in the repository, like in readRefs
-// To stay compatible, this does not remove a ref from the branches list
-// even after it has been deleted.
-// returns YES when a ref was changed
-- (BOOL) reloadRefs
+- (void) reloadRefs
 {
 	_headRef = nil;
-	BOOL ret = NO;
+	_headSha = nil;
 
 	refs = [NSMutableDictionary dictionary];
+	NSMutableArray *oldBranches = [branches mutableCopy];
 
-	NSString* output = [PBEasyPipe outputForCommand:[PBGitBinary path]
-										   withArgs:[NSArray arrayWithObjects:@"for-each-ref", @"--format=%(refname) %(objecttype) %(objectname)"
-													 " %(*objectname)", @"refs", nil]
-											  inDir: self.fileURL.path];
-	NSArray* lines = [output componentsSeparatedByString:@"\n"];
+	NSArray *arguments = [NSArray arrayWithObjects:@"for-each-ref", @"--format=%(refname) %(objecttype) %(objectname) %(*objectname)", @"refs", nil];
+	NSString *output = [self outputForArguments:arguments];
+	NSArray *lines = [output componentsSeparatedByString:@"\n"];
 
-	for (NSString* line in lines) {
+	for (NSString *line in lines) {
 		// If its an empty line, skip it (e.g. with empty repositories)
 		if ([line length] == 0)
 			continue;
 
-		NSArray* components = [line componentsSeparatedByString:@" "];
+		NSArray *components = [line componentsSeparatedByString:@" "];
 
-		// First do the ref matching. If this ref is new, add it to our ref list
 		PBGitRef *newRef = [PBGitRef refFromString:[components objectAtIndex:0]];
-		PBGitRevSpecifier* revSpec = [[PBGitRevSpecifier alloc] initWithRef:newRef];
-		if ([self addBranch:revSpec] != revSpec)
-			ret = YES;
+		PBGitRevSpecifier *revSpec = [[PBGitRevSpecifier alloc] initWithRef:newRef];
 
-		// Also add this ref to the refs list
+		[self addBranch:revSpec];
 		[self addRef:newRef fromParameters:components];
+		[oldBranches removeObject:revSpec];
 	}
 
-	// Add an "All branches" option in the branches list
-	[self addBranch:[PBGitRevSpecifier allBranchesRevSpec]];
-	[self addBranch:[PBGitRevSpecifier localBranchesRevSpec]];
+	for (PBGitRevSpecifier *branch in oldBranches)
+		if ([branch isSimpleRef] && ![branch isEqual:[self headRef]])
+			[self removeBranch:branch];
+
+	[self willChangeValueForKey:@"refs"];
+	[self didChangeValueForKey:@"refs"];
 
 	[[[self windowController] window] setTitle:[self displayName]];
+}
 
-	return ret;
++(bool)isLocalBranch:(NSString *)branch branchNameInto:(NSString **)name
+{
+	NSScanner *scanner=[NSScanner scannerWithString:branch];
+	bool is=[scanner scanString:@"refs/heads/" intoString:NULL];
+	if(is && (name)){
+		*name=[branch substringFromIndex:[scanner scanLocation]];
+	}
+	return is;
 }
 
 - (void) lazyReload
@@ -263,8 +299,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	if (!hasChanged)
 		return;
 
-	[self reloadRefs];
-	[self.revisionList reload];
+	[self.revisionList updateHistory];
 	hasChanged = NO;
 }
 
@@ -279,37 +314,193 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	else
 		_headRef = [[PBGitRevSpecifier alloc] initWithRef:[PBGitRef refFromString:@"HEAD"]];
 
+	_headSha = [self shaForRef:[_headRef ref]];
+
 	return _headRef;
+}
+
+- (PBGitSHA *)headSHA
+{
+	if (! _headSha)
+		[self headRef];
+
+	return _headSha;
+}
+
+- (PBGitCommit *)headCommit
+{
+	return [self commitForSHA:[self headSHA]];
+}
+
+- (PBGitSHA *)shaForRef:(PBGitRef *)ref
+{
+	if (!ref)
+		return nil;
+
+	for (PBGitSHA *sha in refs)
+		for (PBGitRef *existingRef in [refs objectForKey:sha])
+			if ([existingRef isEqualToRef:ref])
+				return sha;
+
+	int retValue = 1;
+	NSArray *args = [NSArray arrayWithObjects:@"rev-list", @"-1", [ref ref], nil];
+	NSString *shaForRef = [self outputInWorkdirForArguments:args retValue:&retValue];
+	if (retValue || [shaForRef isEqualToString:@""])
+		return nil;
+
+	return [PBGitSHA shaWithString:shaForRef];
+}
+
+- (PBGitCommit *)commitForRef:(PBGitRef *)ref
+{
+	if (!ref)
+		return nil;
+
+	return [self commitForSHA:[self shaForRef:ref]];
+}
+
+- (PBGitCommit *)commitForSHA:(PBGitSHA *)sha
+{
+	if (!sha)
+		return nil;
+	NSArray *revList = revisionList.projectCommits;
+
+    if (!revList) {
+        [revisionList forceUpdate];
+        revList = revisionList.projectCommits;
+    }
+	for (PBGitCommit *commit in revList)
+		if ([[commit sha] isEqual:sha])
+			return commit;
+
+	return nil;
+}
+
+- (BOOL)isOnSameBranch:(PBGitSHA *)branchSHA asSHA:(PBGitSHA *)testSHA
+{
+	if (!branchSHA || !testSHA)
+		return NO;
+
+	if ([testSHA isEqual:branchSHA])
+		return YES;
+
+	NSArray *revList = revisionList.projectCommits;
+
+	NSMutableSet *searchSHAs = [NSMutableSet setWithObject:branchSHA];
+
+	for (PBGitCommit *commit in revList) {
+		PBGitSHA *commitSHA = [commit sha];
+		if ([searchSHAs containsObject:commitSHA]) {
+			if ([testSHA isEqual:commitSHA])
+				return YES;
+			[searchSHAs removeObject:commitSHA];
+			[searchSHAs addObjectsFromArray:commit.parents];
+		}
+		else if ([testSHA isEqual:commitSHA])
+			return NO;
+	}
+
+	return NO;
+}
+
+- (BOOL)isSHAOnHeadBranch:(PBGitSHA *)testSHA
+{
+	if (!testSHA)
+		return NO;
+
+	PBGitSHA *headSHA = [self headSHA];
+
+	if ([testSHA isEqual:headSHA])
+		return YES;
+
+	return [self isOnSameBranch:headSHA asSHA:testSHA];
+}
+
+- (BOOL)isRefOnHeadBranch:(PBGitRef *)testRef
+{
+	if (!testRef)
+		return NO;
+
+	return [self isSHAOnHeadBranch:[self shaForRef:testRef]];
+}
+
+- (BOOL) checkRefFormat:(NSString *)refName
+{
+	int retValue = 1;
+	[self outputInWorkdirForArguments:[NSArray arrayWithObjects:@"check-ref-format", refName, nil] retValue:&retValue];
+	if (retValue)
+		return NO;
+	return YES;
+}
+
+- (BOOL) refExists:(PBGitRef *)ref
+{
+	int retValue = 1;
+    NSString *output = [self outputInWorkdirForArguments:[NSArray arrayWithObjects:@"for-each-ref", [ref ref], nil] retValue:&retValue];
+    if (retValue || [output isEqualToString:@""])
+        return NO;
+    return YES;
+}
+
+// useful for getting the full ref for a user entered name
+// EX:  name: master
+//       ref: refs/heads/master
+- (PBGitRef *)refForName:(NSString *)name
+{
+	if (!name)
+		return nil;
+
+	int retValue = 1;
+    NSString *output = [self outputInWorkdirForArguments:[NSArray arrayWithObjects:@"show-ref", name, nil] retValue:&retValue];
+	if (retValue)
+		return nil;
+
+	// the output is in the format: <SHA-1 ID> <space> <reference name>
+	// with potentially multiple lines if there are multiple matching refs (ex: refs/remotes/origin/master)
+	// here we only care about the first match
+	NSArray *refList = [output componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	if ([refList count] > 1) {
+		NSString *refName = [refList objectAtIndex:1];
+		return [PBGitRef refFromString:refName];
+	}
+
+	return nil;
 }
 		
 // Returns either this object, or an existing, equal object
-- (PBGitRevSpecifier*) addBranch: (PBGitRevSpecifier*) rev
+- (PBGitRevSpecifier*) addBranch:(PBGitRevSpecifier*)branch
 {
-	if ([[rev parameters] count] == 0)
-		rev = [self headRef];
+	if ([[branch parameters] count] == 0)
+		branch = [self headRef];
 
 	// First check if the branch doesn't exist already
-	for (PBGitRevSpecifier* r in branches)
-		if ([rev isEqualTo: r])
-			return r;
+	for (PBGitRevSpecifier *rev in branches)
+		if ([branch isEqual: rev])
+			return rev;
 
-	[self willChangeValueForKey:@"branches"];
-	[branches addObject: rev];
-	[self didChangeValueForKey:@"branches"];
-	return rev;
+	NSIndexSet *newIndex = [NSIndexSet indexSetWithIndex:[branches count]];
+	[self willChange:NSKeyValueChangeInsertion valuesAtIndexes:newIndex forKey:@"branches"];
+
+	[branches addObject:branch];
+
+	[self didChange:NSKeyValueChangeInsertion valuesAtIndexes:newIndex forKey:@"branches"];
+	return branch;
 }
 
-- (BOOL)removeBranch:(PBGitRevSpecifier *)rev
+- (BOOL) removeBranch:(PBGitRevSpecifier *)branch
 {
-	for (PBGitRevSpecifier *r in branches) {
-		if ([rev isEqualTo:r]) {
-			[self willChangeValueForKey:@"branches"];
-			[branches removeObject:r];
-			[self didChangeValueForKey:@"branches"];
-			return TRUE;
+	for (PBGitRevSpecifier *rev in branches) {
+		if ([branch isEqual:rev]) {
+			NSIndexSet *oldIndex = [NSIndexSet indexSetWithIndex:[branches indexOfObject:rev]];
+			[self willChange:NSKeyValueChangeRemoval valuesAtIndexes:oldIndex forKey:@"branches"];
+
+			[branches removeObject:rev];
+
+			[self didChange:NSKeyValueChangeRemoval valuesAtIndexes:oldIndex forKey:@"branches"];
+			return YES;
 		}
 	}
-	return FALSE;
+	return NO;
 }
 	
 - (void) readCurrentBranch
@@ -325,7 +516,512 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		return [PBGitBinary path];
 	
 	return nil;
-}		
+}
+
+#pragma mark Remotes
+
+- (NSArray *) remotes
+{
+	int retValue = 1;
+	NSString *remotes = [self outputInWorkdirForArguments:[NSArray arrayWithObject:@"remote"] retValue:&retValue];
+	if (retValue || [remotes isEqualToString:@""])
+		return nil;
+
+	return [remotes componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+}
+
+- (BOOL) hasRemotes
+{
+	return ([self remotes] != nil);
+}
+
+- (PBGitRef *) remoteRefForBranch:(PBGitRef *)branch error:(NSError **)error
+{
+	if ([branch isRemote])
+		return [branch remoteRef];
+
+	NSString *branchName = [branch branchName];
+	if (branchName) {
+		NSString *remoteName = [[self config] valueForKeyPath:[NSString stringWithFormat:@"branch.%@.remote", branchName]];
+		if (remoteName && ([remoteName isKindOfClass:[NSString class]] && ![remoteName isEqualToString:@""])) {
+			PBGitRef *remoteRef = [PBGitRef refFromString:[kGitXRemoteRefPrefix stringByAppendingString:remoteName]];
+			// check that the remote is a valid ref and exists
+			if ([self checkRefFormat:[remoteRef ref]] && [self refExists:remoteRef])
+				return remoteRef;
+		}
+	}
+
+	if (error != NULL) {
+		NSString *info = [NSString stringWithFormat:@"There is no remote configured for the %@ '%@'.\n\nPlease select a branch from the popup menu, which has a corresponding remote tracking branch set up.\n\nYou can also use a contextual menu to choose a branch by right clicking on its label in the commit history list.", [branch refishType], [branch shortName]];
+		*error = [NSError errorWithDomain:PBGitRepositoryErrorDomain code:0
+								 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:
+										   @"No remote configured for branch", NSLocalizedDescriptionKey,
+										   info, NSLocalizedRecoverySuggestionErrorKey,
+										   nil]];
+	}
+	return nil;
+}
+
+- (NSString *) infoForRemote:(NSString *)remoteName
+{
+	int retValue = 1;
+	NSString *output = [self outputInWorkdirForArguments:[NSArray arrayWithObjects:@"remote", @"show", remoteName, nil] retValue:&retValue];
+	if (retValue)
+		return nil;
+
+	return output;
+}
+
+#pragma mark Repository commands
+
+- (void) cloneRepositoryToPath:(NSString *)path bare:(BOOL)isBare
+{
+	if (!path || [path isEqualToString:@""])
+		return;
+
+	NSMutableArray *arguments = [NSMutableArray arrayWithObjects:@"clone", @"--no-hardlinks", @"--", @".", path, nil];
+	if (isBare)
+		[arguments insertObject:@"--bare" atIndex:1];
+
+	NSString *description = [NSString stringWithFormat:@"Cloning the repository %@ to %@", [self projectName], path];
+	NSString *title = @"Cloning Repository";
+	[PBRemoteProgressSheet beginRemoteProgressSheetForArguments:arguments title:title description:description inRepository:self];
+}
+
+- (void) beginAddRemote:(NSString *)remoteName forURL:(NSString *)remoteURL
+{
+	NSArray *arguments = [NSArray arrayWithObjects:@"remote",  @"add", @"-f", remoteName, remoteURL, nil];
+
+	NSString *description = [NSString stringWithFormat:@"Adding the remote %@ and fetching tracking branches", remoteName];
+	NSString *title = @"Adding a remote";
+	[PBRemoteProgressSheet beginRemoteProgressSheetForArguments:arguments title:title description:description inRepository:self];
+}
+
+- (void) beginFetchFromRemoteForRef:(PBGitRef *)ref
+{
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"fetch"];
+
+	if (![ref isRemote]) {
+		NSError *error = nil;
+		ref = [self remoteRefForBranch:ref error:&error];
+		if (!ref) {
+			if (error)
+				[self.windowController showErrorSheet:error];
+			return;
+		}
+	}
+	NSString *remoteName = [ref remoteName];
+	[arguments addObject:remoteName];
+
+	NSString *description = [NSString stringWithFormat:@"Fetching all tracking branches from %@", remoteName];
+	NSString *title = @"Fetching from remote";
+	[PBRemoteProgressSheet beginRemoteProgressSheetForArguments:arguments title:title description:description inRepository:self];
+}
+
+- (void) beginPullFromRemote:(PBGitRef *)remoteRef forRef:(PBGitRef *)ref
+{
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"pull"];
+
+	// a nil remoteRef means lookup the ref's default remote
+	if (!remoteRef || ![remoteRef isRemote]) {
+		NSError *error = nil;
+		remoteRef = [self remoteRefForBranch:ref error:&error];
+		if (!remoteRef) {
+			if (error)
+				[self.windowController showErrorSheet:error];
+			return;
+		}
+	}
+	NSString *remoteName = [remoteRef remoteName];
+	[arguments addObject:remoteName];
+
+	NSString *description = [NSString stringWithFormat:@"Pulling all tracking branches from %@", remoteName];
+	NSString *title = @"Pulling from remote";
+	[PBRemoteProgressSheet beginRemoteProgressSheetForArguments:arguments title:title description:description inRepository:self];
+}
+
+- (void) beginPushRef:(PBGitRef *)ref toRemote:(PBGitRef *)remoteRef
+{
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"push"];
+
+	// a nil remoteRef means lookup the ref's default remote
+	if (!remoteRef || ![remoteRef isRemote]) {
+		NSError *error = nil;
+		remoteRef = [self remoteRefForBranch:ref error:&error];
+		if (!remoteRef) {
+			if (error)
+				[self.windowController showErrorSheet:error];
+			return;
+		}
+	}
+	NSString *remoteName = [remoteRef remoteName];
+	[arguments addObject:remoteName];
+
+	NSString *branchName = nil;
+	if ([ref isRemote] || !ref) {
+		branchName = @"all updates";
+	}
+	else if ([ref isTag]) {
+		branchName = [NSString stringWithFormat:@"tag '%@'", [ref tagName]];
+		[arguments addObject:@"tag"];
+		[arguments addObject:[ref tagName]];
+	}
+	else {
+		branchName = [ref shortName];
+		[arguments addObject:branchName];
+	}
+
+	NSString *description = [NSString stringWithFormat:@"Pushing %@ to %@", branchName, remoteName];
+	NSString *title = @"Pushing to remote";
+	[PBRemoteProgressSheet beginRemoteProgressSheetForArguments:arguments title:title description:description inRepository:self];
+}
+
+- (BOOL) checkoutRefish:(id <PBGitRefish>)ref
+{
+	NSString *refName = nil;
+	if ([ref refishType] == kGitXBranchType)
+		refName = [ref shortName];
+	else
+		refName = [ref refishName];
+
+	int retValue = 1;
+	NSArray *arguments = [NSArray arrayWithObjects:@"checkout", refName, nil];
+	NSString *output = [self outputInWorkdirForArguments:arguments retValue:&retValue];
+	if (retValue) {
+		NSString *message = [NSString stringWithFormat:@"There was an error checking out the %@ '%@'.\n\nPerhaps your working directory is not clean?", [ref refishType], [ref shortName]];
+		[self.windowController showErrorSheetTitle:@"Checkout failed!" message:message arguments:arguments output:output];
+		return NO;
+	}
+
+	[self reloadRefs];
+	[self readCurrentBranch];
+	return YES;
+}
+
+- (BOOL) checkoutFiles:(NSArray *)files fromRefish:(id <PBGitRefish>)ref
+{
+	if (!files || ([files count] == 0))
+		return NO;
+
+	NSString *refName = nil;
+	if ([ref refishType] == kGitXBranchType)
+		refName = [ref shortName];
+	else
+		refName = [ref refishName];
+
+	int retValue = 1;
+	NSMutableArray *arguments = [NSMutableArray arrayWithObjects:@"checkout", refName, @"--", nil];
+	[arguments addObjectsFromArray:files];
+	NSString *output = [self outputInWorkdirForArguments:arguments retValue:&retValue];
+	if (retValue) {
+		NSString *message = [NSString stringWithFormat:@"There was an error checking out the file(s) from the %@ '%@'.\n\nPerhaps your working directory is not clean?", [ref refishType], [ref shortName]];
+		[self.windowController showErrorSheetTitle:@"Checkout failed!" message:message arguments:arguments output:output];
+		return NO;
+	}
+
+	return YES;
+}
+
+
+- (BOOL) mergeWithRefish:(id <PBGitRefish>)ref
+{
+	NSString *refName = [ref refishName];
+
+	int retValue = 1;
+	NSArray *arguments = [NSArray arrayWithObjects:@"merge", refName, nil];
+	NSString *output = [self outputInWorkdirForArguments:arguments retValue:&retValue];
+	if (retValue) {
+		NSString *headName = [[[self headRef] ref] shortName];
+		NSString *message = [NSString stringWithFormat:@"There was an error merging %@ into %@.", refName, headName];
+		[self.windowController showErrorSheetTitle:@"Merge failed!" message:message arguments:arguments output:output];
+		return NO;
+	}
+
+	[self reloadRefs];
+	[self readCurrentBranch];
+	return YES;
+}
+
+- (BOOL) cherryPickRefish:(id <PBGitRefish>)ref
+{
+	if (!ref)
+		return NO;
+
+	NSString *refName = [ref refishName];
+
+	int retValue = 1;
+	NSArray *arguments = [NSArray arrayWithObjects:@"cherry-pick", refName, nil];
+	NSString *output = [self outputInWorkdirForArguments:arguments retValue:&retValue];
+	if (retValue) {
+		NSString *message = [NSString stringWithFormat:@"There was an error cherry picking the %@ '%@'.\n\nPerhaps your working directory is not clean?", [ref refishType], [ref shortName]];
+		[self.windowController showErrorSheetTitle:@"Cherry pick failed!" message:message arguments:arguments output:output];
+		return NO;
+	}
+
+	[self reloadRefs];
+	[self readCurrentBranch];
+	return YES;
+}
+
+- (BOOL) rebaseBranch:(id <PBGitRefish>)branch onRefish:(id <PBGitRefish>)upstream
+{
+	if (!upstream)
+		return NO;
+
+	NSMutableArray *arguments = [NSMutableArray arrayWithObjects:@"rebase", [upstream refishName], nil];
+
+	if (branch)
+		[arguments addObject:[branch refishName]];
+
+	int retValue = 1;
+	NSString *output = [self outputInWorkdirForArguments:arguments retValue:&retValue];
+	if (retValue) {
+		NSString *branchName = @"HEAD";
+		if (branch)
+			branchName = [NSString stringWithFormat:@"%@ '%@'", [branch refishType], [branch shortName]];
+		NSString *message = [NSString stringWithFormat:@"There was an error rebasing %@ with %@ '%@'.", branchName, [upstream refishType], [upstream shortName]];
+		[self.windowController showErrorSheetTitle:@"Rebase failed!" message:message arguments:arguments output:output];
+		return NO;
+	}
+
+	[self reloadRefs];
+	[self readCurrentBranch];
+	return YES;
+}
+
+- (BOOL) createBranch:(NSString *)branchName atRefish:(id <PBGitRefish>)ref
+{
+	if (!branchName || !ref)
+		return NO;
+
+	int retValue = 1;
+	NSArray *arguments = [NSArray arrayWithObjects:@"branch", branchName, [ref refishName], nil];
+	NSString *output = [self outputInWorkdirForArguments:arguments retValue:&retValue];
+	if (retValue) {
+		NSString *message = [NSString stringWithFormat:@"There was an error creating the branch '%@' at %@ '%@'.", branchName, [ref refishType], [ref shortName]];
+		[self.windowController showErrorSheetTitle:@"Create Branch failed!" message:message arguments:arguments output:output];
+		return NO;
+	}
+
+	[self reloadRefs];
+	return YES;
+}
+
+- (BOOL) createTag:(NSString *)tagName message:(NSString *)message atRefish:(id <PBGitRefish>)target
+{
+	if (!tagName)
+		return NO;
+
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"tag"];
+
+	// if there is a message then make this an annotated tag
+	if (message && ![message isEqualToString:@""] && ([message length] > 3)) {
+		[arguments addObject:@"-a"];
+		[arguments addObject:[@"-m" stringByAppendingString:message]];
+	}
+
+	[arguments addObject:tagName];
+
+	// if no refish then git will add it to HEAD
+	if (target)
+		[arguments addObject:[target refishName]];
+
+	int retValue = 1;
+	NSString *output = [self outputInWorkdirForArguments:arguments retValue:&retValue];
+	if (retValue) {
+		NSString *targetName = @"HEAD";
+		if (target)
+			targetName = [NSString stringWithFormat:@"%@ '%@'", [target refishType], [target shortName]];
+		NSString *message = [NSString stringWithFormat:@"There was an error creating the tag '%@' at %@.", tagName, targetName];
+		[self.windowController showErrorSheetTitle:@"Create Tag failed!" message:message arguments:arguments output:output];
+		return NO;
+	}
+
+	[self reloadRefs];
+	return YES;
+}
+
+- (BOOL) deleteRemote:(PBGitRef *)ref
+{
+	if (!ref || ([ref refishType] != kGitXRemoteType))
+		return NO;
+
+	int retValue = 1;
+	NSArray *arguments = [NSArray arrayWithObjects:@"remote", @"rm", [ref remoteName], nil];
+	NSString * output = [self outputForArguments:arguments retValue:&retValue];
+	if (retValue) {
+		NSString *message = [NSString stringWithFormat:@"There was an error deleting the remote: %@\n\n", [ref remoteName]];
+		[self.windowController showErrorSheetTitle:@"Delete remote failed!" message:message arguments:arguments output:output];
+		return NO;
+	}
+
+	// remove the remote's branches
+	NSString *remoteRef = [kGitXRemoteRefPrefix stringByAppendingString:[ref remoteName]];
+	for (PBGitRevSpecifier *rev in [branches copy]) {
+		PBGitRef *branch = [rev ref];
+		if ([[branch ref] hasPrefix:remoteRef]) {
+			[self removeBranch:rev];
+			PBGitCommit *commit = [self commitForRef:branch];
+			[commit removeRef:branch];
+		}
+	}
+
+	[self reloadRefs];
+	return YES;
+}
+
+- (BOOL) deleteRef:(PBGitRef *)ref
+{
+	if (!ref)
+		return NO;
+
+	if ([ref refishType] == kGitXRemoteType)
+		return [self deleteRemote:ref];
+
+	int retValue = 1;
+	NSArray *arguments = [NSArray arrayWithObjects:@"update-ref", @"-d", [ref ref], nil];
+	NSString * output = [self outputForArguments:arguments retValue:&retValue];
+	if (retValue) {
+		NSString *message = [NSString stringWithFormat:@"There was an error deleting the ref: %@\n\n", [ref shortName]];
+		[self.windowController showErrorSheetTitle:@"Delete ref failed!" message:message arguments:arguments output:output];
+		return NO;
+	}
+
+	[self removeBranch:[[PBGitRevSpecifier alloc] initWithRef:ref]];
+	PBGitCommit *commit = [self commitForRef:ref];
+	[commit removeRef:ref];
+
+	[self reloadRefs];
+	return YES;
+}
+
+
+#pragma mark GitX Scripting
+
+- (void)handleRevListArguments:(NSArray *)arguments inWorkingDirectory:(NSURL *)workingDirectory
+{
+	if (![arguments count])
+		return;
+
+	PBGitRevSpecifier *revListSpecifier = nil;
+
+	// the argument may be a branch or tag name but will probably not be the full reference
+	if ([arguments count] == 1) {
+		PBGitRef *refArgument = [self refForName:[arguments lastObject]];
+		if (refArgument) {
+			revListSpecifier = [[PBGitRevSpecifier alloc] initWithRef:refArgument];
+			revListSpecifier.workingDirectory = workingDirectory;
+		}
+	}
+
+	if (!revListSpecifier) {
+		revListSpecifier = [[PBGitRevSpecifier alloc] initWithParameters:arguments];
+		revListSpecifier.workingDirectory = workingDirectory;
+	}
+
+	self.currentBranch = [self addBranch:revListSpecifier];
+	[PBGitDefaults setShowStageView:NO];
+	[self.windowController showHistoryView:self];
+}
+
+- (void)handleBranchFilterEventForFilter:(PBGitXBranchFilterType)filter additionalArguments:(NSMutableArray *)arguments inWorkingDirectory:(NSURL *)workingDirectory
+{
+	self.currentBranchFilter = filter;
+	[PBGitDefaults setShowStageView:NO];
+	[self.windowController showHistoryView:self];
+
+	// treat any additional arguments as a rev-list specifier
+	if ([arguments count] > 1) {
+		[arguments removeObjectAtIndex:0];
+		[self handleRevListArguments:arguments inWorkingDirectory:workingDirectory];
+	}
+}
+
+- (void)handleGitXScriptingArguments:(NSAppleEventDescriptor *)argumentsList inWorkingDirectory:(NSURL *)workingDirectory
+{
+	NSMutableArray *arguments = [NSMutableArray array];
+	uint argumentsIndex = 1; // AppleEvent list descriptor's are one based
+	while(1) {
+		NSAppleEventDescriptor *arg = [argumentsList descriptorAtIndex:argumentsIndex++];
+		if (arg)
+			[arguments addObject:[arg stringValue]];
+		else
+			break;
+	}
+
+	if (![arguments count])
+		return;
+
+	NSString *firstArgument = [arguments objectAtIndex:0];
+
+	if ([firstArgument isEqualToString:@"-c"] || [firstArgument isEqualToString:@"--commit"]) {
+		[PBGitDefaults setShowStageView:YES];
+		[self.windowController showCommitView:self];
+		return;
+	}
+
+	if ([firstArgument isEqualToString:@"--all"]) {
+		[self handleBranchFilterEventForFilter:kGitXAllBranchesFilter additionalArguments:arguments inWorkingDirectory:workingDirectory];
+		return;
+	}
+
+	if ([firstArgument isEqualToString:@"--local"]) {
+		[self handleBranchFilterEventForFilter:kGitXLocalRemoteBranchesFilter additionalArguments:arguments inWorkingDirectory:workingDirectory];
+		return;
+	}
+
+	if ([firstArgument isEqualToString:@"--branch"]) {
+		[self handleBranchFilterEventForFilter:kGitXSelectedBranchFilter additionalArguments:arguments inWorkingDirectory:workingDirectory];
+		return;
+	}
+
+	// if the argument is not a known command then treat it as a rev-list specifier
+	[self handleRevListArguments:arguments inWorkingDirectory:workingDirectory];
+}
+
+// see if the current appleEvent has the command line arguments from the gitx cli
+// this could be from an openApplication or an openDocument apple event
+// when opening a repository this is called before the sidebar controller gets it's awakeFromNib: message
+// if the repository is already open then this is also a good place to catch the event as the window is about to be brought forward
+- (void)showWindows
+{
+	NSAppleEventDescriptor *currentAppleEvent = [[NSAppleEventManager sharedAppleEventManager] currentAppleEvent];
+
+	if (currentAppleEvent) {
+		NSAppleEventDescriptor *eventRecord = [currentAppleEvent paramDescriptorForKeyword:keyAEPropData];
+
+		// on app launch there may be many repositories opening, so double check that this is the right repo
+		NSString *path = [[eventRecord paramDescriptorForKeyword:typeFileURL] stringValue];
+		if (path) {
+			NSURL *workingDirectory = [NSURL URLWithString:path];
+			if ([[PBGitRepository gitDirForURL:workingDirectory] isEqual:[self fileURL]]) {
+				NSAppleEventDescriptor *argumentsList = [eventRecord paramDescriptorForKeyword:kGitXAEKeyArgumentsList];
+				[self handleGitXScriptingArguments:argumentsList inWorkingDirectory:workingDirectory];
+
+				// showWindows may be called more than once during app launch so remove the CLI data after we handle the event
+				[currentAppleEvent removeDescriptorWithKeyword:keyAEPropData];
+			}
+		}
+	}
+
+	[super showWindows];
+}
+
+// for the scripting bridge
+- (void)findInModeScriptCommand:(NSScriptCommand *)command
+{
+	NSDictionary *arguments = [command arguments];
+	NSString *searchString = [arguments objectForKey:kGitXFindSearchStringKey];
+	if (searchString) {
+		NSInteger mode = [[arguments objectForKey:kGitXFindInModeKey] integerValue];
+		[PBGitDefaults setShowStageView:NO];
+		[self.windowController showHistoryView:self];
+		[self.windowController setHistorySearch:searchString mode:mode];
+	}
+}
+
+
+#pragma mark low level
 
 - (int) returnValueForCommand:(NSString *)cmd
 {

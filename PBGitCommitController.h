@@ -10,6 +10,7 @@
 #import "PBViewController.h"
 
 @class PBGitIndexController, PBIconAndTextCell, PBWebChangesController, PBGitIndex;
+@class PBNiceSplitView;
 
 @interface PBGitCommitController : PBViewController {
 	// This might have to transfer over to the PBGitRepository
@@ -19,19 +20,17 @@
 	IBOutlet NSTextView *commitMessageView;
 	IBOutlet NSArrayController *unstagedFilesController;
 	IBOutlet NSArrayController *cachedFilesController;
+	IBOutlet NSButton *commitButton;
 
 	IBOutlet PBGitIndexController *indexController;
 	IBOutlet PBWebChangesController *webController;
-
-	NSString *status;
-	BOOL busy;
+	IBOutlet PBNiceSplitView *commitSplitView;
 }
 
-@property(copy) NSString *status;
 @property(readonly) PBGitIndex *index;
-@property(assign) BOOL busy;
 
 - (IBAction) refresh:(id) sender;
 - (IBAction) commit:(id) sender;
+- (IBAction) forceCommit:(id) sender;
 - (IBAction)signOff:(id)sender;
 @end

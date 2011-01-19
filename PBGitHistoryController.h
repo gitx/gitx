@@ -12,36 +12,67 @@
 #import "PBViewController.h"
 #import "PBCollapsibleSplitView.h"
 
+@class PBGitSidebarController;
+@class PBWebHistoryController;
+@class PBGitGradientBarView;
+@class PBRefController;
+@class QLPreviewPanel;
+@class PBCommitList;
+@class GLFileView;
+@class PBGitSHA;
+
+@class PBHistorySearchController;
+
 @interface PBGitHistoryController : PBViewController {
+	IBOutlet PBRefController *refController;
 	IBOutlet NSSearchField *searchField;
 	IBOutlet NSArrayController* commitController;
 	IBOutlet NSTreeController* treeController;
 	IBOutlet NSOutlineView* fileBrowser;
-	IBOutlet NSTableView* commitList;
+	NSArray *currentFileBrowserSelectionPath;
+	IBOutlet PBCommitList* commitList;
 	IBOutlet PBCollapsibleSplitView *historySplitView;
+	IBOutlet PBWebHistoryController *webHistoryController;
+    QLPreviewPanel* previewPanel;
+	IBOutlet PBHistorySearchController *searchController;
+	IBOutlet GLFileView *fileView;
+
+	IBOutlet PBGitGradientBarView *upperToolbarView;
+	IBOutlet NSButton *mergeButton;
+	IBOutlet NSButton *cherryPickButton;
+	IBOutlet NSButton *rebaseButton;
+
+	IBOutlet PBGitGradientBarView *scopeBarView;
+	IBOutlet NSButton *allBranchesFilterItem;
+	IBOutlet NSButton *localRemoteBranchesFilterItem;
+	IBOutlet NSButton *selectedBranchFilterItem;
 
 	IBOutlet id webView;
-	int selectedTab;
+	int selectedCommitDetailsIndex;
+	BOOL forceSelectionUpdate;
 	
-	PBGitTree* gitTree;
-	PBGitCommit* webCommit;
-	PBGitCommit* rawCommit;
-	PBGitCommit* realCommit;
+	PBGitTree *gitTree;
+	PBGitCommit *webCommit;
+	PBGitCommit *selectedCommit;
 }
 
-@property (assign) int selectedTab;
-@property (retain) PBGitCommit *webCommit, *rawCommit;
+@property (readonly) NSTreeController* treeController;
+@property (assign) int selectedCommitDetailsIndex;
+@property (retain) PBGitCommit *webCommit;
 @property (retain) PBGitTree* gitTree;
 @property (readonly) NSArrayController *commitController;
+@property (readonly) PBRefController *refController;
+@property (readonly) PBHistorySearchController *searchController;
+@property (readonly) PBCommitList *commitList;
 
-- (IBAction) setDetailedView: sender;
-- (IBAction) setRawView: sender;
-- (IBAction) setTreeView: sender;
+- (IBAction) setDetailedView:(id)sender;
+- (IBAction) setTreeView:(id)sender;
+- (IBAction) setBranchFilter:(id)sender;
 
-- (void) selectCommit: (NSString*) commit;
-- (IBAction) refresh: sender;
-- (IBAction) toggleQuickView: sender;
-- (IBAction) openSelectedFile: sender;
+- (void)selectCommit:(PBGitSHA *)commit;
+- (IBAction) refresh:(id)sender;
+- (IBAction) toggleQLPreviewPanel:(id)sender;
+- (IBAction) openSelectedFile:(id)sender;
 - (void) updateQuicklookForce: (BOOL) force;
 
 // Context menu methods
@@ -51,7 +82,20 @@
 - (void)showInFinderAction:(id)sender;
 - (void)openFilesAction:(id)sender;
 
+// Repository Methods
+- (IBAction) createBranch:(id)sender;
+- (IBAction) createTag:(id)sender;
+- (IBAction) showAddRemoteSheet:(id)sender;
+- (IBAction) merge:(id)sender;
+- (IBAction) cherryPick:(id)sender;
+- (IBAction) rebase:(id)sender;
+
+// Find/Search methods
+- (IBAction)selectNext:(id)sender;
+- (IBAction)selectPrevious:(id)sender;
+
 - (void) copyCommitInfo;
+- (void) copyCommitSHA;
 
 - (BOOL) hasNonlinearPath;
 

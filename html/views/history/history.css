@@ -1,59 +1,94 @@
+.clearfix:after {
+	visibility: hidden;
+	display: block;
+	font-size: 0;
+	content: " ";
+	clear: both;
+	height: 0;
+}
+
+.clearfix {
+	display: inline-block;
+}
+
+/* start commented backslash hack \*/
+
+* html .clearfix {
+	height: 1%;
+}
+
+.clearfix {
+	display: block;
+}
+
+/* close commented backslash hack */
+
 body {
+	background-color: #f2f2f2;
 	font-family: 'Lucida Grande';
+	margin: 0px;
+	padding: 0px;
 }
 
 #commit_header {
-	width: 100%;
+	width: auto;
 	font-size: 12px;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
-#commit_header td {
-  padding-left: 5px;
+#commit_header tr {
+	vertical-align: top;
+}
+
+#authorTable {
+	margin: -4px;
 }
 
 #rightcontent {
-	float: right;
+	float: none;
 	margin: 5px;
+	position: absolute;
+	right: 0;
 }
 
 #buttons {
 	float: left;
 }
 
-a.servicebutton{
+a.servicebutton {
 	display: block;
 	width: 80px;
 	padding: 2px;
 	margin-bottom: 4px;
-
 	border: 1px solid #3465a4;
 	background-color: #cce5ff;
 	color: #204a87;
-
 	font-size: 65%;
 	text-decoration: none;
 	text-align: center;
-
 	-webkit-border-radius: 2px;
 }
 
-#gravatar {
-	margin-left: 5px;
-	padding: 2px;
-	width: 60px;
-	height: 60px;
-
+.gravatar {
+	padding: 0.1em;
 	border: solid gray 1px;
 	-webkit-border-radius: 2px;
 }
 
+.gravatar img {
+	width: 2.9em;
+	height: 2.9em;
+	max-height: 60px;
+	max-width: 60px;
+}
+
 .property_name {
 	width: 6em;
-	color:#7F7F7F;
+	color: #7F7F7F;
 	text-align: right;
 	font-weight: bold;
 }
-
 
 #message_files {
 	margin: 5px;
@@ -61,33 +96,46 @@ a.servicebutton{
 	width: auto;
 }
 
-#message {
-	font-family: Monaco;
-	font-size: 10px;
+#header p.subject {
+	font-size: 15px;
+	padding: 5px;
+	float: none;
+	font-family: Menlo, Monaco;
 }
 
 #files {
 	margin-top: 1em;
+	margin-left: 0.5em;
 }
 
 #files a {
 	color: #666666;
+	text-decoration: none;
+}
+
+#files a:hover {
+	color: #4444ff;
+	border-bottom: 1px solid #4444ff;
+}
+
+#files img {
+	float: left;
+	margin-right: 0.5em;
+	margin-top: 1px;
 }
 
 #files p {
-	margin: 4px;
-}
-#files a:hover {
-	color: #4444ff;
+	margin-top: 0.25em;
+	margin-bottom: 0.25em;
 }
 
 .clear_both {
-	clear:both;
-	display:block;
-	height:1px;
-	line-height:0;
-	margin:1em;
-	visibility:hidden;
+	clear: both;
+	display: block;
+	height: 1px;
+	line-height: 0;
+	margin: 1em;
+	visibility: hidden;
 }
 
 #details {
@@ -96,6 +144,7 @@ a.servicebutton{
 	overflow: hidden;
 	width: 600px;
 }
+
 hr {
 	border: 0;
 	height: 1px;
@@ -117,7 +166,7 @@ a.showdiff {
 	font-size: 9px;
 	font-family: Helvetica;
 	border: 1px solid black;
-	margin-right: 5px;
+	margin-right: 2px;
 	padding: 1px 3px 1px 3px;
 	-webkit-border-radius: 2px;
 }
@@ -138,45 +187,134 @@ a.showdiff {
 	background-color: #fca64f;
 }
 
-div.button
-{
-	color: #666666;
+#filelist {
+	font-size: 13px;
+	white-space: nowrap;
+	width: 100%;
+	padding: 10px 20px;
+	border-collapse: collapse;
+}
 
-	font-size: 60%;
-	text-align: center;
+#filelist tr td {
+	border-bottom: 1px solid #ccc;
+}
 
-	width: 70px;
+#filelist a {
+	margin-left: 10px;
+	padding-left: 20px;
+	text-decoration: none;
+}
 
-	margin-right: 10px;
+#filelist a:hover {
+	text-decoration: underline;
+}
 
-	padding: 2px;
+#filelist a.A {
+	background: url(../../images/added.png) no-repeat 0 center;
+}
 
-	float: left;
+#filelist a.D {
+	background: url(../../images/removed.png) no-repeat 0 center;
+}
+
+#filelist a.M {
+	background: url(../../images/modified.png) no-repeat 0 center;
+}
+
+#filelist a.R,#filelist a.C {
+	background: url(../../images/renamed.png) no-repeat 0 center;
+}
+
+#filelist span.add,#filelist span.rem {
+	display: block;
+	height: 10px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	float: right;
 	clear: both;
-
-	border: 1px solid;
-	-webkit-border-radius: 3px;
 }
 
-div.created
-{
-	background-color: #ccffcc;
-	border-color: #66ff66;
+#filelist span.add {
+	background-color: green;
 }
 
-div.changed
-{
-	background-color: #ffcc99;
-	border-color: #ff9933;
+#filelist span.rem {
+	background-color: red;
 }
 
-div.deleted
-{
-	background-color: #ffcccc;
-	border-color: #ff6666;
+#filelist td.bar {
+	width: 50%;
+	display: block;
 }
 
-div.renamed
-{
-	/*No colour needed right now.*/
+#filelist td.add,#filelist td.rem {
+	width: 1%;
+	text-align: right;
+}
+
+#header {
+	font-size: 13px;
+	background-image: -webkit-gradient(linear,left top,left bottom, color-stop(.7, #EAF2f6), color-stop(1, #e3ebf3));
+}
+
+#header table.references  a {
+	font-family: Menlo, Consolas, 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
+}
+
+#header p.time {
+	margin-top: 2px;
+	font-size: 11px;
+	white-space: nowrap;
+}
+
+#header p.name {
+	font-size: 15px;
+	white-space: nowrap;
+}
+
+#header span.rol,p.time {
+	color: gray;
+}
+
+#header img.avatar {
+	float: left;
+	padding: 2px;
+	border: 1px solid black;
+	margin: 0 5px 5px;
+}
+
+#header table.references {
+	float: right;
+	font-size: 12px;
+	margin: 5px;
+}
+
+#header div.user {
+	float: left;
+	clear: left;
+}
+
+#header p {
+	margin: 0;
+}
+
+#header div#badges {
+	clear: left;
+	float: left;
+	margin: 5px;
+	padding-bottom: 5px;
+}
+
+#diffs {
+	-webkit-box-shadow: inset 0px 5px 5px #ccc;
+	width: 100%;
+	display: block;
+	padding-top: 20px;
+	overflow: auto;
+}
+
+#diffs table.diff {
+	-webkit-box-shadow: 5px 5px 5px #ccc;
+	width: 98%;
+	margin: auto auto 20px 1%;
 }

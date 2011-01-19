@@ -18,6 +18,14 @@
 	[diffController addObserver:self forKeyPath:@"diff" options:0 context:@"ChangedDiff"];
 }
 
+- (void)closeView
+{
+	[diffController removeObserver:self forKeyPath:@"diff"];
+
+	[super closeView];
+}
+
+
 - (void) didLoad
 {
 	[self showDiff:diffController.diff];
@@ -35,7 +43,10 @@
 		return;
 
 	id script = [view windowScriptObject];
-	[script callWebScriptMethod:@"showDiff" withArguments: [NSArray arrayWithObject:diff]];
+	if ([diff length] == 0)
+		[script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObject:@"There are no differences"]];
+	else
+		[script callWebScriptMethod:@"showDiff" withArguments:[NSArray arrayWithObject:diff]];
 }
 
 @end

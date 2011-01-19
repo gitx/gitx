@@ -7,27 +7,20 @@
 //
 
 #import "PBGitCommit.h"
+#import "PBGitSHA.h"
 #import "PBGitDefaults.h"
+
+
+NSString * const kGitXCommitType = @"commit";
+
 
 @implementation PBGitCommit
 
-@synthesize repository, subject, timestamp, author, parentShas, nParents, sign, lineInfo;
+@synthesize repository, subject, timestamp, author, sign, lineInfo;
+@synthesize sha;
+@synthesize parents;
+@synthesize committer;
 
-- (NSArray *) parents
-{
-	if (nParents == 0)
-		return NULL;
-
-	int i;
-	NSMutableArray *p = [NSMutableArray arrayWithCapacity:nParents];
-	for (i = 0; i < nParents; ++i)
-	{
-		char *s = git_oid_mkhex(parentShas + i);
-		[p addObject:[NSString stringWithUTF8String:s]];
-		free(s);
-	}
-	return p;
-}
 
 - (NSDate *)date
 {
@@ -45,12 +38,12 @@
 	return self.tree.children;
 }
 
-- (git_oid *)sha
++ (PBGitCommit *)commitWithRepository:(PBGitRepository*)repo andSha:(PBGitSHA *)newSha
 {
-	return &sha;
+	return [[self alloc] initWithRepository:repo andSha:newSha];
 }
 
-- initWithRepository:(PBGitRepository*) repo andSha:(git_oid)newSha
+- (id)initWithRepository:(PBGitRepository*) repo andSha:(PBGitSHA *)newSha
 {
 	details = nil;
 	repository = repo;
@@ -60,10 +53,39 @@
 
 - (NSString *)realSha
 {
-	char *hex = git_oid_mkhex(&sha);
-	NSString *str = [NSString stringWithUTF8String:hex];
-	free(hex);
-	return str;
+	return sha.string;
+}
+
+- (BOOL) isOnSameBranchAs:(PBGitCommit *)otherCommit
+{
+	if (!otherCommit)
+		return NO;
+
+	if ([self isEqual:otherCommit])
+		return YES;
+
+	return [repository isOnSameBranch:otherCommit.sha asSHA:self.sha];
+}
+
+- (BOOL) isOnHeadBranch
+{
+	return [self isOnSameBranchAs:[repository headCommit]];
+}
+
+- (BOOL)isEqual:(id)otherCommit
+{
+	if (self == otherCommit)
+		return YES;
+
+	if (![otherCommit isMemberOfClass:[PBGitCommit class]])
+		return NO;
+
+	return [self.sha isEqual:[(PBGitCommit *)otherCommit sha]];
+}
+
+- (NSUInteger)hash
+{
+	return [self.sha hash];
 }
 
 // FIXME: Remove this method once it's unused.
@@ -104,19 +126,30 @@
 	[self.refs removeObject:ref];
 }
 
+- (BOOL) hasRef:(PBGitRef *)ref
+{
+	if (!self.refs)
+		return NO;
+
+	for (PBGitRef *existingRef in self.refs)
+		if ([existingRef isEqualToRef:ref])
+			return YES;
+
+	return NO;
+}
+
 - (NSMutableArray *)refs
 {
-	return [[repository refs] objectForKey:[self realSha]];
+	return [[repository refs] objectForKey:[self sha]];
 }
 
 - (void) setRefs:(NSMutableArray *)refs
 {
-	[[repository refs] setObject:refs forKey:[self realSha]];
+	[[repository refs] setObject:refs forKey:[self sha]];
 }
 
 - (void)finalize
 {
-	free(parentShas);
 	[super finalize];
 }
 
@@ -128,4 +161,23 @@
 + (BOOL)isKeyExcludedFromWebScript:(const char *)name {
 	return NO;
 }
+
+
+#pragma mark <PBGitRefish>
+
+- (NSString *) refishName
+{
+	return [self realSha];
+}
+
+- (NSString *) shortName
+{
+	return [[self realSha] substringToIndex:10];
+}
+
+- (NSString *) refishType
+{
+	return kGitXCommitType;
+}
+
 @end

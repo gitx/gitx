@@ -8,6 +8,9 @@
 
 #import "PBPrefsWindowController.h"
 #import "PBGitRepository.h"
+#import "PBGitDefaults.h"
+
+#define kPreferenceViewIdentifier @"PBGitXPreferenceViewIdentifier"
 
 @implementation PBPrefsWindowController
 
@@ -21,6 +24,22 @@
 	[self addView:integrationPrefsView label:@"Integration" image:[NSImage imageNamed:NSImageNameNetwork]];
 	// UPDATES
 	[self addView:updatesPrefsView label:@"Updates"];
+}
+
+- (void)displayViewForIdentifier:(NSString *)identifier animate:(BOOL)animate
+{
+	[super displayViewForIdentifier:identifier animate:animate];
+
+	[[NSUserDefaults standardUserDefaults] setObject:identifier forKey:kPreferenceViewIdentifier];
+}
+
+- (NSString *)defaultViewIdentifier
+{
+	NSString *identifier = [[NSUserDefaults standardUserDefaults] objectForKey:kPreferenceViewIdentifier];
+	if (identifier)
+		return identifier;
+
+	return [super defaultViewIdentifier];
 }
 
 #pragma mark -
@@ -44,9 +63,15 @@
 	[openPanel setAllowsMultipleSelection:NO];
 	[openPanel setTreatsFilePackagesAsDirectories:YES];
 	[openPanel setAccessoryView:gitPathOpenAccessory];
+	[openPanel setResolvesAliases:NO];
 	//[[openPanel _navView] setShowsHiddenFiles:YES];
 
 	gitPathOpenPanel = openPanel;
+}
+
+- (IBAction)resetAllDialogWarnings:(id)sender
+{
+	[PBGitDefaults resetAllDialogWarnings];
 }
 
 #pragma mark -

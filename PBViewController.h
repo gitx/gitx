@@ -14,18 +14,19 @@
 	__weak PBGitRepository *repository;
 	__weak PBGitWindowController *superController;
 
-	IBOutlet NSToolbar *viewToolbar;
+	NSString *status;
+	BOOL isBusy;
+	BOOL hasViewLoaded;
 }
 
 @property (readonly) __weak PBGitRepository *repository;
-@property (readonly) NSToolbar *viewToolbar;
+@property(copy) NSString *status;
+@property(assign) BOOL isBusy;
 
 - (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller;
 
-/* removeView is called whenever the view is removed, either to be swapped
- * with a different view, or when the repository window will be destroyed
- */
-- (void) removeView;
+/* closeView is called when the repository window will be closed */
+- (void)closeView;
 
 /* Updateview is called every time it is loaded into the main view */
 - (void) updateView;
@@ -36,6 +37,7 @@
 - (void)viewLoaded;
 
 - (NSResponder *)firstResponder;
+- (IBAction) refresh:(id)sender;
 
 - (IBAction) refresh:(id)sender;
 @end

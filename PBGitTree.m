@@ -65,10 +65,12 @@
 
 - (BOOL)hasBinaryHeader:(NSString*)contents
 {
-	if(!contents)
+	if (!contents)
 		return NO;
 
-	return [contents rangeOfString:@"\0" options:0 range:NSMakeRange(0, ([contents length] >= 8000) ? 7999 : [contents length])].location != NSNotFound;
+	return [contents rangeOfString:@"\0"
+						   options:0
+							 range:NSMakeRange(0, ([contents length] >= 8000) ? 7999 : [contents length])].location != NSNotFound;
 }
 
 - (BOOL)hasBinaryAttributes
@@ -113,6 +115,102 @@
 	return [repository outputForArguments:[NSArray arrayWithObjects:@"show", [self refSpec], nil]];
 }
 
+- (NSString *) blame:(NSError **)anError
+{
+	NSString *error=nil;
+	NSString *res=nil;
+	if (!leaf)
+		error=[NSString stringWithFormat:@"This is a tree with path %@", [self fullPath]];
+	
+	if ([self hasBinaryAttributes])
+		error=[NSString stringWithFormat:@"%@ appears to be a binary file of %d bytes", [self fullPath], [self fileSize]];
+	
+	if ([self fileSize] > 52428800) // ~50MB
+		error=[NSString stringWithFormat:@"%@ is too big to be displayed (%d bytes)", [self fullPath], [self fileSize]];
+	
+	if(error==nil){
+		res=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"blame", @"-p",  sha, @"--", [self fullPath], nil]];
+	}else{
+		*anError = [NSError errorWithDomain:@"blame" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+	}
+	
+	return res;
+}
+
+- (NSString *) log:(NSString *)format error:(NSError **)anError
+{
+	NSString *error=nil;
+	NSString *res=nil;
+	if (!leaf)
+		error=[NSString stringWithFormat:@"This is a tree with path %@", [self fullPath]];
+	
+	if(error==nil){
+		res=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"log", [NSString stringWithFormat:@"--pretty=format:%@",format], @"--", [self fullPath], nil]];
+	}else{
+		*anError = [NSError errorWithDomain:@"log" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+	}
+	
+	return res;
+}
+
+- (NSString *) diff:(NSString *)format error:(NSError **)anError
+{
+	NSString *error=nil;
+	NSString *res=nil;
+	if (!leaf)
+		error=[NSString stringWithFormat:@"This is a tree with path %@", [self fullPath]];
+	
+	if ([self hasBinaryAttributes])
+		error=[NSString stringWithFormat:@"%@ appears to be a binary file of %d bytes", [self fullPath], [self fileSize]];
+	
+	if ([self fileSize] > 52428800) // ~50MB
+		error=[NSString stringWithFormat:@"%@ is too big to be displayed (%d bytes)", [self fullPath], [self fileSize]];
+	
+	if(error==nil){
+		NSString *des=@"";
+		if(format==@"p") {
+			des=[NSString stringWithFormat:@"%@^",sha];
+		}else if(format==@"h") {
+			des=@"HEAD";
+		}else{
+			des=@"--";
+		}
+		res=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff", sha, des,[self fullPath], nil]];
+		if ([res length]==0) {
+			NSLog(@"--%d",[res length]);
+			*anError = [NSError errorWithDomain:@"diff" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No Diff",NSLocalizedDescriptionKey,nil]];
+		}else{
+			NSLog(@"--%@",[res substringToIndex:80]);
+		}
+	}else{
+		*anError = [NSError errorWithDomain:@"diff" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+	}
+
+	return res;
+}
+
+- (NSString *)textContents:(NSError **)anError
+{
+	NSString *error=nil;
+	NSString *res=nil;
+	if (!leaf)
+		error=[NSString stringWithFormat:@"This is a tree with path %@", [self fullPath]];
+	
+	if ([self hasBinaryAttributes])
+		error=[NSString stringWithFormat:@"%@ appears to be a binary file of %d bytes", [self fullPath], [self fileSize]];
+	
+	if ([self fileSize] > 52428800) // ~50MB
+		error=[NSString stringWithFormat:@"%@ is too big to be displayed (%d bytes)", [self fullPath], [self fileSize]];
+	
+	if(error==nil){
+		res = [self contents];
+	}else{
+		*anError = [NSError errorWithDomain:@"show" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+	}
+
+	return res;
+}
+
 - (long long)fileSize
 {
 	if (_fileSize)
@@ -127,25 +225,6 @@
 		_fileSize = [sizeString longLongValue];
 
 	return _fileSize;
-}
-
-- (NSString *)textContents
-{
-	if (!leaf)
-		return [NSString stringWithFormat:@"This is a tree with path %@", [self fullPath]];
-
-	if ([self hasBinaryAttributes])
-		return [NSString stringWithFormat:@"%@ appears to be a binary file of %d bytes", [self fullPath], [self fileSize]];
-
-	if ([self fileSize] > 52428800) // ~50MB
-		return [NSString stringWithFormat:@"%@ is too big to be displayed (%d bytes)", [self fullPath], [self fileSize]];
-
-	NSString* contents = [self contents];
-
-	if ([self hasBinaryHeader:contents])
-		return [NSString stringWithFormat:@"%@ appears to be a binary file of %d bytes", [self fullPath], [self fileSize]];
-
-	return contents;
 }
 
 - (void) saveToFolder: (NSString *) dir
