@@ -360,8 +360,8 @@
 
 +(NSArray *)getFilesNames:(NSString *)line
 {
-	NSString *a;
-	NSString *b;
+	NSString *a = nil;
+	NSString *b = nil;
 	NSScanner *scanner=[NSScanner scannerWithString:line];
 	if([scanner scanString:@"Binary files " intoString:NULL]){
 		[scanner scanUpToString:@" and" intoString:&a];
