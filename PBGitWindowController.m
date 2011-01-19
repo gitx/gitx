@@ -136,8 +136,8 @@
 
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-	if (self.viewController && [PBGitDefaults refreshAutomatically]) {
-		[(PBViewController *)self.viewController refresh:nil];
+	if ([PBGitDefaults refreshAutomatically]) {
+		[contentController refresh:nil];
 	}
 }
 
