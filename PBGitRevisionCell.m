@@ -9,6 +9,7 @@
 #import "PBGitRevisionCell.h"
 #import "PBGitRef.h"
 #import "RoundedRectangle.h"
+#import "GitXTextFieldCell.h"
 
 @implementation PBGitRevisionCell
 
@@ -16,20 +17,24 @@
 - (id) initWithCoder: (id) coder
 {
 	self = [super initWithCoder:coder];
-	textCell = [[NSTextFieldCell alloc] initWithCoder:coder];
+	textCell = [[GitXTextFieldCell alloc] initWithCoder:coder];
 	return self;
 }
 
-- (NSArray*) colors
++ (NSArray *)laneColors
 {
-	return 	[NSArray arrayWithObjects:
-				[NSColor colorWithCalibratedRed: 0X4e/256.0 green:0X9A/256.0 blue: 0X06/256.0 alpha: 1.0],
-				[NSColor colorWithCalibratedRed: 0X20/256.0 green:0X4A/256.0 blue: 0X87/256.0 alpha: 1.0],
-				[NSColor colorWithCalibratedRed: 0XC4/256.0 green:0XA0/256.0 blue: 0 alpha: 1.0],
-				[NSColor colorWithCalibratedRed: 0X5C/256.0 green:0X35/256.0 blue: 0X66/256.0 alpha: 1.0],
-				[NSColor colorWithCalibratedRed: 0XA4/256.0 green:0X00/256.0 blue: 0X00/256.0 alpha: 1.0],
-				[NSColor colorWithCalibratedRed: 0XCE/256.0 green:0X5C/256.0 blue: 0 alpha: 1.0],
-				nil];
+	static NSArray *laneColors = nil;
+	if (!laneColors)
+		laneColors = [NSArray arrayWithObjects:
+					  [NSColor colorWithCalibratedRed: 0X4e/256.0 green:0X9A/256.0 blue: 0X06/256.0 alpha: 1.0],
+					  [NSColor colorWithCalibratedRed: 0X20/256.0 green:0X4A/256.0 blue: 0X87/256.0 alpha: 1.0],
+					  [NSColor colorWithCalibratedRed: 0XC4/256.0 green:0XA0/256.0 blue: 0 alpha: 1.0],
+					  [NSColor colorWithCalibratedRed: 0X5C/256.0 green:0X35/256.0 blue: 0X66/256.0 alpha: 1.0],
+					  [NSColor colorWithCalibratedRed: 0XA4/256.0 green:0X00/256.0 blue: 0X00/256.0 alpha: 1.0],
+					  [NSColor colorWithCalibratedRed: 0XCE/256.0 green:0X5C/256.0 blue: 0 alpha: 1.0],
+					  nil];
+
+	return laneColors;
 }
 
 - (void) drawLineFromColumn: (int) from toColumn: (int) to inRect: (NSRect) r offset: (int) offset color: (int) c
@@ -41,8 +46,7 @@
 	NSPoint source = NSMakePoint(origin.x + columnWidth* from, origin.y + offset);
 	NSPoint center = NSMakePoint( origin.x + columnWidth * to, origin.y + r.size.height * 0.5 + 0.5);
 
-	// Just use red for now.
-	NSArray* colors = [self colors];
+	NSArray* colors = [PBGitRevisionCell laneColors];
 	[[colors objectAtIndex: c % [colors count]] set];
 	
 	NSBezierPath * path = [NSBezierPath bezierPath];
@@ -52,6 +56,16 @@
 	[path lineToPoint: center];
 	[path stroke];
 	
+}
+
+- (BOOL) isCurrentCommit
+{
+	PBGitSHA *thisSha = [self.objectValue sha];
+
+	PBGitRepository* repository = [self.objectValue repository];
+	PBGitSHA *currentSha = [repository headSHA];
+
+	return [currentSha isEqual:thisSha];
 }
 
 - (void) drawCircleInRect: (NSRect) r
@@ -71,7 +85,13 @@
 	[path fill];
 	
 	NSRect smallOval = { columnOrigin.x - 3, columnOrigin.y + r.size.height * 0.5 - 3, 6, 6};
-	[[NSColor whiteColor] set];
+
+	if ( [self isCurrentCommit ] ) {
+		[[NSColor colorWithCalibratedRed: 0Xfc/256.0 green:0Xa6/256.0 blue: 0X4f/256.0 alpha: 1.0] set];
+	} else {
+		[[NSColor whiteColor] set];
+	}
+
 	path = [NSBezierPath bezierPathWithOvalInRect:smallOval];
 	[path fill];	
 }
@@ -149,8 +169,8 @@
 	static const int ref_spacing = 2;
 	
 	NSRect lastRect = rect;
-	lastRect.origin.x = round(lastRect.origin.x) - 0.5;
-	lastRect.origin.y = round(lastRect.origin.y) - 0.5;
+	lastRect.origin.x = round(lastRect.origin.x) + 0.5;
+	lastRect.origin.y = round(lastRect.origin.y) + 0.5;
 	
 	for (PBGitRef *ref in self.objectValue.refs) {
 		NSMutableDictionary* attributes = [self attributesForRefLabelSelected:NO];
@@ -161,9 +181,11 @@
 		newRect.size.height = textSize.height;
 		newRect.origin.y = rect.origin.y + (rect.size.height - newRect.size.height) / 2;
 		
-		[array addObject:[NSValue valueWithRect:newRect]];
-		lastRect = newRect;
-		lastRect.origin.x += (int)lastRect.size.width + ref_spacing;
+		if (NSContainsRect(rect, newRect)) {
+			[array addObject:[NSValue valueWithRect:newRect]];
+			lastRect = newRect;
+			lastRect.origin.x += (int)lastRect.size.width + ref_spacing;
+		}
 	}
 	
 	return array;
@@ -187,7 +209,7 @@
 {
 	[[NSColor blackColor] setStroke];
 
-	NSRect lastRect;
+	NSRect lastRect = NSMakeRect(0, 0, 0, 0);
 	int index = 0;
 	for (NSValue *rectValue in [self rectsForRefsinRect:*refRect])
 	{
@@ -283,20 +305,22 @@
 	if (!contextMenuDelegate)
 		return [self menu];
 
-	int i = [self indexAtX:[view convertPointFromBase:[event locationInWindow]].x];
-	if (i < 0)
-		return [self menu];
+	int i = [self indexAtX:[view convertPointFromBase:[event locationInWindow]].x - rect.origin.x];
 
-	id ref = [[[self objectValue] refs] objectAtIndex:i];
-	if (!ref)
-		return [self menu];
+	id ref = nil;
+	if (i >= 0)
+		ref = [[[self objectValue] refs] objectAtIndex:i];
 
-	NSArray *items = [contextMenuDelegate menuItemsForRef:ref commit:[self objectValue]];
+	NSArray *items = nil;
+	if (ref)
+		items = [contextMenuDelegate menuItemsForRef:ref];
+	else
+		items = [contextMenuDelegate menuItemsForCommit:[self objectValue]];
+
 	NSMenu *menu = [[NSMenu alloc] init];
+	[menu setAutoenablesItems:NO];
 	for (NSMenuItem *item in items)
 		[menu addItem:item];
 	return menu;
-
-	return [self menu];
 }
 @end

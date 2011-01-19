@@ -12,6 +12,7 @@
 }
 
 + (int) commitMessageViewVerticalLineLength;
++ (BOOL) commitMessageViewHasVerticalLine;
 + (BOOL) isGistEnabled;
 + (BOOL) isGravatarEnabled;
 + (BOOL) confirmPublicGists;
@@ -20,6 +21,26 @@
 + (BOOL)refreshAutomatically;
 + (BOOL)openCurDirOnLaunch;
 + (BOOL)showOpenPanelOnLaunch;
++ (BOOL) shouldCheckoutBranch;
++ (void) setShouldCheckoutBranch:(BOOL)shouldCheckout;
++ (NSString *) recentCloneDestination;
++ (void) setRecentCloneDestination:(NSString *)path;
++ (BOOL) showStageView;
++ (void) setShowStageView:(BOOL)suppress;
++ (BOOL) openPreviousDocumentsOnLaunch;
++ (void) setPreviousDocumentPaths:(NSArray *)documentPaths;
++ (NSArray *) previousDocumentPaths;
++ (void) removePreviousDocumentPaths;
++ (NSInteger) branchFilter;
++ (void) setBranchFilter:(NSInteger)state;
++ (NSInteger)historySearchMode;
++ (void)setHistorySearchMode:(NSInteger)mode;
+
+
+// Suppressed Dialog Warnings
++ (void)suppressDialogWarningForDialog:(NSString *)dialog;
++ (BOOL)isDialogWarningSuppressedForDialog:(NSString *)dialog;
++ (void)resetAllDialogWarnings;
 
 
 @end

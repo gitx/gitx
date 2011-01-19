@@ -25,22 +25,28 @@
 {
     NSURL *url = [[self request] URL];
 	PBGitRepository *repo = [[self request] repository];
-
+	
 	if(!repo) {
 		[[self client] URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:0 userInfo:nil]];
 		return;
     }
-
-	NSString *specifier = [NSString stringWithFormat:@"%@:%@", [url host], [[url path] substringFromIndex:1]];
+	
+	NSString *path=[[url path] substringFromIndex:1];
+	NSString *v=@"";
+	if ([[path substringToIndex:5] isEqualToString:@"prev/"]) {
+		path=[path substringFromIndex:5];
+		v=@"^";
+	}
+	NSString *specifier = [NSString stringWithFormat:@"%@%@:%@", [url host], v,path];
 	handle = [repo handleInWorkDirForArguments:[NSArray arrayWithObjects:@"cat-file", @"blob", specifier, nil]];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFinishFileLoad:) name:NSFileHandleReadToEndOfFileCompletionNotification object:handle];
 	[handle readToEndOfFileInBackgroundAndNotify];
-
+	
     NSURLResponse *response = [[NSURLResponse alloc] initWithURL:[[self request] URL]
 														MIMEType:nil
 										   expectedContentLength:-1
 												textEncodingName:nil];
-
+	
     [[self client] URLProtocol:self
 			didReceiveResponse:response
 			cacheStoragePolicy:NSURLCacheStorageNotAllowed];

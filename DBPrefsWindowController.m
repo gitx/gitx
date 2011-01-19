@@ -74,13 +74,13 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 		// Create a new window to display the preference views.
 		// If the developer attached a window to this controller
 		// in Interface Builder, it gets replaced with this one.
-	NSWindow *window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0,0,1000,1000)
+	NSPanel *panel = [[[NSPanel alloc] initWithContentRect:NSMakeRect(0,0,1000,1000)
 												    styleMask:(NSTitledWindowMask |
 															   NSClosableWindowMask |
 															   NSMiniaturizableWindowMask)
 													  backing:NSBackingStoreBuffered
 													    defer:YES] autorelease];
-	[self setWindow:window];
+	[self setWindow:panel];
 	contentSubview = [[[NSView alloc] initWithFrame:[[[self window] contentView] frame]] autorelease];
 	[contentSubview setAutoresizingMask:(NSViewMinYMargin | NSViewWidthSizable)];
 	[[[self window] contentView] addSubview:contentSubview];
@@ -211,9 +211,9 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 		[toolbar release];
 	}
 
-	NSString *firstIdentifier = [toolbarIdentifiers objectAtIndex:0];
-	[[[self window] toolbar] setSelectedItemIdentifier:firstIdentifier];
-	[self displayViewForIdentifier:firstIdentifier animate:NO];
+	NSString *identifier = [self defaultViewIdentifier];
+	[[[self window] toolbar] setSelectedItemIdentifier:identifier];
+	[self displayViewForIdentifier:identifier animate:NO];
 
 	[[self window] center];
 
@@ -370,7 +370,7 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 	NSEnumerator *subviewsEnum = [[contentSubview subviews] reverseObjectEnumerator];
 
 		// This is our visible view. Just get past it.
-	subview = [subviewsEnum nextObject];
+	[subviewsEnum nextObject];
 
 		// Remove everything else. There should be just one, but
 		// if the user does a lot of fast clicking, we might have
@@ -401,6 +401,18 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 	windowFrame.origin.y = NSMaxY([[self window] frame]) - NSHeight(windowFrame);
 
 	return windowFrame;
+}
+
+
+
+
+#pragma mark -
+#pragma mark Default View
+
+
+- (NSString *)defaultViewIdentifier
+{
+	return [toolbarIdentifiers objectAtIndex:0];
 }
 
 

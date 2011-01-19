@@ -24,6 +24,15 @@
 	[cachedFilesController addObserver:self forKeyPath:@"selection" options:0 context:@"cachedFileSelected"];
 }
 
+- (void)closeView
+{
+	[[self script] removeWebScriptKey:@"Index"];
+	[unstagedFilesController removeObserver:self forKeyPath:@"selection"];
+	[cachedFilesController removeObserver:self forKeyPath:@"selection"];
+
+	[super closeView];
+}
+
 - (void) didLoad
 {
 	[[self script] setValue:controller.index forKey:@"Index"];
@@ -85,21 +94,35 @@
 	[self refresh];
 }
 
+- (void) discardHunk:(NSString *)hunk
+{
+    [controller.index applyPatch:hunk stage:NO reverse:YES];
+    [self refresh];
+}
+
+- (void) discardHunkAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    [[alert window] orderOut:nil];
+
+	if (returnCode == NSAlertDefaultReturn)
+		[self discardHunk:contextInfo];
+}
+
 - (void)discardHunk:(NSString *)hunk altKey:(BOOL)altKey
 {
-	int ret = NSAlertDefaultReturn;
 	if (!altKey) {
-		ret = [[NSAlert alertWithMessageText:@"Discard hunk"
-			defaultButton:nil
-			alternateButton:@"Cancel"
-			otherButton:nil
-			informativeTextWithFormat:@"Are you sure you wish to discard the changes in this hunk?\n\nYou cannot undo this operation."] runModal];
-	}
-
-	if (ret == NSAlertDefaultReturn) {
-		[controller.index applyPatch:hunk stage:NO reverse:YES];
-		[self refresh];
-	}
+        NSAlert *alert = [NSAlert alertWithMessageText:@"Discard hunk"
+                                         defaultButton:nil
+                                       alternateButton:@"Cancel"
+                                           otherButton:nil
+                             informativeTextWithFormat:@"Are you sure you wish to discard the changes in this hunk?\n\nYou cannot undo this operation."];
+		[alert beginSheetModalForWindow:[[controller view] window]
+                          modalDelegate:self
+                         didEndSelector:@selector(discardHunkAlertDidEnd:returnCode:contextInfo:)
+                            contextInfo:hunk];
+	} else {
+        [self discardHunk:hunk];
+    }
 }
 
 - (void) setStateMessage:(NSString *)state
