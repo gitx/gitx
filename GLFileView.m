@@ -253,7 +253,6 @@
 		NSArray *stat=[stats objectForKey:fileName];
 		NSInteger add=[[stat objectAtIndex:0] integerValue];
 		NSInteger rem=[[stat objectAtIndex:1] integerValue];
-		NSInteger tot=add+rem;
 		
 		[res appendString:@"<tr><td class='name'>"];
 		[res appendString:[NSString stringWithFormat:@"<a class='%@' href='#%@' representedFile='%@'>%@</a>",status,file,fileName,txt]];
