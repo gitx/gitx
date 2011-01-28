@@ -287,7 +287,7 @@
 
 - (BOOL) haveRefsBeenModified
 {
-	[repository reloadRefs];
+	//[repository reloadRefs];
 
 	NSMutableSet *currentRefSHAs = [NSMutableSet setWithArray:[repository.refs allKeys]];
 	[currentRefSHAs minusSet:lastRefSHAs];

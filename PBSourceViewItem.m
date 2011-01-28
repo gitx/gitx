@@ -110,6 +110,11 @@
 	return nil;
 }
 
+- (NSString *)badge
+{
+	return nil;
+}
+
 - (NSImage *) icon
 {
 	return nil;

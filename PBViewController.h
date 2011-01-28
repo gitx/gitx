@@ -37,6 +37,6 @@
 - (void)viewLoaded;
 
 - (NSResponder *)firstResponder;
-- (IBAction) refresh:(id)sender;
 
+- (IBAction) refresh:(id)sender;
 @end

@@ -11,9 +11,15 @@
 
 
 @interface PBGitSVBranchItem : PBSourceViewItem {
-
+	BOOL isCheckedOut;
+	NSNumber *behind;
+	NSNumber *ahead;
 }
 
 + (id)branchItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier;
+
+@property (assign) BOOL isCheckedOut;
+@property (assign) NSNumber *behind;
+@property (assign) NSNumber *ahead;
 
 @end

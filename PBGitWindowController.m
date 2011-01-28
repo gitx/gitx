@@ -9,6 +9,7 @@
 #import "PBGitWindowController.h"
 #import "PBGitHistoryController.h"
 #import "PBGitCommitController.h"
+#import "PBGitDefaults.h"
 #import "Terminal.h"
 #import "PBCloneRepsitoryToSheet.h"
 #import "PBCommitHookFailedSheet.h"
@@ -130,6 +131,14 @@
 		[PBGitXMessageSheet beginMessageSheetForWindow:[self window] withError:error];
 	else
 		[[NSAlert alertWithError:error] beginSheetModalForWindow:[self window] modalDelegate:self didEndSelector:nil contextInfo:nil];
+}
+
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+	if ([PBGitDefaults refreshAutomatically]) {
+		[contentController refresh:nil];
+	}
 }
 
 - (void)showErrorSheetTitle:(NSString *)title message:(NSString *)message arguments:(NSArray *)arguments output:(NSString *)output
