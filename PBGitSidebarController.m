@@ -48,7 +48,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	self = [super initWithRepository:theRepository superController:controller];
 	[sourceView setDelegate:self];
 	items = [NSMutableArray array];
-
+	
 	return self;
 }
 
@@ -57,19 +57,19 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	[super awakeFromNib];
 	window.contentView = self.view;
 	[self populateList];
-
+	
 	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
-
+	
 	[repository addObserver:self forKeyPath:@"refs" options:0 context:@"updateRefs"];
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
 	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
 	[repository addObserver:self forKeyPath:@"stashController.stashes" options:NSKeyValueObservingOptionNew context:kObservingContextStashes];
 	[repository addObserver:self forKeyPath:@"submoduleController.submodules" options:NSKeyValueObservingOptionNew context:kObservingContextSubmodules];
-
-
+	
+	
 	[self menuNeedsUpdate:[actionButton menu]];
-
+	
 	if ([PBGitDefaults showStageView])
 		[self selectStage];
 	else
@@ -83,12 +83,12 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 {
 	[historyViewController closeView];
 	[commitViewController closeView];
-
+	
 	[repository removeObserver:self forKeyPath:@"currentBranch"];
 	[repository removeObserver:self forKeyPath:@"branches"];
 	[repository removeObserver:self forKeyPath:@"stashController.stashes"];
 	[repository removeObserver:self forKeyPath:@"submoduleController.submodules"];
-
+	
 	[super closeView];
 }
 
@@ -99,7 +99,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 		[self selectCurrentBranch];
 	}else if ([@"branchesModified" isEqualToString:context]) {
 		NSInteger changeKind = [(NSNumber *)[change objectForKey:NSKeyValueChangeKindKey] intValue];
-
+		
 		if (changeKind == NSKeyValueChangeInsertion) {
 			NSArray *newRevSpecs = [change objectForKey:NSKeyValueChangeNewKey];
 			for (PBGitRevSpecifier *rev in newRevSpecs) {
@@ -195,7 +195,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 {
 	NSInteger index = [sourceView selectedRow];
 	PBSourceViewItem *item = [sourceView itemAtRow:index];
-
+	
 	return item;
 }
 
@@ -261,7 +261,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 		[sourceView reloadData];
 		return;
 	}
-
+	
 	NSArray *pathComponents = [[rev simpleRef] componentsSeparatedByString:@"/"];
 	if ([pathComponents count] < 2)
 		[branches addChild:[PBSourceViewItem itemWithRevSpec:rev]];
@@ -271,17 +271,17 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 		[tags addRev:rev toPath:[pathComponents subarrayWithRange:NSMakeRange(2, [pathComponents count] - 2)]];
 	else if ([[rev simpleRef] hasPrefix:@"refs/remotes/"])
 		[remotes addRev:rev toPath:[pathComponents subarrayWithRange:NSMakeRange(2, [pathComponents count] - 2)]];
-
+	
 	[sourceView reloadData];
 }
 
 - (void) removeRevSpec:(PBGitRevSpecifier *)rev
 {
 	PBSourceViewItem *item = [self itemForRev:rev];
-
+	
 	if (!item)
 		return;
-
+	
 	PBSourceViewItem *parent = item.parent;
 	[parent removeChild:item];
 	[sourceView reloadData];
@@ -298,19 +298,19 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 {
 	NSInteger index = [sourceView selectedRow];
 	PBSourceViewItem *item = [sourceView itemAtRow:index];
-
+	
 	if ([item revSpecifier]) {
 		if (![repository.currentBranch isEqual:[item revSpecifier]])
 			repository.currentBranch = [item revSpecifier];
 		[superController changeContentController:historyViewController];
 		[PBGitDefaults setShowStageView:NO];
 	}
-
+	
 	if (item == stage) {
 		[superController changeContentController:commitViewController];
 		[PBGitDefaults setShowStageView:YES];
 	}
-
+	
 	[self updateActionMenu];
 	[self updateRemoteControls];
 }
@@ -358,7 +358,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	PBSourceViewItem *project = [PBSourceViewItem groupItemWithTitle:[repository projectName]];
 	project.showsActionButton = YES;
 	project.isUncollapsible = YES;
-
+	
 	stage = [PBGitSVStageItem stageItem];
 	[project addChild:stage];
 	
@@ -369,10 +369,10 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	others = [PBSourceViewItem groupItemWithTitle:@"Other"];
 	stashes = [PBSourceViewItem groupItemWithTitle:@"Stashes"];
 	submodules = [PBSourceViewItem groupItemWithTitle:@"Submodules"];
-
+	
 	for (PBGitRevSpecifier *rev in repository.branches)
 		[self addRevSpec:rev];
-
+	
 	[items addObject:project];
 	[items addObject:branches];
 	[items addObject:remotes];
@@ -380,7 +380,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	[items addObject:others];
 	[items addObject:stashes];
 	[items addObject:submodules];
-
+	
 	[sourceView reloadData];
 	[sourceView expandItem:project];
 	[sourceView expandItem:branches expandChildren:YES];
@@ -396,7 +396,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 {
 	if (!item)
 		return [items objectAtIndex:index];
-
+	
 	return [[(PBSourceViewItem *)item children] objectAtIndex:index];
 }
 
@@ -409,7 +409,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 {
 	if (!item)
 		return [items count];
-
+	
 	return [[(PBSourceViewItem *)item children] count];
 }
 
@@ -430,7 +430,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 {
 	if (!ref)
 		return;
-
+	
 	for (NSMenuItem *menuItem in [historyViewController.refController menuItemsForRef:ref])
 		[menu addItem:menuItem];
 }
@@ -441,7 +441,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	NSImage *actionIcon = [NSImage imageNamed:@"NSActionTemplate"];
 	[actionIcon setSize:NSMakeSize(12, 12)];
 	[actionIconItem setImage:actionIcon];
-
+	
 	return actionIconItem;
 }
 
@@ -472,11 +472,11 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	PBGitRef *ref = [viewItem ref];
 	if (!ref)
 		return nil;
-
+	
 	NSMenu *menu = [[NSMenu alloc] init];
 	[menu setAutoenablesItems:NO];
 	[self addMenuItemsForRef:ref toMenu:menu];
-
+	
 	return menu;
 }
 
@@ -485,7 +485,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 {
 	[actionButton removeAllItems];
 	[menu addItem:[self actionIconItem]];
-
+	
 	PBGitRef *ref = [[self selectedItem] ref];
 	[self addMenuItemsForRef:ref toMenu:menu];
 }
@@ -503,11 +503,11 @@ enum  {
 - (void) updateRemoteControls
 {
 	BOOL hasRemote = NO;
-
+	
 	PBGitRef *ref = [[self selectedItem] ref];
 	if ([ref isRemote] || ([ref isBranch] && [[repository remoteRefForBranch:ref error:NULL] remoteName]))
 		hasRemote = YES;
-
+	
 	[remoteControls setEnabled:hasRemote forSegment:kFetchSegment];
 	[remoteControls setEnabled:hasRemote forSegment:kPullSegment];
 	[remoteControls setEnabled:hasRemote forSegment:kPushSegment];
@@ -522,26 +522,26 @@ enum  {
 - (IBAction) fetchPullPushAction:(id)sender
 {
 	NSInteger selectedSegment = [sender selectedSegment];
-
+	
 	if (selectedSegment == kAddRemoteSegment) {
 		[PBAddRemoteSheet beginAddRemoteSheetForRepository:repository];
 		return;
 	}
-
+	
 	NSInteger index = [sourceView selectedRow];
 	PBSourceViewItem *item = [sourceView itemAtRow:index];
 	PBGitRef *ref = [[item revSpecifier] ref];
-
+	
 	if (!ref && (item.parent == remotes))
 		ref = [PBGitRef refFromString:[kGitXRemoteRefPrefix stringByAppendingString:[item title]]];
-
+	
 	if (![ref isRemote] && ![ref isBranch])
 		return;
-
+	
 	PBGitRef *remoteRef = [repository remoteRefForBranch:ref error:NULL];
 	if (!remoteRef)
 		return;
-
+	
 	if (selectedSegment == kFetchSegment)
 		[repository beginFetchFromRemoteForRef:ref];
 	else if (selectedSegment == kPullSegment)

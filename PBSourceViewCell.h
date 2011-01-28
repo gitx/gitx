@@ -10,14 +10,13 @@
 #import "PBIconAndTextCell.h"
 
 @interface PBSourceViewCell : PBIconAndTextCell {
+	NSString *badge;
 	BOOL showsActionButton;
 	
 	BOOL iMouseDownInInfoButton;
     BOOL iMouseHoveredInInfoButton;
     SEL iInfoButtonAction;
-	NSString *badge;
 }
-
 @property (nonatomic) BOOL showsActionButton;
 @property (nonatomic) SEL iInfoButtonAction;
 @property (assign) NSString *badge;

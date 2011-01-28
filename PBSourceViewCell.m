@@ -14,11 +14,9 @@
 - (NSRect)infoButtonRectForBounds:(NSRect)bounds;
 @end
 
-
 @implementation PBSourceViewCell
 @synthesize iInfoButtonAction;
 @synthesize showsActionButton;
-
 @synthesize badge;
 
 # pragma mark context menu delegate methods
