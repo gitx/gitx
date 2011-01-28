@@ -14,6 +14,7 @@
 #import "PBGitDefaults.h"
 #import "PBDiffWindowController.h"
 
+#import "PBArgumentPickerController.h"
 
 #define kDialogAcceptDroppedRef @"Accept Dropped Ref"
 #define kDialogConfirmPush @"Confirm Push"
@@ -228,7 +229,7 @@
 }
 
 - (void) showTagInfoSheet:(PBRefMenuItem *)sender
-{
+{	
 	if ([[sender refish] refishType] != kGitXTagType)
 		return;
 

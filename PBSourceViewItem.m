@@ -12,6 +12,7 @@
 
 @implementation PBSourceViewItem
 @synthesize parent, title, isGroupItem, children, revSpecifier, isUncollapsible;
+@synthesize showsActionButton;
 @dynamic icon;
 
 - (id)init

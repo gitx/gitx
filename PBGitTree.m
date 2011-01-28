@@ -131,7 +131,9 @@
 	if(error==nil){
 		res=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"blame", @"-p",  sha, @"--", [self fullPath], nil]];
 	}else{
-		*anError = [NSError errorWithDomain:@"blame" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+		if (anError != NULL) {
+			*anError = [NSError errorWithDomain:@"blame" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+		}
 	}
 	
 	return res;
@@ -147,7 +149,9 @@
 	if(error==nil){
 		res=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"log", [NSString stringWithFormat:@"--pretty=format:%@",format], @"--", [self fullPath], nil]];
 	}else{
-		*anError = [NSError errorWithDomain:@"log" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+		if (anError != NULL) {
+			*anError = [NSError errorWithDomain:@"log" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+		}
 	}
 	
 	return res;
@@ -178,12 +182,16 @@
 		res=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff", sha, des,[self fullPath], nil]];
 		if ([res length]==0) {
 			NSLog(@"--%d",[res length]);
-			*anError = [NSError errorWithDomain:@"diff" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No Diff",NSLocalizedDescriptionKey,nil]];
+			if (anError != NULL) {
+				*anError = [NSError errorWithDomain:@"diff" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No Diff",NSLocalizedDescriptionKey,nil]];
+			}
 		}else{
 			NSLog(@"--%@",[res substringToIndex:80]);
 		}
 	}else{
-		*anError = [NSError errorWithDomain:@"diff" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+		if (anError != NULL) {
+			*anError = [NSError errorWithDomain:@"diff" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+		}
 	}
 
 	return res;
@@ -205,7 +213,9 @@
 	if(error==nil){
 		res = [self contents];
 	}else{
-		*anError = [NSError errorWithDomain:@"show" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+		if (anError != NULL) {
+			*anError = [NSError errorWithDomain:@"show" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:error,NSLocalizedDescriptionKey,nil]];
+		}
 	}
 
 	return res;

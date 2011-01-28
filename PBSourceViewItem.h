@@ -20,7 +20,10 @@
 
 	BOOL isGroupItem;
 	BOOL isUncollapsible;
+	
+	BOOL showsActionButton;
 }
+@property (nonatomic) BOOL showsActionButton;
 
 + (id)groupItemWithTitle:(NSString *)title;
 + (id)itemWithRevSpec:(PBGitRevSpecifier *)revSpecifier;

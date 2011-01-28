@@ -18,6 +18,7 @@
 + (BOOL) confirmPublicGists;
 + (BOOL) isGistPublic;
 + (BOOL)showWhitespaceDifferences;
++ (BOOL)refreshAutomatically;
 + (BOOL)openCurDirOnLaunch;
 + (BOOL)showOpenPanelOnLaunch;
 + (BOOL) shouldCheckoutBranch;
@@ -40,5 +41,6 @@
 + (void)suppressDialogWarningForDialog:(NSString *)dialog;
 + (BOOL)isDialogWarningSuppressedForDialog:(NSString *)dialog;
 + (void)resetAllDialogWarnings;
+
 
 @end

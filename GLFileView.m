@@ -253,7 +253,6 @@
 		NSArray *stat=[stats objectForKey:fileName];
 		NSInteger add=[[stat objectAtIndex:0] integerValue];
 		NSInteger rem=[[stat objectAtIndex:1] integerValue];
-		NSInteger tot=add+rem;
 		
 		[res appendString:@"<tr><td class='name'>"];
 		[res appendString:[NSString stringWithFormat:@"<a class='%@' href='#%@' representedFile='%@'>%@</a>",status,file,fileName,txt]];
@@ -278,8 +277,8 @@
 	BOOL inDiff=FALSE;
 	BOOL inBlock=FALSE;
 	
-	int l_int,l_line,l_end;
-	int r_int,r_line,r_end;
+	int l_line,l_end;
+	int r_line,r_end;
 	int i;
 	for (i=0; i<[lines count]; i++) {
 		line=[lines objectAtIndex:i];
@@ -295,12 +294,12 @@
 			NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
 			NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
 			
-			l_end=l_line=l_int=abs([[pos_l objectAtIndex:0]integerValue]);
+			l_end=l_line=abs([[pos_l objectAtIndex:0]integerValue]);
 			if ([pos_l count]>1) {
 				l_end=l_line+[[pos_l objectAtIndex:1]integerValue];				
 			}
 			
-			r_end=r_line=r_int=[[pos_r objectAtIndex:0]integerValue];
+			r_end=r_line=[[pos_r objectAtIndex:0]integerValue];
 			if ([pos_r count]>1) {
 				r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
 			}
@@ -360,8 +359,8 @@
 
 +(NSArray *)getFilesNames:(NSString *)line
 {
-	NSString *a;
-	NSString *b;
+	NSString *a = nil;
+	NSString *b = nil;
 	NSScanner *scanner=[NSScanner scannerWithString:line];
 	if([scanner scanString:@"Binary files " intoString:NULL]){
 		[scanner scanUpToString:@" and" intoString:&a];

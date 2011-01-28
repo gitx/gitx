@@ -88,4 +88,37 @@
 	// It doesn't exist at all. Write it locally.
 	[self writeValue:value forKey:path global:NO];
 }
+
+/**
+ runs `git config -l` returning a dict of key-value pairs from the result
+ 
+ passing nil as directory passes '--global' flag
+ */
+- (NSDictionary*) listConfigValuesInDir:(NSString*)inDir
+{
+    NSArray* arguments;
+    
+    if (inDir == nil) {
+        arguments = [NSArray arrayWithObjects:@"config", @"--global", @"-l", nil];
+    } else {
+        arguments = [NSArray arrayWithObjects:@"config", @"-l", nil];
+    }
+    
+	int ret = 1;
+	NSString* output = [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:arguments inDir:inDir retValue:&ret];
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    if (ret==0) {
+        NSArray *lines = [output componentsSeparatedByString:@"\n"];
+        
+        for (NSString* line in lines) {
+            NSRange equalsPos = [line rangeOfString:@"="];
+            NSString* key = [line substringToIndex:equalsPos.location];
+            NSString* value = [line substringFromIndex:equalsPos.location+1];
+            [result setObject:value forKey:key];
+        }
+    }
+    
+    return [NSDictionary dictionaryWithDictionary:result];
+}
+
 @end

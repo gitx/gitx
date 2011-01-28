@@ -25,8 +25,6 @@
 	IBOutlet NSTextField *statusField;
 	IBOutlet NSProgressIndicator *progressIndicator;
 
-	PBViewController* viewController;
-
 	IBOutlet NSToolbarItem *terminalItem;
 	IBOutlet NSToolbarItem *finderItem;
 }
