@@ -82,6 +82,9 @@
 		91B103CC0E898EC300C84364 /* PBIconAndTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 91B103CB0E898EC300C84364 /* PBIconAndTextCell.m */; };
 		93CB42C20EAB7B2200530609 /* PBGitDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 93CB42C10EAB7B2200530609 /* PBGitDefaults.m */; };
 		93F7857F0EA3ABF100C1F443 /* PBCommitMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93F7857E0EA3ABF100C1F443 /* PBCommitMessageView.m */; };
+		C3B13DD812F3A89D0045437C /* SecurityFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3B13DD712F3A89D0045437C /* SecurityFoundation.framework */; };
+		C3B13DE412F3A8D70045437C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3B13DE312F3A8D70045437C /* Security.framework */; };
+		C3B13E2312F3A9130045437C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3B13DE312F3A8D70045437C /* Security.framework */; };
 		D26DC6450E782C9000C777B2 /* gitx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D26DC6440E782C9000C777B2 /* gitx.icns */; };
 		D8022FE811E124A0003C21F6 /* PBGitXMessageSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8022FE711E124A0003C21F6 /* PBGitXMessageSheet.xib */; };
 		D8022FED11E124C8003C21F6 /* PBGitXMessageSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = D8022FEC11E124C8003C21F6 /* PBGitXMessageSheet.m */; };
@@ -375,6 +378,8 @@
 		93F7857D0EA3ABF100C1F443 /* PBCommitMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBCommitMessageView.h; sourceTree = "<group>"; };
 		93F7857E0EA3ABF100C1F443 /* PBCommitMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBCommitMessageView.m; sourceTree = "<group>"; };
 		93FCCBA80EA8AF450061B02B /* PBGitConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitConfig.m; sourceTree = "<group>"; };
+		C3B13DD712F3A89D0045437C /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
+		C3B13DE312F3A8D70045437C /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		D26DC6440E782C9000C777B2 /* gitx.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = gitx.icns; sourceTree = "<group>"; };
 		D8022A3411DFCCA5003C21F6 /* build_libgit2.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_libgit2.sh; sourceTree = "<group>"; };
 		D8022FE711E124A0003C21F6 /* PBGitXMessageSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PBGitXMessageSheet.xib; sourceTree = "<group>"; };
@@ -573,6 +578,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3B13E2312F3A9130045437C /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,6 +594,8 @@
 				F5C580E50EDA250900995434 /* libgit2.a in Frameworks */,
 				D8E3B2B810DC9FB2001096A3 /* ScriptingBridge.framework in Frameworks */,
 				D87127011229A21C00012334 /* QuartzCore.framework in Frameworks */,
+				C3B13DD812F3A89D0045437C /* SecurityFoundation.framework in Frameworks */,
+				C3B13DE412F3A8D70045437C /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -759,6 +767,7 @@
 				F5886A120ED5D33D0066E74C /* SpeedTest-Info.plist */,
 				F567CC3A106E6B910059BB9D /* GitXTesting-Info.plist */,
 				D89E9AB21218A9DA0097A90B /* ScriptingBridge.framework */,
+				C3B13DD712F3A89D0045437C /* SecurityFoundation.framework */,
 			);
 			name = GitTest;
 			sourceTree = "<group>";
@@ -838,6 +847,7 @@
 				F5C580E40EDA250900995434 /* libgit2.a */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				C3B13DE312F3A8D70045437C /* Security.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

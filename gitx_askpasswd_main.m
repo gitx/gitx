@@ -9,6 +9,17 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 #import <AppKit/AppKit.h>
+#include <errno.h>
+#include <string.h>
+#include <sys/sysctl.h>
+#include <Security/Security.h>
+#include <CoreServices/CoreServices.h>
+#include <Security/SecKeychain.h>
+#include <Security/SecKeychainItem.h>
+#include <Security/SecAccess.h>
+#include <Security/SecTrustedApplication.h>
+#include <Security/SecACL.h>
+#include <CoreFoundation/CoreFoundation.h>
 
 #define OKBUTTONWIDTH			100.0
 #define OKBUTTONHEIGHT			24.0
@@ -23,19 +34,22 @@
 {
 	NSPanel*			mPasswordPanel;
 	NSSecureTextField*	mPasswordField;
+	NSButton*			rememberCheck;
 }
 
--(NSPanel*)		passwordPanel;
+-(NSPanel*)	passwordPanel;
 
 -(IBAction)	doOKButton: (id)sender;
 -(IBAction)	doCancelButton: (id)sender;
 
 @end
 
+NSString*			url;
+
 
 @implementation GAPAppDelegate
 
--(NSPanel*)	passwordPanel
+-(NSPanel*)passwordPanel:(NSString *)prompt remember:(BOOL)remember
 {
 	if( !mPasswordPanel )
 	{
@@ -67,7 +81,7 @@
 		[okButton setBordered: YES];
 		[okButton setBezelStyle: NSRoundedBezelStyle];
 		[[mPasswordPanel contentView] addSubview: okButton];
-
+		
 		// Cancel:
 		NSRect	cancelBox = box;
 		cancelBox.origin.x = NSMinX( okBox ) -CANCELBUTTONWIDTH -6;
@@ -109,8 +123,23 @@
 		[passwordLabel setBordered: NO];
 		[passwordLabel setBezeled: NO];
 		[passwordLabel setDrawsBackground: NO];
-		[passwordLabel setStringValue: @"Please enter your password:"];	// +++ Localize.
+		[passwordLabel setStringValue: prompt];
 		[[mPasswordPanel contentView] addSubview: passwordLabel];
+		
+		// remember buton:
+		if(remember){
+			NSRect rememberBox = box;
+			rememberBox.origin.x = 100;
+			rememberBox.size.width = CANCELBUTTONWIDTH;
+			rememberBox.origin.y += 20;
+			rememberBox.size.height = CANCELBUTTONHEIGHT;
+			rememberCheck = [[NSButton alloc] initWithFrame: rememberBox];
+			[rememberCheck setButtonType:NSSwitchButton];
+			[rememberCheck setTarget: self];
+			[rememberCheck setTitle: @"Remenber"];			// +++ Localize.
+			[rememberCheck setKeyEquivalent: @"\r"];
+			[[mPasswordPanel contentView] addSubview: rememberCheck];
+		}
 		
 		// GitX icon:
 		NSRect gitxIconBox = box;
@@ -132,7 +161,15 @@
 
 -(IBAction)	doOKButton: (id)sender
 {
-	printf( "%s\n", [[mPasswordField stringValue] UTF8String] );
+	NSString *pas=[mPasswordField stringValue];
+	printf( "%s\n", [pas UTF8String] );
+	
+	StorePasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],
+						   [url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],
+						   [pas cStringUsingEncoding:NSASCIIStringEncoding],
+						   [pas lengthOfBytesUsingEncoding:NSASCIIStringEncoding]); //Call
+	
+	
 	[[NSApplication sharedApplication] stopModalWithCode: 0];
 }
 
@@ -147,9 +184,111 @@
 
 @end
 
+void getproclline(pid_t pid, char *command_name);
+
+void getproclline(pid_t pid, char *command_name)
+{
+	int		mib[3], argmax, nargs, c = 0;
+	size_t		size;
+	char		*procargs, *sp, *np, *cp;
+	
+	mib[0] = CTL_KERN;
+	mib[1] = KERN_ARGMAX;
+	
+	size = sizeof(argmax);
+	if (sysctl(mib, 2, &argmax, &size, NULL, 0) == -1) {
+		return;
+	}
+	
+	/* Allocate space for the arguments. */
+	procargs = (char *)malloc(argmax);
+	if (procargs == NULL) {
+		return;
+	}
+	
+	mib[0] = CTL_KERN;
+	mib[1] = KERN_PROCARGS2;
+	mib[2] = pid;
+	
+	size = (size_t)argmax;
+	if (sysctl(mib, 3, procargs, &size, NULL, 0) == -1) {
+		return;
+	}
+	
+	memcpy(&nargs, procargs, sizeof(nargs));
+	cp = procargs + sizeof(nargs);
+	
+	/* Skip the saved exec_path. */
+	for (; cp < &procargs[size]; cp++) {
+		if (*cp == '\0') {
+			/* End of exec_path reached. */
+			break;
+		}
+	}
+	if (cp == &procargs[size]) {
+		return;
+	}
+	
+	/* Skip trailing '\0' characters. */
+	for (; cp < &procargs[size]; cp++) {
+		if (*cp != '\0') {
+			/* Beginning of first argument reached. */
+			break;
+		}
+	}
+	if (cp == &procargs[size]) {
+		return;
+	}
+	/* Save where the argv[0] string starts. */
+	sp = cp;
+	
+	for (np = NULL; c < nargs && cp < &procargs[size]; cp++) {
+		if (*cp == '\0') {
+			c++;
+			if (np != NULL) {
+				*np = ' ';
+			}
+			np = cp;
+		}
+	}	
+	sprintf(command_name, "%s",sp);
+}
+
+OSStatus StorePasswordKeychain (const char *url, UInt32 urlLength, void* password,UInt32 passwordLength)
+{
+	OSStatus status;
+	status = SecKeychainAddGenericPassword (
+											NULL,            // default keychain
+											4,               // length of service name
+											"GitX",          // service name
+											urlLength,       // length of account name
+											url,             // account name
+											passwordLength,  // length of password
+											password,        // pointer to password data
+											NULL             // the item reference
+											);
+    return (status);
+}
+
+OSStatus GetPasswordKeychain (const char *url, UInt32 urlLength ,void *passwordData,UInt32 *passwordLength,
+							  SecKeychainItemRef *itemRef)
+{
+	OSStatus status ;
+	status = SecKeychainFindGenericPassword (
+											 NULL,           // default keychain
+											 4,              // length of service name
+											 "GitX",         // service name
+											 urlLength,      // length of account name
+											 url,            // account name
+											 passwordLength, // length of password
+											 passwordData,   // pointer to password data
+											 itemRef         // the item reference
+											 );
+	return (status);
+}
 
 
-int	main( int argc, const char** argv )
+int	main( int argc, const char* argv[] )
 {
 	// close stderr to stop cocoa log messages from being picked up by GitX
 	close(STDERR_FILENO);
@@ -162,14 +301,47 @@ int	main( int argc, const char** argv )
 	NSApplication *app = [NSApplication sharedApplication];
 	GAPAppDelegate *appDel = [[GAPAppDelegate alloc] init];
 	[app setDelegate: appDel];
-	NSWindow *passPanel = [appDel passwordPanel];
 	
-	[app activateIgnoringOtherApps: YES];
-	[passPanel makeKeyAndOrderFront: nil];
-	NSInteger code = [app runModalForWindow: passPanel];
+	char args[4024];
+	getproclline(getppid(),args);
+	NSString *cmd=[NSString stringWithFormat:@"%@",[NSString stringWithUTF8String:args]];
+	
+	NSString *prompt=@"???";
+	
+	url=@"poipoi";
+	
+	if([cmd hasPrefix:@"git-remote-https"]){
+		NSArray *args=[cmd componentsSeparatedByString:@" "];
+		url=[args objectAtIndex:[args count]-1];
+	}else if((sizeof(argv)/sizeof(char*))>1){
+		prompt=[NSString stringWithCString:argv[1] encoding:NSASCIIStringEncoding];
+	}else{
+		prompt=@"null";
+	}
+	
+	
+	OSStatus status,status1;
+	void *passwordData = nil; 
+	SecKeychainItemRef itemRef = nil;
+	UInt32 passwordLength = nil;
+	
+	status1 = GetPasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],[url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],&passwordData,&passwordLength,&itemRef); 
+	if (status1 == noErr)      {
+		SecKeychainItemFreeContent (NULL,passwordData);
+	}
+	
+	NSInteger code;
+	
+	if(passwordLength>0){
+		NSString *pass=[NSString stringWithCString:passwordData encoding:NSASCIIStringEncoding];
+	}else {		
+		NSWindow *passPanel = [appDel passwordPanel:prompt remember:NO];
+		[app activateIgnoringOtherApps: YES];
+		[passPanel makeKeyAndOrderFront: nil];
+		code = [app runModalForWindow: passPanel];
+	}
 	
 	[defaults synchronize];
 	
 	return code;
 }
-
