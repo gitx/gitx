@@ -137,7 +137,6 @@ NSString*			url;
 			[rememberCheck setButtonType:NSSwitchButton];
 			[rememberCheck setTarget: self];
 			[rememberCheck setTitle: @"Remenber"];			// +++ Localize.
-			[rememberCheck setKeyEquivalent: @"\r"];
 			[[mPasswordPanel contentView] addSubview: rememberCheck];
 		}
 		
@@ -162,15 +161,17 @@ NSString*			url;
 -(IBAction)	doOKButton: (id)sender
 {
 	NSString *pas=[mPasswordField stringValue];
-	printf( "%s\n", [pas UTF8String] );
 	
-	StorePasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],
-						   [url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],
-						   [pas cStringUsingEncoding:NSASCIIStringEncoding],
-						   [pas lengthOfBytesUsingEncoding:NSASCIIStringEncoding]); //Call
-	
-	
-	[[NSApplication sharedApplication] stopModalWithCode: 0];
+	if ((rememberCheck!=nil) && [rememberCheck state]==NSOnState) {
+		OSStatus status = StorePasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],
+												 [url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],
+												 [pas cStringUsingEncoding:NSASCIIStringEncoding],
+												 [pas lengthOfBytesUsingEncoding:NSASCIIStringEncoding]); //Call
+		if (status != noErr) {
+			[[NSApplication sharedApplication] stopModalWithCode:-1];
+		}
+	}
+	[[NSApplication sharedApplication] stopModalWithCode:0];
 }
 
 
@@ -179,7 +180,7 @@ NSString*			url;
 //       many times the remote server allows failed attempts.
 -(IBAction)	doCancelButton: (id)sender
 {
-	[[NSApplication sharedApplication] stopModalWithCode: 1];
+	[[NSApplication sharedApplication] stopModalWithCode:-1];
 }
 
 @end
@@ -310,36 +311,41 @@ int	main( int argc, const char* argv[] )
 	
 	url=@"poipoi";
 	
+	BOOL remember=NO;
+	
 	if([cmd hasPrefix:@"git-remote-https"]){
 		NSArray *args=[cmd componentsSeparatedByString:@" "];
 		url=[args objectAtIndex:[args count]-1];
+		prompt=[NSString stringWithFormat:@"%@ %@",[NSString stringWithCString:argv[1] encoding:NSASCIIStringEncoding],url];
+		remember=YES;
 	}else if((sizeof(argv)/sizeof(char*))>1){
 		prompt=[NSString stringWithCString:argv[1] encoding:NSASCIIStringEncoding];
-	}else{
-		prompt=@"null";
+	}else{ // only for test
+		remember=YES;
+		prompt=[NSString stringWithFormat:@"%???? %@",url];
 	}
 	
-	
-	OSStatus status,status1;
 	void *passwordData = nil; 
 	SecKeychainItemRef itemRef = nil;
 	UInt32 passwordLength = nil;
 	
-	status1 = GetPasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],[url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],&passwordData,&passwordLength,&itemRef); 
-	if (status1 == noErr)      {
+	OSStatus status = GetPasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],[url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],&passwordData,&passwordLength,&itemRef); 
+	printf( "status= %d\n",status);
+	if (status == noErr)      {
 		SecKeychainItemFreeContent (NULL,passwordData);
+		NSString *pas=[NSString stringWithCString:passwordData encoding:NSASCIIStringEncoding];
+		printf( "%s\n", [pas UTF8String] );
+		return 0;
+	}else if (status != errSecItemNotFound) {
+		return -1;
 	}
-	
+
 	NSInteger code;
 	
-	if(passwordLength>0){
-		NSString *pass=[NSString stringWithCString:passwordData encoding:NSASCIIStringEncoding];
-	}else {		
-		NSWindow *passPanel = [appDel passwordPanel:prompt remember:NO];
-		[app activateIgnoringOtherApps: YES];
-		[passPanel makeKeyAndOrderFront: nil];
-		code = [app runModalForWindow: passPanel];
-	}
+	NSWindow *passPanel = [appDel passwordPanel:prompt remember:remember];
+	[app activateIgnoringOtherApps: YES];
+	[passPanel makeKeyAndOrderFront: nil];
+	code = [app runModalForWindow: passPanel];
 	
 	[defaults synchronize];
 	
