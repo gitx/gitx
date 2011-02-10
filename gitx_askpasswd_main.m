@@ -161,7 +161,8 @@ NSString*			url;
 -(IBAction)	doOKButton: (id)sender
 {
 	NSString *pas=[mPasswordField stringValue];
-	
+	printf( "%s", [pas UTF8String] );
+
 	if ((rememberCheck!=nil) && [rememberCheck state]==NSOnState) {
 		OSStatus status = StorePasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],
 												 [url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],
@@ -330,11 +331,11 @@ int	main( int argc, const char* argv[] )
 	UInt32 passwordLength = nil;
 	
 	OSStatus status = GetPasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],[url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],&passwordData,&passwordLength,&itemRef); 
-	printf( "status= %d\n",status);
 	if (status == noErr)      {
 		SecKeychainItemFreeContent (NULL,passwordData);
-		NSString *pas=[NSString stringWithCString:passwordData encoding:NSASCIIStringEncoding];
-		printf( "%s\n", [pas UTF8String] );
+		NSString *pas=[[NSString stringWithCString:passwordData encoding:NSASCIIStringEncoding] substringToIndex:passwordLength];
+		printf( "%s", [pas UTF8String] );
+		//NSLog(@"--> '%@'",pas);
 		return 0;
 	}else if (status != errSecItemNotFound) {
 		return -1;
