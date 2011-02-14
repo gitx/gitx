@@ -45,6 +45,7 @@
 @end
 
 NSString*			url;
+OSStatus			StorePasswordKeychain (const char *url, UInt32 urlLength, void* password,UInt32 passwordLength);
 
 
 @implementation GAPAppDelegate
