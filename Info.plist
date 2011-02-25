@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>SUPublicDSAKeyFile</key>
-	<string>UpdateKey.pem</string>
+	<string>gitx_l_pub.pem</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleName</key>
@@ -61,7 +61,7 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>SUFeedURL</key>
-	<string>http://gitx.frim.nl/Downloads/appcast.xml</string>
+	<string>http://gitx.laullon.com/appcast.xml</string>
 	<key>NSServices</key>
 	<array>
 		<dict>
