@@ -35,6 +35,9 @@
 + (void) setBranchFilter:(NSInteger)state;
 + (NSInteger)historySearchMode;
 + (void)setHistorySearchMode:(NSInteger)mode;
++ (BOOL) isUseITerm2;
++ (BOOL) isITerm2Available;
++ (void) setITerm2Available:(BOOL)iTerm2Available;
 
 
 // Suppressed Dialog Warnings

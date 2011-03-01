@@ -231,6 +231,7 @@
 		F5FE6C030EB13BC900F30D12 /* PBServicesController.m in Sources */ = {isa = PBXBuildFile; fileRef = F5FE6C020EB13BC900F30D12 /* PBServicesController.m */; };
 		F5FF4E180E0829C20006317A /* PBGitRevList.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5FF4E170E0829C20006317A /* PBGitRevList.mm */; };
 		F5FF4E7A0E082E440006317A /* PBGitGrapher.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5FF4E790E082E440006317A /* PBGitGrapher.mm */; };
+		FA8DFF3E131AEE2700C0F289 /* Start_iTerm2.applescript in Resources */ = {isa = PBXBuildFile; fileRef = FA8DFF37131AEDD400C0F289 /* Start_iTerm2.applescript */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -573,6 +574,7 @@
 		F5FF4E170E0829C20006317A /* PBGitRevList.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PBGitRevList.mm; sourceTree = "<group>"; };
 		F5FF4E780E082E440006317A /* PBGitGrapher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitGrapher.h; sourceTree = "<group>"; };
 		F5FF4E790E082E440006317A /* PBGitGrapher.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PBGitGrapher.mm; sourceTree = "<group>"; };
+		FA8DFF37131AEDD400C0F289 /* Start_iTerm2.applescript */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.applescript; path = Start_iTerm2.applescript; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -813,6 +815,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				FA8DFF37131AEDD400C0F289 /* Start_iTerm2.applescript */,
 				21025C1012947AB200D87200 /* sourceListAction.png */,
 				21025C1112947AB200D87200 /* sourceListActionOver.png */,
 				02B41A5F123E307F00DFC531 /* PBCommitHookFailedSheet.xib */,
@@ -1338,6 +1341,7 @@
 			isa = PBXProject;
 			buildConfigurationList = 26FC0A880875C7B200E6366F /* Build configuration list for PBXProject "GitX" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -1365,6 +1369,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA8DFF3E131AEE2700C0F289 /* Start_iTerm2.applescript in Resources */,
 				F5E92A1B0E88550E00056E75 /* empty_file.png in Resources */,
 				913D5E500E55645900CECEA2 /* gitx in Resources */,
 				551BF176112F3F4B00265053 /* gitx_askpasswd in Resources */,

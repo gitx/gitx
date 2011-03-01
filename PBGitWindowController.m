@@ -139,6 +139,15 @@
 	if ([PBGitDefaults refreshAutomatically]) {
 		[contentController refresh:nil];
 	}
+	
+	if ([PBGitDefaults isUseITerm2]) {
+		[terminalItem setImage:[[NSWorkspace sharedWorkspace] iconForFile:[[NSWorkspace sharedWorkspace] absolutePathForAppBundleWithIdentifier:@"com.googlecode.iterm2"]]];
+		[terminalItem setLabel:@"iTerm"];
+	}
+	else {
+		[terminalItem setImage:[[NSWorkspace sharedWorkspace] iconForFile:@"/Applications/Utilities/Terminal.app/"]];
+		[terminalItem setLabel:@"Terminal"];
+	}
 }
 
 - (void)showErrorSheetTitle:(NSString *)title message:(NSString *)message arguments:(NSArray *)arguments output:(NSString *)output
@@ -160,12 +169,25 @@
 
 - (IBAction) openInTerminal:(id)sender
 {
-	TerminalApplication *term = [SBApplication applicationWithBundleIdentifier: @"com.apple.Terminal"];
 	NSString *workingDirectory = [[repository workingDirectory] stringByAppendingString:@"/"];
-	NSString *cmd = [NSString stringWithFormat: @"cd \"%@\"; clear; echo '# Opened by GitX:'; git status", workingDirectory];
-	[term doScript: cmd in: nil];
-	[NSThread sleepForTimeInterval: 0.1];
-	[term activate];
+	
+	if ([PBGitDefaults isUseITerm2]) {
+		NSStringEncoding encoding;		 
+		NSString *resourcePath = [[[NSBundle bundleForClass:[self class]] resourcePath] stringByAppendingPathComponent:@"Start_iTerm2.applescript"];
+		NSString *scriptSource = [NSString stringWithContentsOfFile:resourcePath usedEncoding:&encoding error:nil];
+		NSString *iTerm2StartScript = [scriptSource stringByReplacingOccurrencesOfString:@"%%workDir%%" withString:workingDirectory];
+		
+		NSAppleScript *scriptObject = [[NSAppleScript alloc] initWithSource:iTerm2StartScript];
+		[scriptObject executeAndReturnError:nil];
+	}
+	else {
+		TerminalApplication *term = [SBApplication applicationWithBundleIdentifier:@"com.apple.Terminal"];	
+		NSString *cmd = [NSString stringWithFormat: @"cd \"%@\"; clear; echo '# Opened by GitX:'; git status", workingDirectory];	
+		[term doScript: cmd in: nil];
+		[NSThread sleepForTimeInterval: 0.1];
+		[term activate];
+	}
+	
 }
 
 - (IBAction) cloneTo:(id)sender
