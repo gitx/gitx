@@ -231,7 +231,8 @@
 {
     if ([(NSString *)context isEqualToString: @"commitChange"]) {
 		[self updateKeys];
-		//[self restoreFileBrowserSelection];
+		[self restoreFileBrowserSelection];
+		[self updateSearch:filesSearchField];
 	}else if ([(NSString *)context isEqualToString: @"treeChange"]) {
 		[self updateQuicklookForce: NO];
 		[self saveFileBrowserSelection];
