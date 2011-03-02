@@ -810,6 +810,32 @@
     NSImage *image = [workspace iconForFile:path];
     [image setSize:NSMakeSize(15, 15)];
     [cell setImage:image];
+	
+	NSColor *textColor = [NSColor blackColor];
+	if ([object filterPredicate] && !([[filesSearchField stringValue] length] > 0 && [[object filterPredicate] evaluateWithObject:object])) {
+		textColor = [NSColor lightGrayColor];
+	}
+
+
+	[cell setTextColor:textColor];
+}
+
+#pragma mark -
+
+- (IBAction) updateSearch:(NSSearchField *) sender {
+	static NSPredicate *predicateTemplate = nil;
+	if (!predicateTemplate) {
+		predicateTemplate = [NSPredicate predicateWithFormat:@"path CONTAINS[c] $SEARCH_STRING"];
+	}
+	
+	NSString *searchString = [sender stringValue];
+	NSPredicate *predicate = nil;
+	if ([searchString length] > 0) {
+		predicate = [predicateTemplate predicateWithSubstitutionVariables:
+								  [NSDictionary dictionaryWithObject:searchString forKey:@"SEARCH_STRING"]];
+	}
+	[gitTree setFilterPredicate:predicate];
+	[treeController setContent:gitTree.filteredChildren];
 }
 
 @end

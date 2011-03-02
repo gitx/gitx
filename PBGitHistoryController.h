@@ -27,6 +27,7 @@
 	IBOutlet PBRefController *refController;
 	IBOutlet NSSearchField *searchField;
 	IBOutlet NSArrayController* commitController;
+	IBOutlet NSSearchField *filesSearchField;
 	IBOutlet NSTreeController* treeController;
 	IBOutlet NSOutlineView* fileBrowser;
 	NSArray *currentFileBrowserSelectionPath;
@@ -93,6 +94,7 @@
 // Find/Search methods
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
+- (IBAction) updateSearch:(id) sender;
 
 - (void) copyCommitInfo;
 - (void) copyCommitSHA;
