@@ -57,6 +57,7 @@
 }
 
 @property (readonly) NSTreeController* treeController;
+@property (readonly) PBCollapsibleSplitView *historySplitView;
 @property (assign) int selectedCommitDetailsIndex;
 @property (retain) PBGitCommit *webCommit;
 @property (retain) PBGitTree* gitTree;

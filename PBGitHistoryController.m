@@ -48,6 +48,7 @@
 @synthesize searchController;
 @synthesize commitList;
 @synthesize treeController;
+@synthesize historySplitView;
 
 - (void)awakeFromNib
 {
