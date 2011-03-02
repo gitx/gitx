@@ -49,12 +49,6 @@
 		212A49AB12A31328009DAFAD /* deleted_file.png in Resources */ = {isa = PBXBuildFile; fileRef = 212A49A912A31328009DAFAD /* deleted_file.png */; };
 		212A49AD12A31350009DAFAD /* ignored_file.png in Resources */ = {isa = PBXBuildFile; fileRef = 212A49AC12A31350009DAFAD /* ignored_file.png */; };
 		212A49AF12A3135C009DAFAD /* modified_file.png in Resources */ = {isa = PBXBuildFile; fileRef = 212A49AE12A3135C009DAFAD /* modified_file.png */; };
-		213C598D12EB8BEB006F0CAE /* PBResetSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 213C598C12EB8BEB006F0CAE /* PBResetSheet.xib */; };
-		213C599012EB8BFC006F0CAE /* PBResetSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 213C598F12EB8BFC006F0CAE /* PBResetSheet.m */; };
-		213C5A6812EB8E95006F0CAE /* GTTopBlackGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 213C5A6712EB8E95006F0CAE /* GTTopBlackGradientView.m */; };
-		213C5A6B12EB8EC5006F0CAE /* GTGradientView.m in Sources */ = {isa = PBXBuildFile; fileRef = 213C5A6A12EB8EC5006F0CAE /* GTGradientView.m */; };
-		213C5AC512EB91F5006F0CAE /* GTSheetWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 213C5AC112EB91F5006F0CAE /* GTSheetWindow.m */; };
-		213C5AC612EB91F5006F0CAE /* GTWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 213C5AC312EB91F5006F0CAE /* GTWindow.m */; };
 		217FF0B912A1CB3300785A65 /* PBStashController.m in Sources */ = {isa = PBXBuildFile; fileRef = 217FF0B312A1CB3300785A65 /* PBStashController.m */; };
 		217FF0BA12A1CB3300785A65 /* PBSubmoduleController.m in Sources */ = {isa = PBXBuildFile; fileRef = 217FF0B512A1CB3300785A65 /* PBSubmoduleController.m */; };
 		217FF0BB12A1CB3300785A65 /* PBGitResetController.m in Sources */ = {isa = PBXBuildFile; fileRef = 217FF0B712A1CB3300785A65 /* PBGitResetController.m */; };
@@ -66,6 +60,7 @@
 		31460CD4124185BA00B90AED /* ReadMe.txt in Resources */ = {isa = PBXBuildFile; fileRef = 31460CAF124185BA00B90AED /* ReadMe.txt */; };
 		31460CD5124185BA00B90AED /* Source Code License.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 31460CB0124185BA00B90AED /* Source Code License.rtf */; };
 		31460CD6124185BA00B90AED /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 31460CB1124185BA00B90AED /* TODO */; };
+		31DAA7ED1317737100463846 /* gitx_l_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 31DAA7EC1317737100463846 /* gitx_l_pub.pem */; };
 		3BC07F4C0ED5A5C5009A7768 /* HistoryViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4A0ED5A5C5009A7768 /* HistoryViewTemplate.png */; };
 		3BC07F4D0ED5A5C5009A7768 /* CommitViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4B0ED5A5C5009A7768 /* CommitViewTemplate.png */; };
 		47DBDB580E94EDE700671A1E /* DBPrefsWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DBDB570E94EDE700671A1E /* DBPrefsWindowController.m */; };
@@ -88,6 +83,9 @@
 		91B103CC0E898EC300C84364 /* PBIconAndTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 91B103CB0E898EC300C84364 /* PBIconAndTextCell.m */; };
 		93CB42C20EAB7B2200530609 /* PBGitDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 93CB42C10EAB7B2200530609 /* PBGitDefaults.m */; };
 		93F7857F0EA3ABF100C1F443 /* PBCommitMessageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93F7857E0EA3ABF100C1F443 /* PBCommitMessageView.m */; };
+		C3B13DD812F3A89D0045437C /* SecurityFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3B13DD712F3A89D0045437C /* SecurityFoundation.framework */; };
+		C3B13DE412F3A8D70045437C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3B13DE312F3A8D70045437C /* Security.framework */; };
+		C3B13E2312F3A9130045437C /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3B13DE312F3A8D70045437C /* Security.framework */; };
 		D26DC6450E782C9000C777B2 /* gitx.icns in Resources */ = {isa = PBXBuildFile; fileRef = D26DC6440E782C9000C777B2 /* gitx.icns */; };
 		D8022FE811E124A0003C21F6 /* PBGitXMessageSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8022FE711E124A0003C21F6 /* PBGitXMessageSheet.xib */; };
 		D8022FED11E124C8003C21F6 /* PBGitXMessageSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = D8022FEC11E124C8003C21F6 /* PBGitXMessageSheet.m */; };
@@ -324,17 +322,6 @@
 		212A49A912A31328009DAFAD /* deleted_file.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = deleted_file.png; sourceTree = "<group>"; };
 		212A49AC12A31350009DAFAD /* ignored_file.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ignored_file.png; sourceTree = "<group>"; };
 		212A49AE12A3135C009DAFAD /* modified_file.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = modified_file.png; sourceTree = "<group>"; };
-		213C598C12EB8BEB006F0CAE /* PBResetSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PBResetSheet.xib; sourceTree = "<group>"; };
-		213C598E12EB8BFC006F0CAE /* PBResetSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBResetSheet.h; sourceTree = "<group>"; };
-		213C598F12EB8BFC006F0CAE /* PBResetSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBResetSheet.m; sourceTree = "<group>"; };
-		213C5A6612EB8E95006F0CAE /* GTTopBlackGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTTopBlackGradientView.h; sourceTree = "<group>"; };
-		213C5A6712EB8E95006F0CAE /* GTTopBlackGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTTopBlackGradientView.m; sourceTree = "<group>"; };
-		213C5A6912EB8EB3006F0CAE /* GTGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTGradientView.h; sourceTree = "<group>"; };
-		213C5A6A12EB8EC5006F0CAE /* GTGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTGradientView.m; sourceTree = "<group>"; };
-		213C5AC112EB91F5006F0CAE /* GTSheetWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTSheetWindow.m; sourceTree = "<group>"; };
-		213C5AC212EB91F5006F0CAE /* GTWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTWindow.h; sourceTree = "<group>"; };
-		213C5AC312EB91F5006F0CAE /* GTWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTWindow.m; sourceTree = "<group>"; };
-		213C5AC412EB91F5006F0CAE /* GTSheetWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTSheetWindow.h; sourceTree = "<group>"; };
 		217FF0B312A1CB3300785A65 /* PBStashController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBStashController.m; sourceTree = SOURCE_ROOT; };
 		217FF0B412A1CB3300785A65 /* PBStashController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBStashController.h; sourceTree = SOURCE_ROOT; };
 		217FF0B512A1CB3300785A65 /* PBSubmoduleController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBSubmoduleController.m; sourceTree = "<group>"; };
@@ -360,6 +347,7 @@
 		31460CAF124185BA00B90AED /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
 		31460CB0124185BA00B90AED /* Source Code License.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = "Source Code License.rtf"; sourceTree = "<group>"; };
 		31460CB1124185BA00B90AED /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
+		31DAA7EC1317737100463846 /* gitx_l_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gitx_l_pub.pem; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* GitX_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitX_Prefix.pch; sourceTree = "<group>"; };
 		3BC07F4A0ED5A5C5009A7768 /* HistoryViewTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = HistoryViewTemplate.png; path = Images/HistoryViewTemplate.png; sourceTree = "<group>"; };
 		3BC07F4B0ED5A5C5009A7768 /* CommitViewTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CommitViewTemplate.png; path = Images/CommitViewTemplate.png; sourceTree = "<group>"; };
@@ -392,6 +380,8 @@
 		93F7857D0EA3ABF100C1F443 /* PBCommitMessageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBCommitMessageView.h; sourceTree = "<group>"; };
 		93F7857E0EA3ABF100C1F443 /* PBCommitMessageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBCommitMessageView.m; sourceTree = "<group>"; };
 		93FCCBA80EA8AF450061B02B /* PBGitConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitConfig.m; sourceTree = "<group>"; };
+		C3B13DD712F3A89D0045437C /* SecurityFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityFoundation.framework; path = System/Library/Frameworks/SecurityFoundation.framework; sourceTree = SDKROOT; };
+		C3B13DE312F3A8D70045437C /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		D26DC6440E782C9000C777B2 /* gitx.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = gitx.icns; sourceTree = "<group>"; };
 		D8022A3411DFCCA5003C21F6 /* build_libgit2.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = build_libgit2.sh; sourceTree = "<group>"; };
 		D8022FE711E124A0003C21F6 /* PBGitXMessageSheet.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PBGitXMessageSheet.xib; sourceTree = "<group>"; };
@@ -590,6 +580,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3B13E2312F3A9130045437C /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -605,6 +596,8 @@
 				F5C580E50EDA250900995434 /* libgit2.a in Frameworks */,
 				D8E3B2B810DC9FB2001096A3 /* ScriptingBridge.framework in Frameworks */,
 				D87127011229A21C00012334 /* QuartzCore.framework in Frameworks */,
+				C3B13DD812F3A89D0045437C /* SecurityFoundation.framework in Frameworks */,
+				C3B13DE412F3A8D70045437C /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -718,8 +711,6 @@
 		21230ED41285ED760046E5A1 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				213C5AC012EB91F5006F0CAE /* Window */,
-				213C5A5D12EB8E72006F0CAE /* Gradient */,
 				21230ED71285EDAF0046E5A1 /* PBArgumentPicker.h */,
 				21230ED81285EDAF0046E5A1 /* PBArgumentPicker.m */,
 				21CF0B22129C7ED90065B37C /* TrackableOutlineView.h */,
@@ -758,28 +749,6 @@
 			path = "File Markers";
 			sourceTree = "<group>";
 		};
-		213C5A5D12EB8E72006F0CAE /* Gradient */ = {
-			isa = PBXGroup;
-			children = (
-				213C5A6612EB8E95006F0CAE /* GTTopBlackGradientView.h */,
-				213C5A6712EB8E95006F0CAE /* GTTopBlackGradientView.m */,
-				213C5A6912EB8EB3006F0CAE /* GTGradientView.h */,
-				213C5A6A12EB8EC5006F0CAE /* GTGradientView.m */,
-			);
-			path = Gradient;
-			sourceTree = "<group>";
-		};
-		213C5AC012EB91F5006F0CAE /* Window */ = {
-			isa = PBXGroup;
-			children = (
-				213C5AC412EB91F5006F0CAE /* GTSheetWindow.h */,
-				213C5AC112EB91F5006F0CAE /* GTSheetWindow.m */,
-				213C5AC212EB91F5006F0CAE /* GTWindow.h */,
-				213C5AC312EB91F5006F0CAE /* GTWindow.m */,
-			);
-			path = Window;
-			sourceTree = "<group>";
-		};
 		29B97314FDCFA39411CA2CEA /* GitTest */ = {
 			isa = PBXGroup;
 			children = (
@@ -800,6 +769,7 @@
 				F5886A120ED5D33D0066E74C /* SpeedTest-Info.plist */,
 				F567CC3A106E6B910059BB9D /* GitXTesting-Info.plist */,
 				D89E9AB21218A9DA0097A90B /* ScriptingBridge.framework */,
+				C3B13DD712F3A89D0045437C /* SecurityFoundation.framework */,
 			);
 			name = GitTest;
 			sourceTree = "<group>";
@@ -847,6 +817,7 @@
 				21025C1112947AB200D87200 /* sourceListActionOver.png */,
 				02B41A5F123E307F00DFC531 /* PBCommitHookFailedSheet.xib */,
 				F5F7D0641062E7940072C81C /* UpdateKey.pem */,
+				31DAA7EC1317737100463846 /* gitx_l_pub.pem */,
 				F50A41130EBB872D00208746 /* Widgets */,
 				47DBDB920E94F47200671A1E /* Preference Icons */,
 				D26DC6440E782C9000C777B2 /* gitx.icns */,
@@ -869,7 +840,6 @@
 				21230ED11285EB5A0046E5A1 /* PBArgumentPicker.xib */,
 				F58DB55F10566E3900CFDF4A /* PBGitSidebarView.xib */,
 				D8022FE711E124A0003C21F6 /* PBGitXMessageSheet.xib */,
-				213C598C12EB8BEB006F0CAE /* PBResetSheet.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -880,6 +850,7 @@
 				F5C580E40EDA250900995434 /* libgit2.a */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				C3B13DE312F3A8D70045437C /* Security.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -960,8 +931,6 @@
 				D8083E02111FA33700337480 /* PBCloneRepositoryPanel.m */,
 				D8022FEB11E124C8003C21F6 /* PBGitXMessageSheet.h */,
 				D8022FEC11E124C8003C21F6 /* PBGitXMessageSheet.m */,
-				213C598E12EB8BFC006F0CAE /* PBResetSheet.h */,
-				213C598F12EB8BFC006F0CAE /* PBResetSheet.m */,
 			);
 			name = Sheets;
 			sourceTree = "<group>";
@@ -1369,7 +1338,6 @@
 			isa = PBXProject;
 			buildConfigurationList = 26FC0A880875C7B200E6366F /* Build configuration list for PBXProject "GitX" */;
 			compatibilityVersion = "Xcode 3.1";
-			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
 				English,
@@ -1459,7 +1427,7 @@
 				212A49AB12A31328009DAFAD /* deleted_file.png in Resources */,
 				212A49AD12A31350009DAFAD /* ignored_file.png in Resources */,
 				212A49AF12A3135C009DAFAD /* modified_file.png in Resources */,
-				213C598D12EB8BEB006F0CAE /* PBResetSheet.xib in Resources */,
+				31DAA7ED1317737100463846 /* gitx_l_pub.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1629,11 +1597,6 @@
 				217FF0BA12A1CB3300785A65 /* PBSubmoduleController.m in Sources */,
 				217FF0BB12A1CB3300785A65 /* PBGitResetController.m in Sources */,
 				217FF0BE12A1CB3E00785A65 /* PBRevealWithFinderCommand.m in Sources */,
-				213C599012EB8BFC006F0CAE /* PBResetSheet.m in Sources */,
-				213C5A6812EB8E95006F0CAE /* GTTopBlackGradientView.m in Sources */,
-				213C5A6B12EB8EC5006F0CAE /* GTGradientView.m in Sources */,
-				213C5AC512EB91F5006F0CAE /* GTSheetWindow.m in Sources */,
-				213C5AC612EB91F5006F0CAE /* GTWindow.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1855,10 +1818,12 @@
 				GCC_ENABLE_OBJC_GC = required;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = DEBUG_BUILD;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_PREPROCESS = YES;
 				PREBINDING = NO;
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 			};
 			name = Debug;
@@ -1872,11 +1837,13 @@
 					x86_64,
 				);
 				GCC_ENABLE_OBJC_GC = required;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_PREFIX_HEADER = $PROJECT_TEMP_DIR/revision;
 				INFOPLIST_PREPROCESS = YES;
 				PREBINDING = NO;
+				RUN_CLANG_STATIC_ANALYZER = YES;
 				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
 			};
 			name = Release;
