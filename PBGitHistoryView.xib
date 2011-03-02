@@ -2075,6 +2075,22 @@
 					</object>
 					<int key="connectionID">490</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">filesSearchField</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="655114161"/>
+					</object>
+					<int key="connectionID">494</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">updateSearch:</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="655114161"/>
+					</object>
+					<int key="connectionID">495</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -3059,7 +3075,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">493</int>
+			<int key="maxID">495</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3287,9 +3303,11 @@
 							<string>showCommitsFromTree:</string>
 							<string>showInFinderAction:</string>
 							<string>toggleQLPreviewPanel:</string>
+							<string>updateSearch:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -3330,6 +3348,7 @@
 							<string>showCommitsFromTree:</string>
 							<string>showInFinderAction:</string>
 							<string>toggleQLPreviewPanel:</string>
+							<string>updateSearch:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3401,6 +3420,10 @@
 								<string key="name">toggleQLPreviewPanel:</string>
 								<string key="candidateClassName">id</string>
 							</object>
+							<object class="IBActionInfo">
+								<string key="name">updateSearch:</string>
+								<string key="candidateClassName">id</string>
+							</object>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
@@ -3413,6 +3436,7 @@
 							<string>commitList</string>
 							<string>fileBrowser</string>
 							<string>fileView</string>
+							<string>filesSearchField</string>
 							<string>historySplitView</string>
 							<string>localRemoteBranchesFilterItem</string>
 							<string>mergeButton</string>
@@ -3435,6 +3459,7 @@
 							<string>PBCommitList</string>
 							<string>NSOutlineView</string>
 							<string>GLFileView</string>
+							<string>NSSearchField</string>
 							<string>PBCollapsibleSplitView</string>
 							<string>NSButton</string>
 							<string>NSButton</string>
@@ -3460,6 +3485,7 @@
 							<string>commitList</string>
 							<string>fileBrowser</string>
 							<string>fileView</string>
+							<string>filesSearchField</string>
 							<string>historySplitView</string>
 							<string>localRemoteBranchesFilterItem</string>
 							<string>mergeButton</string>
@@ -3499,6 +3525,10 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">fileView</string>
 								<string key="candidateClassName">GLFileView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">filesSearchField</string>
+								<string key="candidateClassName">NSSearchField</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">historySplitView</string>
