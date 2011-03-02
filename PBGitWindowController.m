@@ -215,6 +215,10 @@
 	[sidebarController setHistorySearch:searchString mode:mode];
 }
 
+- (IBAction) changeLayout:(id)sender{
+	NSLog(@"selectedSegment=%ld (%d)",[sender selectedSegment],[sender isSelectedForSegment:[sender selectedSegment]]);
+}
+
 
 
 #pragma mark -
