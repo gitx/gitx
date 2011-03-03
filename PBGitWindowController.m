@@ -241,10 +241,10 @@
 	}else{
 		clipFrame.size.height = kGitSplitViewMinWidth * show;
 	}
-	[clipview setFrame:clipFrame];
+
+	[[clipview animator] setFrame:clipFrame];
 	[sp adjustSubviews];
 }
-
 
 #pragma mark -
 #pragma mark SplitView Delegates
