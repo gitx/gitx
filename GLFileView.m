@@ -324,6 +324,7 @@
 			inDiff=TRUE;
 			NSString *fileName=[self getFileName:line];
 			[res appendString:[NSString stringWithFormat:@"<table id='%@' class='diff'><thead><tr><td colspan='3'>",fileName]];
+			[res appendString:[NSString stringWithFormat:@"<div class='filemerge'><a href='' onclick='openFileMerge(\"%@\",\"{SHA}\"); return false;'><img src='GitX://app:/filemerge' width='32' height='32'/><br/>open in<br/>FileMerge</a></div>",fileName]];
 			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
 		}else if(inDiff){
 			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];

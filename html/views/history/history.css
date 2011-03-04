@@ -318,3 +318,8 @@ a.showdiff {
 	width: 98%;
 	margin: auto auto 20px 1%;
 }
+
+.filemerge {
+	float: right;
+	text-align: center;
+}
