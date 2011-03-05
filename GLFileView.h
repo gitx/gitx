@@ -40,6 +40,7 @@
 +(BOOL)isBinaryFile:(NSString *)line;
 +(NSString*)mimeTypeForFileName:(NSString*)file;
 +(BOOL)isImage:(NSString*)file;
++(BOOL)isDiffHeader:(NSString*)line;
 
 @property(retain) NSMutableArray *groups;
 @property(retain) NSString *logFormat;
