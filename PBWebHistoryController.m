@@ -224,6 +224,13 @@
 	[historyController selectCommit:[PBGitSHA shaWithString:sha]];
 }
 
+- (void) openFileMerge:(NSString*)file sha:(NSString *)sha
+{
+	NSArray *args=[NSArray arrayWithObjects:@"difftool",@"--no-prompt",@"--tool=opendiff",[NSString stringWithFormat:@"%@^",sha],sha,file,nil];
+	[historyController.repository handleForArguments:args];
+}
+
+
 - (void) sendKey: (NSString*) key
 {
 	id script = [view windowScriptObject];
