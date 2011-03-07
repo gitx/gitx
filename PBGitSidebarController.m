@@ -154,12 +154,13 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 		}
 		
 		for(PBGitSVBranchItem* branch in [branches children]){
-			NSString *bName=[branch title];
-			[branch setAhead:[self countCommintsOf:[NSString stringWithFormat:@"origin/%@..%@",bName,bName]]];
-			[branch setBehind:[self countCommintsOf:[NSString stringWithFormat:@"%@..origin/%@",bName,bName]]];
-			[branch setIsCheckedOut:[branch.revSpecifier isEqual:[repository headRef]]];
+			if([branch isKindOfClass:[PBGitSVBranchItem class]]){
+				NSString *bName=[branch title];
+				[branch setAhead:[self countCommintsOf:[NSString stringWithFormat:@"origin/%@..%@",bName,bName]]];
+				[branch setBehind:[self countCommintsOf:[NSString stringWithFormat:@"%@..origin/%@",bName,bName]]];
+				[branch setIsCheckedOut:[branch.revSpecifier isEqual:[repository headRef]]];
+			}
 		}
-		
 	}else{
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	}
