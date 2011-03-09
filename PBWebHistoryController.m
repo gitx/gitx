@@ -226,7 +226,7 @@
 
 - (void) openFileMerge:(NSString*)file sha:(NSString *)sha
 {
-	NSArray *args=[NSArray arrayWithObjects:@"difftool",@"--no-prompt",@"--tool=opendiff",[NSString stringWithFormat:@"%@^",sha],sha,file,nil];
+	NSArray *args=[NSArray arrayWithObjects:@"difftool",@"--no-prompt",@"--tool=opendiff",[NSString stringWithFormat:@"%@^",sha],sha,@"--",file,nil];
 	[historyController.repository handleForArguments:args];
 }
 
