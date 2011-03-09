@@ -37,7 +37,7 @@
 	NSButton*			rememberCheck;
 }
 
--(NSPanel*)	passwordPanel;
+-(NSPanel*)passwordPanel:(NSString *)prompt remember:(BOOL)remember;
 
 -(IBAction)	doOKButton: (id)sender;
 -(IBAction)	doCancelButton: (id)sender;

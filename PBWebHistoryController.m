@@ -120,7 +120,7 @@
 	
 	[[view windowScriptObject] callWebScriptMethod:@"showCommit" withArguments:[NSArray arrayWithObject:html]];
 	
-#if 1
+#ifdef DEBUG_BUILD
 	NSString *dom=[[[[view mainFrame] DOMDocument] documentElement] outerHTML];
 	NSString *tmpFile=@"~/tmp/test2.html";
 	[dom writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
@@ -223,6 +223,13 @@
 {
 	[historyController selectCommit:[PBGitSHA shaWithString:sha]];
 }
+
+- (void) openFileMerge:(NSString*)file sha:(NSString *)sha
+{
+	NSArray *args=[NSArray arrayWithObjects:@"difftool",@"--no-prompt",@"--tool=opendiff",[NSString stringWithFormat:@"%@^",sha],sha,@"--",file,nil];
+	[historyController.repository handleForArguments:args];
+}
+
 
 - (void) sendKey: (NSString*) key
 {

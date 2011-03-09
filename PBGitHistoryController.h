@@ -27,6 +27,7 @@
 	IBOutlet PBRefController *refController;
 	IBOutlet NSSearchField *searchField;
 	IBOutlet NSArrayController* commitController;
+	IBOutlet NSSearchField *filesSearchField;
 	IBOutlet NSTreeController* treeController;
 	IBOutlet NSOutlineView* fileBrowser;
 	NSArray *currentFileBrowserSelectionPath;
@@ -57,6 +58,7 @@
 }
 
 @property (readonly) NSTreeController* treeController;
+@property (readonly) PBCollapsibleSplitView *historySplitView;
 @property (assign) int selectedCommitDetailsIndex;
 @property (retain) PBGitCommit *webCommit;
 @property (retain) PBGitTree* gitTree;
@@ -93,6 +95,7 @@
 // Find/Search methods
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
+- (IBAction) updateSearch:(id) sender;
 
 - (void) copyCommitInfo;
 - (void) copyCommitSHA;

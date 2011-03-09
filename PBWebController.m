@@ -76,6 +76,11 @@
 	NSLog(@"Error from webkit: %@", dictionary);
 }
 
+- (void)webView:(WebView *)sender runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WebFrame *)frame
+{
+	NSLog(@"Message from webkit: %@", message);
+}
+
 - (NSURLRequest *)webView:(WebView *)sender
                  resource:(id)identifier
           willSendRequest:(NSURLRequest *)request

@@ -15,6 +15,55 @@
 @implementation PBGitTree
 
 @synthesize sha, path, repository, leaf, parent;
+@synthesize filterPredicate;
+@synthesize filteredChildren;
+
+#pragma mark -
+#pragma mark get/set
+
+- (NSArray *) filteredChildren {
+	if (!filteredChildren) {
+		filteredChildren = [[NSMutableArray alloc] init];
+		[filteredChildren addObjectsFromArray:self.children];
+	}
+	return filteredChildren;
+}
+
+- (void) setFilterPredicate:(NSPredicate *) newPredicate {
+	if (newPredicate != filterPredicate) {
+		[filterPredicate release];
+		filterPredicate = [newPredicate retain];
+		
+		if (leaf) {
+			return;
+		}
+		
+		// initiate filtering
+		[filteredChildren removeAllObjects];
+		filteredChildren = [[NSMutableArray alloc] init];
+		
+		if (filterPredicate == nil) {
+			[filteredChildren addObjectsFromArray:self.children];
+		}
+
+		for (id item in self.children) {
+			[item setFilterPredicate:filterPredicate];
+			if (filterPredicate) {
+				if ([item leaf]) {
+					if ([filterPredicate evaluateWithObject:item]) {
+						[filteredChildren addObject:item];
+					}
+				} else {
+					if ([[item filteredChildren] count] > 0) {
+						[filteredChildren addObject:item];
+					}
+				}
+			}
+		}
+	}
+}
+
+#pragma mark -
 
 + (PBGitTree*) rootForCommit:(id) commit
 {
@@ -40,6 +89,7 @@
 
 - init
 {
+	filteredChildren = nil;
 	children = nil;
 	localFileName = nil;
 	leaf = YES;

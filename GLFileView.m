@@ -125,7 +125,7 @@
 		}
 	}
 	
-#if 1
+#ifdef DEBUG_BUILD
 	NSString *dom=[[[[view mainFrame] DOMDocument] documentElement] outerHTML];
 	NSString *tmpFile=@"~/tmp/test.html";
 	[dom writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
@@ -274,61 +274,27 @@
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSString *line;
 	NSMutableString *res=[NSMutableString string];
-	BOOL inDiff=FALSE;
-	BOOL inBlock=FALSE;
-	
+
 	int l_line,l_end;
 	int r_line,r_end;
-	int i;
-	for (i=0; i<[lines count]; i++) {
+
+	int i=0;
+	do {
 		line=[lines objectAtIndex:i];
-		
-		if([GLFileView isStartBlock:line]){
-			[res appendString:@"</td></tr></thead><tbody>"];
-			inDiff=FALSE;
-			NSString *header=[line substringFromIndex:3];
-			NSRange hr = NSMakeRange(0, [header rangeOfString:@" @@"].location);
-			header=[header substringWithRange:hr];
-			
-			NSArray *pos=[header componentsSeparatedByString:@" "];
-			NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
-			NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
-			
-			l_end=l_line=abs([[pos_l objectAtIndex:0]integerValue]);
-			if ([pos_l count]>1) {
-				l_end=l_line+[[pos_l objectAtIndex:1]integerValue];				
-			}
-			
-			r_end=r_line=[[pos_r objectAtIndex:0]integerValue];
-			if ([pos_r count]>1) {
-				r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
-			}
-			
-			[res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
-			inBlock=TRUE;
-		}else if(inBlock){
-			NSString *s=[line substringToIndex:1];
-			if([s isEqualToString:@" "]){
-				[res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
-			}else if([s isEqualToString:@"-"]){
-				[res appendString:[NSString stringWithFormat:@"<tr class='l'><td class='l'>%d</td><td class='r'></td>",l_line++]];
-			}else if([s isEqualToString:@"+"]){
-				[res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
-			}
-			[res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:1]]];		
-			if(!(l_line<l_end) && !(r_line<r_end))
-				inBlock=FALSE;
-		}else if([GLFileView isStartDiff:line]){
-			if(inDiff)
-				[res appendString:@"</tbody></table>"];
-			inDiff=TRUE;
+		if([GLFileView isStartDiff:line]){
 			NSString *fileName=[self getFileName:line];
-			[res appendString:[NSString stringWithFormat:@"<table id='%@' class='diff'><thead><tr><td colspan='3'>",fileName]];
-			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
-		}else if(inDiff){
-			[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
+			[res appendString:[NSString stringWithFormat:@"<table id='%@' class='diff'><thead><tr><td colspan='3'><div style='float:left;'>",fileName]];
+			do{
+				[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
+				line=[lines objectAtIndex:++i];
+			}while([GLFileView isDiffHeader:line]);
+			[res appendString:@"</div>"];
+			if(![self isBinaryFile:line]){
+				[res appendString:[NSString stringWithFormat:@"<div class='filemerge'><a href='' onclick='openFileMerge(\"%@\",\"{SHA}\"); return false;'><img src='GitX://app:/filemerge' width='32' height='32'/><br/>open in<br/>FileMerge</a></div>",fileName]];
+			}
+			[res appendString:@"</td></tr></thead><tbody>"];
+
 			if([self isBinaryFile:line]){
-				[res appendString:@"</td></tr></thead><tbody>"];
 				NSArray *files=[self getFilesNames:line];
 				if(![[files objectAtIndex:0] isAbsolutePath]){
 					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'>%@</td></tr>",[files objectAtIndex:0]]];
@@ -342,11 +308,50 @@
 						[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'><img src='GitX://{SHA}/%@'/></td></tr>",[files objectAtIndex:1]]];
 					}
 				}
+			}else{
+				do{
+					NSString *header=[line substringFromIndex:3];
+					NSRange hr = NSMakeRange(0, [header rangeOfString:@" @@"].location);
+					header=[header substringWithRange:hr];
+					
+					NSArray *pos=[header componentsSeparatedByString:@" "];
+					NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
+					NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
+					
+					l_end=l_line=abs([[pos_l objectAtIndex:0]integerValue]);
+					if ([pos_l count]>1) {
+						l_end=l_line+[[pos_l objectAtIndex:1]integerValue];				
+					}
+					
+					r_end=r_line=[[pos_r objectAtIndex:0]integerValue];
+					if ([pos_r count]>1) {
+						r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
+					}
+					
+					[res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
+					do{
+						line=[lines objectAtIndex:++i];
+						NSString *s=[line substringToIndex:1];
+						if([s isEqualToString:@" "]){
+							[res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
+						}else if([s isEqualToString:@"-"]){
+							[res appendString:[NSString stringWithFormat:@"<tr class='l'><td class='l'>%d</td><td class='r'></td>",l_line++]];
+						}else if([s isEqualToString:@"+"]){
+							[res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
+						}
+						[res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:1]]];								
+					}while((l_line<l_end) || (r_line<r_end));
+					if(i<([lines count]-1)){
+						line=[lines objectAtIndex:++i];
+					}
+				}while([GLFileView isStartBlock:line]);
 			}
+			[res appendString:@"</tbody></table>"];
+		}else {
+			i++;
 		}
-	}
-	if(inDiff)
-		[res appendString:@"</tbody></table>"];
+	}while(i<[lines count]);
+	
 	return res;
 }
 
@@ -393,6 +398,12 @@
 		}
 	}
     return mimeType;
+}
+
++(BOOL)isDiffHeader:(NSString*)line
+{
+	unichar c=[line characterAtIndex:0];
+	return (c=='i') || (c=='m') || (c=='n') || (c=='d') || (c=='-') || (c=='+'); 
 }
 
 +(BOOL)isImage:(NSString*)file

@@ -150,23 +150,29 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 		[sourceView reloadData];
 	}else if ([@"updateRefs" isEqualToString:context]) {
 		for(PBGitSVRemoteItem* remote in [remotes children]){
-			NSLog(@"remote.title=%@",[remote title]);
-			[remote setAlert:[self remoteNeedFetch:[remote title]]];
+			[self performSelectorInBackground:@selector(evaluateRemoteBadge:) withObject:remote];
 		}
 		
 		for(PBGitSVBranchItem* branch in [branches children]){
-			NSString *bName=[branch title];
-			[branch setAhead:[self countCommintsOf:[NSString stringWithFormat:@"origin/%@..%@",bName,bName]]];
-			[branch setBehind:[self countCommintsOf:[NSString stringWithFormat:@"%@..origin/%@",bName,bName]]];
-			[branch setIsCheckedOut:[branch.revSpecifier isEqual:[repository headRef]]];
+			if([branch isKindOfClass:[PBGitSVBranchItem class]]){
+				NSString *bName=[branch title];
+				[branch setAhead:[self countCommintsOf:[NSString stringWithFormat:@"origin/%@..%@",bName,bName]]];
+				[branch setBehind:[self countCommintsOf:[NSString stringWithFormat:@"%@..origin/%@",bName,bName]]];
+				[branch setIsCheckedOut:[branch.revSpecifier isEqual:[repository headRef]]];
+			}
 		}
-		
 	}else{
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	}
 }
 
 #pragma mark Badges Methods
+
+-(void)evaluateRemoteBadge:(PBGitSVRemoteItem *)remote
+{
+	NSLog(@"remote.title=%@",[remote title]);
+	[remote setAlert:[self remoteNeedFetch:[remote title]]];
+}
 
 -(NSNumber *)countCommintsOf:(NSString *)range
 {
