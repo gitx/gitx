@@ -145,7 +145,6 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 // for the scripting bridge
 - (void)findInModeScriptCommand:(NSScriptCommand *)command;
 
--(NSNumber *)countCommintsOf:(NSString *)branchs;
 - (NSMenu *) menu;
 +(bool)isLocalBranch:(NSString *)branch branchNameInto:(NSString **)name;
 

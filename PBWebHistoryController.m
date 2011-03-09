@@ -120,7 +120,7 @@
 	
 	[[view windowScriptObject] callWebScriptMethod:@"showCommit" withArguments:[NSArray arrayWithObject:html]];
 	
-#if 1
+#ifdef DEBUG_BUILD
 	NSString *dom=[[[[view mainFrame] DOMDocument] documentElement] outerHTML];
 	NSString *tmpFile=@"~/tmp/test2.html";
 	[dom writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];

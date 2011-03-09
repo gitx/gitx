@@ -125,7 +125,7 @@
 		}
 	}
 	
-#if 1
+#ifdef DEBUG_BUILD
 	NSString *dom=[[[[view mainFrame] DOMDocument] documentElement] outerHTML];
 	NSString *tmpFile=@"~/tmp/test.html";
 	[dom writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
