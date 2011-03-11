@@ -485,7 +485,6 @@
 			
 			int n;
 			for(n=1;n<nLines;n++){
-				line=[lines objectAtIndex:i++];
 				do{
 					line=[lines objectAtIndex:i++];
 				}while([line characterAtIndex:0]!='\t');

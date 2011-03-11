@@ -244,7 +244,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	PBSourceViewItem *item = [self selectedItem];
 	if ([item isKindOfClass:[PBGitMenuItem class]]) {
 		PBGitMenuItem *sidebarItem = (PBGitMenuItem *) item;
-		NSObject *sourceObject = [sidebarItem sourceObject];
+		id<PBPresentable> sourceObject = [sidebarItem sourceObject];
 		if ([sourceObject isKindOfClass:[PBGitSubmodule class]]) {
 			[[repository.submoduleController defaultCommandForSubmodule:(id)sourceObject] invoke];
 		}

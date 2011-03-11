@@ -2005,6 +2005,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "Generate PList Prefix";
+				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -2016,6 +2017,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				INFOPLIST_PREPROCESS = YES;
 				PRODUCT_NAME = "Generate PList Prefix";
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2052,6 +2054,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = GitXTesting;
+				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -2082,6 +2085,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = GitXTesting;
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2111,7 +2115,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = SpeedTest;
-				SDKROOT = macosx10.5;
+				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -2136,7 +2140,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = SpeedTest;
-				SDKROOT = iphoneos2.0;
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;

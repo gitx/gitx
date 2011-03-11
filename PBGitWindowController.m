@@ -216,7 +216,6 @@
 }
 
 - (IBAction) changeLayout:(id)sender{
-	NSLog(@"selectedSegment=%ld (%d)",[sender selectedSegment],[sender isSelectedForSegment:[sender selectedSegment]]);
 	NSSplitView *sp=nil;
 	switch ([sender selectedSegment]) {
 		case 0:

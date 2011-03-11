@@ -15,7 +15,7 @@ static NSString * const kCommandKey = @"command";
 @implementation PBGitResetController
 
 - (id) initWithRepository:(PBGitRepository *) repo {
-	if (self = [super init]){
+	if ((self = [super init])){
         repository = [repo retain];
     }
     return self;

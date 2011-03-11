@@ -30,7 +30,7 @@
 #define WINDOWAUTOSAVENAME		@"GitXAskPasswordWindowFrame"
 
 
-@interface GAPAppDelegate : NSObject
+@interface GAPAppDelegate : NSObject <NSApplicationDelegate>
 {
 	NSPanel*			mPasswordPanel;
 	NSSecureTextField*	mPasswordField;
@@ -48,7 +48,7 @@ NSString*			url;
 OSStatus			StorePasswordKeychain (const char *url, UInt32 urlLength, void* password,UInt32 passwordLength);
 
 
-@implementation GAPAppDelegate
+@implementation GAPAppDelegate 
 
 -(NSPanel*)passwordPanel:(NSString *)prompt remember:(BOOL)remember
 {
@@ -167,7 +167,7 @@ OSStatus			StorePasswordKeychain (const char *url, UInt32 urlLength, void* passw
 	if ((rememberCheck!=nil) && [rememberCheck state]==NSOnState) {
 		OSStatus status = StorePasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],
 												 [url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],
-												 [pas cStringUsingEncoding:NSASCIIStringEncoding],
+												 (void *)[pas cStringUsingEncoding:NSASCIIStringEncoding],
 												 [pas lengthOfBytesUsingEncoding:NSASCIIStringEncoding]); //Call
 		if (status != noErr) {
 			[[NSApplication sharedApplication] stopModalWithCode:-1];
@@ -329,7 +329,7 @@ int	main( int argc, const char* argv[] )
 	
 	void *passwordData = nil; 
 	SecKeychainItemRef itemRef = nil;
-	UInt32 passwordLength = nil;
+	UInt32 passwordLength = 0;
 	
 	OSStatus status = GetPasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],[url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],&passwordData,&passwordLength,&itemRef); 
 	if (status == noErr)      {

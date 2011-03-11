@@ -113,16 +113,6 @@
 	return NO;
 }
 
-- (BOOL)hasBinaryHeader:(NSString*)contents
-{
-	if (!contents)
-		return NO;
-
-	return [contents rangeOfString:@"\0"
-						   options:0
-							 range:NSMakeRange(0, ([contents length] >= 8000) ? 7999 : [contents length])].location != NSNotFound;
-}
-
 - (BOOL)hasBinaryAttributes
 {
 	// First ask git check-attr if the file has a binary attribute custom set
@@ -231,7 +221,7 @@
 		}
 		res=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff", sha, des,[self fullPath], nil]];
 		if ([res length]==0) {
-			NSLog(@"--%d",[res length]);
+			NSLog(@"--%@",[res length]);
 			if (anError != NULL) {
 				*anError = [NSError errorWithDomain:@"diff" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No Diff",NSLocalizedDescriptionKey,nil]];
 			}
@@ -296,7 +286,7 @@
 		NSData* data = [handle readDataToEndOfFile];
 		[data writeToFile:newName atomically:YES];
 	} else { // Directory
-		[[NSFileManager defaultManager] createDirectoryAtPath:newName attributes:nil];
+		[[NSFileManager defaultManager] createDirectoryAtPath:newName withIntermediateDirectories:YES attributes:nil error:nil];
 		for (PBGitTree* child in [self children])
 			[child saveToFolder: newName];
 	}
@@ -383,7 +373,7 @@
 - (void) finalize
 {
 	if (localFileName)
-		[[NSFileManager defaultManager] removeFileAtPath:localFileName handler:nil];
+		[[NSFileManager defaultManager] removeItemAtPath:localFileName error:nil];
 	[super finalize];
 }
 @end

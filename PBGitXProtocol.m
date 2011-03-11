@@ -17,7 +17,7 @@
     // note that this leaks!
     CFRetain(client);
 	
-    if (self = [super initWithRequest:request cachedResponse:cachedResponse client:client])
+    if ((self = [super initWithRequest:request cachedResponse:cachedResponse client:client]))
     {
     }
 	

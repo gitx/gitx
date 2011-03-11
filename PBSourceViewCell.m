@@ -22,7 +22,7 @@
 # pragma mark context menu delegate methods
 
 - init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 
 	}
 	return self;

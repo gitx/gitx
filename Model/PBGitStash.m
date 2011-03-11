@@ -16,7 +16,7 @@
 @synthesize stashSourceMessage;
 
 - initWithRawStashLine:(NSString *) stashLineFromStashListOutput {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		stashRawString = [stashLineFromStashListOutput retain];
 		NSArray *lineComponents = [stashLineFromStashListOutput componentsSeparatedByString:@":"];
 		name = [[lineComponents objectAtIndex:0] retain];

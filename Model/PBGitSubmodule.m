@@ -32,7 +32,7 @@
 - (id) initWithRawSubmoduleStatusString:(NSString *) submoduleStatusString {
 	NSParameterAssert([submoduleStatusString length] > 0);
 	
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		unichar status = [submoduleStatusString characterAtIndex:0];
 		submoduleState = [PBGitSubmodule submoduleStateFromCharacter:status];
 		NSScanner *scanner = [NSScanner scannerWithString:[submoduleStatusString substringFromIndex:1]];
@@ -47,7 +47,7 @@
 			shouldContinue = [scanner scanString:@"(" intoString:NULL];
 		}
 		if (shouldContinue) {
-			shouldContinue = [scanner scanUpToString:@")" intoString:&coName];
+            [scanner scanUpToString:@")" intoString:&coName];
 		}
 		self.path = [fullPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 		coName = [coName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];

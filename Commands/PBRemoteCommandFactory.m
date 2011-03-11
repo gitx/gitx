@@ -58,7 +58,7 @@
 	return commands;
 }
 
-+ (NSArray *) commandsForObject:(NSObject *) object repository:(PBGitRepository *) repository {
++ (NSArray *) commandsForObject:(id<PBPresentable>) object repository:(PBGitRepository *) repository {
 	if ([object isKindOfClass:[PBGitSubmodule class]]) {
 		return [PBRemoteCommandFactory commandsForSubmodule:(id)object inRepository:repository];
 	}

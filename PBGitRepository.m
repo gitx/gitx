@@ -143,7 +143,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	NSURL* gitDirURL = [PBGitRepository gitDirForURL:[self fileURL]];
 	if (!gitDirURL) {
 		if (outError) {
-			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@ does not appear to be a git repository.", [self fileName]]
+			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@ does not appear to be a git repository.", [self fileURL]]
 																 forKey:NSLocalizedRecoverySuggestionErrorKey];
 			*outError = [NSError errorWithDomain:PBGitRepositoryErrorDomain code:0 userInfo:userInfo];
 		}
