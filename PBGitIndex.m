@@ -299,7 +299,7 @@ NSString *PBGitIndexOperationFailed = @"PBGitIndexOperationFailed";
 			
 			PBChangedFile *file = [stageFiles objectAtIndex:i];
 			
-			[input appendFormat:@"%@\0", file.path];
+			[input appendFormat:@"%@", file.path];
 		}
 		
 			
@@ -390,9 +390,9 @@ NSString *PBGitIndexOperationFailed = @"PBGitIndexOperationFailed";
 - (void)discardChangesForFiles:(NSArray *)discardFiles
 {
 	NSArray *paths = [discardFiles valueForKey:@"path"];
-	NSString *input = [paths componentsJoinedByString:@"\0"];
+	NSString *input = [paths componentsJoinedByString:@"\n"];
 
-	NSArray *arguments = [NSArray arrayWithObjects:@"checkout-index", @"--index", @"--quiet", @"--force", @"-z", @"--stdin", nil];
+	NSArray *arguments = [NSArray arrayWithObjects:@"checkout-index", @"--index", @"--quiet", @"--force", @"--stdin", nil];
 
 	int ret = 1;
 	[PBEasyPipe outputForCommand:[PBGitBinary path]	withArgs:arguments inDir:[workingDirectory path] inputString:input retValue:&ret];
@@ -499,7 +499,7 @@ NSString *PBGitIndexOperationFailed = @"PBGitIndexOperationFailed";
 	// Other files (not tracked, not ignored)
 	refreshStatus++;
 	NSFileHandle *handle = [PBEasyPipe handleForCommand:[PBGitBinary path] 
-											   withArgs:[NSArray arrayWithObjects:@"ls-files", @"--others", @"--exclude-standard", @"-z", nil]
+											   withArgs:[NSArray arrayWithObjects:@"ls-files", @"--others", @"--exclude-standard", nil]
 												  inDir:[workingDirectory path]];
 	[nc addObserver:self selector:@selector(readOtherFiles:) name:NSFileHandleReadToEndOfFileCompletionNotification object:handle]; 
 	[handle readToEndOfFileInBackgroundAndNotify];
@@ -507,7 +507,7 @@ NSString *PBGitIndexOperationFailed = @"PBGitIndexOperationFailed";
 	// Unstaged files
 	refreshStatus++;
 	handle = [PBEasyPipe handleForCommand:[PBGitBinary path] 
-											   withArgs:[NSArray arrayWithObjects:@"diff-files", @"-z", nil]
+											   withArgs:[NSArray arrayWithObjects:@"diff-files", nil]
 												  inDir:[workingDirectory path]];
 	[nc addObserver:self selector:@selector(readUnstagedFiles:) name:NSFileHandleReadToEndOfFileCompletionNotification object:handle]; 
 	[handle readToEndOfFileInBackgroundAndNotify];
@@ -515,7 +515,7 @@ NSString *PBGitIndexOperationFailed = @"PBGitIndexOperationFailed";
 	// Staged files
 	refreshStatus++;
 	handle = [PBEasyPipe handleForCommand:[PBGitBinary path] 
-								 withArgs:[NSArray arrayWithObjects:@"diff-index", @"--cached", @"-z", [self parentTree], nil]
+								 withArgs:[NSArray arrayWithObjects:@"diff-index", @"--cached", [self parentTree], nil]
 									inDir:[workingDirectory path]];
 	[nc addObserver:self selector:@selector(readStagedFiles:) name:NSFileHandleReadToEndOfFileCompletionNotification object:handle]; 
 	[handle readToEndOfFileInBackgroundAndNotify];
@@ -641,35 +641,27 @@ NSString *PBGitIndexOperationFailed = @"PBGitIndexOperationFailed";
 		return [NSArray array];
 
 	NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-	// FIXME: throw an error?
 	if (!string)
 		return [NSArray array];
-
-	// Strip trailing null
-	if ([string hasSuffix:@"\0"])
-		string = [string substringToIndex:[string length]-1];
 
 	if ([string length] == 0)
 		return [NSArray array];
 
-	return [string componentsSeparatedByString:@"\0"];
+    string=[string stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	return [string componentsSeparatedByString:@"\n"];
 }
 
 - (NSMutableDictionary *)dictionaryForLines:(NSArray *)lines
 {
-	NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[lines count]/2];
-	
-	// Fill the dictionary with the new information. These lines are in the form of:
-	// :00000 :0644 OTHER INDEX INFORMATION
-	// Filename
-
-	NSAssert1([lines count] % 2 == 0, @"Lines must have an even number of lines: %@", lines);
+	NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:[lines count]];
 
 	NSEnumerator *enumerator = [lines objectEnumerator];
-	NSString *fileStatus;
-	while (fileStatus = [enumerator nextObject]) {
-		NSString *fileName = [enumerator nextObject];
-		[dictionary setObject:[fileStatus componentsSeparatedByString:@" "] forKey:fileName];
+	NSString *line;
+	while ((line = [enumerator nextObject])) {
+        NSArray *lineComp=[line componentsSeparatedByString:@"\t"];
+        NSArray *fileStatus=[[lineComp objectAtIndex:0] componentsSeparatedByString:@" "];
+		NSString *fileName = [lineComp objectAtIndex:1];
+		[dictionary setObject:fileStatus forKey:fileName];
 	}
 
 	return dictionary;
