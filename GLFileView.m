@@ -218,6 +218,7 @@
 	txt=[txt stringByReplacingOccurrencesOfString:@"&" withString:@"&amp;"];
 	txt=[txt stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
 	txt=[txt stringByReplacingOccurrencesOfString:@">" withString:@"&gt;"];
+	txt=[txt stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
 	
 	return txt;
 }
@@ -479,7 +480,6 @@
 				line=[lines objectAtIndex:i++];
 			}while([line characterAtIndex:0]!='\t');
 			line=[line substringFromIndex:1];
-			line=[line stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
 			[code appendString:line];
 			[code appendString:@"\n"];
 			
@@ -489,7 +489,6 @@
 					line=[lines objectAtIndex:i++];
 				}while([line characterAtIndex:0]!='\t');
 				line=[line substringFromIndex:1];
-				line=[line stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
 				[code appendString:line];
 				[code appendString:@"\n"];
 			}
