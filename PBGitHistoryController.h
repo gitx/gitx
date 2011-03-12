@@ -22,7 +22,7 @@
 
 @class PBHistorySearchController;
 
-@interface PBGitHistoryController : PBViewController <NSOutlineViewDelegate>{
+@interface PBGitHistoryController : PBViewController /*<NSOutlineViewDelegate>*/{
 	IBOutlet PBRefController *refController;
 	IBOutlet NSSearchField *searchField;
 	IBOutlet NSArrayController* commitController;

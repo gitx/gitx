@@ -30,7 +30,7 @@
 #define WINDOWAUTOSAVENAME		@"GitXAskPasswordWindowFrame"
 
 
-@interface GAPAppDelegate : NSObject <NSApplicationDelegate>
+@interface GAPAppDelegate : NSObject /*<NSApplicationDelegate>*/
 {
 	NSPanel*			mPasswordPanel;
 	NSSecureTextField*	mPasswordField;
