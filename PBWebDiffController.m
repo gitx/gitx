@@ -7,6 +7,7 @@
 //
 
 #import "PBWebDiffController.h"
+#import "GLFileView.h"
 
 
 @implementation PBWebDiffController
@@ -46,7 +47,7 @@
 	if ([diff length] == 0)
 		[script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObject:@"There are no differences"]];
 	else
-		[script callWebScriptMethod:@"showDiff" withArguments:[NSArray arrayWithObject:diff]];
+		[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObject:[GLFileView parseDiff:diff]]];
 }
 
 @end
