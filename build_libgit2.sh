@@ -14,6 +14,7 @@ buildAction () {
 	then
 		export PATH=$PATH:$HOME/bin:$HOME/local/bin:/sw/bin:/opt/local/bin:`"$TARGET_BUILD_DIR"/gitx --git-path`
 		git submodule init
+		git submodule sync
 		git submodule update
 		cd libgit2
 		rm -f libgit2.a
