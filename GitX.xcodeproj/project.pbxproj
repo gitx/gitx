@@ -72,6 +72,8 @@
 		47DBDBCA0E95016F00671A1E /* PBNSURLPathUserDefaultsTransfomer.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DBDBC90E95016F00671A1E /* PBNSURLPathUserDefaultsTransfomer.m */; };
 		551BF11E112F376C00265053 /* gitx_askpasswd_main.m in Sources */ = {isa = PBXBuildFile; fileRef = 551BF11D112F376C00265053 /* gitx_askpasswd_main.m */; };
 		551BF176112F3F4B00265053 /* gitx_askpasswd in Resources */ = {isa = PBXBuildFile; fileRef = 551BF111112F371800265053 /* gitx_askpasswd */; };
+		65D58BC4132D27A8003F7290 /* PBResetSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 65D58BC3132D27A7003F7290 /* PBResetSheet.xib */; };
+		65D58BC7132D48C2003F7290 /* PBResetSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 65D58BC6132D48C0003F7290 /* PBResetSheet.m */; };
 		770B37ED0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel */; };
 		77C8280E06725ACE000B614F /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C8280C06725ACE000B614F /* ApplicationController.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
@@ -365,6 +367,9 @@
 		47DBDBC90E95016F00671A1E /* PBNSURLPathUserDefaultsTransfomer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBNSURLPathUserDefaultsTransfomer.m; sourceTree = "<group>"; };
 		551BF111112F371800265053 /* gitx_askpasswd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gitx_askpasswd; sourceTree = BUILT_PRODUCTS_DIR; };
 		551BF11D112F376C00265053 /* gitx_askpasswd_main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gitx_askpasswd_main.m; sourceTree = "<group>"; };
+		65D58BC3132D27A7003F7290 /* PBResetSheet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PBResetSheet.xib; sourceTree = "<group>"; };
+		65D58BC5132D48BF003F7290 /* PBResetSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBResetSheet.h; sourceTree = "<group>"; };
+		65D58BC6132D48C0003F7290 /* PBResetSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBResetSheet.m; sourceTree = "<group>"; };
 		770B37EC0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = GitTest_DataModel.xcdatamodel; sourceTree = "<group>"; };
 		77C82804067257F0000B614F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		77C8280B06725ACE000B614F /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -846,6 +851,7 @@
 				21230ED11285EB5A0046E5A1 /* PBArgumentPicker.xib */,
 				F58DB55F10566E3900CFDF4A /* PBGitSidebarView.xib */,
 				D8022FE711E124A0003C21F6 /* PBGitXMessageSheet.xib */,
+				65D58BC3132D27A7003F7290 /* PBResetSheet.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -937,6 +943,8 @@
 				D8083E02111FA33700337480 /* PBCloneRepositoryPanel.m */,
 				D8022FEB11E124C8003C21F6 /* PBGitXMessageSheet.h */,
 				D8022FEC11E124C8003C21F6 /* PBGitXMessageSheet.m */,
+				65D58BC5132D48BF003F7290 /* PBResetSheet.h */,
+				65D58BC6132D48C0003F7290 /* PBResetSheet.m */,
 			);
 			name = Sheets;
 			sourceTree = "<group>";
@@ -1437,6 +1445,7 @@
 				31DAA7ED1317737100463846 /* gitx_l_pub.pem in Resources */,
 				316E7202131EE9C600AFBB36 /* list_Template.png in Resources */,
 				316E7203131EE9C600AFBB36 /* sidebar_Template.png in Resources */,
+				65D58BC4132D27A8003F7290 /* PBResetSheet.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1606,6 +1615,7 @@
 				217FF0BA12A1CB3300785A65 /* PBSubmoduleController.m in Sources */,
 				217FF0BB12A1CB3300785A65 /* PBGitResetController.m in Sources */,
 				217FF0BE12A1CB3E00785A65 /* PBRevealWithFinderCommand.m in Sources */,
+				65D58BC7132D48C2003F7290 /* PBResetSheet.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

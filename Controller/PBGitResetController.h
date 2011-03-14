@@ -7,8 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "PBResetSheet.h"
 
 @class PBGitRepository;
+@protocol PBGitRefish;
 
 @interface PBGitResetController : NSObject {
 	PBGitRepository *repository;
@@ -17,8 +19,8 @@
 
 - (NSArray *) menuItems;
 
-
 // actions
+- (void) resetToRefish: (id<PBGitRefish>) spec type: (PBResetType) type;
 - (void) resetHardToHead;
 
 @end
