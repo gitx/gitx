@@ -58,3 +58,20 @@ table.diff thead tr td {
 table.diff tbody tr.header {
 	background-image: -webkit-gradient(linear,left top,left bottom, color-stop(0, rgba(244, 244, 244,1)), color-stop(1, rgba(215,215,215,1)));
 }
+
+table.diff .filemerge {
+	float: right;
+	text-align: center;
+}
+
+#diff {
+	width: 100%;
+	display: block;
+	overflow: auto;
+}
+
+#diff table.diff {
+	-webkit-box-shadow: 5px 5px 5px #ccc;
+	width: 98%;
+	margin: auto auto 20px 1%;
+}
