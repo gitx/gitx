@@ -119,6 +119,7 @@
 		id script = [view windowScriptObject];
 		if(!theError){
 			NSString *filePath = [file fullPath];
+            fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
 			[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
 		}else{
 			[script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObjects:[theError localizedDescription], nil]];
@@ -218,7 +219,6 @@
 	txt=[txt stringByReplacingOccurrencesOfString:@"&" withString:@"&amp;"];
 	txt=[txt stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
 	txt=[txt stringByReplacingOccurrencesOfString:@">" withString:@"&gt;"];
-	txt=[txt stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
 	
 	return txt;
 }
