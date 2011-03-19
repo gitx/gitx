@@ -42,6 +42,8 @@
 +(BOOL)isImage:(NSString*)file;
 +(BOOL)isDiffHeader:(NSString*)line;
 
+- (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2;
+
 @property(retain) NSMutableArray *groups;
 @property(retain) NSString *logFormat;
 

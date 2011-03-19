@@ -1,11 +1,14 @@
+// TODO: need to be refactoring
 var selectCommit = function(a) {
 	Controller.selectCommit_(a);
 }
 
-var openFileMerge = function(file,sha) {
+// TODO: need to be refactoring
+var openFileMerge = function(file,sha,sha2) {
 	alert(file);
 	alert(sha);
-	Controller.openFileMerge_sha_(file,sha);
+	alert(sha2);
+	Controller.openFileMerge_sha_sha2_(file,sha,sha2);
 }
 
 var showImage = function(element, filename)

@@ -29,7 +29,7 @@
 - (NSString *)parseHeader:(NSString *)txt withRefs:(NSString *)badges;
 - (NSMutableDictionary *)parseStats:(NSString *)txt;
 - (NSString *) someMethodThatReturnsSomeHashForSomeString:(NSString*)concat;
-- (void) openFileMerge:(NSString*)file sha:(NSString *)sha;
+- (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2;
 
 @property (readonly) NSString* diff;
 @end

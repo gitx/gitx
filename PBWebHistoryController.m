@@ -116,7 +116,8 @@
 	
 	NSString *html=[NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
 	
-	html=[html stringByReplacingOccurrencesOfString:@"{SHA}" withString:[currentSha string]];
+	html=[html stringByReplacingOccurrencesOfString:@"{SHA}" withString:[NSString stringWithFormat:@"%@^",[currentSha string]]];
+	html=[html stringByReplacingOccurrencesOfString:@"{SHA2}" withString:[currentSha string]];
 	
 	[[view windowScriptObject] callWebScriptMethod:@"showCommit" withArguments:[NSArray arrayWithObject:html]];
 	
@@ -224,10 +225,11 @@
 	[historyController selectCommit:[PBGitSHA shaWithString:sha]];
 }
 
-- (void) openFileMerge:(NSString*)file sha:(NSString *)sha
+// TODO: need to be refactoring
+- (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2
 {
-	NSArray *args=[NSArray arrayWithObjects:@"difftool",@"--no-prompt",@"--tool=opendiff",[NSString stringWithFormat:@"%@^",sha],sha,@"--",file,nil];
-	[historyController.repository handleForArguments:args];
+	NSArray *args=[NSArray arrayWithObjects:@"difftool",@"--no-prompt",@"--tool=opendiff",sha,sha2,@"--",file,nil];
+	[historyController.repository handleInWorkDirForArguments:args];
 }
 
 

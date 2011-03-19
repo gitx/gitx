@@ -120,6 +120,12 @@
 		if(!theError){
 			NSString *filePath = [file fullPath];
             fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
+            fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA}" withString:file.sha];
+            if(diffType==@"h") {
+                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA2}" withString:@"HEAD"];
+            }else {
+                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA2}" withString:@"--"];
+            }
 			[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
 		}else{
 			[script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObjects:[theError localizedDescription], nil]];
@@ -138,6 +144,13 @@
 - (void) selectCommit:(NSString*)c
 {
 	[historyController selectCommit:[PBGitSHA shaWithString:c]];
+}
+
+// TODO: need to be refactoring
+- (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2;
+{
+	NSArray *args=[NSArray arrayWithObjects:@"difftool",@"--no-prompt",@"--tool=opendiff",sha,sha2,file,nil];
+	[historyController.repository handleInWorkDirForArguments:args];
 }
 
 #pragma mark MGScopeBarDelegate methods
@@ -275,10 +288,10 @@
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSString *line;
 	NSMutableString *res=[NSMutableString string];
-
+    
 	int l_line,l_end;
 	int r_line,r_end;
-
+    
 	int i=0;
 	do {
 		line=[lines objectAtIndex:i];
@@ -291,10 +304,10 @@
 			}while([GLFileView isDiffHeader:line]);
 			[res appendString:@"</div>"];
 			if(![self isBinaryFile:line]){
-				[res appendString:[NSString stringWithFormat:@"<div class='filemerge'><a href='' onclick='openFileMerge(\"%@\",\"{SHA}\"); return false;'><img src='GitX://app:/filemerge' width='32' height='32'/><br/>open in<br/>FileMerge</a></div>",fileName]];
+				[res appendString:[NSString stringWithFormat:@"<div class='filemerge'><a href='' onclick='openFileMerge(\"%@\",\"{SHA}\",\"{SHA2}\"); return false;'><img src='GitX://app:/filemerge' width='32' height='32'/><br/>open in<br/>FileMerge</a></div>",fileName]];
 			}
 			[res appendString:@"</td></tr></thead><tbody>"];
-
+            
 			if([self isBinaryFile:line]){
 				NSArray *files=[self getFilesNames:line];
 				if(![[files objectAtIndex:0] isAbsolutePath]){
@@ -340,7 +353,9 @@
 						}else if([s isEqualToString:@"+"]){
 							[res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
 						}
-						[res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:1]]];								
+                        if(![s isEqualToString:@"\\"]){
+                            [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:1]]];								
+                        }
 					}while((l_line<l_end) || (r_line<r_end));
 					if(i<([lines count]-1)){
 						line=[lines objectAtIndex:++i];
