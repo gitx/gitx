@@ -175,7 +175,8 @@
 
 - (IBAction) refresh:(id)sender
 {
-	[contentController refresh:self];
+    [sidebarController.historyViewController refresh: self];
+    [sidebarController.commitViewController refresh: self];
 }
 
 - (void) updateStatus
