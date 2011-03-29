@@ -287,7 +287,9 @@
 			[res appendString:[NSString stringWithFormat:@"<table id='%@' class='diff'><thead><tr><td colspan='3'><div style='float:left;'>",fileName]];
 			do{
 				[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
-				line=[lines objectAtIndex:++i];
+				line=nil;
+				if (i<([lines count]-1))
+					line = [lines objectAtIndex:++i];
 			}while([GLFileView isDiffHeader:line]);
 			[res appendString:@"</div>"];
 			if(![self isBinaryFile:line]){
@@ -295,6 +297,9 @@
 			}
 			[res appendString:@"</td></tr></thead><tbody>"];
 
+			if (!line)
+				break; // do nothing, this is probably header-only diff (permissions change, maybe)
+			
 			if([self isBinaryFile:line]){
 				NSArray *files=[self getFilesNames:line];
 				if(![[files objectAtIndex:0] isAbsolutePath]){
