@@ -35,6 +35,10 @@
 	if ((self = [super init])) {
 		unichar status = [submoduleStatusString characterAtIndex:0];
 		submoduleState = [PBGitSubmodule submoduleStateFromCharacter:status];
+		if (submoduleState == PBGitSubmoduleStateFailed) {
+			NSLog(@"Submodule status failed:\n %@", submoduleStatusString);
+			return nil;
+		}
 		NSScanner *scanner = [NSScanner scannerWithString:[submoduleStatusString substringFromIndex:1]];
 		NSString *sha1 = nil;
 		NSString *fullPath = nil;
@@ -114,7 +118,7 @@
 	} else if (character == '+') {
 		state = PBGitSubmoduleStateDoesNotMatchIndex;
 	} else if (character != ' ') {
-		NSAssert1(NO, @"Ooops unsupported submodule status character: %c", character);
+		return PBGitSubmoduleStateFailed;
 	}
 
 	return state;
