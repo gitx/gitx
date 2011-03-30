@@ -131,11 +131,14 @@
 			[script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObjects:[theError localizedDescription], nil]];
 		}
 	}
+    
+    [self updateSearch:searchField];
 	
 #ifdef DEBUG_BUILD
-	NSString *dom=[[[[view mainFrame] DOMDocument] documentElement] outerHTML];
+    DOMHTMLElement *dom=(DOMHTMLElement *)[[[view mainFrame] DOMDocument] documentElement];
+	NSString *domH=[dom outerHTML];
 	NSString *tmpFile=@"~/tmp/test.html";
-	[dom writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
+	[domH writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
 #endif 
 }
 
@@ -583,6 +586,21 @@
 	[fileListSplitView setHidden:NO];
 }
 
+#pragma mark IBActions
+
+-(IBAction)updateSearch:(NSSearchField *)sender
+{
+    NSString *searchString = [sender stringValue];
+    NSLog(@"searchString:%@",searchString);
+    
+    if([searchString length]>0){
+        [view highlightAllOccurencesOfString:searchString];
+    }else{
+        [view removeAllHighlights];
+    }
+}
+
+#pragma mark -
 
 
 @synthesize groups;
