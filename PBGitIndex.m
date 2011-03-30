@@ -235,6 +235,7 @@ NSString *PBGitIndexOperationFailed = @"PBGitIndexOperationFailed";
 		return;
 
 	repository.hasChanged = YES;
+    [repository reloadRefs];
 
 	amendEnvironment = nil;
 	if (amend)

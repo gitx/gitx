@@ -250,7 +250,9 @@
 	}else if([(NSString *)context isEqualToString:@"updateCommitCount"] || [(NSString *)context isEqualToString:@"revisionListUpdating"]) {
 		[self updateStatus];
 
-		if ([repository.currentBranch isSimpleRef])
+		if (selectedCommitBeforeRefresh && [repository commitForSHA:[selectedCommitBeforeRefresh sha]])
+			[self selectCommit:[selectedCommitBeforeRefresh sha]];
+		else if ([repository.currentBranch isSimpleRef])
 			[self selectCommit:[repository shaForRef:[repository.currentBranch ref]]];
 		else
 			[self selectCommit:[[self firstCommit] sha]];
@@ -405,11 +407,13 @@
 
 - (IBAction) refresh:(id)sender
 {
+	selectedCommitBeforeRefresh = selectedCommit;
 	[repository forceUpdateRevisions];
 }
 
 - (void) updateView
 {
+    [self refresh: nil];
 	[self updateKeys];
 }
 

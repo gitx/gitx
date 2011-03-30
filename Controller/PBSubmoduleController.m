@@ -42,7 +42,8 @@
 		if ([submoduleLine length] == 0)
 			continue;
 		PBGitSubmodule *submodule = [[PBGitSubmodule alloc] initWithRawSubmoduleStatusString:submoduleLine];
-		[loadedSubmodules addObject:submodule];
+		if (submodule)
+			[loadedSubmodules addObject:submodule];
 	}
 	
 	NSMutableArray *groupedSubmodules = [[NSMutableArray alloc] init];

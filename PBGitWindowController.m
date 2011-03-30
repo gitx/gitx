@@ -33,7 +33,7 @@
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-	NSLog(@"Window will close!");
+	//NSLog(@"Window will close!");
 
 	if (sidebarController)
 		[sidebarController closeView];
@@ -175,7 +175,8 @@
 
 - (IBAction) refresh:(id)sender
 {
-	[contentController refresh:self];
+    [sidebarController.historyViewController refresh: self];
+    [sidebarController.commitViewController refresh: self];
 }
 
 - (void) updateStatus

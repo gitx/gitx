@@ -55,6 +55,7 @@
 	PBGitTree *gitTree;
 	PBGitCommit *webCommit;
 	PBGitCommit *selectedCommit;
+	PBGitCommit *selectedCommitBeforeRefresh;
 }
 
 @property (readonly) NSTreeController* treeController;
