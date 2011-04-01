@@ -4,6 +4,7 @@ table.diff {
 	width: 100%;
 	border-collapse: collapse;
 	margin-bottom: 10px;
+	-webkit-box-shadow: 5px 5px 5px #ccc;
 }
 
 table.diff tr td {
@@ -71,7 +72,6 @@ table.diff .filemerge {
 }
 
 #diff table.diff {
-	-webkit-box-shadow: 5px 5px 5px #ccc;
 	width: 98%;
 	margin: auto auto 20px 1%;
 }

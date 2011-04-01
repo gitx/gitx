@@ -20,6 +20,10 @@
 @interface GLFileView ()
 
 - (void)saveSplitViewPosition;
++ (NSString *)parseDiffBlock:(NSString *)txt;
++ (NSString *)parseDiffHeader:(NSString *)txt;
++ (NSString *)parseDiffChunk:(NSString *)txt;
++ (NSString *)parseBinaryDiff:(NSString *)txt;
 
 @end
 
@@ -120,11 +124,12 @@
 		if(!theError){
 			NSString *filePath = [file fullPath];
             fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
-            fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA}" withString:file.sha];
+            NSLog(@"file.sha='%@'",file.sha);
+            fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:file.sha];
             if(diffType==@"h") {
-                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA2}" withString:@"HEAD"];
+                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA}" withString:@"HEAD"];
             }else {
-                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA2}" withString:@"--"];
+                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA}" withString:@"--"];
             }
 			[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
 		}else{
@@ -287,245 +292,291 @@
 + (NSString *)parseDiff:(NSString *)txt
 {
 	txt=[self parseHTML:txt];
-	
-	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
-	NSString *line;
+    
 	NSMutableString *res=[NSMutableString string];
+    NSScanner *scan=[NSScanner scannerWithString:txt];
+    NSString *block;
     
-	int l_line,l_end;
-	int r_line,r_end;
+    [scan scanUpToString:@"diff --git" intoString:NULL];  //move to first diff
     
-	int i=0;
-	do {
-		line=[lines objectAtIndex:i];
-		if([GLFileView isStartDiff:line]){
-			NSString *fileName=[self getFileName:line];
-			[res appendString:[NSString stringWithFormat:@"<table id='%@' class='diff'><thead><tr><td colspan='3'><div style='float:left;'>",fileName]];
-			do{
-				[res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
-				line=nil;
-				if (i<([lines count]-1))
-					line = [lines objectAtIndex:++i];
-			}while([GLFileView isDiffHeader:line]);
-			[res appendString:@"</div>"];
-			if(![self isBinaryFile:line]){
-				[res appendString:[NSString stringWithFormat:@"<div class='filemerge'><a href='' onclick='openFileMerge(\"%@\",\"{SHA}\",\"{SHA2}\"); return false;'><img src='GitX://app:/filemerge' width='32' height='32'/><br/>open in<br/>FileMerge</a></div>",fileName]];
-			}
-			[res appendString:@"</td></tr></thead><tbody>"];
+    while([scan scanString:@"diff --git" intoString:NULL]){ // is a diff start?
+        [scan scanUpToString:@"diff --git" intoString:&block];
+        [res appendString:[GLFileView parseDiffBlock:[NSString stringWithFormat:@"diff --git %@",block]]];
+    }
+    
+    return res;
+}
 
-			if (!line)
-				break; // do nothing, this is probably header-only diff (permissions change, maybe)
-            
-			if([self isBinaryFile:line]){
-				NSArray *files=[self getFilesNames:line];
-				if(![[files objectAtIndex:0] isAbsolutePath]){
-					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'>%@</td></tr>",[files objectAtIndex:0]]];
-					if([GLFileView isImage:[files objectAtIndex:0]]){
-						[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'><img src='GitX://{SHA}:/prev/%@'/></td></tr>",[files objectAtIndex:0]]];
-					}
-				}
-				if(![[files objectAtIndex:1] isAbsolutePath]){
-					[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'>%@</td></tr>",[files objectAtIndex:1]]];
-					if([GLFileView isImage:[files objectAtIndex:1]]){
-						[res appendString:[NSString stringWithFormat:@"<tr><td colspan='3'><img src='GitX://{SHA}/%@'/></td></tr>",[files objectAtIndex:1]]];
-					}
-				}
-			}else{
-				do{
-					NSString *header=[line substringFromIndex:3];
-					NSRange hr = NSMakeRange(0, [header rangeOfString:@" @@"].location);
-					header=[header substringWithRange:hr];
-					
-					NSArray *pos=[header componentsSeparatedByString:@" "];
-					NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
-					NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
-					
-					l_end=l_line=abs([[pos_l objectAtIndex:0]integerValue]);
-					if ([pos_l count]>1) {
-						l_end=l_line+[[pos_l objectAtIndex:1]integerValue];				
-					}
-					
-					r_end=r_line=[[pos_r objectAtIndex:0]integerValue];
-					if ([pos_r count]>1) {
-						r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
-					}
-					
-					[res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
-					do{
-						line=[lines objectAtIndex:++i];
-						NSString *s=[line substringToIndex:1];
-						if([s isEqualToString:@" "]){
-							[res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
-						}else if([s isEqualToString:@"-"]){
-							[res appendString:[NSString stringWithFormat:@"<tr class='l'><td class='l'>%d</td><td class='r'></td>",l_line++]];
-						}else if([s isEqualToString:@"+"]){
-							[res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
-						}
-                        if(![s isEqualToString:@"\\"]){
-                            [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:1]]];								
-                        }
-					}while((l_line<l_end) || (r_line<r_end));
-					if(i<([lines count]-1)){
-						line=[lines objectAtIndex:++i];
-					}
-				}while([GLFileView isStartBlock:line]);
-			}
-			[res appendString:@"</tbody></table>"];
-		}else {
-			i++;
-		}
-	}while(i<[lines count]);
-	
-	return res;
++ (NSString *)parseDiffBlock:(NSString *)txt
+{
+	NSMutableString *res=[NSMutableString string];
+    NSScanner *scan=[NSScanner scannerWithString:txt];
+    NSString *block;
+    
+    [scan scanUpToString:@"\n@@ " intoString:&block];
+    [res appendString:@"<table class='diff'><thead>"];
+    [res appendString:[GLFileView parseDiffHeader:block]];
+    [res appendString:@"</td></tr></thead><tbody>"];
+    
+    if([txt rangeOfString:@"Binary files"].location!=NSNotFound){
+        [res appendString:[GLFileView parseBinaryDiff:block]];
+    }
+    
+    while([scan scanString:@"@@ " intoString:NULL]){
+        [scan scanUpToString:@"\n@@ " intoString:&block];
+        [res appendString:[GLFileView parseDiffChunk:[NSString stringWithFormat:@"@@ %@",block]]];
+    }
+    
+    [res appendString:@"</tbody></table>"];
+    
+    return res;
+}
+
++ (NSString *)parseBinaryDiff:(NSString *)txt
+{
+	NSMutableString *res=[NSMutableString string];
+    NSScanner *scan=[NSScanner scannerWithString:txt];
+    NSString *block;
+
+    [scan scanUpToString:@"Binary files" intoString:NULL];
+    [scan scanUpToString:@"" intoString:&block];
+
+    NSArray *files=[self getFilesNames:block];
+    [res appendString:@"<tr class='images'><td>"];
+    [res appendString:[NSString stringWithFormat:@"%@<br/>",[files objectAtIndex:0]]];
+    if(![[files objectAtIndex:0] isAbsolutePath]){
+        if([GLFileView isImage:[files objectAtIndex:0]]){
+            [res appendString:[NSString stringWithFormat:@"<img src='GitX://{SHA}:/prev/%@'/>",[files objectAtIndex:0]]];
+        }
+    }
+    [res appendString:@"</td><td>=&gt;</td><td>"];
+    [res appendString:[NSString stringWithFormat:@"%@<br/>",[files objectAtIndex:1]]];
+    if(![[files objectAtIndex:1] isAbsolutePath]){
+        if([GLFileView isImage:[files objectAtIndex:1]]){
+            [res appendString:[NSString stringWithFormat:@"<img src='GitX://{SHA}:/%@'/>",[files objectAtIndex:1]]];
+        }
+    }
+    [res appendString:@"</td></tr>"];
+
+    return res;
+}
+
++ (NSString *)parseDiffChunk:(NSString *)txt
+{
+    NSEnumerator *lines = [[txt componentsSeparatedByString:@"\n"] objectEnumerator];
+    NSMutableString *res=[NSMutableString string];
+    
+    NSString *line;
+    int l_line,l_end;
+    int r_line,r_end;
+    
+    line=[lines nextObject];
+    NSLog(@"-=%@=-",line);
+    NSString *header=[line substringFromIndex:3];
+    NSRange hr = NSMakeRange(0, [header rangeOfString:@" @@"].location);
+    header=[header substringWithRange:hr];
+    
+    NSArray *pos=[header componentsSeparatedByString:@" "];
+    NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
+    NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
+    
+    l_end=l_line=abs([[pos_l objectAtIndex:0]integerValue]);
+    if ([pos_l count]>1) {
+        l_end=l_line+[[pos_l objectAtIndex:1]integerValue];				
+    }
+    
+    r_end=r_line=[[pos_r objectAtIndex:0]integerValue];
+    if ([pos_r count]>1) {
+        r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
+    }
+    
+    [res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
+    do{
+        line=[lines nextObject];
+        NSString *s=[line substringToIndex:1];
+        if([s isEqualToString:@" "]){
+            [res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
+        }else if([s isEqualToString:@"-"]){
+            [res appendString:[NSString stringWithFormat:@"<tr class='l'><td class='l'>%d</td><td class='r'></td>",l_line++]];
+        }else if([s isEqualToString:@"+"]){
+            [res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
+        }
+        if(![s isEqualToString:@"\\"]){
+            [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:1]]];								
+        }
+    }while((l_line<l_end) || (r_line<r_end));
+    return res;
+}
+
++ (NSString *)parseDiffHeader:(NSString *)txt
+{
+    NSEnumerator *lines = [[txt componentsSeparatedByString:@"\n"] objectEnumerator];
+    NSMutableString *res=[NSMutableString string];
+    
+    NSString *line=[lines nextObject];
+    NSString *fileName=[self getFileName:line];
+    [res appendString:[NSString stringWithFormat:@"<tr id='%@'><td colspan='3'><div style='float:left;'>",fileName]];
+    do{
+        [res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
+    }while((line=[lines nextObject]));
+    [res appendString:@"</div>"];
+    
+    if([txt rangeOfString:@"Binary files"].location==NSNotFound){
+        [res appendString:[NSString stringWithFormat:@"<div class='filemerge'><a href='' onclick='openFileMerge(\"%@\",\"{SHA_PREV}\",\"{SHA}\"); return false;'><img src='GitX://app:/filemerge' width='32' height='32'/><br/>open in<br/>FileMerge</a></div>",fileName]];
+    }
+    
+    [res appendString:@"</td></tr>"];
+    
+    return res;
 }
 
 +(NSString *)getFileName:(NSString *)line
 {
-	NSRange b = [line rangeOfString:@"b/"];
-	NSString *file=[line substringFromIndex:b.location+2];
-	return file;
+    NSRange b = [line rangeOfString:@"b/"];
+    NSString *file=[line substringFromIndex:b.location+2];
+    return file;
 }
 
 +(NSArray *)getFilesNames:(NSString *)line
 {
-	NSString *a = nil;
-	NSString *b = nil;
-	NSScanner *scanner=[NSScanner scannerWithString:line];
-	if([scanner scanString:@"Binary files " intoString:NULL]){
-		[scanner scanUpToString:@" and" intoString:&a];
-		[scanner scanString:@"and" intoString:NULL];
-		[scanner scanUpToString:@" differ" intoString:&b];
-	}
-	if (![a isAbsolutePath]) {
-		a=[a substringFromIndex:2];
-	}
-	if (![b isAbsolutePath]) {
-		b=[b substringFromIndex:2];
-	}
-	
-	return [NSArray arrayWithObjects:a,b,nil];
+    NSString *a = nil;
+    NSString *b = nil;
+    NSScanner *scanner=[NSScanner scannerWithString:line];
+    if([scanner scanString:@"Binary files " intoString:NULL]){
+        [scanner scanUpToString:@" and" intoString:&a];
+        [scanner scanString:@"and" intoString:NULL];
+        [scanner scanUpToString:@" differ" intoString:&b];
+    }
+    if (![a isAbsolutePath]) {
+        a=[a substringFromIndex:2];
+    }
+    if (![b isAbsolutePath]) {
+        b=[b substringFromIndex:2];
+    }
+    
+    return [NSArray arrayWithObjects:a,b,nil];
 }
 
 +(NSString*)mimeTypeForFileName:(NSString*)name
 {
     NSString *mimeType = nil;
-	NSInteger i=[name rangeOfString:@"." options:NSBackwardsSearch].location;
-	if(i!=NSNotFound){
-		NSString *ext=[name substringFromIndex:i+1];
-		CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)ext, NULL);
-		if(UTI){
-			CFStringRef registeredType = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
-			if(registeredType){
-				mimeType = NSMakeCollectable(registeredType);
-			}
-			CFRelease(UTI);
-		}
-	}
+    NSInteger i=[name rangeOfString:@"." options:NSBackwardsSearch].location;
+    if(i!=NSNotFound){
+        NSString *ext=[name substringFromIndex:i+1];
+        CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (CFStringRef)ext, NULL);
+        if(UTI){
+            CFStringRef registeredType = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
+            if(registeredType){
+                mimeType = NSMakeCollectable(registeredType);
+            }
+            CFRelease(UTI);
+        }
+    }
     return mimeType;
 }
 
 +(BOOL)isDiffHeader:(NSString*)line
 {
-	unichar c=[line characterAtIndex:0];
-	return (c=='i') || (c=='m') || (c=='n') || (c=='d') || (c=='-') || (c=='+'); 
+    unichar c=[line characterAtIndex:0];
+    return (c=='i') || (c=='m') || (c=='n') || (c=='d') || (c=='-') || (c=='+'); 
 }
 
 +(BOOL)isImage:(NSString*)file
 {
-	NSString *mimeType=[GLFileView mimeTypeForFileName:file];
-	return (mimeType!=nil) && ([mimeType rangeOfString:@"image/" options:NSCaseInsensitiveSearch].location!=NSNotFound);
+    NSString *mimeType=[GLFileView mimeTypeForFileName:file];
+    return (mimeType!=nil) && ([mimeType rangeOfString:@"image/" options:NSCaseInsensitiveSearch].location!=NSNotFound);
 }
 
 +(BOOL)isBinaryFile:(NSString *)line
 {
-	return (([line length]>12) && [[line substringToIndex:12] isEqualToString:@"Binary files"]);
+    return (([line length]>12) && [[line substringToIndex:12] isEqualToString:@"Binary files"]);
 }
 
 +(BOOL)isStartDiff:(NSString *)line
 {
-	return (([line length]>10) && [[line substringToIndex:10] isEqualToString:@"diff --git"]);
+    return (([line length]>10) && [[line substringToIndex:10] isEqualToString:@"diff --git"]);
 }
 
 +(BOOL)isStartBlock:(NSString *)line
 {
-	return (([line length]>3) && [[line substringToIndex:3] isEqualToString:@"@@ "]);
+    return (([line length]>3) && [[line substringToIndex:3] isEqualToString:@"@@ "]);
 }
 
 - (NSString *) parseBlame:(NSString *)txt
 {
-	txt=[GLFileView parseHTML:txt];
-	
-	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
-	NSString *line;
-	NSMutableDictionary *headers=[NSMutableDictionary dictionary];
-	NSMutableString *res=[NSMutableString string];
-	
-	[res appendString:@"<table class='blocks'>\n"];
-	int i=0;
-	while(i<[lines count]){
-		line=[lines objectAtIndex:i];
-		NSArray *header=[line componentsSeparatedByString:@" "];
-		if([header count]==4){
-			NSString *commitID = (NSString *)[header objectAtIndex:0];
-			int nLines=[(NSString *)[header objectAtIndex:3] intValue];
-			[res appendFormat:@"<tr class='block l%d'>\n",nLines];
-			line=[lines objectAtIndex:++i];
-			if([[[line componentsSeparatedByString:@" "] objectAtIndex:0] isEqual:@"author"]){
-				NSString *author=[line stringByReplacingOccurrencesOfString:@"author" withString:@""];
-				NSString *summary=nil;
-				while(summary==nil){
-					line=[lines objectAtIndex:i++];
-					if([[[line componentsSeparatedByString:@" "] objectAtIndex:0] isEqual:@"summary"]){
-						summary=[line stringByReplacingOccurrencesOfString:@"summary" withString:@""];
-					}
-				}
-				NSRange trunc_c={0,7};
-				NSString *truncate_c=commitID;
-				if([commitID length]>8){
-					truncate_c=[commitID substringWithRange:trunc_c];
-				}
-				NSRange trunc={0,22};
-				NSString *truncate_a=author;
-				if([author length]>22){
-					truncate_a=[author substringWithRange:trunc];
-				}
-				NSString *truncate_s=summary;
-				if([summary length]>30){
-					truncate_s=[summary substringWithRange:trunc];
-				}
-				NSString *block=[NSString stringWithFormat:@"<td><p class='author'><a href='' onclick='selectCommit(\"%@\"); return false;'>%@</a> %@</p><p class='summary'>%@</p></td>\n<td>\n",commitID,truncate_c,truncate_a,truncate_s];
-				[headers setObject:block forKey:[header objectAtIndex:0]];
-			}
-			[res appendString:[headers objectForKey:[header objectAtIndex:0]]];
-			
-			NSMutableString *code=[NSMutableString string];
-			do{
-				line=[lines objectAtIndex:i++];
-			}while([line characterAtIndex:0]!='\t');
-			line=[line substringFromIndex:1];
-			[code appendString:line];
-			[code appendString:@"\n"];
-			
-			int n;
-			for(n=1;n<nLines;n++){
-				do{
-					line=[lines objectAtIndex:i++];
-				}while([line characterAtIndex:0]!='\t');
-				line=[line substringFromIndex:1];
-				[code appendString:line];
-				[code appendString:@"\n"];
-			}
-			[res appendFormat:@"<pre class='first-line: %@;brush: objc'>%@</pre>",[header objectAtIndex:2],code];
-			[res appendString:@"</td>\n"];
-		}else{
-			break;
-		}
-		[res appendString:@"</tr>\n"];
-	}  
-	[res appendString:@"</table>\n"];
-	//NSLog(@"%@",res);
-	
-	return (NSString *)res;
+    txt=[GLFileView parseHTML:txt];
+    
+    NSArray *lines = [txt componentsSeparatedByString:@"\n"];
+    NSString *line;
+    NSMutableDictionary *headers=[NSMutableDictionary dictionary];
+    NSMutableString *res=[NSMutableString string];
+    
+    [res appendString:@"<table class='blocks'>\n"];
+    int i=0;
+    while(i<[lines count]){
+        line=[lines objectAtIndex:i];
+        NSArray *header=[line componentsSeparatedByString:@" "];
+        if([header count]==4){
+            NSString *commitID = (NSString *)[header objectAtIndex:0];
+            int nLines=[(NSString *)[header objectAtIndex:3] intValue];
+            [res appendFormat:@"<tr class='block l%d'>\n",nLines];
+            line=[lines objectAtIndex:++i];
+            if([[[line componentsSeparatedByString:@" "] objectAtIndex:0] isEqual:@"author"]){
+                NSString *author=[line stringByReplacingOccurrencesOfString:@"author" withString:@""];
+                NSString *summary=nil;
+                while(summary==nil){
+                    line=[lines objectAtIndex:i++];
+                    if([[[line componentsSeparatedByString:@" "] objectAtIndex:0] isEqual:@"summary"]){
+                        summary=[line stringByReplacingOccurrencesOfString:@"summary" withString:@""];
+                    }
+                }
+                NSRange trunc_c={0,7};
+                NSString *truncate_c=commitID;
+                if([commitID length]>8){
+                    truncate_c=[commitID substringWithRange:trunc_c];
+                }
+                NSRange trunc={0,22};
+                NSString *truncate_a=author;
+                if([author length]>22){
+                    truncate_a=[author substringWithRange:trunc];
+                }
+                NSString *truncate_s=summary;
+                if([summary length]>30){
+                    truncate_s=[summary substringWithRange:trunc];
+                }
+                NSString *block=[NSString stringWithFormat:@"<td><p class='author'><a href='' onclick='selectCommit(\"%@\"); return false;'>%@</a> %@</p><p class='summary'>%@</p></td>\n<td>\n",commitID,truncate_c,truncate_a,truncate_s];
+                [headers setObject:block forKey:[header objectAtIndex:0]];
+            }
+            [res appendString:[headers objectForKey:[header objectAtIndex:0]]];
+            
+            NSMutableString *code=[NSMutableString string];
+            do{
+                line=[lines objectAtIndex:i++];
+            }while([line characterAtIndex:0]!='\t');
+            line=[line substringFromIndex:1];
+            [code appendString:line];
+            [code appendString:@"\n"];
+            
+            int n;
+            for(n=1;n<nLines;n++){
+                do{
+                    line=[lines objectAtIndex:i++];
+                }while([line characterAtIndex:0]!='\t');
+                line=[line substringFromIndex:1];
+                [code appendString:line];
+                [code appendString:@"\n"];
+            }
+            [res appendFormat:@"<pre class='first-line: %@;brush: objc'>%@</pre>",[header objectAtIndex:2],code];
+            [res appendString:@"</td>\n"];
+        }else{
+            break;
+        }
+        [res appendString:@"</tr>\n"];
+    }  
+    [res appendString:@"</table>\n"];
+    //NSLog(@"%@",res);
+    
+    return (NSString *)res;
 }
 
 
@@ -538,38 +589,38 @@
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex
 {
-	return kFileListSplitViewLeftMin;
+    return kFileListSplitViewLeftMin;
 }
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex
 {
-	return [splitView frame].size.width - [splitView dividerThickness] - kFileListSplitViewRightMin;
+    return [splitView frame].size.width - [splitView dividerThickness] - kFileListSplitViewRightMin;
 }
 
 // while the user resizes the window keep the left (file list) view constant and just resize the right view
 // unless the right view gets too small
 - (void)splitView:(NSSplitView *)splitView resizeSubviewsWithOldSize:(NSSize)oldSize
 {
-	NSRect newFrame = [splitView frame];
-	
-	float dividerThickness = [splitView dividerThickness];
-	
-	NSView *leftView = [[splitView subviews] objectAtIndex:0];
-	NSRect leftFrame = [leftView frame];
-	leftFrame.size.height = newFrame.size.height;
-	
-	if ((newFrame.size.width - leftFrame.size.width - dividerThickness) < kFileListSplitViewRightMin) {
-		leftFrame.size.width = newFrame.size.width - kFileListSplitViewRightMin - dividerThickness;
-	}
-	
-	NSView *rightView = [[splitView subviews] objectAtIndex:1];
-	NSRect rightFrame = [rightView frame];
-	rightFrame.origin.x = leftFrame.size.width + dividerThickness;
-	rightFrame.size.width = newFrame.size.width - rightFrame.origin.x;
-	rightFrame.size.height = newFrame.size.height;
-	
-	[leftView setFrame:leftFrame];
-	[rightView setFrame:rightFrame];
+    NSRect newFrame = [splitView frame];
+    
+    float dividerThickness = [splitView dividerThickness];
+    
+    NSView *leftView = [[splitView subviews] objectAtIndex:0];
+    NSRect leftFrame = [leftView frame];
+    leftFrame.size.height = newFrame.size.height;
+    
+    if ((newFrame.size.width - leftFrame.size.width - dividerThickness) < kFileListSplitViewRightMin) {
+        leftFrame.size.width = newFrame.size.width - kFileListSplitViewRightMin - dividerThickness;
+    }
+    
+    NSView *rightView = [[splitView subviews] objectAtIndex:1];
+    NSRect rightFrame = [rightView frame];
+    rightFrame.origin.x = leftFrame.size.width + dividerThickness;
+    rightFrame.size.width = newFrame.size.width - rightFrame.origin.x;
+    rightFrame.size.height = newFrame.size.height;
+    
+    [leftView setFrame:leftFrame];
+    [rightView setFrame:rightFrame];
 }
 
 // NSSplitView does not save and restore the position of the SplitView correctly so do it manually

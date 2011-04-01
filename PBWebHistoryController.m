@@ -116,8 +116,8 @@
 	
 	NSString *html=[NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
 	
-	html=[html stringByReplacingOccurrencesOfString:@"{SHA}" withString:[NSString stringWithFormat:@"%@^",[currentSha string]]];
-	html=[html stringByReplacingOccurrencesOfString:@"{SHA2}" withString:[currentSha string]];
+	html=[html stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:[NSString stringWithFormat:@"%@^",[currentSha string]]];
+	html=[html stringByReplacingOccurrencesOfString:@"{SHA}" withString:[currentSha string]];
 	
 	[[view windowScriptObject] callWebScriptMethod:@"showCommit" withArguments:[NSArray arrayWithObject:html]];
 	
