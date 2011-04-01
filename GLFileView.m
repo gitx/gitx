@@ -297,10 +297,10 @@
     NSScanner *scan=[NSScanner scannerWithString:txt];
     NSString *block;
     
-    [scan scanUpToString:@"diff --git" intoString:NULL];  //move to first diff
+    [scan scanUpToString:@"\ndiff --git" intoString:NULL];  //move to first diff
     
     while([scan scanString:@"diff --git" intoString:NULL]){ // is a diff start?
-        [scan scanUpToString:@"diff --git" intoString:&block];
+        [scan scanUpToString:@"\ndiff --git" intoString:&block];
         [res appendString:[GLFileView parseDiffBlock:[NSString stringWithFormat:@"diff --git %@",block]]];
     }
     
@@ -318,7 +318,7 @@
     [res appendString:[GLFileView parseDiffHeader:block]];
     [res appendString:@"</td></tr></thead><tbody>"];
     
-    if([txt rangeOfString:@"Binary files"].location!=NSNotFound){
+    if([block rangeOfString:@"Binary files"].location!=NSNotFound){
         [res appendString:[GLFileView parseBinaryDiff:block]];
     }
     
