@@ -297,7 +297,8 @@
     NSScanner *scan=[NSScanner scannerWithString:txt];
     NSString *block;
     
-    [scan scanUpToString:@"\ndiff --git" intoString:NULL];  //move to first diff
+    if(![txt hasPrefix:@"diff --git"])
+        [scan scanUpToString:@"diff --git" intoString:&block];  //move to first diff
     
     while([scan scanString:@"diff --git" intoString:NULL]){ // is a diff start?
         [scan scanUpToString:@"\ndiff --git" intoString:&block];
