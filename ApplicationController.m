@@ -31,7 +31,7 @@
 
 	if(![[NSBundle bundleWithPath:@"/System/Library/Frameworks/Quartz.framework/Frameworks/QuickLookUI.framework"] load])
 		if(![[NSBundle bundleWithPath:@"/System/Library/PrivateFrameworks/QuickLookUI.framework"] load])
-			NSLog(@"Could not load QuickLook");
+			DLog(@"Could not load QuickLook");
 
 	/* Value Transformers */
 	NSValueTransformer *transformer = [[PBNSURLPathUserDefaultsTransfomer alloc] init];
@@ -55,7 +55,7 @@
 	int serviceVersion = [[NSUserDefaults standardUserDefaults] integerForKey:@"Services Version"];
 	if (serviceVersion < 2)
 	{
-		NSLog(@"Updating services menu…");
+		DLog(@"Updating services menu…");
 		NSUpdateDynamicServices();
 		[[NSUserDefaults standardUserDefaults] setInteger:2 forKey:@"Services Version"];
 	}

@@ -36,7 +36,7 @@
 		unichar status = [submoduleStatusString characterAtIndex:0];
 		submoduleState = [PBGitSubmodule submoduleStateFromCharacter:status];
 		if (submoduleState == PBGitSubmoduleStateFailed) {
-			NSLog(@"Submodule status failed:\n %@", submoduleStatusString);
+			DLog(@"Submodule status failed:\n %@", submoduleStatusString);
 			return nil;
 		}
 		NSScanner *scanner = [NSScanner scannerWithString:[submoduleStatusString substringFromIndex:1]];

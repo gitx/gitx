@@ -8,7 +8,6 @@
 
 #import "PBEasyPipe.h"
 
-
 @implementation PBEasyPipe
 
 + (NSFileHandle*) handleForCommand: (NSString*) cmd withArgs: (NSArray*) args
@@ -33,9 +32,9 @@
 		[task setCurrentDirectoryPath:dir];
 
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"Show Debug Messages"])
-		NSLog(@"Starting command `%@ %@` in dir %@", cmd, [args componentsJoinedByString:@" "], dir);
+		DLog(@"Starting command `%@ %@` in dir %@", cmd, [args componentsJoinedByString:@" "], dir);
 #ifdef CLI
-	NSLog(@"Starting command `%@ %@` in dir %@", cmd, [args componentsJoinedByString:@" "], dir);
+	DLog(@"Starting command `%@ %@` in dir %@", cmd, [args componentsJoinedByString:@" "], dir);
 #endif
 
 	NSPipe* pipe = [NSPipe pipe];
@@ -128,7 +127,7 @@
 		data = [handle readDataToEndOfFile];
 	}
 	@catch (NSException * e) {
-		NSLog(@"Got a bad file descriptor in %@!", NSStringFromSelector(_cmd));
+		DLog(@"Got a bad file descriptor in %@!", NSStringFromSelector(_cmd));
 		if ([NSThread currentThread] != [NSThread mainThread])
 			[task waitUntilExit];
 

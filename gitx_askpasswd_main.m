@@ -336,7 +336,7 @@ int	main( int argc, const char* argv[] )
 		SecKeychainItemFreeContent (NULL,passwordData);
 		NSString *pas=[[NSString stringWithCString:passwordData encoding:NSASCIIStringEncoding] substringToIndex:passwordLength];
 		printf( "%s", [pas UTF8String] );
-		//NSLog(@"--> '%@'",pas);
+		//DLog(@"--> '%@'",pas);
 		return 0;
 	}else if (status != errSecItemNotFound) {
 		return -1;

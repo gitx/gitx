@@ -221,12 +221,12 @@
 		}
 		res=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff", sha, des,[self fullPath], nil]];
 		if ([res length]==0) {
-			NSLog(@"--%@",[res length]);
+			DLog(@"--%@",[res length]);
 			if (anError != NULL) {
 				*anError = [NSError errorWithDomain:@"diff" code:1 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:@"No Diff",NSLocalizedDescriptionKey,nil]];
 			}
 		}else{
-			NSLog(@"--%@",[res substringToIndex:80]);
+			DLog(@"--%@",[res substringToIndex:80]);
 		}
 	}else{
 		if (anError != NULL) {

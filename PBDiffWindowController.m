@@ -47,7 +47,7 @@
 	int retValue;
 	NSString *diff = [startCommit.repository outputInWorkdirForArguments:arguments retValue:&retValue];
 	if (retValue) {
-		NSLog(@"diff failed with retValue: %d   for command: '%@'    output: '%@'", retValue, [arguments componentsJoinedByString:@" "], diff);
+		DLog(@"diff failed with retValue: %d   for command: '%@'    output: '%@'", retValue, [arguments componentsJoinedByString:@" "], diff);
 		return;
 	}
 

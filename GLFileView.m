@@ -124,7 +124,7 @@
 		if(!theError){
 			NSString *filePath = [file fullPath];
             fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
-            NSLog(@"file.sha='%@'",file.sha);
+            DLog(@"file.sha='%@'",file.sha);
             fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:file.sha];
             if(diffType==@"h") {
                 fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA}" withString:@"HEAD"];
@@ -372,7 +372,7 @@
     int r_line,r_end;
     
     line=[lines nextObject];
-    NSLog(@"-=%@=-",line);
+    DLog(@"-=%@=-",line);
     NSString *header=[line substringFromIndex:3];
     NSRange hr = NSMakeRange(0, [header rangeOfString:@" @@"].location);
     header=[header substringWithRange:hr];
@@ -575,7 +575,7 @@
         [res appendString:@"</tr>\n"];
     }  
     [res appendString:@"</table>\n"];
-    //NSLog(@"%@",res);
+    //DLog(@"%@",res);
     
     return (NSString *)res;
 }
@@ -648,7 +648,7 @@
 -(IBAction)updateSearch:(NSSearchField *)sender
 {
     NSString *searchString = [sender stringValue];
-    NSLog(@"searchString:%@",searchString);
+    DLog(@"searchString:%@",searchString);
     
     if([searchString length]>0){
         [view highlightAllOccurencesOfString:searchString];

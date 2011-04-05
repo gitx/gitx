@@ -42,7 +42,7 @@
         }else if([node nodeType]==DOM_ELEMENT_NODE){
             count+=[self highlightAllOccurencesOfString:str inNode:node];
         }else{
-            NSLog(@"--->%@",node);
+            DLog(@"--->%@",node);
         }
         node=[node nextSibling];
     }

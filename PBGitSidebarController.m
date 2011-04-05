@@ -170,7 +170,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 
 -(void)evaluateRemoteBadge:(PBGitSVRemoteItem *)remote
 {
-	NSLog(@"remote.title=%@",[remote title]);
+	DLog(@"remote.title=%@",[remote title]);
 	[remote setAlert:[self remoteNeedFetch:[remote title]]];
 }
 

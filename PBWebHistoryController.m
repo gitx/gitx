@@ -262,7 +262,7 @@ contextMenuItemsForElement:(NSDictionary *)element
 				if ([[ref shortName] isEqualToString:selectedRefString])
 					return [contextMenuDelegate menuItemsForRef:ref];
 			}
-			NSLog(@"Could not find selected ref!");
+			DLog(@"Could not find selected ref!");
 			return defaultMenuItems;
 		}
 		if ([node hasAttributes] && [[node attributes] getNamedItem:@"representedFile"])

@@ -71,7 +71,7 @@
 
     if (code == NSOKButton) {
 		NSString *clonePath = [(NSOpenPanel *)sheet filename];
-		NSLog(@"clone path = %@", clonePath);
+		DLog(@"clone path = %@", clonePath);
 		[self.repository cloneRepositoryToPath:clonePath bare:self.isBare];
 	}
 }

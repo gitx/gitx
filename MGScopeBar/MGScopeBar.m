@@ -451,11 +451,11 @@
 				// We're widening. See if we can expand this group and still be within availableWidth.
 				if (((theoreticalOccupiedWidth - contractedWidth) + expandedWidth) > availableWidth) {
 					// We'd be too wide if we expanded this group. Terminate iteration without updating _firstCollapsedGroup.
-					//NSLog(@"We'd be too wide if we expanded right now");
+					//DLog(@"We'd be too wide if we expanded right now");
 					break;
 				} // else, continue trying to expand groups.
 				theoreticalOccupiedWidth = ((theoreticalOccupiedWidth - contractedWidth) + expandedWidth);
-				//NSLog(@"We can continue expanding");
+				//DLog(@"We can continue expanding");
 			}
 			
 			// Update _firstCollapsedGroup appropriately.
@@ -474,7 +474,7 @@
 		// Work out how many groups we need to actually change.
 		NSRange changedRange = NSMakeRange(0, [_groups count]);
 		BOOL adjusting = YES;
-		//NSLog(@"Old firstCollapsedGroup: %d, new: %d", oldFirstCollapsedGroup, _firstCollapsedGroup);
+		//DLog(@"Old firstCollapsedGroup: %d, new: %d", oldFirstCollapsedGroup, _firstCollapsedGroup);
 		if (_firstCollapsedGroup != oldFirstCollapsedGroup) {
 			if (narrower) {
 				// Narrower. _firstCollapsedGroup will be less (earlier) than oldFirstCollapsedGroup.
@@ -492,7 +492,7 @@
 		
 		// If a change is required, ensure that each group is expanded or contracted as appropriate.
 		if (adjusting || shouldAdjustPopups) {
-			//NSLog(@"Got %@ - modifying groups %@", ((narrower) ? @"narrower" : @"wider"), NSStringFromRange(changedRange));
+			//DLog(@"Got %@ - modifying groups %@", ((narrower) ? @"narrower" : @"wider"), NSStringFromRange(changedRange));
 			NSInteger nextXCoord = NSNotFound;
 			if (adjusting) {
 				int i;

@@ -43,7 +43,7 @@ static NSString* gitPath = nil;
 		return YES;
 	}
 
-	NSLog(@"Found a git binary at %@, but is only version %@", path, version);
+	DLog(@"Found a git binary at %@, but is only version %@", path, version);
 	return NO;
 }
 
@@ -80,7 +80,7 @@ static NSString* gitPath = nil;
 			return;
 	}
 
-	NSLog(@"Could not find a git binary higher than version " MIN_GIT_VERSION);
+	DLog(@"Could not find a git binary higher than version " MIN_GIT_VERSION);
 }
 
 + (NSString *) path;

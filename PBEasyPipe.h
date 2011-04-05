@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#import "GitX_Prefix.pch"
 
 @interface PBEasyPipe : NSObject {
 
