@@ -368,8 +368,8 @@
     NSMutableString *res=[NSMutableString string];
     
     NSString *line;
-    int l_line,l_end;
-    int r_line,r_end;
+    int l_line;
+    int r_line;
     
     line=[lines nextObject];
     DLog(@"-=%@=-",line);
@@ -381,19 +381,11 @@
     NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
     NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
     
-    l_end=l_line=abs([[pos_l objectAtIndex:0]integerValue]);
-    if ([pos_l count]>1) {
-        l_end=l_line+[[pos_l objectAtIndex:1]integerValue];				
-    }
-    
-    r_end=r_line=[[pos_r objectAtIndex:0]integerValue];
-    if ([pos_r count]>1) {
-        r_end=r_line+[[pos_r objectAtIndex:1]integerValue];
-    }
-    
+    l_line=abs([[pos_l objectAtIndex:0]integerValue]);
+    r_line=[[pos_r objectAtIndex:0]integerValue];
+
     [res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
-    do{
-        line=[lines nextObject];
+    while((line=[lines nextObject])){
         NSString *s=[line substringToIndex:1];
         if([s isEqualToString:@" "]){
             [res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
@@ -405,7 +397,7 @@
         if(![s isEqualToString:@"\\"]){
             [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:1]]];								
         }
-    }while((l_line<l_end) || (r_line<r_end));
+    }
     return res;
 }
 
