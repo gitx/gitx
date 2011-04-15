@@ -410,6 +410,7 @@
 			[searchArguments addObject:[NSString stringWithFormat:@"-S%@", searchString]];
 			break;
 		case kGitXPathSearchMode:
+		  [searchArguments addObject:@"--follow"];
 			[searchArguments addObject:@"--"];
 			[searchArguments addObjectsFromArray:[searchString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
 			break;
