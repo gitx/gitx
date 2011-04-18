@@ -409,6 +409,7 @@
 {
 	selectedCommitBeforeRefresh = selectedCommit;
 	[repository forceUpdateRevisions];
+	selectedCommitBeforeRefresh = NULL;
 }
 
 - (void) updateView
