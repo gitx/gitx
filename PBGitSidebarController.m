@@ -171,7 +171,8 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 -(void)evaluateRemoteBadge:(PBGitSVRemoteItem *)remote
 {
 	DLog(@"remote.title=%@",[remote title]);
-	[remote setAlert:[self remoteNeedFetch:[remote title]]];
+    if([remote isKindOfClass:[PBGitSVRemoteItem class]])
+        [remote setAlert:[self remoteNeedFetch:[remote title]]];
 }
 
 -(NSNumber *)countCommintsOf:(NSString *)range
