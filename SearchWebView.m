@@ -50,19 +50,43 @@
     return count;
 }
 
-- (NSInteger)highlightAllOccurencesOfString:(NSString*)str
+- (DOMRange *)highlightAllOccurencesOfString:(NSString*)str
 {
     NSInteger count=0;
+    DOMRange *res=nil;
     
     if([[[[self mainFrame] DOMDocument] documentElement] isKindOfClass:[DOMHTMLElement class]]){
         DOMHTMLElement *dom=(DOMHTMLElement *)[[[self mainFrame] DOMDocument] documentElement];
         if(![str isEqualToString:[dom getAttribute:@"searchStr"]]){
             [self removeAllHighlights];
             count=[self highlightAllOccurencesOfString:str inNode:dom];
+            if(count>0){
+                [dom setAttribute:@"searchStr" value:str];
+            }
+        }
+        if([self searchFor:str direction:YES caseSensitive:NO wrap:YES]){
+            res=[self selectedDOMRange];
         }
     }
     
-    return count;
+    return res;
+}
+
+- (void)updateSearch:(NSSearchField *)sender
+{
+    NSString *searchString = [sender stringValue];
+    DLog(@"searchString:%@",searchString);
+    
+    DOMRange *selection;
+    
+    if([searchString length]>0){
+        selection=[self highlightAllOccurencesOfString:searchString];
+        [[sender window] makeFirstResponder:sender];
+        if(selection!=nil)
+            [self setSelectedDOMRange:selection affinity:NSSelectionAffinityDownstream];
+    }else{
+        [self removeAllHighlights];
+    }
 }
 
 - (void)removeAllHighlights:(DOMNode *)_node

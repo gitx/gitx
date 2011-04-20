@@ -639,14 +639,7 @@
 
 -(IBAction)updateSearch:(NSSearchField *)sender
 {
-    NSString *searchString = [sender stringValue];
-    DLog(@"searchString:%@",searchString);
-    
-    if([searchString length]>0){
-        [view highlightAllOccurencesOfString:searchString];
-    }else{
-        [view removeAllHighlights];
-    }
+    [view updateSearch:sender];
 }
 
 #pragma mark -
