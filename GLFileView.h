@@ -25,6 +25,7 @@
 	IBOutlet NSView *accessoryView;
 	IBOutlet NSSplitView *fileListSplitView;
     IBOutlet NSSearchField *searchField;
+    PBGitTree *lastFile;
 }
 
 - (void)showFile;

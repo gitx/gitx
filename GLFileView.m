@@ -102,42 +102,46 @@
 	NSArray *files=[historyController.treeController selectedObjects];
 	if ([files count]>0) {
 		PBGitTree *file=[files objectAtIndex:0];
-		
-		NSString *fileTxt = @"";
-		if(startFile==@"fileview"){
-			fileTxt=[file textContents:&theError];
-			if(!theError)
-				fileTxt=[GLFileView parseHTML:fileTxt];
-		}else if(startFile==@"blame"){
-			fileTxt=[file blame:&theError];
-			if(!theError)
-				fileTxt=[self parseBlame:fileTxt];
-		}else if(startFile==@"log"){
-			fileTxt=[file log:logFormat error:&theError];		
-		}else if(startFile==@"diff"){
-			fileTxt=[file diff:diffType error:&theError];
-			if(!theError)
-				fileTxt=[GLFileView parseDiff:fileTxt];
-		}
-		
-		id script = [view windowScriptObject];
-		if(!theError){
-			NSString *filePath = [file fullPath];
-            fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
-            DLog(@"file.sha='%@'",file.sha);
-            fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:file.sha];
-            if(diffType==@"h") {
-                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA}" withString:@"HEAD"];
-            }else {
-                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA}" withString:@"--"];
+		DLog(@"file=%@ == %@ => %d",file,lastFile,[file isEqualTo:lastFile]);
+        if(![file isEqualTo:lastFile]){
+            lastFile=file;
+            
+            NSString *fileTxt = @"";
+            if(startFile==@"fileview"){
+                fileTxt=[file textContents:&theError];
+                if(!theError)
+                    fileTxt=[GLFileView parseHTML:fileTxt];
+            }else if(startFile==@"blame"){
+                fileTxt=[file blame:&theError];
+                if(!theError)
+                    fileTxt=[self parseBlame:fileTxt];
+            }else if(startFile==@"log"){
+                fileTxt=[file log:logFormat error:&theError];		
+            }else if(startFile==@"diff"){
+                fileTxt=[file diff:diffType error:&theError];
+                if(!theError)
+                    fileTxt=[GLFileView parseDiff:fileTxt];
             }
-			[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
-		}else{
-			[script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObjects:[theError localizedDescription], nil]];
-		}
+            
+            id script = [view windowScriptObject];
+            if(!theError){
+                NSString *filePath = [file fullPath];
+                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
+                DLog(@"file.sha='%@'",file.sha);
+                fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:file.sha];
+                if(diffType==@"h") {
+                    fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA}" withString:@"HEAD"];
+                }else {
+                    fileTxt=[fileTxt stringByReplacingOccurrencesOfString:@"{SHA}" withString:@"--"];
+                }
+                [script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
+            }else{
+                [script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObjects:[theError localizedDescription], nil]];
+            }
+            [self updateSearch:searchField];
+        }
 	}
     
-    [self updateSearch:searchField];
 	
 #ifdef DEBUG_BUILD
     DOMHTMLElement *dom=(DOMHTMLElement *)[[[view mainFrame] DOMDocument] documentElement];
@@ -338,10 +342,10 @@
 	NSMutableString *res=[NSMutableString string];
     NSScanner *scan=[NSScanner scannerWithString:txt];
     NSString *block;
-
+    
     [scan scanUpToString:@"Binary files" intoString:NULL];
     [scan scanUpToString:@"" intoString:&block];
-
+    
     NSArray *files=[self getFilesNames:block];
     [res appendString:@"<tr class='images'><td>"];
     [res appendString:[NSString stringWithFormat:@"%@<br/>",[files objectAtIndex:0]]];
@@ -358,7 +362,7 @@
         }
     }
     [res appendString:@"</td></tr>"];
-
+    
     return res;
 }
 
@@ -383,7 +387,7 @@
     
     l_line=abs([[pos_l objectAtIndex:0]integerValue]);
     r_line=[[pos_r objectAtIndex:0]integerValue];
-
+    
     [res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
     while((line=[lines nextObject])){
         NSString *s=[line substringToIndex:1];

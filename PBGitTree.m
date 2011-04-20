@@ -376,4 +376,9 @@
 		[[NSFileManager defaultManager] removeItemAtPath:localFileName error:nil];
 	[super finalize];
 }
+
+- (BOOL)isEqualTo:(PBGitTree *)object
+{
+    return [sha isEqualTo:[object sha]] && [[self fullPath] isEqualTo:[object fullPath]];
+}
 @end
