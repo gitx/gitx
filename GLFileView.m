@@ -219,6 +219,7 @@
 			[[view mainFrame] reload];
 		}
 	}
+    lastFile=nil;
 }
 
 - (NSView *)accessoryViewForScopeBar:(MGScopeBar *)scopeBar

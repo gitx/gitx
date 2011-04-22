@@ -2,10 +2,10 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">10J567</string>
+		<string key="IBDocument.SystemVersion">10J869</string>
 		<string key="IBDocument.InterfaceBuilderVersion">1305</string>
 		<string key="IBDocument.AppKitVersion">1038.35</string>
-		<string key="IBDocument.HIToolboxVersion">462.00</string>
+		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
 			<string key="NS.object.0">1305</string>
@@ -109,11 +109,9 @@
 								<string key="NSToolbarItemPaletteLabel">Clone Repository To</string>
 								<nil key="NSToolbarItemToolTip"/>
 								<object class="NSButton" key="NSToolbarItemView" id="703553818">
-									<reference key="NSNextResponder"/>
+									<nil key="NSNextResponder"/>
 									<int key="NSvFlags">268</int>
 									<string key="NSFrame">{{38, 14}, {40, 25}}</string>
-									<reference key="NSSuperview"/>
-									<reference key="NSWindow"/>
 									<bool key="NSEnabled">YES</bool>
 									<object class="NSButtonCell" key="NSCell" id="64590231">
 										<int key="NSCellFlags">-2080244224</int>
@@ -156,11 +154,9 @@
 								<string key="NSToolbarItemPaletteLabel">Refresh</string>
 								<nil key="NSToolbarItemToolTip"/>
 								<object class="NSButton" key="NSToolbarItemView" id="438380428">
-									<reference key="NSNextResponder"/>
+									<nil key="NSNextResponder"/>
 									<int key="NSvFlags">268</int>
 									<string key="NSFrame">{{8, 14}, {32, 25}}</string>
-									<reference key="NSSuperview"/>
-									<reference key="NSWindow"/>
 									<bool key="NSEnabled">YES</bool>
 									<object class="NSButtonCell" key="NSCell" id="604536609">
 										<int key="NSCellFlags">-2080244224</int>
@@ -199,11 +195,9 @@
 								<string key="NSToolbarItemPaletteLabel">View</string>
 								<nil key="NSToolbarItemToolTip"/>
 								<object class="NSSegmentedControl" key="NSToolbarItemView" id="371591001">
-									<reference key="NSNextResponder"/>
+									<nil key="NSNextResponder"/>
 									<int key="NSvFlags">268</int>
 									<string key="NSFrame">{{0, 14}, {94, 25}}</string>
-									<reference key="NSSuperview"/>
-									<reference key="NSWindow"/>
 									<bool key="NSEnabled">YES</bool>
 									<object class="NSSegmentedCell" key="NSCell" id="399933706">
 										<int key="NSCellFlags">67239424</int>
@@ -402,6 +396,7 @@
 									<string key="NSFrameSize">{184, 483}</string>
 									<reference key="NSSuperview" ref="120427370"/>
 									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView" ref="933485175"/>
 									<string key="NSClassName">NSView</string>
 								</object>
 								<object class="NSCustomView" id="933485175">
@@ -410,12 +405,14 @@
 									<string key="NSFrame">{{185, 0}, {705, 483}}</string>
 									<reference key="NSSuperview" ref="120427370"/>
 									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView" ref="207262158"/>
 									<string key="NSClassName">NSView</string>
 								</object>
 							</object>
 							<string key="NSFrame">{{0, 31}, {890, 483}}</string>
 							<reference key="NSSuperview" ref="751230759"/>
 							<reference key="NSWindow"/>
+							<reference key="NSNextKeyView" ref="3950721"/>
 							<bool key="NSIsVertical">YES</bool>
 							<int key="NSDividerStyle">2</int>
 							<string key="NSAutosaveName">sourceSplitView</string>
@@ -426,6 +423,7 @@
 							<string key="NSFrame">{{0, 1}, {515, 31}}</string>
 							<reference key="NSSuperview" ref="751230759"/>
 							<reference key="NSWindow"/>
+							<reference key="NSNextKeyView" ref="44848571"/>
 							<string key="NSClassName">NSView</string>
 						</object>
 						<object class="NSCustomView" id="44848571">
@@ -440,6 +438,7 @@
 									<string key="NSFrame">{{20, 7}, {16, 16}}</string>
 									<reference key="NSSuperview" ref="44848571"/>
 									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView" ref="508249619"/>
 									<int key="NSpiFlags">20746</int>
 									<double key="NSMaxValue">100</double>
 								</object>
@@ -449,6 +448,7 @@
 									<string key="NSFrame">{{41, 8}, {188, 14}}</string>
 									<reference key="NSSuperview" ref="44848571"/>
 									<reference key="NSWindow"/>
+									<reference key="NSNextKeyView"/>
 									<bool key="NSEnabled">YES</bool>
 									<object class="NSTextFieldCell" key="NSCell" id="708164574">
 										<int key="NSCellFlags">67239488</int>
@@ -484,14 +484,16 @@
 							<string key="NSFrame">{{552, 0}, {246, 31}}</string>
 							<reference key="NSSuperview" ref="751230759"/>
 							<reference key="NSWindow"/>
+							<reference key="NSNextKeyView" ref="490597384"/>
 							<string key="NSClassName">NSView</string>
 						</object>
 					</object>
 					<string key="NSFrame">{{7, 11}, {890, 514}}</string>
 					<reference key="NSSuperview"/>
 					<reference key="NSWindow"/>
+					<reference key="NSNextKeyView" ref="120427370"/>
 				</object>
-				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
+				<string key="NSScreenRect">{{0, 0}, {1680, 1028}}</string>
 				<string key="NSMinSize">{600, 528}</string>
 				<string key="NSMaxSize">{1e+13, 1e+13}</string>
 				<string key="NSFrameAutosaveName">GitX</string>
@@ -532,14 +534,6 @@
 						<reference key="destination" ref="933485175"/>
 					</object>
 					<int key="connectionID">356</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">splitView</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="120427370"/>
-					</object>
-					<int key="connectionID">357</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -620,6 +614,14 @@
 						<reference key="destination" ref="121507526"/>
 					</object>
 					<int key="connectionID">423</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">mainSplitView</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="120427370"/>
+					</object>
+					<int key="connectionID">424</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -945,7 +947,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">423</int>
+			<int key="maxID">424</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1026,10 +1028,10 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>contentSplitView</string>
 							<string>finderItem</string>
+							<string>mainSplitView</string>
 							<string>progressIndicator</string>
 							<string>sourceListControlsView</string>
 							<string>sourceSplitView</string>
-							<string>splitView</string>
 							<string>statusField</string>
 							<string>terminalItem</string>
 						</object>
@@ -1037,10 +1039,10 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NSView</string>
 							<string>NSToolbarItem</string>
+							<string>NSSplitView</string>
 							<string>NSProgressIndicator</string>
 							<string>NSView</string>
 							<string>NSView</string>
-							<string>NSSplitView</string>
 							<string>NSTextField</string>
 							<string>NSToolbarItem</string>
 						</object>
@@ -1051,10 +1053,10 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>contentSplitView</string>
 							<string>finderItem</string>
+							<string>mainSplitView</string>
 							<string>progressIndicator</string>
 							<string>sourceListControlsView</string>
 							<string>sourceSplitView</string>
-							<string>splitView</string>
 							<string>statusField</string>
 							<string>terminalItem</string>
 						</object>
@@ -1069,6 +1071,10 @@
 								<string key="candidateClassName">NSToolbarItem</string>
 							</object>
 							<object class="IBToOneOutletInfo">
+								<string key="name">mainSplitView</string>
+								<string key="candidateClassName">NSSplitView</string>
+							</object>
+							<object class="IBToOneOutletInfo">
 								<string key="name">progressIndicator</string>
 								<string key="candidateClassName">NSProgressIndicator</string>
 							</object>
@@ -1079,10 +1085,6 @@
 							<object class="IBToOneOutletInfo">
 								<string key="name">sourceSplitView</string>
 								<string key="candidateClassName">NSView</string>
-							</object>
-							<object class="IBToOneOutletInfo">
-								<string key="name">splitView</string>
-								<string key="candidateClassName">NSSplitView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">statusField</string>

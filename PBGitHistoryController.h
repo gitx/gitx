@@ -10,7 +10,6 @@
 #import "PBGitCommit.h"
 #import "PBGitTree.h"
 #import "PBViewController.h"
-#import "PBCollapsibleSplitView.h"
 
 @class PBGitSidebarController;
 @class PBWebHistoryController;
@@ -32,7 +31,7 @@
 	IBOutlet NSOutlineView* fileBrowser;
 	NSArray *currentFileBrowserSelectionPath;
 	IBOutlet PBCommitList* commitList;
-	IBOutlet PBCollapsibleSplitView *historySplitView;
+	IBOutlet NSSplitView *historySplitView;
 	IBOutlet PBWebHistoryController *webHistoryController;
     QLPreviewPanel* previewPanel;
 	IBOutlet PBHistorySearchController *searchController;
@@ -59,7 +58,7 @@
 }
 
 @property (readonly) NSTreeController* treeController;
-@property (readonly) PBCollapsibleSplitView *historySplitView;
+@property (readonly) NSSplitView *historySplitView;
 @property (assign) int selectedCommitDetailsIndex;
 @property (retain) PBGitCommit *webCommit;
 @property (retain) PBGitTree* gitTree;
@@ -107,7 +106,5 @@
 
 - (BOOL)splitView:(NSSplitView *)sender canCollapseSubview:(NSView *)subview;
 - (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
-- (CGFloat)splitView:(NSSplitView *)sender constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset;
-- (CGFloat)splitView:(NSSplitView *)sender constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)offset;
 
 @end

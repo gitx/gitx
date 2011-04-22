@@ -83,7 +83,7 @@
 	// Add a menu that allows a user to select which columns to view
 	[[commitList headerView] setMenu:[self tableColumnMenu]];
 
-	[historySplitView setTopMin:58.0 andBottomMin:100.0];
+//	[historySplitView setTopMin:58.0 andBottomMin:100.0];
 	[historySplitView setHidden:YES];
 	[self performSelector:@selector(restoreSplitViewPositiion) withObject:nil afterDelay:0];
 
@@ -628,42 +628,6 @@
 	return FALSE;
 }
 
-- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex
-{
-	return historySplitView.topViewMin;
-}
-
-- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex
-{
-	return [splitView frame].size.height - [splitView dividerThickness] - historySplitView.bottomViewMin;
-}
-
-// while the user resizes the window keep the upper (history) view constant and just resize the lower view
-// unless the lower view gets too small
-- (void)splitView:(NSSplitView *)splitView resizeSubviewsWithOldSize:(NSSize)oldSize
-{
-	NSRect newFrame = [splitView frame];
-
-	float dividerThickness = [splitView dividerThickness];
-
-	NSView *upperView = [[splitView subviews] objectAtIndex:0];
-	NSRect upperFrame = [upperView frame];
-	upperFrame.size.width = newFrame.size.width;
-
-	if ((newFrame.size.height - upperFrame.size.height - dividerThickness) < historySplitView.bottomViewMin) {
-		upperFrame.size.height = newFrame.size.height - historySplitView.bottomViewMin - dividerThickness;
-	}
-
-	NSView *lowerView = [[splitView subviews] objectAtIndex:1];
-	NSRect lowerFrame = [lowerView frame];
-	lowerFrame.origin.y = upperFrame.size.height + dividerThickness;
-	lowerFrame.size.height = newFrame.size.height - lowerFrame.origin.y;
-	lowerFrame.size.width = newFrame.size.width;
-
-	[upperView setFrame:upperFrame];
-	[lowerView setFrame:lowerFrame];
-}
-
 // NSSplitView does not save and restore the position of the SplitView correctly so do it manually
 - (void)saveSplitViewPosition
 {
@@ -681,6 +645,23 @@
 
 	[historySplitView setPosition:position ofDividerAtIndex:0];
 	[historySplitView setHidden:NO];
+}
+
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex
+{
+	if (proposedMin < 100)
+		return 100;
+	return proposedMin;
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex
+{
+    CGFloat max=[splitView frame].size.height - [splitView dividerThickness] - 100;
+	if (max < proposedMax)
+		return max;
+    
+	return proposedMax;
 }
 
 
