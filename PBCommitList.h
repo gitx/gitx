@@ -12,6 +12,10 @@
 
 @class PBWebHistoryController;
 
+// Displays the list of commits. Additional behavior includes special key
+// handling and hiliting search results.
+// dataSource: PBRefController
+// delegate: PBGitHistoryController
 @interface PBCommitList : NSTableView {
 	IBOutlet WebView* webView;
 	IBOutlet PBWebHistoryController *webController;

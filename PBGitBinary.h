@@ -11,6 +11,7 @@
 
 #define MIN_GIT_VERSION "1.6.0"
 
+// Returns information about the git binary used to execute commands.
 @interface PBGitBinary : NSObject {
 
 }
