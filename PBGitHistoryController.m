@@ -822,7 +822,7 @@
 								  [NSDictionary dictionaryWithObject:searchString forKey:@"SEARCH_STRING"]];
 	}
 	[gitTree setFilterPredicate:predicate];
-	[treeController setContent:gitTree.filteredChildren];
+	[treeController setContent:[gitTree filteredChildren]];
 }
 
 @end
