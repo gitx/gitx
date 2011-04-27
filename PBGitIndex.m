@@ -301,11 +301,12 @@ NSString *PBGitIndexOperationFailed = @"PBGitIndexOperationFailed";
 			PBChangedFile *file = [stageFiles objectAtIndex:i];
 			
 			[input appendFormat:@"%@", file.path];
+			[input appendString:@"\n"];
 		}
 		
 			
 		int ret = 1;
-		[repository outputForArguments:[NSArray arrayWithObjects:@"update-index", @"--add", @"--remove", @"-z", @"--stdin", nil]
+		[repository outputForArguments:[NSArray arrayWithObjects:@"update-index", @"--add", @"--remove", @"--stdin", nil]
 						   inputString:input
 							  retValue:&ret];
 
@@ -357,10 +358,11 @@ NSString *PBGitIndexOperationFailed = @"PBGitIndexOperationFailed";
 			PBChangedFile *file = [unstageFiles objectAtIndex:i];
 			
 			[input appendString:[file indexInfo]];
+			[input appendString:@"\n"];
 		}
 		
 		int ret = 1;
-		[repository outputForArguments:[NSArray arrayWithObjects:@"update-index", @"-z", @"--index-info", nil]
+		[repository outputForArguments:[NSArray arrayWithObjects:@"update-index", @"--index-info", nil]
 						   inputString:input
 							  retValue:&ret];
 		
