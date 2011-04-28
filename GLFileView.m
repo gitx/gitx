@@ -430,8 +430,10 @@
 
 +(NSString *)getFileName:(NSString *)line
 {
-    NSRange b = [line rangeOfString:@"b/"];
-    NSString *file=[line substringFromIndex:b.location+2];
+    NSRange b = [line rangeOfString:@" b/"];
+    NSString *file=[line substringFromIndex:b.location+3];
+    DLog(@"line=%@",line);
+    DLog(@"file=%@",file);
     return file;
 }
 
