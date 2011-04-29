@@ -17,7 +17,7 @@
 //---------------------------------------------------------------------------------------------
 
 - initWithSourceObject:(id<PBPresentable>) anObject {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		super.title = [anObject displayDescription];
 		sourceObject = [anObject retain];
 	}

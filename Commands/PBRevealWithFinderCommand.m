@@ -17,7 +17,7 @@
 		return nil;
 	}
 	
-	if (self = [super initWithDisplayName:@"Reveal in Finder" parameters:nil repository:nil]) {
+	if ((self = [super initWithDisplayName:@"Reveal in Finder" parameters:nil repository:nil])) {
 		documentURL = [[NSURL alloc] initWithString:path];
 	}
 	return self;

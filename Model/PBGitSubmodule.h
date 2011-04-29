@@ -13,6 +13,7 @@ typedef enum {
 	PBGitSubmoduleStateNotInitialized,
 	PBGitSubmoduleStateMatchingIndex,
 	PBGitSubmoduleStateDoesNotMatchIndex,
+	PBGitSubmoduleStateFailed,
 } PBGitSubmoduleState;
 
 @interface PBGitSubmodule : NSObject<PBPresentable> {

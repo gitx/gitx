@@ -5,3 +5,15 @@
 #ifdef __OBJC__
     #import <Cocoa/Cocoa.h>
 #endif
+
+#ifndef DLog
+#ifdef DEBUG
+#    define DLog(...) NSLog(__VA_ARGS__)
+#else
+#    define DLog(...) /* */
+#endif
+#endif
+
+#ifndef ALog
+#define ALog(...) DLog(__VA_ARGS__)
+#endif

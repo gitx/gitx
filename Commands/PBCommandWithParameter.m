@@ -16,7 +16,7 @@
 @synthesize parameterDisplayName;
 
 - initWithCommand:(PBCommand *) aCommand parameterName:(NSString *) param parameterDisplayName:(NSString *) paramDisplayName {
-	if (self = [super initWithDisplayName:[aCommand displayName] parameters:nil repository:[aCommand repository]]) {
+	if ((self = [super initWithDisplayName:[aCommand displayName] parameters:nil repository:[aCommand repository]])) {
 		command = [aCommand retain];
 		parameterName = [param retain];
 		parameterDisplayName = [paramDisplayName retain];

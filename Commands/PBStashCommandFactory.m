@@ -22,7 +22,7 @@
 
 @implementation PBStashCommandFactory
 
-+ (NSArray *) commandsForObject:(NSObject *) object repository:(PBGitRepository *) repository {
++ (NSArray *) commandsForObject:(id<PBPresentable>) object repository:(PBGitRepository *) repository {
 	NSArray *cmds = nil;
 	if ([object isKindOfClass:[PBGitStash class]]) {
 		cmds = [PBStashCommandFactory commandsForStash:(id)object repository:repository];

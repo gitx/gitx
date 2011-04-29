@@ -46,7 +46,15 @@
 	if ([diff length] == 0)
 		[script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObject:@"There are no differences"]];
 	else
-		[script callWebScriptMethod:@"showDiff" withArguments:[NSArray arrayWithObject:diff]];
+		[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObject:diff]];
 }
+
+// TODO: need to be refactoring
+- (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2;
+{
+	NSArray *args=[NSArray arrayWithObjects:@"difftool",@"--no-prompt",@"--tool=opendiff",sha,sha2,file,nil];
+	[repository handleInWorkDirForArguments:args];
+}
+
 
 @end

@@ -62,6 +62,7 @@
 		31460CD6124185BA00B90AED /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 31460CB1124185BA00B90AED /* TODO */; };
 		316E7202131EE9C600AFBB36 /* list_Template.png in Resources */ = {isa = PBXBuildFile; fileRef = 316E7200131EE9C600AFBB36 /* list_Template.png */; };
 		316E7203131EE9C600AFBB36 /* sidebar_Template.png in Resources */ = {isa = PBXBuildFile; fileRef = 316E7201131EE9C600AFBB36 /* sidebar_Template.png */; };
+		31776089133569350025876E /* SearchWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 31776088133569350025876E /* SearchWebView.m */; };
 		31DAA7ED1317737100463846 /* gitx_l_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 31DAA7EC1317737100463846 /* gitx_l_pub.pem */; };
 		3BC07F4C0ED5A5C5009A7768 /* HistoryViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4A0ED5A5C5009A7768 /* HistoryViewTemplate.png */; };
 		3BC07F4D0ED5A5C5009A7768 /* CommitViewTemplate.png in Resources */ = {isa = PBXBuildFile; fileRef = 3BC07F4B0ED5A5C5009A7768 /* CommitViewTemplate.png */; };
@@ -72,6 +73,8 @@
 		47DBDBCA0E95016F00671A1E /* PBNSURLPathUserDefaultsTransfomer.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DBDBC90E95016F00671A1E /* PBNSURLPathUserDefaultsTransfomer.m */; };
 		551BF11E112F376C00265053 /* gitx_askpasswd_main.m in Sources */ = {isa = PBXBuildFile; fileRef = 551BF11D112F376C00265053 /* gitx_askpasswd_main.m */; };
 		551BF176112F3F4B00265053 /* gitx_askpasswd in Resources */ = {isa = PBXBuildFile; fileRef = 551BF111112F371800265053 /* gitx_askpasswd */; };
+		65D58BC4132D27A8003F7290 /* PBResetSheet.xib in Resources */ = {isa = PBXBuildFile; fileRef = 65D58BC3132D27A7003F7290 /* PBResetSheet.xib */; };
+		65D58BC7132D48C2003F7290 /* PBResetSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 65D58BC6132D48C0003F7290 /* PBResetSheet.m */; };
 		770B37ED0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel */; };
 		77C8280E06725ACE000B614F /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C8280C06725ACE000B614F /* ApplicationController.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
@@ -138,10 +141,6 @@
 		D8FDDA6F114335E8005647F6 /* PBGitSVStageItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FDDA67114335E8005647F6 /* PBGitSVStageItem.m */; };
 		D8FDDA70114335E8005647F6 /* PBGitSVTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FDDA69114335E8005647F6 /* PBGitSVTagItem.m */; };
 		D8FDDBF41143F318005647F6 /* AddRemote.png in Resources */ = {isa = PBXBuildFile; fileRef = D8FDDBF31143F318005647F6 /* AddRemote.png */; };
-		EB2A734A0FEE3F09006601CF /* PBCollapsibleSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = EB2A73490FEE3F09006601CF /* PBCollapsibleSplitView.m */; };
-		F50A411F0EBB874C00208746 /* mainSplitterBar.tiff in Resources */ = {isa = PBXBuildFile; fileRef = F50A411D0EBB874C00208746 /* mainSplitterBar.tiff */; };
-		F50A41200EBB874C00208746 /* mainSplitterDimple.tiff in Resources */ = {isa = PBXBuildFile; fileRef = F50A411E0EBB874C00208746 /* mainSplitterDimple.tiff */; };
-		F50A41230EBB875D00208746 /* PBNiceSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = F50A41220EBB875D00208746 /* PBNiceSplitView.m */; };
 		F50FE0E30E07BE9600854FCD /* PBGitRevisionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F50FE0E20E07BE9600854FCD /* PBGitRevisionCell.m */; };
 		F513085B0E0740F2000C8BCD /* PBQLOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = F513085A0E0740F2000C8BCD /* PBQLOutlineView.m */; };
 		F5140DC90E8A8EB20091E9F3 /* RoundedRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = F5140DC80E8A8EB20091E9F3 /* RoundedRectangle.m */; };
@@ -352,6 +351,8 @@
 		31460CB1124185BA00B90AED /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
 		316E7200131EE9C600AFBB36 /* list_Template.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = list_Template.png; sourceTree = "<group>"; };
 		316E7201131EE9C600AFBB36 /* sidebar_Template.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sidebar_Template.png; sourceTree = "<group>"; };
+		31776087133569350025876E /* SearchWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchWebView.h; sourceTree = "<group>"; };
+		31776088133569350025876E /* SearchWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchWebView.m; sourceTree = "<group>"; };
 		31DAA7EC1317737100463846 /* gitx_l_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gitx_l_pub.pem; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* GitX_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitX_Prefix.pch; sourceTree = "<group>"; };
 		3BC07F4A0ED5A5C5009A7768 /* HistoryViewTemplate.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = HistoryViewTemplate.png; path = Images/HistoryViewTemplate.png; sourceTree = "<group>"; };
@@ -366,6 +367,9 @@
 		47DBDBC90E95016F00671A1E /* PBNSURLPathUserDefaultsTransfomer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBNSURLPathUserDefaultsTransfomer.m; sourceTree = "<group>"; };
 		551BF111112F371800265053 /* gitx_askpasswd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gitx_askpasswd; sourceTree = BUILT_PRODUCTS_DIR; };
 		551BF11D112F376C00265053 /* gitx_askpasswd_main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gitx_askpasswd_main.m; sourceTree = "<group>"; };
+		65D58BC3132D27A7003F7290 /* PBResetSheet.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PBResetSheet.xib; sourceTree = "<group>"; };
+		65D58BC5132D48BF003F7290 /* PBResetSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBResetSheet.h; sourceTree = "<group>"; };
+		65D58BC6132D48C0003F7290 /* PBResetSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBResetSheet.m; sourceTree = "<group>"; };
 		770B37EC0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = GitTest_DataModel.xcdatamodel; sourceTree = "<group>"; };
 		77C82804067257F0000B614F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		77C8280B06725ACE000B614F /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
@@ -468,12 +472,6 @@
 		D8FDDA69114335E8005647F6 /* PBGitSVTagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitSVTagItem.m; sourceTree = "<group>"; };
 		D8FDDA7311433634005647F6 /* PBSourceViewItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewItems.h; sourceTree = "<group>"; };
 		D8FDDBF31143F318005647F6 /* AddRemote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AddRemote.png; path = Images/AddRemote.png; sourceTree = "<group>"; };
-		EB2A73480FEE3F09006601CF /* PBCollapsibleSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBCollapsibleSplitView.h; sourceTree = "<group>"; };
-		EB2A73490FEE3F09006601CF /* PBCollapsibleSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBCollapsibleSplitView.m; sourceTree = "<group>"; };
-		F50A411D0EBB874C00208746 /* mainSplitterBar.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = mainSplitterBar.tiff; path = Images/mainSplitterBar.tiff; sourceTree = "<group>"; };
-		F50A411E0EBB874C00208746 /* mainSplitterDimple.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; name = mainSplitterDimple.tiff; path = Images/mainSplitterDimple.tiff; sourceTree = "<group>"; };
-		F50A41210EBB875D00208746 /* PBNiceSplitView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBNiceSplitView.h; sourceTree = "<group>"; };
-		F50A41220EBB875D00208746 /* PBNiceSplitView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBNiceSplitView.m; sourceTree = "<group>"; };
 		F50FE0E10E07BE9600854FCD /* PBGitRevisionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRevisionCell.h; sourceTree = "<group>"; };
 		F50FE0E20E07BE9600854FCD /* PBGitRevisionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitRevisionCell.m; sourceTree = "<group>"; };
 		F51308590E0740F2000C8BCD /* PBQLOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBQLOutlineView.h; sourceTree = "<group>"; };
@@ -827,7 +825,6 @@
 				02B41A5F123E307F00DFC531 /* PBCommitHookFailedSheet.xib */,
 				F5F7D0641062E7940072C81C /* UpdateKey.pem */,
 				31DAA7EC1317737100463846 /* gitx_l_pub.pem */,
-				F50A41130EBB872D00208746 /* Widgets */,
 				47DBDB920E94F47200671A1E /* Preference Icons */,
 				D26DC6440E782C9000C777B2 /* gitx.icns */,
 				8D1107310486CEB800E47090 /* Info.plist */,
@@ -849,6 +846,7 @@
 				21230ED11285EB5A0046E5A1 /* PBArgumentPicker.xib */,
 				F58DB55F10566E3900CFDF4A /* PBGitSidebarView.xib */,
 				D8022FE711E124A0003C21F6 /* PBGitXMessageSheet.xib */,
+				65D58BC3132D27A7003F7290 /* PBResetSheet.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -940,6 +938,8 @@
 				D8083E02111FA33700337480 /* PBCloneRepositoryPanel.m */,
 				D8022FEB11E124C8003C21F6 /* PBGitXMessageSheet.h */,
 				D8022FEC11E124C8003C21F6 /* PBGitXMessageSheet.m */,
+				65D58BC5132D48BF003F7290 /* PBResetSheet.h */,
+				65D58BC6132D48C0003F7290 /* PBResetSheet.m */,
 			);
 			name = Sheets;
 			sourceTree = "<group>";
@@ -979,15 +979,6 @@
 				D8FDDA5F114335E8005647F6 /* PBGitSVFolderItem.m */,
 			);
 			name = "Source View Items";
-			sourceTree = "<group>";
-		};
-		F50A41130EBB872D00208746 /* Widgets */ = {
-			isa = PBXGroup;
-			children = (
-				F50A411D0EBB874C00208746 /* mainSplitterBar.tiff */,
-				F50A411E0EBB874C00208746 /* mainSplitterDimple.tiff */,
-			);
-			name = Widgets;
 			sourceTree = "<group>";
 		};
 		F56174540E05887E001DCD79 /* Git */ = {
@@ -1064,10 +1055,6 @@
 				F5140DC80E8A8EB20091E9F3 /* RoundedRectangle.m */,
 				F56244070E9684B0002B6C44 /* PBUnsortableTableHeader.h */,
 				F56244080E9684B0002B6C44 /* PBUnsortableTableHeader.m */,
-				F50A41210EBB875D00208746 /* PBNiceSplitView.h */,
-				F50A41220EBB875D00208746 /* PBNiceSplitView.m */,
-				EB2A73480FEE3F09006601CF /* PBCollapsibleSplitView.h */,
-				EB2A73490FEE3F09006601CF /* PBCollapsibleSplitView.m */,
 				F5FC41F20EBCBD4300191D80 /* PBGitXProtocol.h */,
 				F5FC41F30EBCBD4300191D80 /* PBGitXProtocol.m */,
 				D823487410CB382C00944BDE /* Terminal.h */,
@@ -1079,6 +1066,8 @@
 				D8EB6169122F643E00FCCAF4 /* GitXRelativeDateFormatter.m */,
 				D87129FE122B14EC00012334 /* GitXTextFieldCell.h */,
 				D87129FF122B14EC00012334 /* GitXTextFieldCell.m */,
+				31776087133569350025876E /* SearchWebView.h */,
+				31776088133569350025876E /* SearchWebView.m */,
 			);
 			name = Aux;
 			sourceTree = "<group>";
@@ -1387,8 +1376,6 @@
 				F59116E60E843BB50072CCB1 /* PBGitCommitView.xib in Resources */,
 				F5E92A230E88569500056E75 /* new_file.png in Resources */,
 				F5E424110EA3E4D60046E362 /* PBDiffWindow.xib in Resources */,
-				F50A411F0EBB874C00208746 /* mainSplitterBar.tiff in Resources */,
-				F50A41200EBB874C00208746 /* mainSplitterDimple.tiff in Resources */,
 				056438B70ED0C40B00985397 /* DetailViewTemplate.png in Resources */,
 				F56ADDD90ED19F9E002AC78F /* AddBranchTemplate.png in Resources */,
 				F56ADDDA0ED19F9E002AC78F /* AddLabelTemplate.png in Resources */,
@@ -1441,6 +1428,7 @@
 				31DAA7ED1317737100463846 /* gitx_l_pub.pem in Resources */,
 				316E7202131EE9C600AFBB36 /* list_Template.png in Resources */,
 				316E7203131EE9C600AFBB36 /* sidebar_Template.png in Resources */,
+				65D58BC4132D27A8003F7290 /* PBResetSheet.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1551,7 +1539,6 @@
 				F5E424150EA3E4E10046E362 /* PBDiffWindowController.m in Sources */,
 				F5E424180EA3E4EB0046E362 /* PBWebDiffController.m in Sources */,
 				F5FE6C030EB13BC900F30D12 /* PBServicesController.m in Sources */,
-				F50A41230EBB875D00208746 /* PBNiceSplitView.m in Sources */,
 				F5FC41F40EBCBD4300191D80 /* PBGitXProtocol.m in Sources */,
 				F574A2850EAE2EAC003F2CB1 /* PBRefController.m in Sources */,
 				F5FC43FE0EBD08EE00191D80 /* PBRefMenuItem.m in Sources */,
@@ -1560,7 +1547,6 @@
 				47DBDB670E94EE8B00671A1E /* PBPrefsWindowController.m in Sources */,
 				47DBDBCA0E95016F00671A1E /* PBNSURLPathUserDefaultsTransfomer.m in Sources */,
 				F562C8870FE1766C000EC528 /* NSString_RegEx.m in Sources */,
-				EB2A734A0FEE3F09006601CF /* PBCollapsibleSplitView.m in Sources */,
 				F59F1DD5105C4FF300115F88 /* PBGitIndex.m in Sources */,
 				D854948610D5C01B0083B917 /* PBCreateBranchSheet.m in Sources */,
 				D8E3B34D10DCA958001096A3 /* PBCreateTagSheet.m in Sources */,
@@ -1610,6 +1596,8 @@
 				217FF0BA12A1CB3300785A65 /* PBSubmoduleController.m in Sources */,
 				217FF0BB12A1CB3300785A65 /* PBGitResetController.m in Sources */,
 				217FF0BE12A1CB3E00785A65 /* PBRevealWithFinderCommand.m in Sources */,
+				65D58BC7132D48C2003F7290 /* PBResetSheet.m in Sources */,
+				31776089133569350025876E /* SearchWebView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1794,6 +1782,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = libgit2;
 				PRODUCT_NAME = GitX;
+				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = YES;
 			};
@@ -1820,6 +1809,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = libgit2;
 				PRODUCT_NAME = GitX;
+				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -1827,7 +1817,7 @@
 		26FC0A890875C7B200E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_ENABLE_OBJC_GC = required;
 				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = DEBUG_BUILD;
@@ -1835,29 +1825,25 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_PREPROCESS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
-				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = macosx10.5;
 			};
 			name = Debug;
 		};
 		26FC0A8A0875C7B200E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-					x86_64,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_ENABLE_OBJC_GC = required;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_PREFIX_HEADER = $PROJECT_TEMP_DIR/revision;
 				INFOPLIST_PREPROCESS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
-				RUN_CLANG_STATIC_ANALYZER = YES;
-				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.5.sdk";
+				SDKROOT = macosx10.5;
 			};
 			name = Release;
 		};
@@ -1881,6 +1867,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = gitx_askpasswd;
+				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -1889,7 +1876,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1903,6 +1890,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = gitx_askpasswd;
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -1924,6 +1912,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = gitx_askpasswd;
+				SDKROOT = "";
 			};
 			name = Install;
 		};
@@ -1947,6 +1936,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = gitx;
+				SDKROOT = "";
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -1970,6 +1960,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = gitx;
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -1981,6 +1972,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = libgit2;
+				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -1991,6 +1983,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				PRODUCT_NAME = libgit2;
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2002,6 +1995,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = "Generate PList Prefix";
+				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -2013,6 +2007,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				INFOPLIST_PREPROCESS = YES;
 				PRODUCT_NAME = "Generate PList Prefix";
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2049,6 +2044,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = GitXTesting;
+				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -2079,6 +2075,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = GitXTesting;
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;
@@ -2108,7 +2105,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = SpeedTest;
-				SDKROOT = macosx10.5;
+				SDKROOT = "";
 			};
 			name = Debug;
 		};
@@ -2133,7 +2130,7 @@
 				);
 				PREBINDING = NO;
 				PRODUCT_NAME = SpeedTest;
-				SDKROOT = iphoneos2.0;
+				SDKROOT = "";
 				ZERO_LINK = NO;
 			};
 			name = Release;

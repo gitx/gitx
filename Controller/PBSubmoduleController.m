@@ -19,7 +19,7 @@
 @synthesize submodules;
 
 - (id) initWithRepository:(PBGitRepository *) repo {
-    if (self = [super init]){
+    if ((self = [super init])){
         repository = [repo retain];
     }
     return self;
@@ -42,7 +42,8 @@
 		if ([submoduleLine length] == 0)
 			continue;
 		PBGitSubmodule *submodule = [[PBGitSubmodule alloc] initWithRawSubmoduleStatusString:submoduleLine];
-		[loadedSubmodules addObject:submodule];
+		if (submodule)
+			[loadedSubmodules addObject:submodule];
 	}
 	
 	NSMutableArray *groupedSubmodules = [[NSMutableArray alloc] init];

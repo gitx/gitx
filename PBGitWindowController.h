@@ -14,14 +14,14 @@
 
 @class PBViewController, PBGitSidebarController, PBGitCommitController;
 
-@interface PBGitWindowController : NSWindowController {
+@interface PBGitWindowController : NSWindowController <NSWindowDelegate>{
 	__weak PBGitRepository* repository;
 
 	PBViewController *contentController;
 
 	PBGitSidebarController *sidebarController;
 	IBOutlet NSView *sourceListControlsView;
-	IBOutlet NSSplitView *splitView;
+	IBOutlet NSSplitView *mainSplitView;
 	IBOutlet NSView *sourceSplitView;
 	IBOutlet NSView *contentSplitView;
 
@@ -30,6 +30,9 @@
 
 	IBOutlet NSToolbarItem *terminalItem;
 	IBOutlet NSToolbarItem *finderItem;
+    
+    NSArray *splitViews;
+    NSMutableArray *splitViewsSize;
 }
 
 @property (assign) __weak PBGitRepository *repository;
@@ -42,7 +45,9 @@
 - (void)showMessageSheet:(NSString *)messageText infoText:(NSString *)infoText;
 - (void)showErrorSheet:(NSError *)error;
 - (void)showErrorSheetTitle:(NSString *)title message:(NSString *)message arguments:(NSArray *)arguments output:(NSString *)output;
-- (void)collapseSplitView:(NSSplitView *)sp show:(BOOL)show;
+
+-(void)initChangeLayout;
+-(IBAction)changeLayout:(id)sender;
 
 - (IBAction) showCommitView:(id)sender;
 - (IBAction) showHistoryView:(id)sender;
@@ -50,7 +55,6 @@
 - (IBAction) openInTerminal:(id)sender;
 - (IBAction) cloneTo:(id)sender;
 - (IBAction) refresh:(id)sender;
-- (IBAction) changeLayout:(id)sender;
 
 - (void)setHistorySearch:(NSString *)searchString mode:(NSInteger)mode;
 

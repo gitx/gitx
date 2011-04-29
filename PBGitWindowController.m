@@ -25,19 +25,19 @@
 {
 	if (!(self = [self initWithWindowNibName:@"RepositoryWindow"]))
 		return nil;
-
+    
 	self.repository = theRepository;
-
+    
 	return self;
 }
 
 - (void)windowWillClose:(NSNotification *)notification
 {
-	NSLog(@"Window will close!");
-
+	//DLog(@"Window will close!");
+    
 	if (sidebarController)
 		[sidebarController closeView];
-
+    
 	if (contentController)
 		[contentController removeObserver:self forKeyPath:@"status"];
 }
@@ -59,22 +59,23 @@
 	[[self window] setDelegate:self];
 	[[self window] setAutorecalculatesContentBorderThickness:NO forEdge:NSMinYEdge];
 	[[self window] setContentBorderThickness:31.0f forEdge:NSMinYEdge];
-
+    
 	sidebarController = [[PBGitSidebarController alloc] initWithRepository:repository superController:self];
 	[[sidebarController view] setFrame:[sourceSplitView bounds]];
 	[sourceSplitView addSubview:[sidebarController view]];
 	[sourceListControlsView addSubview:sidebarController.sourceListControlsView];
-
+    
 	[[statusField cell] setBackgroundStyle:NSBackgroundStyleRaised];
 	[progressIndicator setUsesThreadedAnimation:YES];
-
+    
 	NSImage *finderImage = [[NSWorkspace sharedWorkspace] iconForFileType:NSFileTypeForHFSTypeCode(kFinderIcon)];
 	[finderItem setImage:finderImage];
-
+    
 	NSImage *terminalImage = [[NSWorkspace sharedWorkspace] iconForFile:@"/Applications/Utilities/Terminal.app/"];
 	[terminalItem setImage:terminalImage];
-
+    
 	[self showWindow:nil];
+    [self initChangeLayout];
 }
 
 - (void) removeAllContentSubViews
@@ -88,17 +89,17 @@
 {
 	if (!controller || (contentController == controller))
 		return;
-
+    
 	if (contentController)
 		[contentController removeObserver:self forKeyPath:@"status"];
-
+    
 	[self removeAllContentSubViews];
-
+    
 	contentController = controller;
 	
 	[[contentController view] setFrame:[contentSplitView bounds]];
 	[contentSplitView addSubview:[contentController view]];
-
+    
 	[self setNextResponder: contentController];
 	[[self window] makeFirstResponder:[contentController firstResponder]];
 	[contentController updateView];
@@ -197,21 +198,22 @@
 
 - (IBAction) refresh:(id)sender
 {
-	[contentController refresh:self];
+    [sidebarController.historyViewController refresh: self];
+    [sidebarController.commitViewController refresh: self];
 }
 
 - (void) updateStatus
 {
 	NSString *status = contentController.status;
 	BOOL isBusy = contentController.isBusy;
-
+    
 	if (!status) {
 		status = @"";
 		isBusy = NO;
 	}
-
+    
 	[statusField setStringValue:status];
-
+    
 	if (isBusy) {
 		[progressIndicator startAnimation:self];
 		[progressIndicator setHidden:NO];
@@ -228,7 +230,7 @@
 		[self updateStatus];
 		return;
 	}
-
+    
 	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
@@ -237,39 +239,69 @@
 	[sidebarController setHistorySearch:searchString mode:mode];
 }
 
-- (IBAction) changeLayout:(id)sender{
-	NSLog(@"selectedSegment=%ld (%d)",[sender selectedSegment],[sender isSelectedForSegment:[sender selectedSegment]]);
-	NSSplitView *sp=nil;
-	switch ([sender selectedSegment]) {
-		case 0:
-			sp=splitView;
-			break;
-		case 1:
-			sp=[[sidebarController historyViewController] historySplitView];
-			break;
-	}
-	NSLog(@"sp=%@",sp);
-	if(sp!=nil)	{
-		[self collapseSplitView:sp show:[sender isSelectedForSegment:[sender selectedSegment]]];	
-	}
+#pragma mark - SplitView changeLayout
+-(void)initChangeLayout
+{
+    splitViews=[NSArray arrayWithObjects:mainSplitView,[[sidebarController historyViewController] historySplitView], nil];
+    splitViewsSize=[NSMutableArray arrayWithCapacity:[splitViews count]];
+    for (int n=0; n<[splitViews count]; n++) {
+        NSSplitView *splitView=[splitViews objectAtIndex:n];
+        NSView *left=[[splitView subviews] objectAtIndex:0];
+        [splitViewsSize addObject:[NSNumber numberWithInt:[left frame].size.width]];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(resizeSubviewsHandler:)
+                                                     name:NSSplitViewWillResizeSubviewsNotification
+                                                   object:splitView
+         ];
+    }
 }
 
-- (void)collapseSplitView:(NSSplitView *)sp show:(BOOL)show{
-	NSView *clipview = [[sp subviews] objectAtIndex:0];
-	NSRect clipFrame = [clipview frame];
+- (IBAction)changeLayout:(id)sender
+{
+    NSInteger index=[sender selectedSegment];
+    NSSplitView *splitView=[splitViews objectAtIndex:index];
+    NSView *left=[[splitView subviews] objectAtIndex:0];
+    
+    CGFloat pos;
+    if ([splitView isSubviewCollapsed:left])
+        pos=[[splitViewsSize objectAtIndex:index] intValue];
+    else
+        pos=[splitView minPossiblePositionOfDividerAtIndex:0];
 
-	if ([sp isVertical]) {
-		clipFrame.size.width = kGitSplitViewMinWidth * show;
-	}else{
-		clipFrame.size.height = kGitSplitViewMinWidth * show;
-	}
+    [splitView setPosition:pos ofDividerAtIndex:0 ];
+}
 
-	[[clipview animator] setFrame:clipFrame];
-	[sp adjustSubviews];
+- (void)resizeSubviewsHandler:(NSNotification *)notif
+{
+    NSSplitView *splitView=[notif object];
+    NSInteger index=[splitViews indexOfObject:splitView];
+    NSView *left=[[splitView subviews] objectAtIndex:0];
+
+    NSNumber *pos;
+    if([splitView isVertical]){
+        pos=[NSNumber numberWithInt:[left frame].size.width];
+    }else{
+        pos=[NSNumber numberWithInt:[left frame].size.height];
+    }
+        
+    [splitViewsSize removeObjectAtIndex:index];
+    [splitViewsSize insertObject:pos atIndex:index];
 }
 
 #pragma mark -
 #pragma mark SplitView Delegates
+
+- (BOOL)splitView:(NSSplitView *)sp canCollapseSubview:(NSView *)subview
+{
+	return TRUE;
+}
+
+- (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex
+{
+	NSUInteger index = [[splitView subviews] indexOfObject:subview];
+	return index==0;
+}
 
 #pragma mark min/max widths while moving the divider
 
@@ -277,7 +309,7 @@
 {
 	if (proposedMin < kGitSplitViewMinWidth)
 		return kGitSplitViewMinWidth;
-
+    
 	return proposedMin;
 }
 
@@ -285,7 +317,7 @@
 {
 	if (dividerIndex == 0)
 		return kGitSplitViewMaxWidth;
-
+    
 	return proposedMax;
 }
 
@@ -294,19 +326,19 @@
 - (void)splitView:(NSSplitView *)sender resizeSubviewsWithOldSize:(NSSize)oldSize
 {
 	NSRect newFrame = [sender frame];
-
+    
 	float dividerThickness = [sender dividerThickness];
-
+    
 	NSView *sourceView = [[sender subviews] objectAtIndex:0];
 	NSRect sourceFrame = [sourceView frame];
 	sourceFrame.size.height = newFrame.size.height;
-
+    
 	NSView *mainView = [[sender subviews] objectAtIndex:1];
 	NSRect mainFrame = [mainView frame];
 	mainFrame.origin.x = sourceFrame.size.width + dividerThickness;
 	mainFrame.size.width = newFrame.size.width - mainFrame.origin.x;
 	mainFrame.size.height = newFrame.size.height;
-
+    
 	[sourceView setFrame:sourceFrame];
 	[mainView setFrame:mainFrame];
 }

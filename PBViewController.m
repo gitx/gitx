@@ -19,7 +19,7 @@
 {
 	NSString *nibName = [[[self class] description] stringByReplacingOccurrencesOfString:@"Controller"
 																			  withString:@"View"];
-	if(self = [self initWithNibName:nibName bundle:nil]) {
+	if((self = [self initWithNibName:nibName bundle:nil])) {
 		repository = theRepository;
 		superController = controller;
 	}

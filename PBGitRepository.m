@@ -143,7 +143,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	NSURL* gitDirURL = [PBGitRepository gitDirForURL:[self fileURL]];
 	if (!gitDirURL) {
 		if (outError) {
-			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@ does not appear to be a git repository.", [self fileName]]
+			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@ does not appear to be a git repository.", [self fileURL]]
 																 forKey:NSLocalizedRecoverySuggestionErrorKey];
 			*outError = [NSError errorWithDomain:PBGitRepositoryErrorDomain code:0 userInfo:userInfo];
 		}
@@ -690,22 +690,34 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	}
 	NSString *remoteName = [remoteRef remoteName];
 	[arguments addObject:remoteName];
-
+	
 	NSString *branchName = nil;
-	if ([ref isRemote] || !ref) {
-		branchName = @"all updates";
-	}
-	else if ([ref isTag]) {
-		branchName = [NSString stringWithFormat:@"tag '%@'", [ref tagName]];
-		[arguments addObject:@"tag"];
-		[arguments addObject:[ref tagName]];
-	}
-	else {
-		branchName = [ref shortName];
-		[arguments addObject:branchName];
+	NSString *actionType = nil;
+
+	if ([config valueForKeyPath:[NSString stringWithFormat:@"remote.%@.mirror", remoteName]]) {
+		// we must check for mirror parameter in config.
+		// if we push branch name in this case to the arguments, push failed
+		actionType = @"Mirroring";
+	} else {
+		
+		if ([ref isRemote] || !ref) {
+			branchName = @"all updates";
+		}
+		else if ([ref isTag]) {
+			branchName = [NSString stringWithFormat:@"tag '%@'", [ref tagName]];
+			[arguments addObject:@"tag"];
+			[arguments addObject:[ref tagName]];
+		}
+		else {
+			branchName = [ref shortName];
+			[arguments addObject:branchName];
+		}
+
+		actionType = [NSString stringWithFormat:@"Pushing %@", branchName];
+		
 	}
 
-	NSString *description = [NSString stringWithFormat:@"Pushing %@ to %@", branchName, remoteName];
+	NSString *description = [actionType stringByAppendingFormat:@" to %@", remoteName];
 	NSString *title = @"Pushing to remote";
 	[PBRemoteProgressSheet beginRemoteProgressSheetForArguments:arguments title:title description:description inRepository:self];
 }
@@ -1270,7 +1282,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 
 - (void) finalize
 {
-	NSLog(@"Dealloc of repository");
+	//DLog(@"Dealloc of repository");
 	[super finalize];
 }
 @end

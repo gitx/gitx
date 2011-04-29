@@ -165,7 +165,7 @@ using namespace std;
 		if (parentString.size() != 0)
 		{
 			if (((parentString.size() + 1) % 41) != 0) {
-				NSLog(@"invalid parents: %zu", parentString.size());
+				DLog(@"invalid parents: %zu", parentString.size());
 				continue;
 			}
 			int nParents = (parentString.size() + 1) / 41;
@@ -191,7 +191,7 @@ using namespace std;
 			stream >> c; // Remove separator
 			stream >> c;
 			if (c != '>' && c != '<' && c != '^' && c != '-')
-				NSLog(@"Error loading commits: sign not correct");
+				DLog(@"Error loading commits: sign not correct");
 			[newCommit setSign: c];
 		}
 
@@ -216,7 +216,7 @@ using namespace std;
 	
 	if (![currentThread isCancelled]) {
 		NSTimeInterval duration = [[NSDate date] timeIntervalSinceDate:start];
-		NSLog(@"Loaded %i commits in %f seconds (%f/sec)", num, duration, num/duration);
+		DLog(@"Loaded %i commits in %f seconds (%f/sec)", num, duration, num/duration);
 
 		// Make sure the commits are stored before exiting.
 		NSDictionary *update = [NSDictionary dictionaryWithObjectsAndKeys:currentThread, kRevListThreadKey, revisions, kRevListRevisionsKey, nil];
@@ -225,7 +225,7 @@ using namespace std;
 		[self performSelectorOnMainThread:@selector(finishedParsing) withObject:nil waitUntilDone:NO];
 	}
 	else {
-		NSLog(@"[%@ %s] thread has been canceled", [self class], NSStringFromSelector(_cmd));
+		DLog(@"[%@ %@] thread has been canceled", [self class], NSStringFromSelector(_cmd));
 	}
 
 	[task terminate];

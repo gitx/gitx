@@ -65,7 +65,7 @@
 		}
 	}
 	//NSTimeInterval duration = [[NSDate date] timeIntervalSinceDate:start];
-	//NSLog(@"Graphed %i commits in %f seconds (%f/sec)", counter, duration, counter/duration);
+	//DLog(@"Graphed %i commits in %f seconds (%f/sec)", counter, duration, counter/duration);
 
 	[self sendCommits:commits];
 	[delegate performSelectorOnMainThread:@selector(finishedGraphing) withObject:nil waitUntilDone:NO];

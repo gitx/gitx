@@ -13,7 +13,7 @@
 @implementation PBOpenDocumentCommand
 
 - (id) initWithDocumentAbsolutePath:(NSString *) path {
-	if (self = [super initWithDisplayName:@"Open" parameters:nil repository:nil]) {
+	if ((self = [super initWithDisplayName:@"Open" parameters:nil repository:nil])) {
 		documentURL = [[NSURL alloc] initWithString:path];
 	}
 	return self;

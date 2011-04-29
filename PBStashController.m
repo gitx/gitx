@@ -23,7 +23,7 @@ static NSString * const kCommandName = @"stash";
 @synthesize stashes;
 
 - (id) initWithRepository:(PBGitRepository *) repo {
-    if (self = [super init]){
+    if ((self = [super init])){
         repository = [repo retain];
     }
     return self;

@@ -41,7 +41,7 @@
 	int ret;
 	[PBEasyPipe outputForCommand:[PBGitBinary path]	withArgs:array inDir:nil retValue:&ret];
 	if (ret)
-		NSLog(@"Writing to config file failed!");
+		DLog(@"Writing to config file failed!");
 	[self didChangeValueForKey:[key substringToIndex:[key rangeOfString:@"."].location]];
 }
 

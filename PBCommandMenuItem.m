@@ -18,7 +18,7 @@
 @synthesize command;
 
 - initWithCommand:(PBCommand *) aCommand {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		self.command = aCommand;
 		super.title = [aCommand displayName];
 		[self setTarget:aCommand];

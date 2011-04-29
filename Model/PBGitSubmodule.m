@@ -32,9 +32,13 @@
 - (id) initWithRawSubmoduleStatusString:(NSString *) submoduleStatusString {
 	NSParameterAssert([submoduleStatusString length] > 0);
 	
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		unichar status = [submoduleStatusString characterAtIndex:0];
 		submoduleState = [PBGitSubmodule submoduleStateFromCharacter:status];
+		if (submoduleState == PBGitSubmoduleStateFailed) {
+			DLog(@"Submodule status failed:\n %@", submoduleStatusString);
+			return nil;
+		}
 		NSScanner *scanner = [NSScanner scannerWithString:[submoduleStatusString substringFromIndex:1]];
 		NSString *sha1 = nil;
 		NSString *fullPath = nil;
@@ -47,7 +51,7 @@
 			shouldContinue = [scanner scanString:@"(" intoString:NULL];
 		}
 		if (shouldContinue) {
-			shouldContinue = [scanner scanUpToString:@")" intoString:&coName];
+            [scanner scanUpToString:@")" intoString:&coName];
 		}
 		self.path = [fullPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 		coName = [coName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -114,7 +118,7 @@
 	} else if (character == '+') {
 		state = PBGitSubmoduleStateDoesNotMatchIndex;
 	} else if (character != ' ') {
-		NSAssert1(NO, @"Ooops unsupported submodule status character: %c", character);
+		return PBGitSubmoduleStateFailed;
 	}
 
 	return state;

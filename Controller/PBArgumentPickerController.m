@@ -13,7 +13,7 @@
 @implementation PBArgumentPickerController
 
 - initWithCommandWithParameter:(PBCommandWithParameter *) aCommand {
-	if (self = [super initWithWindowNibName:@"PBArgumentPicker" owner:self]) {
+	if ((self = [super initWithWindowNibName:@"PBArgumentPicker" owner:self])) {
 		cmdWithParameter = [aCommand retain];
 	}
 	return self;

@@ -63,7 +63,7 @@
 // a little bit depending on how much the bottom half of the split view is dragged down.
 - (NSRect)adjustScroll:(NSRect)proposedVisibleRect {
 
-    //NSLog(@"[%@ %s]: proposedVisibleRect: %@", [self class], _cmd, NSStringFromRect(proposedVisibleRect));
+    //DLog(@"[%@ %s]: proposedVisibleRect: %@", [self class], _cmd, NSStringFromRect(proposedVisibleRect));
     NSRect newRect = proposedVisibleRect;
 
     // !!! Andre Berg 20100330: only modify if -scrollSelectionToTopOfViewFrom: has set useAdjustScroll to YES
@@ -74,18 +74,18 @@
         NSInteger adj = rh - ny;
         // check the targeted row and see if we need to add or subtract the difference (if there is one)...
         NSRect sr = [self rectOfRow:[self selectedRow]];
-        // NSLog(@"[%@ %s]: selectedRow %d, rect: %@", [self class], _cmd, [self selectedRow], NSStringFromRect(sr));
+        // DLog(@"[%@ %s]: selectedRow %d, rect: %@", [self class], _cmd, [self selectedRow], NSStringFromRect(sr));
         if (sr.origin.y > proposedVisibleRect.origin.y) {
-            // NSLog(@"[%@ %s] selectedRow.origin.y > proposedVisibleRect.origin.y. adding adj (%d)", [self class], _cmd, adj);
+            // DLog(@"[%@ %s] selectedRow.origin.y > proposedVisibleRect.origin.y. adding adj (%d)", [self class], _cmd, adj);
             newRect = NSMakeRect(newRect.origin.x, newRect.origin.y + adj, newRect.size.width, newRect.size.height);
         } else if (sr.origin.y < proposedVisibleRect.origin.y) {
-            // NSLog(@"[%@ %s] selectedRow.origin.y < proposedVisibleRect.origin.y. subtracting ny (%d)", [self class], _cmd, ny);
+            // DLog(@"[%@ %s] selectedRow.origin.y < proposedVisibleRect.origin.y. subtracting ny (%d)", [self class], _cmd, ny);
             newRect = NSMakeRect(newRect.origin.x, newRect.origin.y - ny , newRect.size.width, newRect.size.height);
         } else {
-            // NSLog(@"[%@ %s] selectedRow.origin.y == proposedVisibleRect.origin.y. leaving as is", [self class], _cmd);
+            // DLog(@"[%@ %s] selectedRow.origin.y == proposedVisibleRect.origin.y. leaving as is", [self class], _cmd);
         }
     }
-    //NSLog(@"[%@ %s]: newRect: %@", [self class], _cmd, NSStringFromRect(newRect));
+    //DLog(@"[%@ %s]: newRect: %@", [self class], _cmd, NSStringFromRect(newRect));
     return newRect;
 }
 

@@ -10,6 +10,7 @@
 #import "PBGitRepository.h"
 #import "PBGitCommit.h"
 #import "PBGitDefaults.h"
+#import "GLFileView.h"
 
 
 @implementation PBDiffWindowController
@@ -21,6 +22,7 @@
 		return nil;
 
 	diff = aDiff;
+    
 	return self;
 }
 
@@ -47,11 +49,15 @@
 	int retValue;
 	NSString *diff = [startCommit.repository outputInWorkdirForArguments:arguments retValue:&retValue];
 	if (retValue) {
-		NSLog(@"diff failed with retValue: %d   for command: '%@'    output: '%@'", retValue, [arguments componentsJoinedByString:@" "], diff);
+		DLog(@"diff failed with retValue: %d   for command: '%@'    output: '%@'", retValue, [arguments componentsJoinedByString:@" "], diff);
 		return;
 	}
+    
+    diff=[GLFileView parseDiff:diff];
+    diff=[diff stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:[startCommit realSha]];
+    diff=[diff stringByReplacingOccurrencesOfString:@"{SHA}" withString:[diffCommit realSha]];
 
-	PBDiffWindowController *diffController = [[PBDiffWindowController alloc] initWithDiff:[diff copy]];
+	PBDiffWindowController *diffController = [[PBDiffWindowController alloc] initWithDiff:diff];
 	[diffController showWindow:nil];
 }
 

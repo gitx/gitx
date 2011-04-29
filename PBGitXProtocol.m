@@ -17,7 +17,7 @@
     // note that this leaks!
     CFRetain(client);
 	
-    if (self = [super initWithRequest:request cachedResponse:cachedResponse client:client])
+    if ((self = [super initWithRequest:request cachedResponse:cachedResponse client:client]))
     {
     }
 	
@@ -47,10 +47,10 @@
 	if ([[url host] isEqualToString:@"app"]) {
 		NSString *app=[[url path] substringFromIndex:1];
 		NSString *appPath=[[NSWorkspace sharedWorkspace] fullPathForApplication:app];
-		NSLog(@"app=%@ appPath=%@",app,appPath);
+		DLog(@"app=%@ appPath=%@",app,appPath);
 		if(appPath){
 			NSImage *icon = [[NSWorkspace sharedWorkspace] iconForFile:appPath];
-			NSLog(@"icon=%@",icon);
+			DLog(@"icon=%@",icon);
 			[[self client] URLProtocol:self didLoadData:[icon TIFFRepresentation]];
 			[[self client] URLProtocolDidFinishLoading:self];
 		}else{

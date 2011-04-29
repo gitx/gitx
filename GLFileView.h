@@ -12,6 +12,7 @@
 #import "PBGitCommit.h"
 #import "PBGitHistoryController.h"
 #import "PBRefContextDelegate.h"
+#import "SearchWebView.h"
 
 @class PBGitGradientBarView;
 
@@ -23,6 +24,8 @@
 	NSString *diffType;
 	IBOutlet NSView *accessoryView;
 	IBOutlet NSSplitView *fileListSplitView;
+    IBOutlet NSSearchField *searchField;
+    PBGitTree *lastFile;
 }
 
 - (void)showFile;
@@ -42,6 +45,10 @@
 +(BOOL)isImage:(NSString*)file;
 +(BOOL)isDiffHeader:(NSString*)line;
 
+- (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2;
+
+-(IBAction)updateSearch:(NSSearchField *)sender;
+  
 @property(retain) NSMutableArray *groups;
 @property(retain) NSString *logFormat;
 

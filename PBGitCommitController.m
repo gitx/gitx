@@ -11,7 +11,6 @@
 #import "PBChangedFile.h"
 #import "PBWebChangesController.h"
 #import "PBGitIndex.h"
-#import "PBNiceSplitView.h"
 
 
 #define kCommitSplitViewPositionDefault @"Commit SplitView Position"
@@ -172,6 +171,7 @@
 	[commitMessageView setEditable:YES];
 	[commitMessageView setString:@""];
 	[webController setStateMessage:[NSString stringWithFormat:[[notification userInfo] objectForKey:@"description"]]];
+	[repository reloadRefs];
 }	
 
 - (void)commitFailed:(NSNotification *)notification
@@ -228,16 +228,16 @@
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex
 {
-	if (splitView == commitSplitView)
+	if (proposedMin < kCommitSplitViewTopViewMin)
 		return kCommitSplitViewTopViewMin;
-
 	return proposedMin;
 }
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex
 {
-	if (splitView == commitSplitView)
-		return [splitView frame].size.height - [splitView dividerThickness] - kCommitSplitViewBottomViewMin;
+    CGFloat max=[splitView frame].size.height - [splitView dividerThickness] - kCommitSplitViewBottomViewMin;
+	if (max < proposedMax)
+		return max;
 
 	return proposedMax;
 }

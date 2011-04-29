@@ -170,8 +170,9 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 
 -(void)evaluateRemoteBadge:(PBGitSVRemoteItem *)remote
 {
-	NSLog(@"remote.title=%@",[remote title]);
-	[remote setAlert:[self remoteNeedFetch:[remote title]]];
+	DLog(@"remote.title=%@",[remote title]);
+    if([remote isKindOfClass:[PBGitSVRemoteItem class]])
+        [remote setAlert:[self remoteNeedFetch:[remote title]]];
 }
 
 -(NSNumber *)countCommintsOf:(NSString *)range
@@ -244,7 +245,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	PBSourceViewItem *item = [self selectedItem];
 	if ([item isKindOfClass:[PBGitMenuItem class]]) {
 		PBGitMenuItem *sidebarItem = (PBGitMenuItem *) item;
-		NSObject *sourceObject = [sidebarItem sourceObject];
+		id<PBPresentable> sourceObject = [sidebarItem sourceObject];
 		if ([sourceObject isKindOfClass:[PBGitSubmodule class]]) {
 			[[repository.submoduleController defaultCommandForSubmodule:(id)sourceObject] invoke];
 		}

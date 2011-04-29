@@ -73,12 +73,12 @@
 
 - (void)webView:(WebView *)webView addMessageToConsole:(NSDictionary *)dictionary
 {
-	NSLog(@"Error from webkit: %@", dictionary);
+	DLog(@"Error from webkit: %@", dictionary);
 }
 
 - (void)webView:(WebView *)sender runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WebFrame *)frame
 {
-	NSLog(@"Message from webkit: %@", message);
+	DLog(@"Message from webkit: %@", message);
 }
 
 - (NSURLRequest *)webView:(WebView *)sender
@@ -114,7 +114,7 @@
 
 - (void) log: (NSString*) logMessage
 {
-	NSLog(@"%@", logMessage);
+	DLog(@"%@", logMessage);
 }
 
 - (BOOL) isReachable:(NSString *)hostname
@@ -189,7 +189,7 @@
 {
 	WebScriptObject *a = [callbacks objectForKey: object];
 	if (!a) {
-		NSLog(@"Could not find a callback for object: %@", object);
+		DLog(@"Could not find a callback for object: %@", object);
 		return;
 	}
 

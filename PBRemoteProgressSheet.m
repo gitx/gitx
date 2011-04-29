@@ -130,7 +130,7 @@ NSString * const kGitXProgressErrorInfo          = @"PBGitXProgressErrorInfo";
 - (void) checkTask:(NSTimer *)timer
 {
 	if (![gitTask isRunning]) {
-		NSLog(@"[%@ %@] gitTask terminated without notification", [self class], NSStringFromSelector(_cmd));
+		DLog(@"[%@ %@] gitTask terminated without notification", [self class], NSStringFromSelector(_cmd));
 		[self taskCompleted:nil];
 	}
 }
