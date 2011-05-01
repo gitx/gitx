@@ -522,11 +522,11 @@ enum  {
     // get config
     BOOL hasSVN = [repository hasSvnRemote];
     [svnFetchButton setEnabled:hasSVN];
-    [svnFetchButton setTransparent:!hasSVN];
+    [svnFetchButton setHidden:!hasSVN];
     [svnRebaseButton setEnabled:hasSVN];
-    [svnRebaseButton setTransparent:!hasSVN];
+    [svnRebaseButton setHidden:!hasSVN];
     [svnDcommitButton setEnabled:hasSVN];
-    [svnDcommitButton setTransparent:!hasSVN];
+    [svnDcommitButton setHidden:!hasSVN];
 }
 
 - (IBAction) fetchPullPushAction:(id)sender
