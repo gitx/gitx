@@ -168,7 +168,7 @@
 		}else{
 			if (subj) {
                 NSString *trimmedLine = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-				[subject appendString:[NSString stringWithFormat:@"%@<br/>",[GLFileView cleanupHTML:trimmedLine]]];
+				[subject appendString:[NSString stringWithFormat:@"%@<br/>",[GLFileView escapeHTML:trimmedLine]]];
 			}else{
 				NSArray *comps=[line componentsSeparatedByString:@" "];
 				if([comps count]==2){

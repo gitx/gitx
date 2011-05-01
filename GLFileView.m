@@ -110,7 +110,7 @@
             if(startFile==@"fileview"){
                 fileTxt=[file textContents:&theError];
                 if(!theError)
-                    fileTxt=[GLFileView cleanupHTML:fileTxt];
+                    fileTxt=[GLFileView escapeHTML:fileTxt];
             }else if(startFile==@"blame"){
                 fileTxt=[file blame:&theError];
                 if(!theError)
@@ -240,7 +240,7 @@
 	[super closeView];
 }
 
-+ (NSString *) cleanupHTML:(NSString *)txt
++ (NSString *) escapeHTML:(NSString *)txt
 {
     NSMutableString *newTxt = [NSMutableString stringWithString:txt];
 	[newTxt replaceOccurrencesOfString:@"&" withString:@"&amp;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
@@ -299,7 +299,7 @@
 
 + (NSString *)parseDiff:(NSString *)txt
 {
-	txt=[self cleanupHTML:txt];
+	txt=[self escapeHTML:txt];
     
 	NSMutableString *res=[NSMutableString string];
     NSScanner *scan=[NSScanner scannerWithString:txt];
@@ -507,7 +507,7 @@
 
 - (NSString *) parseBlame:(NSString *)txt
 {
-    txt=[GLFileView cleanupHTML:txt];
+    txt=[GLFileView escapeHTML:txt];
     
     NSArray *lines = [txt componentsSeparatedByString:@"\n"];
     NSString *line;
