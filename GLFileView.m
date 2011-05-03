@@ -110,7 +110,7 @@
             if(startFile==@"fileview"){
                 fileTxt=[file textContents:&theError];
                 if(!theError)
-                    fileTxt=[GLFileView parseHTML:fileTxt];
+                    fileTxt=[GLFileView escapeHTML:fileTxt];
             }else if(startFile==@"blame"){
                 fileTxt=[file blame:&theError];
                 if(!theError)
@@ -240,13 +240,16 @@
 	[super closeView];
 }
 
-+ (NSString *) parseHTML:(NSString *)txt
++ (NSString *) escapeHTML:(NSString *)txt
 {
-	txt=[txt stringByReplacingOccurrencesOfString:@"&" withString:@"&amp;"];
-	txt=[txt stringByReplacingOccurrencesOfString:@"<" withString:@"&lt;"];
-	txt=[txt stringByReplacingOccurrencesOfString:@">" withString:@"&gt;"];
+    NSMutableString *newTxt = [NSMutableString stringWithString:txt];
+	[newTxt replaceOccurrencesOfString:@"&" withString:@"&amp;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
+	[newTxt replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
+	[newTxt replaceOccurrencesOfString:@">" withString:@"&gt;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
+    [newTxt replaceOccurrencesOfString:@"\"" withString:@"&quot;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
+    [newTxt replaceOccurrencesOfString:@"'" withString:@"&apos;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
 	
-	return txt;
+	return newTxt;
 }
 
 + (NSString *)parseDiffTree:(NSString *)txt withStats:(NSMutableDictionary *)stats
@@ -296,7 +299,7 @@
 
 + (NSString *)parseDiff:(NSString *)txt
 {
-	txt=[self parseHTML:txt];
+	txt=[self escapeHTML:txt];
     
 	NSMutableString *res=[NSMutableString string];
     NSScanner *scan=[NSScanner scannerWithString:txt];
@@ -504,7 +507,7 @@
 
 - (NSString *) parseBlame:(NSString *)txt
 {
-    txt=[GLFileView parseHTML:txt];
+    txt=[GLFileView escapeHTML:txt];
     
     NSArray *lines = [txt componentsSeparatedByString:@"\n"];
     NSString *line;
