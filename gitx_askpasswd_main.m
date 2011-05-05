@@ -64,7 +64,7 @@ OSStatus			StorePasswordKeychain (const char *url, UInt32 urlLength, void* passw
     
     NSRect box = NSMakeRect(0, 0, 200, 24);
     
-    NSTextField * passView = [[NSTextField alloc] initWithFrame: box];
+    NSSecureTextField * passView = [[NSSecureTextField alloc] initWithFrame: box];
     [passView setSelectable: YES];
     [passView setEditable: YES];
     [passView setBordered: YES];
