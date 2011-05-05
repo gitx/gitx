@@ -12,7 +12,10 @@ buildAction () {
     echo "Building libgit2..."
 	if [[ -d .git ]]
 	then
-		export PATH=$PATH:$HOME/bin:$HOME/local/bin:/sw/bin:/opt/local/bin:`"$TARGET_BUILD_DIR"/gitx --git-path`
+        if [ "$(which git)" == "" ]; then
+            echo "git not found"
+            exit -1
+        fi
 		git submodule init
 		git submodule sync
 		git submodule update
