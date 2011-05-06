@@ -305,12 +305,12 @@
     NSScanner *scan=[NSScanner scannerWithString:txt];
     NSString *block;
     
-    if(![txt hasPrefix:@"diff --git"])
-        [scan scanUpToString:@"diff --git" intoString:&block];  //move to first diff
+    if(![txt hasPrefix:@"diff --"])
+        [scan scanUpToString:@"diff --" intoString:&block];  //move to first diff
     
-    while([scan scanString:@"diff --git" intoString:NULL]){ // is a diff start?
-        [scan scanUpToString:@"\ndiff --git" intoString:&block];
-        [res appendString:[GLFileView parseDiffBlock:[NSString stringWithFormat:@"diff --git %@",block]]];
+    while([scan scanString:@"diff --" intoString:NULL]){ // is a diff start?
+        [scan scanUpToString:@"\ndiff --" intoString:&block];
+        [res appendString:[GLFileView parseDiffBlock:[NSString stringWithFormat:@"diff --%@",block]]];
     }
     
     return res;
@@ -322,7 +322,7 @@
     NSScanner *scan=[NSScanner scannerWithString:txt];
     NSString *block;
     
-    [scan scanUpToString:@"\n@@ " intoString:&block];
+    [scan scanUpToString:@"\n@@" intoString:&block];
     [res appendString:@"<table class='diff'><thead>"];
     [res appendString:[GLFileView parseDiffHeader:block]];
     [res appendString:@"</td></tr></thead><tbody>"];
@@ -331,9 +331,9 @@
         [res appendString:[GLFileView parseBinaryDiff:block]];
     }
     
-    while([scan scanString:@"@@ " intoString:NULL]){
-        [scan scanUpToString:@"\n@@ " intoString:&block];
-        [res appendString:[GLFileView parseDiffChunk:[NSString stringWithFormat:@"@@ %@",block]]];
+    while([scan scanString:@"@@" intoString:NULL]){
+        [scan scanUpToString:@"\n@@" intoString:&block];
+        [res appendString:[GLFileView parseDiffChunk:[NSString stringWithFormat:@"@@%@",block]]];
     }
     
     [res appendString:@"</tbody></table>"];
@@ -433,11 +433,16 @@
 
 +(NSString *)getFileName:(NSString *)line
 {
-    NSRange b = [line rangeOfString:@" b/"];
-    NSString *file=[line substringFromIndex:b.location+3];
+    NSRange b = [line rangeOfString:@"b/"];
+	if (b.length == 0)
+		b = [line rangeOfString:@"--cc "];
+	
+    NSString *file=[line substringFromIndex:b.location+b.length];
+	
     DLog(@"line=%@",line);
     DLog(@"file=%@",file);
-    return file;
+    
+	return file;
 }
 
 +(NSArray *)getFilesNames:(NSString *)line
@@ -492,17 +497,17 @@
 
 +(BOOL)isBinaryFile:(NSString *)line
 {
-    return (([line length]>12) && [[line substringToIndex:12] isEqualToString:@"Binary files"]);
+    return [line hasPrefix:@"Binary files"];
 }
 
 +(BOOL)isStartDiff:(NSString *)line
 {
-    return (([line length]>10) && [[line substringToIndex:10] isEqualToString:@"diff --git"]);
+    return [line hasPrefix:@"diff --"];
 }
 
 +(BOOL)isStartBlock:(NSString *)line
 {
-    return (([line length]>3) && [[line substringToIndex:3] isEqualToString:@"@@ "]);
+    return [line hasPrefix:@"@@"];
 }
 
 - (NSString *) parseBlame:(NSString *)txt
