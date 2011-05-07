@@ -118,6 +118,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 //this works much better.
 - (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 {
+	@try {
 	if (![PBGitBinary path])
 	{
 		if (outError) {
@@ -153,6 +154,14 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	[self setFileURL:gitDirURL];
 	[self setup];
 	return YES;
+	} @catch(id x) {
+		if (outError) {
+			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"An error occured while trying to open %@.\n%@", [self fileURL],x]
+																 forKey:NSLocalizedRecoverySuggestionErrorKey];
+			*outError = [NSError errorWithDomain:PBGitRepositoryErrorDomain code:0 userInfo:userInfo];
+		}
+		return NO;
+	}
 }
 
 - (void) setup
