@@ -381,13 +381,17 @@
     
     line=[lines nextObject];
     DLog(@"-=%@=-",line);
-    NSString *header=[line substringFromIndex:3];
-    NSRange hr = NSMakeRange(0, [header rangeOfString:@" @@"].location);
-    header=[header substringWithRange:hr];
+	
+	int arity = 0; /* How many files are merged here? Count the '@'! */
+	while ([line characterAtIndex:arity] == '@')
+		arity++;
+	
+    NSRange hr = NSMakeRange(arity+1, [line rangeOfString:@" @@"].location-arity-1);
+    NSString *header=[line substringWithRange:hr];
     
     NSArray *pos=[header componentsSeparatedByString:@" "];
     NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
-    NSArray *pos_r=[[pos objectAtIndex:1] componentsSeparatedByString:@","];
+    NSArray *pos_r=[[pos objectAtIndex:arity-1] componentsSeparatedByString:@","];
     
     l_line=abs([[pos_l objectAtIndex:0]integerValue]);
     r_line=[[pos_r objectAtIndex:0]integerValue];
@@ -403,7 +407,7 @@
             [res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
         }
         if(![s isEqualToString:@"\\"]){
-            [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:1]]];								
+            [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:arity-1]]];								
         }
     }
     return res;
