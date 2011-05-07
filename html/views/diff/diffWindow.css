@@ -24,8 +24,8 @@ table.diff tr.header td {
 	padding: 5px;
 }
 
-table.diff tr td.r {
-	border-left: 1px solid #909090;
+table.diff tr td.l {
+	border-right: 1px solid #909090;
 }
 
 table.diff tr.r {

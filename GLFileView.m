@@ -376,7 +376,7 @@
     NSMutableString *res=[NSMutableString string];
     
     NSString *line;
-    int l_line;
+    int l_line[32]; // FIXME: make dynamic
     int r_line;
     
     line=[lines nextObject];
@@ -390,26 +390,46 @@
     NSString *header=[line substringWithRange:hr];
     
     NSArray *pos=[header componentsSeparatedByString:@" "];
-    NSArray *pos_l=[[pos objectAtIndex:0] componentsSeparatedByString:@","];
     NSArray *pos_r=[[pos objectAtIndex:arity-1] componentsSeparatedByString:@","];
     
-    l_line=abs([[pos_l objectAtIndex:0]integerValue]);
+	for(int i=0; i<arity-1; i++){
+		NSArray *pos_l=[[pos objectAtIndex:i] componentsSeparatedByString:@","];
+		l_line[i]=abs([[pos_l objectAtIndex:0]integerValue]);
+	}
     r_line=[[pos_r objectAtIndex:0]integerValue];
     
-    [res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='3'>%@</td></tr>",line]];
+    [res appendString:[NSString stringWithFormat:@"<tr class='header'><td colspan='%d'>%@</td></tr>",arity+1,line]];
     while((line=[lines nextObject])){
-        NSString *s=[line substringToIndex:1];
-        if([s isEqualToString:@" "]){
-            [res appendString:[NSString stringWithFormat:@"<tr><td class='l'>%d</td><td class='r'>%d</td>",l_line++,r_line++]];
-        }else if([s isEqualToString:@"-"]){
-            [res appendString:[NSString stringWithFormat:@"<tr class='l'><td class='l'>%d</td><td class='r'></td>",l_line++]];
-        }else if([s isEqualToString:@"+"]){
-            [res appendString:[NSString stringWithFormat:@"<tr class='r'><td class='l'></td><td class='r'>%d</td>",r_line++]];
-        }
-        if(![s isEqualToString:@"\\"]){
+        NSString *prefix=[line substringToIndex:arity-1];
+        if([prefix rangeOfString:@"-"].location != NSNotFound){
+            [res appendString:@"<tr class='l'>"];
+			for(int i=0; i<arity-1; i++){
+				if([prefix characterAtIndex:i] == '-'){
+					[res appendString:[NSString stringWithFormat:@"<td class='l'>%d</td>",l_line[i]++]];
+				}else{
+					[res appendString:@"<td class='l'></td>"];
+				}
+			}
+            [res appendString:@"<td class='r'></td>"];
+        }else if([prefix rangeOfString:@"+"].location != NSNotFound){
+            [res appendString:@"<tr class='r'>"];
+			for(int i=0; i<arity-1; i++){
+				[res appendString:@"<td class='l'></td>"];
+			}
+            [res appendString:[NSString stringWithFormat:@"<td class='r'>%d</td>",r_line++]];
+        }else{
+			[res appendString:@"<tr>"];
+			for(int i=0; i<arity-1; i++){
+				[res appendString:[NSString stringWithFormat:@"<td class='l'>%d</td>",l_line[i]++]];
+			}
+			[res appendString:[NSString stringWithFormat:@"<td class='r'>%d</td>",r_line++]];
+		}
+		if(![prefix hasPrefix:@"\\"]){
             [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:arity-1]]];								
         }
     }
+	DLog(@"-=%@=-",res);
+
     return res;
 }
 
@@ -420,7 +440,7 @@
     
     NSString *line=[lines nextObject];
     NSString *fileName=[self getFileName:line];
-    [res appendString:[NSString stringWithFormat:@"<tr id='%@'><td colspan='3'><div style='float:left;'>",fileName]];
+    [res appendString:[NSString stringWithFormat:@"<tr id='%@'><td colspan='33'><div style='float:left;'>",fileName]];
     do{
         [res appendString:[NSString stringWithFormat:@"<p>%@</p>",line]];
     }while((line=[lines nextObject]));
