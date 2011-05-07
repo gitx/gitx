@@ -428,8 +428,6 @@
             [res appendString:[NSString stringWithFormat:@"<td class='code'>%@</td></tr>",[line substringFromIndex:arity-1]]];								
         }
     }
-	DLog(@"-=%@=-",res);
-
     return res;
 }
 
