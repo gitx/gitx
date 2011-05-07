@@ -18,6 +18,7 @@
 #define kPublicGist @"PBGistPublic"
 #define kShowWhitespaceDifferences @"PBShowWhitespaceDifferences"
 #define kRefreshAutomatically @"PBRefreshAutomatically"
+#define kUseAskPasswd @"PBUseAskPasswd"
 #define kOpenCurDirOnLaunch @"PBOpenCurDirOnLaunch"
 #define kShowOpenPanelOnLaunch @"PBShowOpenPanelOnLaunch"
 #define kShouldCheckoutBranch @"PBShouldCheckoutBranch"
@@ -53,6 +54,8 @@
 					  forKey:kShowWhitespaceDifferences];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
 					  forKey:kRefreshAutomatically];
+	[defaultValues setObject:[NSNumber numberWithBool:YES]
+					  forKey:kUseAskPasswd];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
 					  forKey:kOpenCurDirOnLaunch];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
@@ -108,6 +111,11 @@
 + (BOOL) refreshAutomatically
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kRefreshAutomatically];
+}
+
++ (BOOL) useAskPasswd
+{
+	return [[NSUserDefaults standardUserDefaults] boolForKey:kUseAskPasswd];
 }
 
 + (BOOL)openCurDirOnLaunch

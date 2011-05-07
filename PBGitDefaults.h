@@ -19,6 +19,7 @@
 + (BOOL) isGistPublic;
 + (BOOL)showWhitespaceDifferences;
 + (BOOL)refreshAutomatically;
++ (BOOL) useAskPasswd;
 + (BOOL)openCurDirOnLaunch;
 + (BOOL)showOpenPanelOnLaunch;
 + (BOOL) shouldCheckoutBranch;
