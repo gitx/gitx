@@ -414,7 +414,11 @@
         }else if([prefix rangeOfString:@"+"].location != NSNotFound){
             [res appendString:@"<tr class='r'>"];
 			for(int i=0; i<arity-1; i++){
-				[res appendString:@"<td class='l'></td>"];
+				if([prefix characterAtIndex:i] == ' '){
+					[res appendString:[NSString stringWithFormat:@"<td class='l'>%d</td>",l_line[i]++]];
+				}else{
+					[res appendString:@"<td class='l'></td>"];
+				}
 			}
             [res appendString:[NSString stringWithFormat:@"<td class='r'>%d</td>",r_line++]];
         }else{
