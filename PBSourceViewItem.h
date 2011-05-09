@@ -14,7 +14,7 @@
 @interface PBSourceViewItem : NSObject {
 	NSMutableArray *children;
 
-	NSString *title;
+	NSString *title, *helpText;
 	PBGitRevSpecifier *revSpecifier;
 	PBSourceViewItem *parent;
 
@@ -43,6 +43,7 @@
 - (PBGitRef *) ref;
 
 @property(retain) NSString *title;
+@property(retain) NSString *helpText;
 @property(readonly) NSMutableArray *children;
 @property(assign) BOOL isGroupItem, isUncollapsible;
 @property(retain) PBGitRevSpecifier *revSpecifier;
