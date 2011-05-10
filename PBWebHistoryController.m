@@ -107,11 +107,11 @@
 	NSMutableDictionary *stats=[self parseStats:details];
 
 	// File list
-	NSString *dt=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"-r", @"-C90%", @"-M90%", [currentSha string], nil]];
+	NSString *dt=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"-r", @"-C90%", @"-M90%", [currentSha string], nil]];
 	NSString *fileList=[GLFileView parseDiffTree:dt withStats:stats];
 	
 	// Diffs list
-	NSString *d=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--cc", @"-C90%", @"-M90%", [currentSha string], nil]];
+	NSString *d=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", [currentSha string], nil]];
 	NSString *diffs=[GLFileView parseDiff:d];
 	
 	NSString *html=[NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
