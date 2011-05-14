@@ -344,7 +344,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 
 - (NSString *)outlineView:(NSOutlineView *)outlineView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tc item:(id)item mouseLocation:(NSPoint)mouseLocation
 {
-	return [item helpText];
+	return [[item revSpecifier] helpText];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item

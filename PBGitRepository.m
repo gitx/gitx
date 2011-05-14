@@ -326,6 +326,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		PBGitRef *newRef = [PBGitRef refFromString:[components objectAtIndex:0]];
 		PBGitRevSpecifier *revSpec = [[PBGitRevSpecifier alloc] initWithRef:newRef];
 
+		[revSpec setHelpText:[self helpTextForRef:newRef]];
 		[self addBranch:revSpec];
 		[self addRef:newRef fromParameters:components];
 		[oldBranches removeObject:revSpec];
