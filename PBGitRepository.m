@@ -278,6 +278,32 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		[refs setObject:[NSMutableArray arrayWithObject:ref] forKey:sha];
 }
 
+// Extracts the text that should be shown in a help tag
+- (NSString*) helpTextForRef:(PBGitRef*)ref
+{
+	NSString *output = nil;
+	NSString *name = [ref shortName];
+	NSArray *arguments = nil;
+
+	if ([ref isRemote]) {
+		arguments = [NSArray arrayWithObjects:@"remote", @"show", @"-n", name, nil];
+		output = [self outputForArguments:arguments];
+
+		NSArray *remoteLines = [output componentsSeparatedByString:@"\n"];
+
+		// Second and third lines have Fetch and Push URLs
+		return [[remoteLines subarrayWithRange:NSMakeRange(1,1)] componentsJoinedByString:@"\n"];
+	}
+	else if ([ref isTag]) {
+		arguments = [NSArray arrayWithObjects:@"tag", @"-ln", name, nil];
+		output = [self outputForArguments:arguments];
+		if (![output hasPrefix:name])
+			return nil;
+		return [[output substringFromIndex:[name length]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	}
+	return nil;
+}
+
 - (void) reloadRefs
 {
 	_headRef = nil;
