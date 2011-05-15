@@ -278,23 +278,32 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		[refs setObject:[NSMutableArray arrayWithObject:ref] forKey:sha];
 }
 
-// Extracts the text that should be shown in a help tag
+// Returns the remote's fetch and pull URLs as an array of two strings.
+- (NSArray*) URLsForRemote:(NSString*)remoteName
+{
+	NSArray *arguments = [NSArray arrayWithObjects:@"remote", @"show", @"-n", remoteName, nil];
+	NSString *output = [self outputForArguments:arguments];
+
+	NSArray *remoteLines = [output componentsSeparatedByString:@"\n"];
+	NSString *fetchURL = [remoteLines objectAtIndex:1];
+	NSString *pushURL = [remoteLines objectAtIndex:2];
+
+	if ([fetchURL hasPrefix:@"  Fetch URL: "] && [pushURL hasPrefix:@"  Push  URL: "])
+		return [NSArray arrayWithObjects:
+				[fetchURL substringFromIndex:13],
+				[pushURL substringFromIndex:13],
+				nil];
+	return nil;
+}
+
+// Extracts the text that should be shown in a help tag.
 - (NSString*) helpTextForRef:(PBGitRef*)ref
 {
 	NSString *output = nil;
 	NSString *name = [ref shortName];
 	NSArray *arguments = nil;
 
-	if ([ref isRemote]) {
-		arguments = [NSArray arrayWithObjects:@"remote", @"show", @"-n", name, nil];
-		output = [self outputForArguments:arguments];
-
-		NSArray *remoteLines = [output componentsSeparatedByString:@"\n"];
-
-		// Second and third lines have Fetch and Push URLs
-		return [[remoteLines subarrayWithRange:NSMakeRange(1,1)] componentsJoinedByString:@"\n"];
-	}
-	else if ([ref isTag]) {
+	if ([ref isTag]) {
 		arguments = [NSArray arrayWithObjects:@"tag", @"-ln", name, nil];
 		output = [self outputForArguments:arguments];
 		if (![output hasPrefix:name])

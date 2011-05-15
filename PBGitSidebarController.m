@@ -344,7 +344,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 
 - (NSString *)outlineView:(NSOutlineView *)outlineView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tc item:(id)item mouseLocation:(NSPoint)mouseLocation
 {
-	return [[item revSpecifier] helpText];
+	return [item helpText];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
@@ -363,6 +363,17 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 - (BOOL) outlineView:(NSOutlineView *)outlineView shouldShowOutlineCellForItem:(id)item
 {
 	return ![item isUncollapsible];
+}
+
+- (NSString*) helpTextForRemoteURLs:(NSArray*)urls
+{
+	NSString *fetchURL = [urls objectAtIndex:0];
+	NSString *pushURL = [urls objectAtIndex:1];
+
+	if ([fetchURL isEqual:pushURL])
+		return fetchURL;
+	else	// Down triangle for fetch, up triangle for push
+		return [NSString stringWithFormat:@"\u25bc %@\n\u25b2", fetchURL, pushURL];
 }
 
 - (void)populateList
@@ -384,6 +395,8 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	
 	for (PBGitRevSpecifier *rev in repository.branches)
 		[self addRevSpec:rev];
+	for (PBGitSVRemoteItem *remote in remotes.children)
+		[remote setHelpText:[self helpTextForRemoteURLs:[[self repository] URLsForRemote:[remote title]]]];
 	
 	[items addObject:project];
 	[items addObject:branches];
