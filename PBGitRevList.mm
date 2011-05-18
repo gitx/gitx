@@ -158,7 +158,9 @@ using namespace std;
 		}
 
 		git_oid oid;
-		git_oid_mkstr(&oid, sha.c_str());
+		if(git_oid_mkstr(&oid, sha.c_str())!=GIT_SUCCESS)
+            break;
+        
 		PBGitCommit *newCommit = [PBGitCommit commitWithRepository:repository andSha:[PBGitSHA shaWithOID:oid]];
 
         if (showSign)
