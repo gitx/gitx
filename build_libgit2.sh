@@ -20,7 +20,7 @@ buildAction () {
 		git submodule sync
 		git submodule update
 		cd libgit2
-		./waf --out=$TARGET_TEMP_DIR --prefix=$TARGET_BUILD_DIR configure
+		CFLAGS='-arch i386 -arch x86_64' ./waf --out=$TARGET_TEMP_DIR --prefix=$TARGET_BUILD_DIR configure
 		if [ $? != 0 ]; then
 			echo "error: failed to waf configure"
 			exit -1
