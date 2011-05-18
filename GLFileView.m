@@ -242,6 +242,8 @@
 
 + (NSString *) escapeHTML:(NSString *)txt
 {
+    if (txt == nil)
+        return txt;
     NSMutableString *newTxt = [NSMutableString stringWithString:txt];
 	[newTxt replaceOccurrencesOfString:@"&" withString:@"&amp;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
 	[newTxt replaceOccurrencesOfString:@"<" withString:@"&lt;" options:NSLiteralSearch range:NSMakeRange(0, [newTxt length])];
