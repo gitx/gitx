@@ -1337,7 +1337,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Build the scripting bridge header GitX.h if the GitX.sdef file changes\nsdef $TARGET_BUILD_DIR/GitX.app | sdp -fh --basename GitX";
+			shellScript = "# Build the scripting bridge header GitX.h if the GitX.sdef file changes\nsdef \"$TARGET_BUILD_DIR/GitX.app\" | sdp -fh --basename GitX";
 		};
 		F56439F60F792B2100A579C2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
