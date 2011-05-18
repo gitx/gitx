@@ -13,7 +13,7 @@
 @class PBGitHistoryController;
 @class PBGitCommitController;
 
-@interface PBGitSidebarController : PBViewController /*<NSOutlineViewDelegate>*/{
+@interface PBGitSidebarController : PBViewController PROTOCOL_10_6(NSOutlineViewDelegate, NSMenuDelegate){
 	IBOutlet NSWindow *window;
 	IBOutlet NSOutlineView *sourceView;
 	IBOutlet NSView *sourceListControlsView;

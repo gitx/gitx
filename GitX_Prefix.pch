@@ -17,3 +17,16 @@
 #ifndef ALog
 #define ALog(...) DLog(__VA_ARGS__)
 #endif
+
+// In 10.6, some NSObject categories (like NSWindowDelegate) were changed to
+// protocols. Thus to avoid warnings we need to add protocol specifiers, but
+// only when compiling for 10.6+.
+#ifndef MAC_OS_X_VERSION_10_6
+#define MAC_OS_X_VERSION_10_6 1060
+#endif
+
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
+#define PROTOCOL_10_6(...) <__VA_ARGS__>
+#else
+#define PROTOCOL_10_6(...)
+#endif
