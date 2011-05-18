@@ -118,6 +118,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 //this works much better.
 - (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 {
+	@try {
 	if (![PBGitBinary path])
 	{
 		if (outError) {
@@ -153,6 +154,14 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	[self setFileURL:gitDirURL];
 	[self setup];
 	return YES;
+	} @catch(id x) {
+		if (outError) {
+			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"An error occured while trying to open %@.\n%@", [self fileURL],x]
+																 forKey:NSLocalizedRecoverySuggestionErrorKey];
+			*outError = [NSError errorWithDomain:PBGitRepositoryErrorDomain code:0 userInfo:userInfo];
+		}
+		return NO;
+	}
 }
 
 - (void) setup
@@ -271,6 +280,11 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	else
 		sha = [PBGitSHA shaWithString:[components objectAtIndex:2]];
 
+	if(!sha) {
+		NSLog(@"sha was nil...? ref=%@, components=%@",ref,components);
+		return;
+	}
+
 	NSMutableArray* curRefs;
 	if ( (curRefs = [refs objectForKey:sha]) != nil )
 		[curRefs addObject:ref];
@@ -289,6 +303,13 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	NSArray *arguments = [NSArray arrayWithObjects:@"for-each-ref", @"--format=%(refname) %(objecttype) %(objectname) %(*objectname)", @"refs", nil];
 	NSString *output = [self outputForArguments:arguments];
 	NSArray *lines = [output componentsSeparatedByString:@"\n"];
+
+	if([output hasPrefix:@"fatal: "]) {
+		NSLog(@"Unable to read refs!");
+		NSLog(@"arguments=%@",arguments);
+		NSLog(@"output=%@",output);
+		@throw output;
+	}
 
 	for (NSString *line in lines) {
 		// If its an empty line, skip it (e.g. with empty repositories)
