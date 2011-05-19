@@ -17,8 +17,6 @@
 #include <string>
 #include <map>
 
-#include <git2/errors.h>
-
 using namespace std;
 
 
@@ -159,11 +157,11 @@ using namespace std;
 			}
 		}
 
-		git_oid oid;
-		if(git_oid_mkstr(&oid, sha.c_str())!=GIT_SUCCESS)
+		NSString *oid=[NSString stringWithCString:sha.c_str() encoding:encoding];
+        if([oid length]!=40)
             break;
         
-		PBGitCommit *newCommit = [PBGitCommit commitWithRepository:repository andSha:[PBGitSHA shaWithOID:oid]];
+		PBGitCommit *newCommit = [PBGitCommit commitWithRepository:repository andSha:oid];
 
         if (showSign)
             [newCommit setSign: sign];
@@ -176,6 +174,7 @@ using namespace std;
 
 		string parentString;
 		getline(stream, parentString, '\1');
+        
 		if (parentString.size() != 0)
 		{
 			if (((parentString.size() + 1) % 41) != 0) {
@@ -185,9 +184,10 @@ using namespace std;
 			int nParents = (parentString.size() + 1) / 41;
 			NSMutableArray *parents = [NSMutableArray arrayWithCapacity:nParents];
 			int parentIndex;
-			for (parentIndex = 0; parentIndex < nParents; ++parentIndex)
-				[parents addObject:[PBGitSHA shaWithCString:parentString.substr(parentIndex * 41, 40).c_str()]];
-
+			for (parentIndex = 0; parentIndex < nParents; ++parentIndex) {
+                NSString *pOid=[NSString stringWithCString:parentString.substr(parentIndex * 41, 40).c_str() encoding:encoding];
+				[parents addObject:pOid];
+            }
 			[newCommit setParents:parents];
 		}
 

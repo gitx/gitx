@@ -18,7 +18,7 @@
 @class QLPreviewPanel;
 @class PBCommitList;
 @class GLFileView;
-@class PBGitSHA;
+@class NSString;
 
 @class PBHistorySearchController;
 
@@ -71,7 +71,7 @@
 - (IBAction) setTreeView:(id)sender;
 - (IBAction) setBranchFilter:(id)sender;
 
-- (void)selectCommit:(PBGitSHA *)commit;
+- (void)selectCommit:(NSString *)commit;
 - (IBAction) refresh:(id)sender;
 - (IBAction) toggleQLPreviewPanel:(id)sender;
 - (IBAction) openSelectedFile:(id)sender;

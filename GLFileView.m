@@ -155,7 +155,7 @@
 
 - (void) selectCommit:(NSString*)c
 {
-	[historyController selectCommit:[PBGitSHA shaWithString:c]];
+	[historyController selectCommit:c];
 }
 
 // TODO: need to be refactoring

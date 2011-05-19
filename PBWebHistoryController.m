@@ -8,7 +8,6 @@
 
 #import "PBWebHistoryController.h"
 #import "PBGitDefaults.h"
-#import "PBGitSHA.h"
 #import "GLFileView.h"
 #import <CommonCrypto/CommonDigest.h>
 
@@ -57,7 +56,7 @@
 	// but this caused some funny behaviour because NSTask's and NSThread's don't really
 	// like each other. Instead, just do it async.
 	
-	NSMutableArray *taskArguments = [NSMutableArray arrayWithObjects:@"show", @"--numstat", @"--summary", @"--pretty=raw", [currentSha string], nil];
+	NSMutableArray *taskArguments = [NSMutableArray arrayWithObjects:@"show", @"--numstat", @"--summary", @"--pretty=raw", currentSha, nil];
 	if (![PBGitDefaults showWhitespaceDifferences])
 		[taskArguments insertObject:@"-w" atIndex:1];
 	
@@ -107,17 +106,17 @@
 	NSMutableDictionary *stats=[self parseStats:details];
 
 	// File list
-	NSString *dt=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"-r", @"-C90%", @"-M90%", [currentSha string], nil]];
+	NSString *dt=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"-r", @"-C90%", @"-M90%", currentSha, nil]];
 	NSString *fileList=[GLFileView parseDiffTree:dt withStats:stats];
 	
 	// Diffs list
-	NSString *d=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", [currentSha string], nil]];
+	NSString *d=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", currentSha, nil]];
 	NSString *diffs=[GLFileView parseDiff:d];
 	
 	NSString *html=[NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
 	
-	html=[html stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:[NSString stringWithFormat:@"%@^",[currentSha string]]];
-	html=[html stringByReplacingOccurrencesOfString:@"{SHA}" withString:[currentSha string]];
+	html=[html stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:[NSString stringWithFormat:@"%@^",currentSha]];
+	html=[html stringByReplacingOccurrencesOfString:@"{SHA}" withString:currentSha];
 	
 	[[view windowScriptObject] callWebScriptMethod:@"showCommit" withArguments:[NSArray arrayWithObject:html]];
 	
@@ -223,7 +222,7 @@
 
 - (void)selectCommit:(NSString *)sha
 {
-	[historyController selectCommit:[PBGitSHA shaWithString:sha]];
+	[historyController selectCommit:sha];
 }
 
 // TODO: need to be refactoring
