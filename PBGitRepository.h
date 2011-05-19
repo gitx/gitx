@@ -88,6 +88,7 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 
 - (NSFileHandle*) handleForCommand:(NSString*) cmd;
 - (NSFileHandle*) handleForArguments:(NSArray*) args;
+- (NSFileHandle*) handleInWorkDirForArguments:(NSArray *)args;
 - (NSFileHandle *) handleInWorkDirForArguments:(NSArray *)args;
 - (NSString*) outputForCommand:(NSString*) cmd;
 - (NSString *)outputForCommand:(NSString *)str retValue:(int *)ret;

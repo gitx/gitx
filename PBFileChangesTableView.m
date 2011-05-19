@@ -18,7 +18,8 @@
 		NSPoint eventLocation = [self convertPoint: [theEvent locationInWindow] fromView: nil];
 		NSInteger rowIndex = [self rowAtPoint:eventLocation];
 		[self selectRowIndexes:[NSIndexSet indexSetWithIndex:rowIndex] byExtendingSelection:TRUE];
-		return [[self delegate] menuForTable: self];
+        // TODO: Fix the coupling so we don't need the cast (at least).
+		return [(PBGitIndexController*)[self delegate] menuForTable: self];
 	}
 
 	return nil;

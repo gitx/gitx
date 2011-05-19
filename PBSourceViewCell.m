@@ -33,7 +33,7 @@
     NSPoint point = [self.controlView convertPoint:[event locationInWindow] fromView:nil];
 	NSInteger row = [view rowAtPoint:point];
 	
-	PBGitSidebarController *controller = [view delegate];
+	PBGitSidebarController *controller = (PBGitSidebarController*)[view delegate];
 	
 	return [controller menuForRow:row];
 }

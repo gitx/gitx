@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import <WebKit/WebKit.h>
 
+#import "PBGitRepository.h"
+
 @interface PBWebController : NSObject {
 	IBOutlet WebView* view;
 	NSString *startFile;
@@ -18,11 +20,11 @@
 	NSMapTable *callbacks;
 
 	// For the repository access
-	IBOutlet id repository;
+	IBOutlet PBGitRepository *repository;
 }
 
 @property (retain) NSString *startFile;
-@property (retain) id repository;
+@property (retain) PBGitRepository *repository;
 
 - (WebScriptObject *) script;
 - (void) closeView;
