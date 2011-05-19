@@ -20,9 +20,9 @@
 	IBOutlet NSPopUpButton *actionButton;
 	IBOutlet NSSegmentedControl *remoteControls;
 
-    IBOutlet NSButton* svnFetchButton;
-    IBOutlet NSButton* svnRebaseButton;
-    IBOutlet NSButton* svnDcommitButton;
+	IBOutlet NSButton* svnFetchButton;
+	IBOutlet NSButton* svnRebaseButton;
+	IBOutlet NSButton* svnDcommitButton;
     
 	NSMutableArray *items;
 

@@ -30,6 +30,7 @@
 + (id)itemWithTitle:(NSString *)title;
 
 - (NSString *)badge;
+- (NSString *)helpText;
 
 - (void)addChild:(PBSourceViewItem *)child;
 - (void)removeChild:(PBSourceViewItem *)child;

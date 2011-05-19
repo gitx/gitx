@@ -11,6 +11,7 @@
 
 @interface PBGitRevSpecifier : NSObject  <NSCopying> {
 	NSString *description;
+	NSString *helpText;
 	NSArray *parameters;
 	NSURL *workingDirectory;
 	BOOL isSimpleRef;
@@ -36,6 +37,7 @@
 + (PBGitRevSpecifier *)localBranchesRevSpec;
 
 @property(retain)   NSString *description;
+@property(retain)   NSString *helpText;
 @property(readonly) NSArray *parameters;
 @property(retain)   NSURL *workingDirectory;
 @property(readonly) BOOL isSimpleRef;

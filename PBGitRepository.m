@@ -292,6 +292,41 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		[refs setObject:[NSMutableArray arrayWithObject:ref] forKey:sha];
 }
 
+// Returns the remote's fetch and pull URLs as an array of two strings.
+- (NSArray*) URLsForRemote:(NSString*)remoteName
+{
+	NSArray *arguments = [NSArray arrayWithObjects:@"remote", @"show", @"-n", remoteName, nil];
+	NSString *output = [self outputForArguments:arguments];
+
+	NSArray *remoteLines = [output componentsSeparatedByString:@"\n"];
+	NSString *fetchURL = [remoteLines objectAtIndex:1];
+	NSString *pushURL = [remoteLines objectAtIndex:2];
+
+	if ([fetchURL hasPrefix:@"  Fetch URL: "] && [pushURL hasPrefix:@"  Push  URL: "])
+		return [NSArray arrayWithObjects:
+				[fetchURL substringFromIndex:13],
+				[pushURL substringFromIndex:13],
+				nil];
+	return nil;
+}
+
+// Extracts the text that should be shown in a help tag.
+- (NSString*) helpTextForRef:(PBGitRef*)ref
+{
+	NSString *output = nil;
+	NSString *name = [ref shortName];
+	NSArray *arguments = nil;
+
+	if ([ref isTag]) {
+		arguments = [NSArray arrayWithObjects:@"tag", @"-ln", name, nil];
+		output = [self outputForArguments:arguments];
+		if (![output hasPrefix:name])
+			return nil;
+		return [[output substringFromIndex:[name length]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	}
+	return nil;
+}
+
 - (void) reloadRefs
 {
 	_headRef = nil;
@@ -321,6 +356,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		PBGitRef *newRef = [PBGitRef refFromString:[components objectAtIndex:0]];
 		PBGitRevSpecifier *revSpec = [[PBGitRevSpecifier alloc] initWithRef:newRef];
 
+		[revSpec setHelpText:[self helpTextForRef:newRef]];
 		[self addBranch:revSpec];
 		[self addRef:newRef fromParameters:components];
 		[oldBranches removeObject:revSpec];

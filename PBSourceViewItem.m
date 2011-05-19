@@ -128,6 +128,11 @@
 	return [[revSpecifier description] lastPathComponent];
 }
 
+- (NSString *) helpText
+{
+	return [revSpecifier helpText];
+}
+
 - (NSString *) stringValue
 {
 	return self.title;
