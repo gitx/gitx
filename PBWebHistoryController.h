@@ -14,13 +14,13 @@
 #import "PBRefContextDelegate.h"
 
 
-@class PBGitSHA;
+@class NSString;
 
 @interface PBWebHistoryController : PBWebController {
 	IBOutlet PBGitHistoryController* historyController;
 	IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
 	
-	PBGitSHA* currentSha;
+	NSString* currentSha;
 	NSString* diff;
 }
 

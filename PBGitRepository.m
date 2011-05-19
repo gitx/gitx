@@ -274,11 +274,11 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 {
 	NSString* type = [components objectAtIndex:1];
 
-	PBGitSHA *sha;
+	NSString *sha;
 	if ([type isEqualToString:@"tag"] && [components count] == 4)
-		sha = [PBGitSHA shaWithString:[components objectAtIndex:3]];
+		sha = [components objectAtIndex:3];
 	else
-		sha = [PBGitSHA shaWithString:[components objectAtIndex:2]];
+		sha = [components objectAtIndex:2];
 
 	if(!sha) {
 		NSLog(@"sha was nil...? ref=%@, components=%@",ref,components);
@@ -374,7 +374,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return _headRef;
 }
 
-- (PBGitSHA *)headSHA
+- (NSString *)headSHA
 {
 	if (! _headSha)
 		[self headRef];
@@ -387,12 +387,12 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return [self commitForSHA:[self headSHA]];
 }
 
-- (PBGitSHA *)shaForRef:(PBGitRef *)ref
+- (NSString *)shaForRef:(PBGitRef *)ref
 {
 	if (!ref)
 		return nil;
 
-	for (PBGitSHA *sha in refs)
+	for (NSString *sha in refs)
 		for (PBGitRef *existingRef in [refs objectForKey:sha])
 			if ([existingRef isEqualToRef:ref])
 				return sha;
@@ -403,7 +403,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	if (retValue || [shaForRef isEqualToString:@""])
 		return nil;
 
-	return [PBGitSHA shaWithString:shaForRef];
+	return shaForRef;
 }
 
 - (PBGitCommit *)commitForRef:(PBGitRef *)ref
@@ -414,7 +414,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return [self commitForSHA:[self shaForRef:ref]];
 }
 
-- (PBGitCommit *)commitForSHA:(PBGitSHA *)sha
+- (PBGitCommit *)commitForSHA:(NSString *)sha
 {
 	if (!sha)
 		return nil;
@@ -431,7 +431,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return nil;
 }
 
-- (BOOL)isOnSameBranch:(PBGitSHA *)branchSHA asSHA:(PBGitSHA *)testSHA
+- (BOOL)isOnSameBranch:(NSString *)branchSHA asSHA:(NSString *)testSHA
 {
 	if (!branchSHA || !testSHA)
 		return NO;
@@ -444,7 +444,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	NSMutableSet *searchSHAs = [NSMutableSet setWithObject:branchSHA];
 
 	for (PBGitCommit *commit in revList) {
-		PBGitSHA *commitSHA = [commit sha];
+		NSString *commitSHA = [commit sha];
 		if ([searchSHAs containsObject:commitSHA]) {
 			if ([testSHA isEqual:commitSHA])
 				return YES;
@@ -458,12 +458,12 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return NO;
 }
 
-- (BOOL)isSHAOnHeadBranch:(PBGitSHA *)testSHA
+- (BOOL)isSHAOnHeadBranch:(NSString *)testSHA
 {
 	if (!testSHA)
 		return NO;
 
-	PBGitSHA *headSHA = [self headSHA];
+	NSString *headSHA = [self headSHA];
 
 	if ([testSHA isEqual:headSHA])
 		return YES;
