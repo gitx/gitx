@@ -17,6 +17,8 @@
 #include <string>
 #include <map>
 
+#include <git2/errors.h>
+
 using namespace std;
 
 
