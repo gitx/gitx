@@ -22,6 +22,7 @@
 
 @class PBHistorySearchController;
 
+// Controls the split history view from PBGitHistoryView.xib
 @interface PBGitHistoryController : PBViewController /*<NSOutlineViewDelegate>*/{
 	IBOutlet PBRefController *refController;
 	IBOutlet NSSearchField *searchField;

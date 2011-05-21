@@ -14,6 +14,7 @@
 
 @class PBViewController, PBGitSidebarController, PBGitCommitController;
 
+// Controls the main repository window from RepositoryWindow.xib
 @interface PBGitWindowController : NSWindowController /*<NSWindowDelegate>*/{
 	__weak PBGitRepository* repository;
 
