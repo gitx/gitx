@@ -56,7 +56,7 @@
 					  forKey:kRefreshAutomatically];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
 					  forKey:kUseAskPasswd];
-	[defaultValues setObject:[NSNumber numberWithBool:YES]
+	[defaultValues setObject:[NSNumber numberWithBool:NO]
 					  forKey:kOpenCurDirOnLaunch];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
 					  forKey:kShowOpenPanelOnLaunch];
