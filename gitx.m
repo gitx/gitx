@@ -169,7 +169,7 @@ void handleOpenRepository(NSURL *repositoryURL, NSMutableArray *arguments)
 	// this allows the repository document to modify itself before it shows it's GUI
 	BOOL didOpenURLs = [[NSWorkspace sharedWorkspace] openURLs:[NSArray arrayWithObject:repositoryURL]
 									   withAppBundleIdentifier:kGitXBundleIdentifier
-													   options:0
+													   options:NSWorkspaceLaunchDefault
 								additionalEventParamDescriptor:recordDescriptor
 											 launchIdentifiers:NULL];
 	if (!didOpenURLs) {
