@@ -7,6 +7,7 @@
 //
 
 #import "PBGitRepository.h"
+#import "PBPresentable.h"
 
 @protocol PBCommandFactory
 + (NSArray *) commandsForObject:(id<PBPresentable>) object repository:(PBGitRepository *) repository;

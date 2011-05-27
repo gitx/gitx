@@ -13,6 +13,7 @@
 #import "PBCreateTagSheet.h"
 #import "PBGitDefaults.h"
 #import "PBDiffWindowController.h"
+#import "PBGitResetController.h"
 
 #import "PBArgumentPickerController.h"
 

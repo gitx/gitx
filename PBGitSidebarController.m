@@ -23,6 +23,7 @@
 #import "PBCommandMenuItem.h"
 #import "PBGitStash.h"
 #import "PBGitSubmodule.h"
+#import "PBSubmoduleController.h"
 
 static NSString * const kObservingContextStashes = @"stashesChanged";
 static NSString * const kObservingContextSubmodules = @"submodulesChanged";
