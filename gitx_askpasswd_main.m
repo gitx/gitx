@@ -29,8 +29,20 @@
 #define	PASSLABELHEIGHT			16.0
 #define WINDOWAUTOSAVENAME		@"GitXAskPasswordWindowFrame"
 
+// In 10.6, some NSObject categories (like NSWindowDelegate) were changed to
+// protocols. Thus to avoid warnings we need to add protocol specifiers, but
+// only when compiling for 10.6+.
+#ifndef MAC_OS_X_VERSION_10_6
+#define MAC_OS_X_VERSION_10_6 1060
+#endif
 
-@interface GAPAppDelegate : NSObject /*<NSApplicationDelegate>*/
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_6
+#define PROTOCOL_10_6(...) <__VA_ARGS__>
+#else
+#define PROTOCOL_10_6(...)
+#endif
+
+@interface GAPAppDelegate : NSObject PROTOCOL_10_6(NSApplicationDelegate)
 {
 }
 
@@ -50,7 +62,7 @@ OSStatus			StorePasswordKeychain (const char *url, UInt32 urlLength, void* passw
     [alert setInformativeText:prompt];
     [alert setAlertStyle:NSWarningAlertStyle];
     NSInteger result = [alert runModal];
-    
+
     Boolean yes=NO;
     if ( result == NSAlertFirstButtonReturn ) {
         yes=YES;
@@ -213,38 +225,49 @@ int	main( int argc, const char* argv[] )
 	
 	NSApplication *app = [NSApplication sharedApplication];
 	GAPAppDelegate *appDel = [[GAPAppDelegate alloc] init];
-	[app setDelegate: appDel];
+	[app setDelegate:appDel];
     
 	
-    char args[4024];
-    getproclline(getppid(),args);
-    NSString *cmd=[NSString stringWithFormat:@"%@",[NSString stringWithUTF8String:args]];
+    char c_args[4024];
+    getproclline(getppid(),c_args);
+    NSString *cmd=[NSString stringWithFormat:@"%@",[NSString stringWithUTF8String:c_args]];
     
     NSLog(@"cmd: '%@'",cmd);
     
-    if([cmd hasPrefix:@"git-remote"]){
-        NSArray *args=[cmd componentsSeparatedByString:@" "];
-        NSString *url=[args objectAtIndex:[args count]-1];
-        
-        void *passwordData = nil; 
-        SecKeychainItemRef itemRef = nil;
-        UInt32 passwordLength = 0;
-        
-        OSStatus status = GetPasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],[url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],&passwordData,&passwordLength,&itemRef); 
-        if (status == noErr)      {
-            SecKeychainItemFreeContent (NULL,passwordData);
-            NSString *pas=[[NSString stringWithCString:passwordData encoding:NSASCIIStringEncoding] substringToIndex:passwordLength];
-            printf( "%s", [pas UTF8String] );
-            return 0;
+    NSString *prompt;
+    NSString *url;
+    BOOL yesno=NO;
+    NSArray *args=[cmd componentsSeparatedByString:@" "];
+    
+    if(argc<1){
+        prompt=@"Enter your OpenSSH passphrase:";
+        url=@"private key";
+    }else{
+        prompt=[NSString stringWithFormat:@"%@",[NSString stringWithCString:argv[1] encoding:NSASCIIStringEncoding]];
+        if([[prompt lowercaseString] rangeOfString:@"yes/no"].location==NSNotFound){
+            url=[args objectAtIndex:[args count]-1];
+        }else{
+            yesno=YES;
+            url=[args objectAtIndex:1];
         }
-        
-        NSString *prompt=[NSString stringWithFormat:@"%@",[NSString stringWithCString:argv[1] encoding:NSASCIIStringEncoding]];
-        [appDel pasword:prompt url:url];
-    }else{ // yes/no?
-        NSString *prompt=[NSString stringWithFormat:@"%@",[NSString stringWithCString:argv[1] encoding:NSASCIIStringEncoding]];
-        NSArray *args=[cmd componentsSeparatedByString:@" "];
-        NSString *url=[args objectAtIndex:1];
+    }
+    
+    void *passwordData = nil; 
+    SecKeychainItemRef itemRef = nil;
+    UInt32 passwordLength = 0;
+    
+    OSStatus status = GetPasswordKeychain ([url cStringUsingEncoding:NSASCIIStringEncoding],[url lengthOfBytesUsingEncoding:NSASCIIStringEncoding],&passwordData,&passwordLength,&itemRef); 
+    if (status == noErr)      {
+        SecKeychainItemFreeContent (NULL,passwordData);
+        NSString *pas=[[NSString stringWithCString:passwordData encoding:NSASCIIStringEncoding] substringToIndex:passwordLength];
+        printf( "%s", [pas UTF8String] );
+        return 0;
+    }
+    
+    if(yesno){
         [appDel yesNo:prompt url:url];
+    }else{
+        [appDel pasword:prompt url:url];
     }
     
 	return 0;
