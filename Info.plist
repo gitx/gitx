@@ -60,6 +60,8 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSSupportsSuddenTermination</key>
+	<true/>
 	<key>SUFeedURL</key>
 	<string>http://gitx.laullon.com/appcast.xml</string>
 	<key>NSServices</key>
