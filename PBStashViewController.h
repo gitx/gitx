@@ -1,5 +1,5 @@
 //
-//  PBGitHistoryView.h
+//  PBStashViewController.h
 //  GitX
 //
 //  Created by David Catmull on 20-06-11.
@@ -7,14 +7,18 @@
 //
 
 #import "PBViewController.h"
+#import "PBWebController.h"
+
+@class PBGitStash;
+@class PBWebStashController;
 
 // Controls the view displaying a stash diff
-@interface PBGitStashController : PBViewController {
+@interface PBStashViewController : PBViewController {
 	IBOutlet id webView;
-	IBOutlet PBWebStashController *webHistoryController;
+	IBOutlet PBWebStashController *webController;
 }
 
-- (void) c:(PBGitStash)stash;
+- (void) showStash:(PBGitStash*)stash;
 
 @end
 
