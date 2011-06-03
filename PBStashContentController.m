@@ -1,15 +1,15 @@
 //
-//  PBStashViewController.h
+//  PBStashContentController.h
 //  GitX
 //
 //  Created by David Catmull on 20-06-11.
 //  Copyright 2011. All rights reserved.
 //
 
-#import "PBStashViewController.h"
+#import "PBStashContentController.h"
 #import "PBGitStash.h"
 
-@implementation PBStashViewController
+@implementation PBStashContentController
 
 - (void) awakeFromNib
 {

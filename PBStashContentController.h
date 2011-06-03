@@ -1,5 +1,5 @@
 //
-//  PBStashViewController.h
+//  PBStashContentController.h
 //  GitX
 //
 //  Created by David Catmull on 20-06-11.
@@ -13,7 +13,7 @@
 @class PBWebStashController;
 
 // Controls the view displaying a stash diff
-@interface PBStashViewController : PBViewController {
+@interface PBStashContentController : PBViewController {
 	IBOutlet id webView;
 	IBOutlet PBWebStashController *webController;
 }
