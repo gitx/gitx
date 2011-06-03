@@ -7,7 +7,7 @@
 //
 
 #import "PBViewController.h"
-#import "PBWebController.h"
+#import "PBWebHistoryController.h"
 
 @class PBGitStash;
 @class PBWebStashController;
@@ -22,13 +22,8 @@
 
 @end
 
-@interface PBWebStashController : PBWebController {
-	PBGitStash* currentStash;
-	NSString* diff;
+// TODO: This class may not be needed
+@interface PBWebStashController : PBWebHistoryController {
 }
-
-- (void) changeContentTo:(PBGitStash*)stash;
-
-@property (readonly) NSString* diff;
 
 @end

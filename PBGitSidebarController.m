@@ -24,6 +24,7 @@
 #import "PBGitStash.h"
 #import "PBGitSubmodule.h"
 #import "PBSubmoduleController.h"
+#import "PBStashContentController.h"
 
 static NSString * const kObservingContextStashes = @"stashesChanged";
 static NSString * const kObservingContextSubmodules = @"submodulesChanged";
@@ -43,6 +44,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 @synthesize sourceListControlsView;
 @synthesize historyViewController;
 @synthesize commitViewController;
+@synthesize stashViewController;
 
 - (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
 {
@@ -61,6 +63,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	
 	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
+	stashViewController = [[PBStashContentController alloc] initWithRepository:repository superController:superController];
 	
 	[repository addObserver:self forKeyPath:@"refs" options:0 context:@"updateRefs"];
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
@@ -319,6 +322,12 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 		[PBGitDefaults setShowStageView:YES];
 	}
 	
+	if ([item parent] == stashes) {
+		[superController changeContentController:stashViewController];
+		[PBGitDefaults setShowStageView:NO];
+        [stashViewController showStash:(PBGitStash*)[(PBGitMenuItem*)item sourceObject]];
+	}
+    
 	[self updateActionMenu];
 	[self updateRemoteControls];
 }
