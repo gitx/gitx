@@ -88,9 +88,7 @@
 	NSArray *refsA=[historyController.webCommit refs];
 	NSString *currentRef=[[[historyController repository] headRef] simpleRef];
 	NSString *style=@"";
-	int r=0;
-	for(r=0;r<[refsA count];r++){
-		PBGitRef *ref=[refsA objectAtIndex:r];
+	for(PBGitRef *ref in refsA){
 		if([currentRef isEqualToString:[ref ref]]){
 			style=[NSString stringWithFormat:@"currentBranch refs %@",[ref type]];
 		}else{
