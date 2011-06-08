@@ -65,6 +65,8 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
 	stashViewController = [[PBStashContentController alloc] initWithRepository:repository superController:superController];
 	
+	[stashViewController loadView];
+	
 	[repository addObserver:self forKeyPath:@"refs" options:0 context:@"updateRefs"];
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
 	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
@@ -87,6 +89,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 {
 	[historyViewController closeView];
 	[commitViewController closeView];
+	[stashViewController closeView];
 	
 	[repository removeObserver:self forKeyPath:@"currentBranch"];
 	[repository removeObserver:self forKeyPath:@"branches"];
