@@ -33,7 +33,7 @@
 	IBOutlet PBCommitList* commitList;
 	IBOutlet NSSplitView *historySplitView;
 	IBOutlet PBWebHistoryController *webHistoryController;
-    QLPreviewPanel* previewPanel;
+	QLPreviewPanel* previewPanel;
 	IBOutlet PBHistorySearchController *searchController;
 	IBOutlet GLFileView *fileView;
 

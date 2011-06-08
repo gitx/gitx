@@ -39,7 +39,7 @@
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if ([(NSString *)context isEqualToString: @"ChangedCommit"])
+	if ([(NSString *)context isEqualToString: @"ChangedCommit"])
 		[self changeContentTo: historyController.webCommit];
 	else
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];

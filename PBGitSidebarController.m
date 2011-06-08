@@ -325,7 +325,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	if ([item parent] == stashes) {
 		[superController changeContentController:stashViewController];
 		[PBGitDefaults setShowStageView:NO];
-        [stashViewController showStash:(PBGitStash*)[(PBGitMenuItem*)item sourceObject]];
+		[stashViewController showStash:(PBGitStash*)[(PBGitMenuItem*)item sourceObject]];
 	}
     
 	[self updateActionMenu];
