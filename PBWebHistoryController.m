@@ -39,7 +39,7 @@
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if ([(NSString *)context isEqualToString: @"ChangedCommit"])
+	if ([(NSString *)context isEqualToString: @"ChangedCommit"])
 		[self changeContentTo: historyController.webCommit];
 	else
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -84,45 +84,43 @@
 		return;
 	
 	
-	NSMutableString *refs=[NSMutableString string];
-	NSArray *refsA=[historyController.webCommit refs];
-	NSString *currentRef=[[[historyController repository] headRef] simpleRef];
-	NSString *style=@"";
-	int r=0;
-	for(r=0;r<[refsA count];r++){
-		PBGitRef *ref=[refsA objectAtIndex:r];
+	NSMutableString *refs = [NSMutableString string];
+	NSArray *refsA = [historyController.webCommit refs];
+	NSString *currentRef = [[[historyController repository] headRef] simpleRef];
+	NSString *style = @"";
+	for(PBGitRef *ref in refsA){
 		if([currentRef isEqualToString:[ref ref]]){
-			style=[NSString stringWithFormat:@"currentBranch refs %@",[ref type]];
+			style = [NSString stringWithFormat:@"currentBranch refs %@",[ref type]];
 		}else{
-			style=[NSString stringWithFormat:@"refs %@",[ref type]];
+			style = [NSString stringWithFormat:@"refs %@",[ref type]];
 		}
 		[refs appendString:[NSString stringWithFormat:@"<span class='%@'>%@</span>",style,[ref shortName]]];
 	}
 	
 	// Header
-	NSString *header=[self parseHeader:details withRefs:refs];
+	NSString *header = [self parseHeader:details withRefs:refs];
 
 	// File Stats
-	NSMutableDictionary *stats=[self parseStats:details];
+	NSMutableDictionary *stats = [self parseStats:details];
 
 	// File list
-	NSString *dt=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"-r", @"-C90%", @"-M90%", currentSha, nil]];
-	NSString *fileList=[GLFileView parseDiffTree:dt withStats:stats];
+	NSString *dt = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"-r", @"-C90%", @"-M90%", currentSha, nil]];
+	NSString *fileList = [GLFileView parseDiffTree:dt withStats:stats];
 	
 	// Diffs list
-	NSString *d=[repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", currentSha, nil]];
-	NSString *diffs=[GLFileView parseDiff:d];
+	NSString *d = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", currentSha, nil]];
+	NSString *diffs = [GLFileView parseDiff:d];
 	
-	NSString *html=[NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
+	NSString *html = [NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
 	
-	html=[html stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:[NSString stringWithFormat:@"%@^",currentSha]];
-	html=[html stringByReplacingOccurrencesOfString:@"{SHA}" withString:currentSha];
+	html = [html stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:[NSString stringWithFormat:@"%@^",currentSha]];
+	html = [html stringByReplacingOccurrencesOfString:@"{SHA}" withString:currentSha];
 	
 	[[view windowScriptObject] callWebScriptMethod:@"showCommit" withArguments:[NSArray arrayWithObject:html]];
 	
 #ifdef DEBUG_BUILD
-	NSString *dom=[(DOMHTMLElement*)[[[view mainFrame] DOMDocument] documentElement] outerHTML];
-	NSString *tmpFile=@"~/tmp/test2.html";
+	NSString *dom = [(DOMHTMLElement*)[[[view mainFrame] DOMDocument] documentElement] outerHTML];
+	NSString *tmpFile = @"~/tmp/test2.html";
 	[dom writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
 #endif 
 }

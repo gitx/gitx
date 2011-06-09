@@ -12,10 +12,6 @@
 #import "PBGitConfig.h"
 #import "PBGitRefish.h"
 
-#import "PBStashController.h"
-#import "PBGitResetController.h"
-#import "PBSubmoduleController.h"
-
 extern NSString* PBGitRepositoryErrorDomain;
 typedef enum branchFilterTypes {
 	kGitXAllBranchesFilter = 0,
@@ -42,7 +38,9 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 
 @class PBGitWindowController;
 @class PBGitCommit;
-@class NSString;
+@class PBGitResetController;
+@class PBStashController;
+@class PBSubmoduleController;
 
 @interface PBGitRepository : NSDocument {
 	PBGitHistoryList* revisionList;

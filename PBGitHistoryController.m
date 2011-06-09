@@ -94,7 +94,7 @@
     
 
 	[super awakeFromNib];
-    [fileBrowser setDelegate:self];
+	[fileBrowser setDelegate:self];
 }
 
 - (void)updateKeys
@@ -414,7 +414,7 @@
 
 - (void) updateView
 {
-    [self refresh: nil];
+	[self refresh: nil];
 	[self updateKeys];
 }
 

@@ -138,6 +138,8 @@
 		D8FDDA6F114335E8005647F6 /* PBGitSVStageItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FDDA67114335E8005647F6 /* PBGitSVStageItem.m */; };
 		D8FDDA70114335E8005647F6 /* PBGitSVTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FDDA69114335E8005647F6 /* PBGitSVTagItem.m */; };
 		D8FDDBF41143F318005647F6 /* AddRemote.png in Resources */ = {isa = PBXBuildFile; fileRef = D8FDDBF31143F318005647F6 /* AddRemote.png */; };
+		DDB8FE0113998CE2001A9EE2 /* PBStashContentController.m in Sources */ = {isa = PBXBuildFile; fileRef = DDB8FE0013998CE2001A9EE2 /* PBStashContentController.m */; };
+		DDB8FEC413999C24001A9EE2 /* PBStashContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DDB8FEC313999C24001A9EE2 /* PBStashContentView.xib */; };
 		F50FE0E30E07BE9600854FCD /* PBGitRevisionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F50FE0E20E07BE9600854FCD /* PBGitRevisionCell.m */; };
 		F513085B0E0740F2000C8BCD /* PBQLOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = F513085A0E0740F2000C8BCD /* PBQLOutlineView.m */; };
 		F5140DC90E8A8EB20091E9F3 /* RoundedRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = F5140DC80E8A8EB20091E9F3 /* RoundedRectangle.m */; };
@@ -425,6 +427,9 @@
 		D8FDDA69114335E8005647F6 /* PBGitSVTagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitSVTagItem.m; sourceTree = "<group>"; };
 		D8FDDA7311433634005647F6 /* PBSourceViewItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewItems.h; sourceTree = "<group>"; };
 		D8FDDBF31143F318005647F6 /* AddRemote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AddRemote.png; path = Images/AddRemote.png; sourceTree = "<group>"; };
+		DDB8FDFF13998CE2001A9EE2 /* PBStashContentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBStashContentController.h; sourceTree = "<group>"; };
+		DDB8FE0013998CE2001A9EE2 /* PBStashContentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBStashContentController.m; sourceTree = "<group>"; };
+		DDB8FEC313999C24001A9EE2 /* PBStashContentView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PBStashContentView.xib; sourceTree = "<group>"; };
 		F50FE0E10E07BE9600854FCD /* PBGitRevisionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRevisionCell.h; sourceTree = "<group>"; };
 		F50FE0E20E07BE9600854FCD /* PBGitRevisionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitRevisionCell.m; sourceTree = "<group>"; };
 		F51308590E0740F2000C8BCD /* PBQLOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBQLOutlineView.h; sourceTree = "<group>"; };
@@ -765,6 +770,7 @@
 				F5E424100EA3E4D60046E362 /* PBDiffWindow.xib */,
 				F52BCE020E84208300AA3741 /* PBGitHistoryView.xib */,
 				F59116E50E843BB50072CCB1 /* PBGitCommitView.xib */,
+				DDB8FEC313999C24001A9EE2 /* PBStashContentView.xib */,
 				D85B939210E3D8B4007F3C28 /* PBCreateBranchSheet.xib */,
 				D889EB3010E6BCBB00F08413 /* PBCreateTagSheet.xib */,
 				D8C1B77110E875CF009B7F8B /* PBRemoteProgressSheet.xib */,
@@ -939,6 +945,8 @@
 				77C8280C06725ACE000B614F /* ApplicationController.m */,
 				93CB42C00EAB7B2200530609 /* PBGitDefaults.h */,
 				93CB42C10EAB7B2200530609 /* PBGitDefaults.m */,
+				DDB8FDFF13998CE2001A9EE2 /* PBStashContentController.h */,
+				DDB8FE0013998CE2001A9EE2 /* PBStashContentController.m */,
 				F57CC43F0E05E496000472E2 /* PBGitWindowController.h */,
 				F57CC4400E05E496000472E2 /* PBGitWindowController.m */,
 				911111F60E594F3F00BF76B4 /* PBRepositoryDocumentController.h */,
@@ -1286,6 +1294,7 @@
 				316E7202131EE9C600AFBB36 /* list_Template.png in Resources */,
 				316E7203131EE9C600AFBB36 /* sidebar_Template.png in Resources */,
 				65D58BC4132D27A8003F7290 /* PBResetSheet.xib in Resources */,
+				DDB8FEC413999C24001A9EE2 /* PBStashContentView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1447,6 +1456,7 @@
 				217FF0BE12A1CB3E00785A65 /* PBRevealWithFinderCommand.m in Sources */,
 				65D58BC7132D48C2003F7290 /* PBResetSheet.m in Sources */,
 				31776089133569350025876E /* SearchWebView.m in Sources */,
+				DDB8FE0113998CE2001A9EE2 /* PBStashContentController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
