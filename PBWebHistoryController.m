@@ -1,5 +1,5 @@
 //
-//  PBWebGitController.m
+//  PBWebHistoryController.m
 //  GitTest
 //
 //  Created by Pieter de Bie on 14-06-08.
@@ -189,7 +189,7 @@
 					if(![email isEqualToString:last_mail]){
 						[auths appendString:[NSString stringWithFormat:@"<div class='user %@ clearfix'>",rol]];
 						if([self isFeatureEnabled:@"gravatar"]){
-							NSString *hash=[self someMethodThatReturnsSomeHashForSomeString:email];
+							NSString *hash=[self arbitraryHashForString:email];
 							[auths appendString:[NSString stringWithFormat:@"<img class='avatar' src='http://www.gravatar.com/avatar/%@?d=wavatar&s=30'/>",hash]];
 						}
 						[auths appendString:[NSString stringWithFormat:@"<p class='name'>%@ <span class='rol'>(%@)</span></p>",name,rol]];
@@ -204,7 +204,7 @@
 	return [NSString stringWithFormat:@"<div id='header' class='clearfix'><table class='references'>%@</table><p class='subject'>%@</p>%@<div id='badges'>%@</div></div>",refs,subject,auths,badges];
 }
 
-- (NSString *) someMethodThatReturnsSomeHashForSomeString:(NSString*)concat {
+- (NSString *) arbitraryHashForString:(NSString*)concat {
 	const char *concat_str = [concat UTF8String];
 	unsigned char result[CC_MD5_DIGEST_LENGTH];
 	CC_MD5(concat_str, strlen(concat_str), result);

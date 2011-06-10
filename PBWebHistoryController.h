@@ -1,5 +1,5 @@
 //
-//  PBWebGitController.h
+//  PBWebHistoryController.h
 //  GitTest
 //
 //  Created by Pieter de Bie on 14-06-08.
@@ -28,7 +28,7 @@
 - (void) sendKey: (NSString*) key;
 - (NSString *)parseHeader:(NSString *)txt withRefs:(NSString *)badges;
 - (NSMutableDictionary *)parseStats:(NSString *)txt;
-- (NSString *) someMethodThatReturnsSomeHashForSomeString:(NSString*)concat;
+- (NSString *) arbitraryHashForString:(NSString*)concat;
 - (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2;
 
 @property (readonly) NSString* diff;
