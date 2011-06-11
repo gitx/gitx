@@ -200,7 +200,7 @@
 {
 }
 
-// TODO: need to be refactoring
+// TODO: this is duplicated in PBWebDiffController
 - (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2
 {
 	NSArray *args=[NSArray arrayWithObjects:@"difftool",@"--no-prompt",@"--tool=opendiff",sha,sha2,@"--",file,nil];
@@ -222,9 +222,19 @@
 	[a setString:source forType: NSStringPboardType];
 }
 
-- (NSArray *)	   webView:(WebView *)sender
+- (PBGitRef*) refFromString:(NSString*)refString
+{
+	return nil;
+}
+
+- (NSArray*) menuItemsForPath:(NSString*)path
+{
+	return nil;
+}
+
+- (NSArray *)      webView:(WebView *)sender
 contextMenuItemsForElement:(NSDictionary *)element
-		defaultMenuItems:(NSArray *)defaultMenuItems
+          defaultMenuItems:(NSArray *)defaultMenuItems
 {
 	DOMNode *node = [element valueForKey:@"WebElementDOMNode"];
 	
@@ -232,16 +242,14 @@ contextMenuItemsForElement:(NSDictionary *)element
 		// Every ref has a class name of 'refs' and some other class. We check on that to see if we pressed on a ref.
 		if ([[node className] hasPrefix:@"refs "]) {
 			NSString *selectedRefString = [[[node childNodes] item:0] textContent];
-			for (PBGitRef *ref in historyController.webCommit.refs)
-			{
-				if ([[ref shortName] isEqualToString:selectedRefString])
-					return [contextMenuDelegate menuItemsForRef:ref];
-			}
+			PBGitRef *ref = [self refFromString:selectedRefString];
+			if (ref != nil)
+				return [contextMenuDelegate menuItemsForRef:ref];
 			DLog(@"Could not find selected ref!");
 			return defaultMenuItems;
 		}
 		if ([node hasAttributes] && [[node attributes] getNamedItem:@"representedFile"])
-			return [historyController menuItemsForPaths:[NSArray arrayWithObject:[[[node attributes] getNamedItem:@"representedFile"] value]]];
+			return [self menuItemsForPath:[[[node attributes] getNamedItem:@"representedFile"] value]];
 		else if ([[node class] isEqual:[DOMHTMLImageElement class]]) {
 			// Copy Image is the only menu item that makes sense here since we don't need
 			// to download the image or open it in a new window (besides with the
@@ -271,11 +279,6 @@ contextMenuItemsForElement:(NSDictionary *)element
 - getConfig:(NSString *)config
 {
 	return [repository valueForKeyPath:[@"config." stringByAppendingString:config]];
-}
-
-- (void)finalize
-{
-	[super finalize];
 }
 
 - (void) preferencesChanged

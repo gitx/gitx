@@ -13,6 +13,7 @@
 @class NSString;
 @class PBGitCommit;
 
+// Displays the diff from a commit in the repository.
 @interface PBWebCommitController : PBWebController {
 	IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
 	
@@ -22,10 +23,15 @@
 
 - (void) changeContentTo: (PBGitCommit *) content;
 - (void) sendKey: (NSString*) key;
-- (NSString *)parseHeader:(NSString *)txt withRefs:(NSString *)badges;
+- (NSString *) parseHeader:(NSString *)txt withRefs:(NSString *)badges;
 - (NSMutableDictionary *)parseStats:(NSString *)txt;
 - (NSString *) arbitraryHashForString:(NSString*)concat;
 - (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2;
+
+- (void) didLoad;
+- (NSString*) refsForCurrentCommit;
+- (PBGitRef*) refFromString:(NSString*)refString;
+- (NSArray*) menuItemsForPath:(NSString*)path;
 
 @property (readonly) NSString* diff;
 @end

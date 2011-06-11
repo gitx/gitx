@@ -7,6 +7,7 @@
 //
 
 #import "PBStashContentController.h"
+#import "PBGitCommit.h"
 #import "PBGitDefaults.h"
 #import "PBGitStash.h"
 

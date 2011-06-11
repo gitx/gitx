@@ -80,6 +80,7 @@
 		65D58BC7132D48C2003F7290 /* PBResetSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 65D58BC6132D48C0003F7290 /* PBResetSheet.m */; };
 		770B37ED0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel */; };
 		77C8280E06725ACE000B614F /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C8280C06725ACE000B614F /* ApplicationController.m */; };
+		89087CA613A3E46B00911503 /* PBWebCommitController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89087CA513A3E46B00911503 /* PBWebCommitController.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -335,6 +336,8 @@
 		77C82804067257F0000B614F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		77C8280B06725ACE000B614F /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
 		77C8280C06725ACE000B614F /* ApplicationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationController.m; sourceTree = "<group>"; };
+		89087CA413A3E46500911503 /* PBWebCommitController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBWebCommitController.h; sourceTree = "<group>"; };
+		89087CA513A3E46B00911503 /* PBWebCommitController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBWebCommitController.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* GitX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		911111E10E58BD5A00BF76B4 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/RepositoryWindow.xib; sourceTree = "<group>"; };
@@ -953,6 +956,8 @@
 				911111F70E594F3F00BF76B4 /* PBRepositoryDocumentController.m */,
 				F5E926040E8827D300056E75 /* PBViewController.h */,
 				F5E926050E8827D300056E75 /* PBViewController.m */,
+				89087CA413A3E46500911503 /* PBWebCommitController.h */,
+				89087CA513A3E46B00911503 /* PBWebCommitController.m */,
 				F5EF8C8C0E9D4A5D0050906B /* PBWebController.h */,
 				F5EF8C8D0E9D4A5D0050906B /* PBWebController.m */,
 				F5FE6C010EB13BC900F30D12 /* PBServicesController.h */,
@@ -1457,6 +1462,7 @@
 				65D58BC7132D48C2003F7290 /* PBResetSheet.m in Sources */,
 				31776089133569350025876E /* SearchWebView.m in Sources */,
 				DDB8FE0113998CE2001A9EE2 /* PBStashContentController.m in Sources */,
+				89087CA613A3E46B00911503 /* PBWebCommitController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
