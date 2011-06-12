@@ -12,6 +12,7 @@
 @implementation PBViewController
 
 @synthesize repository;
+@synthesize superController;
 @synthesize status;
 @synthesize isBusy;
 
