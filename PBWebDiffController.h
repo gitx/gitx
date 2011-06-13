@@ -10,6 +10,7 @@
 #import "PBWebController.h"
 #import "PBDiffWindowController.h"
 
+// Instantiated in PBDiffWindow.xib, used by PBDiffWindowController
 @interface PBWebDiffController : PBWebController {
 	IBOutlet PBDiffWindowController *diffController;
 }
