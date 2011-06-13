@@ -10,6 +10,16 @@
 #import "GLFileView.h"
 #import <CommonCrypto/CommonDigest.h>
 
+@interface PBWebCommitController (Private)
+
+- (NSArray *)parseHeader:(NSString *)text;
+- (NSString *)htmlForHeader:(NSArray *)header withRefs:(NSString *)badges;
+- (NSMutableDictionary *)parseStats:(NSString *)txt;
+- (NSString *) arbitraryHashForString:(NSString*)concat;
+
+@end
+
+
 @implementation PBWebCommitController
 
 @synthesize diff;
@@ -71,7 +81,8 @@
 		return;
 	
 	// Header
-	NSString *header = [self parseHeader:details withRefs:[self refsForCurrentCommit]];
+	NSArray *headerItems = [self parseHeader:details];
+	NSString *header = [self htmlForHeader:details withRefs:[self refsForCurrentCommit]];
 
 	// File Stats
 	NSMutableDictionary *stats = [self parseStats:details];
@@ -121,60 +132,99 @@
 	return stats;
 }
 
-- (NSString *)parseHeader:(NSString *)txt withRefs:(NSString *)badges
+// -parseHeader: returns an array of dictionaries with these keys
+const NSString *kHeaderKeyName = @"name";
+const NSString *kHeaderKeyContent = @"content";
+
+// Keys for the author/committer dictionary
+const NSString *kAuthorKeyName = @"name";
+const NSString *kAuthorKeyEmail = @"email";
+const NSString *kAuthorKeyDate = @"date";
+
+- (NSArray *)parseHeader:(NSString *)text
 {
-	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
-	NSString *line;
-	NSString *last_mail=@"";
-	NSMutableString *auths=[NSMutableString string];
-	NSMutableString *refs=[NSMutableString string];
-	NSMutableString *subject=[NSMutableString string];
-	BOOL subj=FALSE;
+	NSMutableArray *result = [NSMutableArray array];
+	NSArray *lines = [text componentsSeparatedByString:@"\n"];
+	BOOL parsingSubject = NO;
 	
-	int i;
-	for (i=0; i<[lines count]; i++) {
-		line=[lines objectAtIndex:i];
-		if([line length]==0){
-			if(!subj){
-				subj=TRUE;
-			}else{
-				i=[lines count];
-			}
-		}else{
-			if (subj) {
-                NSString *trimmedLine = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-				[subject appendString:[NSString stringWithFormat:@"%@<br/>",[GLFileView escapeHTML:trimmedLine]]];
-			}else{
-				NSArray *comps=[line componentsSeparatedByString:@" "];
-				if([comps count]==2){
-					[refs appendString:[NSString stringWithFormat:@"<tr><td>%@</td><td><a href='' onclick='selectCommit(this.innerHTML); return false;'>%@</a></td></tr>",[comps objectAtIndex:0],[comps objectAtIndex:1]]];
-				}else if([comps count]>2){
+	for (NSString *line in lines) {
+		if ([line length] == 0) {
+			if (!parsingSubject)
+				parsingSubject = TRUE;
+			else
+				break;
+		} else {
+			if (parsingSubject) {
+				NSString *trimmedLine = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+				[result addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+						@"subject", kHeaderKeyName, trimmedLine, kHeaderKeyContent, nil]];
+			} else {
+				NSArray *comps = [line componentsSeparatedByString:@" "];
+				if ([comps count] == 2) {
+					[result addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+							[comps objectAtIndex:0], kHeaderKeyName,
+							[comps objectAtIndex:1], kHeaderKeyContent, nil]];
+				} else if ([comps count] > 2) {
 					NSRange r_email_i = [line rangeOfString:@"<"];
 					NSRange r_email_e = [line rangeOfString:@">"];
 					NSRange r_name_i = [line rangeOfString:@" "];
 					
-					NSString *rol=[line substringToIndex:r_name_i.location];
-					NSString *name=[line substringWithRange:NSMakeRange(r_name_i.location,(r_email_i.location-r_name_i.location))];
-					NSString *email=[line substringWithRange:NSMakeRange(r_email_i.location+1,((r_email_e.location-1)-r_email_i.location))];
+					NSString *name = [line substringWithRange:NSMakeRange(r_name_i.location,(r_email_i.location-r_name_i.location))];
+					NSString *email = [line substringWithRange:NSMakeRange(r_email_i.location+1,((r_email_e.location-1)-r_email_i.location))];
 					
 					NSArray *t=[[line substringFromIndex:r_email_e.location+2] componentsSeparatedByString:@" "];
 					NSDate *date=[NSDate dateWithTimeIntervalSince1970:[[t objectAtIndex:0] doubleValue]];
+					
+					[result addObject:[NSDictionary dictionaryWithObjectsAndKeys:
+							[comps objectAtIndex:0], kHeaderKeyName,
+							[NSDictionary dictionaryWithObjectsAndKeys:
+									name, kAuthorKeyName,
+									email, kAuthorKeyEmail,
+									date, kAuthorKeyDate,
+									nil],
+							nil]];
+				}
+			}
+		}
+	}
+	
+	return result;
+}
+
+- (NSString *)htmlForHeader:(NSArray *)header withRefs:(NSString *)badges
+{
+	NSString *last_mail = @"";
+	NSMutableString *auths=[NSMutableString string];
+	NSMutableString *refs=[NSMutableString string];
+	NSMutableString *subject=[NSMutableString string];
+	
+	for (NSDictionary *item in header) {
+		if ([[item objectForKey:kHeaderKeyName] isEqualToString:@"subject"]) {
+			[subject appendString:[NSString stringWithFormat:@"%@<br/>",[GLFileView escapeHTML:[item objectForKey:kHeaderKeyContent]]]];
+		}else{
+			if([[item objectForKey:kHeaderKeyContent] isKindOfClass:[NSString class]]){
+				[refs appendString:[NSString stringWithFormat:@"<tr><td>%@</td><td><a href='' onclick='selectCommit(this.innerHTML); return false;'>%@</a></td></tr>",[item objectForKey:kHeaderKeyName],[item objectForKey:kHeaderKeyContent]]];
+			}else{  // NSDictionary: author or committer
+				NSDictionary *content = [item objectForKey:kHeaderKeyContent];
+				NSString *email = [content objectForKey:kAuthorKeyEmail];
+				
+				if(![email isEqualToString:last_mail]){
+					NSString *name = [content objectForKey:kAuthorKeyName];
+					NSDate *date = [content objectForKey:kAuthorKeyDate];
 					NSDateFormatter* theDateFormatter = [[NSDateFormatter alloc] init];  
 					[theDateFormatter setDateStyle:NSDateFormatterMediumStyle];  
 					[theDateFormatter setTimeStyle:NSDateFormatterMediumStyle];  
 					NSString *dateString=[theDateFormatter stringForObjectValue:date];
-										
-					if(![email isEqualToString:last_mail]){
-						[auths appendString:[NSString stringWithFormat:@"<div class='user %@ clearfix'>",rol]];
-						if([self isFeatureEnabled:@"gravatar"]){
-							NSString *hash=[self arbitraryHashForString:email];
-							[auths appendString:[NSString stringWithFormat:@"<img class='avatar' src='http://www.gravatar.com/avatar/%@?d=wavatar&s=30'/>",hash]];
-						}
-						[auths appendString:[NSString stringWithFormat:@"<p class='name'>%@ <span class='rol'>(%@)</span></p>",name,rol]];
-						[auths appendString:[NSString stringWithFormat:@"<p class='time'>%@</p></div>",dateString]];
+									
+					[auths appendString:[NSString stringWithFormat:@"<div class='user %@ clearfix'>",rol]];
+					if([self isFeatureEnabled:@"gravatar"]){
+						NSString *hash=[self arbitraryHashForString:email];
+						[auths appendString:[NSString stringWithFormat:@"<img class='avatar' src='http://www.gravatar.com/avatar/%@?d=wavatar&s=30'/>",hash]];
 					}
-					last_mail=email;
+					[auths appendString:[NSString stringWithFormat:@"<p class='name'>%@ <span class='rol'>(%@)</span></p>",name,rol]];
+					[auths appendString:[NSString stringWithFormat:@"<p class='time'>%@</p></div>",dateString]];
 				}
+				last_mail=email;
 			}
 		}
 	}	

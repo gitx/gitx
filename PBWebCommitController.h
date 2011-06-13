@@ -23,9 +23,6 @@
 
 - (void) changeContentTo: (PBGitCommit *) content;
 - (void) sendKey: (NSString*) key;
-- (NSString *) parseHeader:(NSString *)txt withRefs:(NSString *)badges;
-- (NSMutableDictionary *)parseStats:(NSString *)txt;
-- (NSString *) arbitraryHashForString:(NSString*)concat;
 - (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2;
 
 - (void) didLoad;
