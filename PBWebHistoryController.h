@@ -11,8 +11,6 @@
 
 @class PBGitHistoryController;
 
-@class NSString;
-
 @interface PBWebHistoryController : PBWebCommitController {
 	IBOutlet PBGitHistoryController* historyController;
 }
