@@ -19,6 +19,14 @@
 
 @end
 
+// -parseHeader: returns an array of dictionaries with these keys
+const NSString *kHeaderKeyName = @"name";
+const NSString *kHeaderKeyContent = @"content";
+
+// Keys for the author/committer dictionary
+const NSString *kAuthorKeyName = @"name";
+const NSString *kAuthorKeyEmail = @"email";
+const NSString *kAuthorKeyDate = @"date";
 
 @implementation PBWebCommitController
 
@@ -84,15 +92,29 @@
 	NSArray *headerItems = [self parseHeader:details];
 	NSString *header = [self htmlForHeader:headerItems withRefs:[self refsForCurrentCommit]];
 
+	// In case the commit is a merge, we need to explicity give diff-tree the
+	// list of parents, or else it will yield an empty result.
+	// If it's not a merge, this won't hurt.
+	NSMutableArray *parentsArray = [NSMutableArray array];
+
+	for (NSDictionary *item in headerItems) {
+		if ([[item objectForKey:kHeaderKeyName] isEqualToString:@"parent"]) {
+			[parentsArray addObject:[item objectForKey:kHeaderKeyContent]];
+			break;
+		}
+	}
+
+	NSString *parents = [parentsArray componentsJoinedByString:@" "];
+
 	// File Stats
 	NSMutableDictionary *stats = [self parseStats:details];
 
 	// File list
-	NSString *dt = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"-r", @"-C90%", @"-M90%", currentSha, nil]];
+	NSString *dt = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"-r", @"-C90%", @"-M90%", currentSha, parents, nil]];
 	NSString *fileList = [GLFileView parseDiffTree:dt withStats:stats];
 	
 	// Diffs list
-	NSString *d = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", currentSha, nil]];
+	NSString *d = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", currentSha, parents, nil]];
 	NSString *diffs = [GLFileView parseDiff:d];
 	
 	NSString *html = [NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
@@ -131,15 +153,6 @@
 	}
 	return stats;
 }
-
-// -parseHeader: returns an array of dictionaries with these keys
-const NSString *kHeaderKeyName = @"name";
-const NSString *kHeaderKeyContent = @"content";
-
-// Keys for the author/committer dictionary
-const NSString *kAuthorKeyName = @"name";
-const NSString *kAuthorKeyEmail = @"email";
-const NSString *kAuthorKeyDate = @"date";
 
 - (NSArray *)parseHeader:(NSString *)text
 {
