@@ -82,7 +82,7 @@
 	
 	// Header
 	NSArray *headerItems = [self parseHeader:details];
-	NSString *header = [self htmlForHeader:details withRefs:[self refsForCurrentCommit]];
+	NSString *header = [self htmlForHeader:headerItems withRefs:[self refsForCurrentCommit]];
 
 	// File Stats
 	NSMutableDictionary *stats = [self parseStats:details];
@@ -175,13 +175,14 @@ const NSString *kAuthorKeyDate = @"date";
 					NSArray *t=[[line substringFromIndex:r_email_e.location+2] componentsSeparatedByString:@" "];
 					NSDate *date=[NSDate dateWithTimeIntervalSince1970:[[t objectAtIndex:0] doubleValue]];
 					
+					NSDictionary *content = [NSDictionary dictionaryWithObjectsAndKeys:
+							name, kAuthorKeyName,
+							email, kAuthorKeyEmail,
+							date, kAuthorKeyDate,
+							nil];
 					[result addObject:[NSDictionary dictionaryWithObjectsAndKeys:
 							[comps objectAtIndex:0], kHeaderKeyName,
-							[NSDictionary dictionaryWithObjectsAndKeys:
-									name, kAuthorKeyName,
-									email, kAuthorKeyEmail,
-									date, kAuthorKeyDate,
-									nil],
+							content, kHeaderKeyContent,
 							nil]];
 				}
 			}
@@ -216,12 +217,12 @@ const NSString *kAuthorKeyDate = @"date";
 					[theDateFormatter setTimeStyle:NSDateFormatterMediumStyle];  
 					NSString *dateString=[theDateFormatter stringForObjectValue:date];
 									
-					[auths appendString:[NSString stringWithFormat:@"<div class='user %@ clearfix'>",rol]];
+					[auths appendString:[NSString stringWithFormat:@"<div class='user %@ clearfix'>",[item objectForKey:kHeaderKeyName]]];
 					if([self isFeatureEnabled:@"gravatar"]){
 						NSString *hash=[self arbitraryHashForString:email];
 						[auths appendString:[NSString stringWithFormat:@"<img class='avatar' src='http://www.gravatar.com/avatar/%@?d=wavatar&s=30'/>",hash]];
 					}
-					[auths appendString:[NSString stringWithFormat:@"<p class='name'>%@ <span class='rol'>(%@)</span></p>",name,rol]];
+					[auths appendString:[NSString stringWithFormat:@"<p class='name'>%@ <span class='rol'>(%@)</span></p>",name,[item objectForKey:kHeaderKeyName]]];
 					[auths appendString:[NSString stringWithFormat:@"<p class='time'>%@</p></div>",dateString]];
 				}
 				last_mail=email;
