@@ -56,7 +56,8 @@
 - (IBAction) cloneTo:(id)sender;
 - (IBAction) refresh:(id)sender;
 
-- (void)selectCommitForSha:(NSString*)sha;
+- (void)selectCommitForSha:(NSString *)sha;
+- (NSArray *)menuItemsForPaths:(NSArray *)paths;
 - (void)setHistorySearch:(NSString *)searchString mode:(NSInteger)mode;
 
 @end

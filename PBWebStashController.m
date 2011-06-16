@@ -16,8 +16,7 @@
 
 - (NSArray*) menuItemsForPath:(NSString*)path
 {
-	// return [[stashController superController] menuItemsForPaths:[NSArray arrayWithObject:path]];
-	return nil;
+	return [[stashController superController] menuItemsForPaths:[NSArray arrayWithObject:path]];
 }
 
 @end
