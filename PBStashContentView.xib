@@ -3,7 +3,7 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1060</int>
 		<string key="IBDocument.SystemVersion">10J869</string>
-		<string key="IBDocument.InterfaceBuilderVersion">851</string>
+		<string key="IBDocument.InterfaceBuilderVersion">788</string>
 		<string key="IBDocument.AppKitVersion">1038.35</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
@@ -15,18 +15,18 @@
 			</object>
 			<object class="NSMutableArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
-				<string>851</string>
-				<string>851</string>
+				<string>788</string>
+				<string>788</string>
 			</object>
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1"/>
+			<integer value="21"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<string>com.apple.WebKitIBPlugin</string>
 			<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+			<string>com.apple.WebKitIBPlugin</string>
 		</object>
 		<object class="NSMutableDictionary" key="IBDocument.Metadata">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -53,62 +53,108 @@
 				<int key="NSvFlags">274</int>
 				<object class="NSMutableArray" key="NSSubviews">
 					<bool key="EncodedWithXMLCoder">YES</bool>
-					<object class="WebView" id="917684001">
+					<object class="NSSplitView" id="996164917">
 						<reference key="NSNextResponder" ref="1005"/>
 						<int key="NSvFlags">274</int>
-						<object class="NSMutableSet" key="NSDragTypes">
+						<object class="NSMutableArray" key="NSSubviews">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<object class="NSArray" key="set.sortedObjects">
-								<bool key="EncodedWithXMLCoder">YES</bool>
-								<string>Apple HTML pasteboard type</string>
-								<string>Apple PDF pasteboard type</string>
-								<string>Apple PICT pasteboard type</string>
-								<string>Apple URL pasteboard type</string>
-								<string>Apple Web Archive pasteboard type</string>
-								<string>NSColor pasteboard type</string>
-								<string>NSFilenamesPboardType</string>
-								<string>NSStringPboardType</string>
-								<string>NeXT RTFD pasteboard type</string>
-								<string>NeXT Rich Text Format v1.0 pasteboard type</string>
-								<string>NeXT TIFF v4.0 pasteboard type</string>
-								<string>WebURLsWithTitlesPboardType</string>
-								<string>public.png</string>
-								<string>public.url</string>
-								<string>public.url-name</string>
+							<object class="WebView" id="917684001">
+								<reference key="NSNextResponder" ref="996164917"/>
+								<int key="NSvFlags">274</int>
+								<object class="NSMutableSet" key="NSDragTypes">
+									<bool key="EncodedWithXMLCoder">YES</bool>
+									<object class="NSArray" key="set.sortedObjects">
+										<bool key="EncodedWithXMLCoder">YES</bool>
+										<string>Apple HTML pasteboard type</string>
+										<string>Apple PDF pasteboard type</string>
+										<string>Apple PICT pasteboard type</string>
+										<string>Apple URL pasteboard type</string>
+										<string>Apple Web Archive pasteboard type</string>
+										<string>NSColor pasteboard type</string>
+										<string>NSFilenamesPboardType</string>
+										<string>NSStringPboardType</string>
+										<string>NeXT RTFD pasteboard type</string>
+										<string>NeXT Rich Text Format v1.0 pasteboard type</string>
+										<string>NeXT TIFF v4.0 pasteboard type</string>
+										<string>WebURLsWithTitlesPboardType</string>
+										<string>public.png</string>
+										<string>public.url</string>
+										<string>public.url-name</string>
+									</object>
+								</object>
+								<string key="NSFrameSize">{480, 272}</string>
+								<reference key="NSSuperview" ref="996164917"/>
+								<reference key="NSNextKeyView"/>
+								<string key="FrameName"/>
+								<string key="GroupName"/>
+								<object class="WebPreferences" key="Preferences" id="913740547">
+									<string key="Identifier"/>
+									<object class="NSMutableDictionary" key="Values">
+										<bool key="EncodedWithXMLCoder">YES</bool>
+										<object class="NSArray" key="dict.sortedKeys">
+											<bool key="EncodedWithXMLCoder">YES</bool>
+											<string>WebKitDefaultFixedFontSize</string>
+											<string>WebKitDefaultFontSize</string>
+											<string>WebKitMinimumFontSize</string>
+										</object>
+										<object class="NSMutableArray" key="dict.values">
+											<bool key="EncodedWithXMLCoder">YES</bool>
+											<integer value="12"/>
+											<integer value="12"/>
+											<integer value="1"/>
+										</object>
+									</object>
+								</object>
+								<bool key="UseBackForwardList">YES</bool>
+								<bool key="AllowsUndo">YES</bool>
+							</object>
+							<object class="WebView" id="1021598825">
+								<reference key="NSNextResponder" ref="996164917"/>
+								<int key="NSvFlags">274</int>
+								<object class="NSMutableSet" key="NSDragTypes">
+									<bool key="EncodedWithXMLCoder">YES</bool>
+									<object class="NSArray" key="set.sortedObjects">
+										<bool key="EncodedWithXMLCoder">YES</bool>
+										<string>Apple HTML pasteboard type</string>
+										<string>Apple PDF pasteboard type</string>
+										<string>Apple PICT pasteboard type</string>
+										<string>Apple URL pasteboard type</string>
+										<string>Apple Web Archive pasteboard type</string>
+										<string>NSColor pasteboard type</string>
+										<string>NSFilenamesPboardType</string>
+										<string>NSStringPboardType</string>
+										<string>NeXT RTFD pasteboard type</string>
+										<string>NeXT Rich Text Format v1.0 pasteboard type</string>
+										<string>NeXT TIFF v4.0 pasteboard type</string>
+										<string>WebURLsWithTitlesPboardType</string>
+										<string>public.png</string>
+										<string>public.url</string>
+										<string>public.url-name</string>
+									</object>
+								</object>
+								<string key="NSFrame">{{0, 282}, {480, 272}}</string>
+								<reference key="NSSuperview" ref="996164917"/>
+								<reference key="NSNextKeyView"/>
+								<string key="FrameName"/>
+								<string key="GroupName"/>
+								<reference key="Preferences" ref="913740547"/>
+								<bool key="UseBackForwardList">YES</bool>
+								<bool key="AllowsUndo">YES</bool>
 							</object>
 						</object>
-						<string key="NSFrameSize">{480, 272}</string>
+						<string key="NSFrameSize">{480, 554}</string>
 						<reference key="NSSuperview" ref="1005"/>
-						<reference key="NSNextKeyView"/>
-						<string key="FrameName"/>
-						<string key="GroupName"/>
-						<object class="WebPreferences" key="Preferences">
-							<string key="Identifier"/>
-							<object class="NSMutableDictionary" key="Values">
-								<bool key="EncodedWithXMLCoder">YES</bool>
-								<object class="NSArray" key="dict.sortedKeys">
-									<bool key="EncodedWithXMLCoder">YES</bool>
-									<string>WebKitDefaultFixedFontSize</string>
-									<string>WebKitDefaultFontSize</string>
-									<string>WebKitMinimumFontSize</string>
-								</object>
-								<object class="NSMutableArray" key="dict.values">
-									<bool key="EncodedWithXMLCoder">YES</bool>
-									<integer value="12"/>
-									<integer value="12"/>
-									<integer value="1"/>
-								</object>
-							</object>
-						</object>
-						<bool key="UseBackForwardList">YES</bool>
-						<bool key="AllowsUndo">YES</bool>
+						<int key="NSDividerStyle">3</int>
 					</object>
 				</object>
-				<string key="NSFrameSize">{480, 272}</string>
+				<string key="NSFrameSize">{480, 554}</string>
 				<reference key="NSSuperview"/>
 				<string key="NSClassName">NSView</string>
 			</object>
 			<object class="NSCustomObject" id="688478824">
+				<string key="NSClassName">PBWebStashController</string>
+			</object>
+			<object class="NSCustomObject" id="977952731">
 				<string key="NSClassName">PBWebStashController</string>
 			</object>
 		</object>
@@ -149,14 +195,6 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">webController</string>
-						<reference key="source" ref="1001"/>
-						<reference key="destination" ref="688478824"/>
-					</object>
-					<int key="connectionID">8</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
 						<string key="label">view</string>
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="1005"/>
@@ -178,6 +216,70 @@
 						<reference key="destination" ref="1001"/>
 					</object>
 					<int key="connectionID">11</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">unstagedController</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="688478824"/>
+					</object>
+					<int key="connectionID">12</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">stashController</string>
+						<reference key="source" ref="977952731"/>
+						<reference key="destination" ref="1001"/>
+					</object>
+					<int key="connectionID">15</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">stagedController</string>
+						<reference key="source" ref="1001"/>
+						<reference key="destination" ref="977952731"/>
+					</object>
+					<int key="connectionID">16</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">view</string>
+						<reference key="source" ref="977952731"/>
+						<reference key="destination" ref="1021598825"/>
+					</object>
+					<int key="connectionID">22</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">frameLoadDelegate</string>
+						<reference key="source" ref="1021598825"/>
+						<reference key="destination" ref="977952731"/>
+					</object>
+					<int key="connectionID">23</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">policyDelegate</string>
+						<reference key="source" ref="1021598825"/>
+						<reference key="destination" ref="977952731"/>
+					</object>
+					<int key="connectionID">24</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">UIDelegate</string>
+						<reference key="source" ref="1021598825"/>
+						<reference key="destination" ref="977952731"/>
+					</object>
+					<int key="connectionID">25</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">delegate</string>
+						<reference key="source" ref="996164917"/>
+						<reference key="destination" ref="1001"/>
+					</object>
+					<int key="connectionID">26</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -212,20 +314,42 @@
 						<reference key="object" ref="1005"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="917684001"/>
+							<reference ref="996164917"/>
 						</object>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">Stash</string>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">2</int>
-						<reference key="object" ref="917684001"/>
-						<reference key="parent" ref="1005"/>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">3</int>
 						<reference key="object" ref="688478824"/>
 						<reference key="parent" ref="0"/>
+						<string key="objectName">Unstaged Controller</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">13</int>
+						<reference key="object" ref="977952731"/>
+						<reference key="parent" ref="0"/>
+						<string key="objectName">Staged Controller</string>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">21</int>
+						<reference key="object" ref="996164917"/>
+						<object class="NSMutableArray" key="children">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<reference ref="917684001"/>
+							<reference ref="1021598825"/>
+						</object>
+						<reference key="parent" ref="1005"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">2</int>
+						<reference key="object" ref="917684001"/>
+						<reference key="parent" ref="996164917"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">17</int>
+						<reference key="object" ref="1021598825"/>
+						<reference key="parent" ref="996164917"/>
 					</object>
 				</object>
 			</object>
@@ -240,6 +364,9 @@
 					<string>1.IBPluginDependency</string>
 					<string>1.WindowOrigin</string>
 					<string>1.editorWindowContentRectSynchronizationRect</string>
+					<string>13.IBPluginDependency</string>
+					<string>17.IBPluginDependency</string>
+					<string>17.IBViewBoundsToFrameTransform</string>
 					<string>2.IBPluginDependency</string>
 					<string>2.IBViewBoundsToFrameTransform</string>
 					<string>3.IBPluginDependency</string>
@@ -249,10 +376,15 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{14, 862}, {480, 272}}</string>
+					<string>{{786, 804}, {480, 554}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>{628, 654}</string>
 					<string>{{357, 416}, {480, 272}}</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.WebKitIBPlugin</string>
+					<object class="NSAffineTransform">
+						<bytes key="NSTransformStruct">AUJwAABCFAAAA</bytes>
+					</object>
 					<string>com.apple.WebKitIBPlugin</string>
 					<object class="NSAffineTransform">
 						<bytes key="NSTransformStruct">AUJwAABCFAAAA</bytes>
@@ -276,7 +408,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">11</int>
+			<int key="maxID">26</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -303,11 +435,13 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>webController</string>
+							<string>stagedController</string>
+							<string>unstagedController</string>
 							<string>webView</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>PBWebStashController</string>
 							<string>PBWebStashController</string>
 							<string>id</string>
 						</object>
@@ -316,13 +450,18 @@
 						<bool key="EncodedWithXMLCoder">YES</bool>
 						<object class="NSArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<string>webController</string>
+							<string>stagedController</string>
+							<string>unstagedController</string>
 							<string>webView</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
-								<string key="name">webController</string>
+								<string key="name">stagedController</string>
+								<string key="candidateClassName">PBWebStashController</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">unstagedController</string>
 								<string key="candidateClassName">PBWebStashController</string>
 							</object>
 							<object class="IBToOneOutletInfo">
@@ -966,6 +1105,14 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSSearchField.h</string>
+					</object>
+				</object>
+				<object class="IBPartialClassDescription">
+					<string key="className">NSSplitView</string>
+					<string key="superclassName">NSView</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBFrameworkSource</string>
+						<string key="minorKey">AppKit.framework/Headers/NSSplitView.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">

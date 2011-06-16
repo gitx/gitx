@@ -11,11 +11,14 @@
 #import "PBGitDefaults.h"
 #import "PBGitStash.h"
 
+const CGFloat kMinPaneSize = 32.0;
+
 @implementation PBStashContentController
 
 - (void) awakeFromNib
 {
-	[webController setRepository:repository];
+	[unstagedController setRepository:repository];
+	[stagedController setRepository:repository];
 }
 
 - (void) showStash:(PBGitStash*)stash
@@ -24,7 +27,17 @@
 	NSString *stashSha = [repository shaForRef:[PBGitRef refFromString:stashRef]];
 	PBGitCommit *commit = [PBGitCommit commitWithRepository:repository andSha:stashSha];
 
-  [webController changeContentTo:commit];
+  [unstagedController changeContentTo:commit];
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex
+{
+	return kMinPaneSize;
+}
+
+- (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex
+{
+	return [splitView frame].size.height - kMinPaneSize;
 }
 
 @end
