@@ -19,4 +19,9 @@
 	return [[stashController superController] menuItemsForPaths:[NSArray arrayWithObject:path]];
 }
 
+- (NSArray*) chooseDiffParents:(NSArray *)parents
+{
+	return [NSArray arrayWithObject:[parents objectAtIndex:0]];
+}
+
 @end

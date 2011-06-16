@@ -24,10 +24,13 @@ const CGFloat kMinPaneSize = 32.0;
 - (void) showStash:(PBGitStash*)stash
 {
 	NSString *stashRef = [NSString stringWithFormat:@"refs/%@", [stash name]];
-	NSString *stashSha = [repository shaForRef:[PBGitRef refFromString:stashRef]];
-	PBGitCommit *commit = [PBGitCommit commitWithRepository:repository andSha:stashSha];
+	NSString *stashSHA = [repository shaForRef:[PBGitRef refFromString:stashRef]];
+	PBGitCommit *commit = [repository commitForSHA:stashSHA];
+	NSString *indexSHA = [commit.parents objectAtIndex:1];
+	PBGitCommit *indexCommit = [repository commitForSHA:indexSHA];
 
   [unstagedController changeContentTo:commit];
+	[stagedController changeContentTo:indexCommit];
 }
 
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)dividerIndex

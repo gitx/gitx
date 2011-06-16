@@ -104,7 +104,7 @@ const NSString *kAuthorKeyDate = @"date";
 		}
 	}
 
-	NSString *parents = [parentsArray componentsJoinedByString:@" "];
+	NSString *parents = [[self chooseDiffParents:parentsArray] componentsJoinedByString:@" "];
 
 	// File Stats
 	NSMutableDictionary *stats = [self parseStats:details];
@@ -134,6 +134,11 @@ const NSString *kAuthorKeyDate = @"date";
 - (NSString*) refsForCurrentCommit
 {
   return @"";
+}
+
+- (NSArray*) chooseDiffParents:(NSArray *)parents
+{
+	return parents;
 }
 
 - (NSMutableDictionary *)parseStats:(NSString *)txt

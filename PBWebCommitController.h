@@ -32,6 +32,8 @@
 - (NSString*) refsForCurrentCommit;
 // Look up a PBGitRef based on its SHA.
 - (PBGitRef*) refFromString:(NSString*)refString;
+// Choose which parents should be used for the diff
+- (NSArray*) chooseDiffParents:(NSArray*)parents;
 // Context menu items to be displayed for a file.
 - (NSArray*) menuItemsForPath:(NSString*)path;
 
