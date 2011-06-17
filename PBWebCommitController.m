@@ -95,26 +95,29 @@ const NSString *kAuthorKeyDate = @"date";
 	// In case the commit is a merge, we need to explicity give diff-tree the
 	// list of parents, or else it will yield an empty result.
 	// If it's not a merge, this won't hurt.
-	NSMutableArray *parentsArray = [NSMutableArray array];
+	NSMutableArray *allParents = [NSMutableArray array];
 
-	for (NSDictionary *item in headerItems) {
-		if ([[item objectForKey:kHeaderKeyName] isEqualToString:@"parent"]) {
-			[parentsArray addObject:[item objectForKey:kHeaderKeyContent]];
-			break;
-		}
-	}
+	for (NSDictionary *item in headerItems)
+		if ([[item objectForKey:kHeaderKeyName] isEqualToString:@"parent"])
+			[allParents addObject:[item objectForKey:kHeaderKeyContent]];
 
-	NSString *parents = [[self chooseDiffParents:parentsArray] componentsJoinedByString:@" "];
+	NSArray *parents = [self chooseDiffParents:allParents];
 
 	// File Stats
 	NSMutableDictionary *stats = [self parseStats:details];
 
 	// File list
-	NSString *dt = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"-r", @"-C90%", @"-M90%", currentSha, parents, nil]];
+	NSMutableArray *args = [NSMutableArray arrayWithObjects:@"diff-tree", @"--root", @"-r", @"-C90%", @"-M90%", nil];
+	[args addObjectsFromArray:parents];
+	[args addObject:currentSha];
+	NSString *dt = [repository outputInWorkdirForArguments:args];
 	NSString *fileList = [GLFileView parseDiffTree:dt withStats:stats];
 	
 	// Diffs list
-	NSString *d = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", parents, currentSha, nil]];
+	args = [NSMutableArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", nil];
+	[args addObjectsFromArray:parents];
+	[args addObject:currentSha];
+	NSString *d = [repository outputInWorkdirForArguments:args];
 	NSString *diffs = [GLFileView parseDiff:d];
 	
 	NSString *html = [NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];

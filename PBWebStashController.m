@@ -21,7 +21,7 @@
 
 - (NSArray*) chooseDiffParents:(NSArray *)parents
 {
-	return [NSArray arrayWithObject:[parents objectAtIndex:0]];
+	return [NSArray arrayWithObject:[parents lastObject]];
 }
 
 @end
