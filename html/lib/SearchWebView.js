@@ -32,7 +32,7 @@ function HighlightAllOccurencesOfStringForElement(element,keyword) {
         } else if (element.nodeType == 1) { // Element node
             if (element.style.display != "none" && element.nodeName.toLowerCase() != 'select') {
                 for (var i=0; i<element.childNodes.length; i++) {
-                    if((element.childNodes[i].nodeType==1) 
+                    if (element.childNodes[i].nodeType==1)
                         alert("-->"+element.childNodes[i].getAttribute('class'));
                     HighlightAllOccurencesOfStringForElement(element.childNodes[i],keyword);
                 }

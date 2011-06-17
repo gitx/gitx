@@ -34,7 +34,7 @@
 
 	PBGitHistoryController *historyViewController;
 	PBGitCommitController *commitViewController;
-    PBStashContentController *stashViewController;
+	PBStashContentController *stashViewController;
 }
 
 - (void) selectStage;

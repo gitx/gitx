@@ -1,5 +1,5 @@
 //
-//  PBGitHistoryView.h
+//  PBGitHistoryController.h
 //  GitX
 //
 //  Created by Pieter de Bie on 19-09-08.

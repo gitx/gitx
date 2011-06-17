@@ -15,7 +15,8 @@
 // Controls the view displaying a stash diff
 @interface PBStashContentController : PBViewController {
 	IBOutlet id webView;
-	IBOutlet PBWebHistoryController *webController;
+	IBOutlet PBWebStashController *unstagedController;
+	IBOutlet PBWebStashController *stagedController;
 }
 
 - (void) showStash:(PBGitStash*)stash;
