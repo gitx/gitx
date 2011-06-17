@@ -114,7 +114,7 @@ const NSString *kAuthorKeyDate = @"date";
 	NSString *fileList = [GLFileView parseDiffTree:dt withStats:stats];
 	
 	// Diffs list
-	NSString *d = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", currentSha, parents, nil]];
+	NSString *d = [repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-tree", @"--root", @"--cc", @"-C90%", @"-M90%", parents, currentSha, nil]];
 	NSString *diffs = [GLFileView parseDiff:d];
 	
 	NSString *html = [NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
