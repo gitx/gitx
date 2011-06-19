@@ -234,6 +234,18 @@
 	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
+- (void) selectCommitForSha:(NSString *)sha
+{
+	if (contentController != sidebarController.historyViewController)
+		[sidebarController selectCurrentBranch];
+	[sidebarController.historyViewController selectCommit:sha];
+}
+
+- (NSArray *) menuItemsForPaths:(NSArray *)paths
+{
+	return [sidebarController.historyViewController menuItemsForPaths:paths];
+}
+
 - (void)setHistorySearch:(NSString *)searchString mode:(NSInteger)mode
 {
 	[sidebarController setHistorySearch:searchString mode:mode];

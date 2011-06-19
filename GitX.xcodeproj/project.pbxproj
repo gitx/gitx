@@ -80,6 +80,8 @@
 		65D58BC7132D48C2003F7290 /* PBResetSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 65D58BC6132D48C0003F7290 /* PBResetSheet.m */; };
 		770B37ED0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 770B37EC0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel */; };
 		77C8280E06725ACE000B614F /* ApplicationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77C8280C06725ACE000B614F /* ApplicationController.m */; };
+		89087CA613A3E46B00911503 /* PBWebCommitController.m in Sources */ = {isa = PBXBuildFile; fileRef = 89087CA513A3E46B00911503 /* PBWebCommitController.m */; };
+		8998B1C613A55B3500121729 /* PBWebStashController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8998B1C513A55B3500121729 /* PBWebStashController.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -129,7 +131,6 @@
 		D8F01C4B12182F19007F729F /* GitX.sdef in Resources */ = {isa = PBXBuildFile; fileRef = D8F01C4A12182F19007F729F /* GitX.sdef */; };
 		D8F01D531218A164007F729F /* NSApplication+GitXScripting.m in Sources */ = {isa = PBXBuildFile; fileRef = D8F01D521218A164007F729F /* NSApplication+GitXScripting.m */; };
 		D8F4AB7912298CE200D6D53C /* rewindImage.pdf in Resources */ = {isa = PBXBuildFile; fileRef = D8F4AB7812298CE200D6D53C /* rewindImage.pdf */; };
-		D8FBCF19115FA20C0098676A /* PBGitSHA.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FBCF18115FA20C0098676A /* PBGitSHA.m */; };
 		D8FDD9F711432A12005647F6 /* PBCloneRepositoryPanel.xib in Resources */ = {isa = PBXBuildFile; fileRef = D8FDD9F511432A12005647F6 /* PBCloneRepositoryPanel.xib */; };
 		D8FDDA6A114335E8005647F6 /* PBGitSVBranchItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FDDA5D114335E8005647F6 /* PBGitSVBranchItem.m */; };
 		D8FDDA6B114335E8005647F6 /* PBGitSVFolderItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FDDA5F114335E8005647F6 /* PBGitSVFolderItem.m */; };
@@ -139,6 +140,8 @@
 		D8FDDA6F114335E8005647F6 /* PBGitSVStageItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FDDA67114335E8005647F6 /* PBGitSVStageItem.m */; };
 		D8FDDA70114335E8005647F6 /* PBGitSVTagItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D8FDDA69114335E8005647F6 /* PBGitSVTagItem.m */; };
 		D8FDDBF41143F318005647F6 /* AddRemote.png in Resources */ = {isa = PBXBuildFile; fileRef = D8FDDBF31143F318005647F6 /* AddRemote.png */; };
+		DDB8FE0113998CE2001A9EE2 /* PBStashContentController.m in Sources */ = {isa = PBXBuildFile; fileRef = DDB8FE0013998CE2001A9EE2 /* PBStashContentController.m */; };
+		DDB8FEC413999C24001A9EE2 /* PBStashContentView.xib in Resources */ = {isa = PBXBuildFile; fileRef = DDB8FEC313999C24001A9EE2 /* PBStashContentView.xib */; };
 		F50FE0E30E07BE9600854FCD /* PBGitRevisionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F50FE0E20E07BE9600854FCD /* PBGitRevisionCell.m */; };
 		F513085B0E0740F2000C8BCD /* PBQLOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = F513085A0E0740F2000C8BCD /* PBQLOutlineView.m */; };
 		F5140DC90E8A8EB20091E9F3 /* RoundedRectangle.m in Sources */ = {isa = PBXBuildFile; fileRef = F5140DC80E8A8EB20091E9F3 /* RoundedRectangle.m */; };
@@ -178,7 +181,6 @@
 		F5AD56790E79B78100EDAAFE /* PBCommitList.m in Sources */ = {isa = PBXBuildFile; fileRef = F5AD56780E79B78100EDAAFE /* PBCommitList.m */; };
 		F5B721C40E05CF7E00AF29DC /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5B721C20E05CF7E00AF29DC /* MainMenu.xib */; };
 		F5C007750E731B48007B84B2 /* PBGitRef.m in Sources */ = {isa = PBXBuildFile; fileRef = F5C007740E731B48007B84B2 /* PBGitRef.m */; };
-		F5C580E50EDA250900995434 /* libgit2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F5C580E40EDA250900995434 /* libgit2.a */; };
 		F5C6F68D0E65FF9300478D97 /* PBGitLane.mm in Sources */ = {isa = PBXBuildFile; fileRef = F5C6F68C0E65FF9300478D97 /* PBGitLane.mm */; };
 		F5DFFA6C0E075D8800617813 /* PBEasyFS.m in Sources */ = {isa = PBXBuildFile; fileRef = F5DFFA6B0E075D8800617813 /* PBEasyFS.m */; };
 		F5E424110EA3E4D60046E362 /* PBDiffWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = F5E424100EA3E4D60046E362 /* PBDiffWindow.xib */; };
@@ -213,13 +215,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 913D5E480E55644600CECEA2;
 			remoteInfo = "cli tool";
-		};
-		D8022C1911DFE8ED003C21F6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D8022B1411DFCE7F003C21F6;
-			remoteInfo = libgit2;
 		};
 		F5643A010F792B4900A579C2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -342,6 +337,10 @@
 		77C82804067257F0000B614F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		77C8280B06725ACE000B614F /* ApplicationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationController.h; sourceTree = "<group>"; };
 		77C8280C06725ACE000B614F /* ApplicationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ApplicationController.m; sourceTree = "<group>"; };
+		89087CA413A3E46500911503 /* PBWebCommitController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBWebCommitController.h; sourceTree = "<group>"; };
+		89087CA513A3E46B00911503 /* PBWebCommitController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBWebCommitController.m; sourceTree = "<group>"; };
+		8998B1AC13A55AC100121729 /* PBWebStashController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBWebStashController.h; sourceTree = "<group>"; };
+		8998B1C513A55B3500121729 /* PBWebStashController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBWebStashController.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* GitX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		911111E10E58BD5A00BF76B4 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/RepositoryWindow.xib; sourceTree = "<group>"; };
@@ -417,8 +416,6 @@
 		D8F01D521218A164007F729F /* NSApplication+GitXScripting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSApplication+GitXScripting.m"; sourceTree = "<group>"; };
 		D8F01D841218A406007F729F /* GitX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitX.h; sourceTree = "<group>"; };
 		D8F4AB7812298CE200D6D53C /* rewindImage.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = rewindImage.pdf; path = Images/rewindImage.pdf; sourceTree = "<group>"; };
-		D8FBCF17115FA20C0098676A /* PBGitSHA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitSHA.h; sourceTree = "<group>"; };
-		D8FBCF18115FA20C0098676A /* PBGitSHA.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitSHA.m; sourceTree = "<group>"; };
 		D8FDD9F611432A12005647F6 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/PBCloneRepositoryPanel.xib; sourceTree = "<group>"; };
 		D8FDDA5C114335E8005647F6 /* PBGitSVBranchItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitSVBranchItem.h; sourceTree = "<group>"; };
 		D8FDDA5D114335E8005647F6 /* PBGitSVBranchItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitSVBranchItem.m; sourceTree = "<group>"; };
@@ -436,6 +433,9 @@
 		D8FDDA69114335E8005647F6 /* PBGitSVTagItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitSVTagItem.m; sourceTree = "<group>"; };
 		D8FDDA7311433634005647F6 /* PBSourceViewItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewItems.h; sourceTree = "<group>"; };
 		D8FDDBF31143F318005647F6 /* AddRemote.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AddRemote.png; path = Images/AddRemote.png; sourceTree = "<group>"; };
+		DDB8FDFF13998CE2001A9EE2 /* PBStashContentController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBStashContentController.h; sourceTree = "<group>"; };
+		DDB8FE0013998CE2001A9EE2 /* PBStashContentController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBStashContentController.m; sourceTree = "<group>"; };
+		DDB8FEC313999C24001A9EE2 /* PBStashContentView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PBStashContentView.xib; sourceTree = "<group>"; };
 		F50FE0E10E07BE9600854FCD /* PBGitRevisionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRevisionCell.h; sourceTree = "<group>"; };
 		F50FE0E20E07BE9600854FCD /* PBGitRevisionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitRevisionCell.m; sourceTree = "<group>"; };
 		F51308590E0740F2000C8BCD /* PBQLOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBQLOutlineView.h; sourceTree = "<group>"; };
@@ -503,7 +503,7 @@
 		F5B721C30E05CF7E00AF29DC /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		F5C007730E731B48007B84B2 /* PBGitRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRef.h; sourceTree = "<group>"; };
 		F5C007740E731B48007B84B2 /* PBGitRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitRef.m; sourceTree = "<group>"; };
-		F5C580E40EDA250900995434 /* libgit2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgit2.a; path = libgit2/libgit2.a; sourceTree = "<group>"; };
+		F5C580E40EDA250900995434 /* libgit2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libgit2.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5C6F68B0E65FF9300478D97 /* PBGitLane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitLane.h; sourceTree = "<group>"; };
 		F5C6F68C0E65FF9300478D97 /* PBGitLane.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PBGitLane.mm; sourceTree = "<group>"; };
 		F5D2DC850EA401A80034AD24 /* PBGitConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitConfig.h; sourceTree = "<group>"; };
@@ -560,7 +560,6 @@
 				911112370E5A097800BF76B4 /* Security.framework in Frameworks */,
 				F580E6AE0E733276009E2D3F /* Sparkle.framework in Frameworks */,
 				F5E4DBFB0EAB58D90013FAFC /* SystemConfiguration.framework in Frameworks */,
-				F5C580E50EDA250900995434 /* libgit2.a in Frameworks */,
 				D8E3B2B810DC9FB2001096A3 /* ScriptingBridge.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -777,6 +776,7 @@
 				F5E424100EA3E4D60046E362 /* PBDiffWindow.xib */,
 				F52BCE020E84208300AA3741 /* PBGitHistoryView.xib */,
 				F59116E50E843BB50072CCB1 /* PBGitCommitView.xib */,
+				DDB8FEC313999C24001A9EE2 /* PBStashContentView.xib */,
 				D85B939210E3D8B4007F3C28 /* PBCreateBranchSheet.xib */,
 				D889EB3010E6BCBB00F08413 /* PBCreateTagSheet.xib */,
 				D8C1B77110E875CF009B7F8B /* PBRemoteProgressSheet.xib */,
@@ -850,6 +850,17 @@
 				770B37EC0679A11B001EADE2 /* GitTest_DataModel.xcdatamodel */,
 			);
 			name = Models;
+			sourceTree = "<group>";
+		};
+		8998B1AB13A55A9B00121729 /* Stash */ = {
+			isa = PBXGroup;
+			children = (
+				DDB8FDFF13998CE2001A9EE2 /* PBStashContentController.h */,
+				DDB8FE0013998CE2001A9EE2 /* PBStashContentController.m */,
+				8998B1AC13A55AC100121729 /* PBWebStashController.h */,
+				8998B1C513A55B3500121729 /* PBWebStashController.m */,
+			);
+			name = Stash;
 			sourceTree = "<group>";
 		};
 		913D5E420E5563FD00CECEA2 /* cli */ = {
@@ -947,6 +958,7 @@
 				F5EF8C880E9D498F0050906B /* History */,
 				F5E927F90E883EF600056E75 /* Commit */,
 				D82F435F111B9C6D00A25A39 /* Sheets */,
+				8998B1AB13A55A9B00121729 /* Stash */,
 				77C8280B06725ACE000B614F /* ApplicationController.h */,
 				77C8280C06725ACE000B614F /* ApplicationController.m */,
 				93CB42C00EAB7B2200530609 /* PBGitDefaults.h */,
@@ -957,6 +969,8 @@
 				911111F70E594F3F00BF76B4 /* PBRepositoryDocumentController.m */,
 				F5E926040E8827D300056E75 /* PBViewController.h */,
 				F5E926050E8827D300056E75 /* PBViewController.m */,
+				89087CA413A3E46500911503 /* PBWebCommitController.h */,
+				89087CA513A3E46B00911503 /* PBWebCommitController.m */,
 				F5EF8C8C0E9D4A5D0050906B /* PBWebController.h */,
 				F5EF8C8D0E9D4A5D0050906B /* PBWebController.m */,
 				F5FE6C010EB13BC900F30D12 /* PBServicesController.h */,
@@ -1084,8 +1098,6 @@
 				F56524EF0E02D45200F03B52 /* PBGitCommit.m */,
 				F5C007730E731B48007B84B2 /* PBGitRef.h */,
 				F5C007740E731B48007B84B2 /* PBGitRef.m */,
-				D8FBCF17115FA20C0098676A /* PBGitSHA.h */,
-				D8FBCF18115FA20C0098676A /* PBGitSHA.m */,
 				D8295D281130A1DC00C838E8 /* PBGitHistoryList.h */,
 				D8295D291130A1DC00C838E8 /* PBGitHistoryList.m */,
 				F5FF4E160E0829C20006317A /* PBGitRevList.h */,
@@ -1146,22 +1158,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXLegacyTarget section */
-		D8022B1411DFCE7F003C21F6 /* libgit2 */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "\"${PROJECT_DIR}/build_libgit2.sh\"";
-			buildConfigurationList = D8022B1C11DFCE98003C21F6 /* Build configuration list for PBXLegacyTarget "libgit2" */;
-			buildPhases = (
-			);
-			buildToolPath = /bin/sh;
-			dependencies = (
-			);
-			name = libgit2;
-			passBuildSettingsInEnvironment = 1;
-			productName = libgit2;
-		};
-/* End PBXLegacyTarget section */
-
 /* Begin PBXNativeTarget section */
 		551BF110112F371800265053 /* gitx_askpasswd */ = {
 			isa = PBXNativeTarget;
@@ -1196,7 +1192,6 @@
 				551BF175112F3F3500265053 /* PBXTargetDependency */,
 				913D5E5A0E5564F400CECEA2 /* PBXTargetDependency */,
 				F5643A020F792B4900A579C2 /* PBXTargetDependency */,
-				D8022C1A11DFE8ED003C21F6 /* PBXTargetDependency */,
 			);
 			name = GitX;
 			productInstallPath = "$(HOME)/Applications";
@@ -1241,7 +1236,6 @@
 				8D1107260486CEB800E47090 /* GitX */,
 				913D5E480E55644600CECEA2 /* cli tool */,
 				F56439F70F792B2100A579C2 /* Generate PList Prefix */,
-				D8022B1411DFCE7F003C21F6 /* libgit2 */,
 				551BF110112F371800265053 /* gitx_askpasswd */,
 			);
 		};
@@ -1317,6 +1311,7 @@
 				316E7202131EE9C600AFBB36 /* list_Template.png in Resources */,
 				316E7203131EE9C600AFBB36 /* sidebar_Template.png in Resources */,
 				65D58BC4132D27A8003F7290 /* PBResetSheet.xib in Resources */,
+				DDB8FEC413999C24001A9EE2 /* PBStashContentView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1337,7 +1332,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Build the scripting bridge header GitX.h if the GitX.sdef file changes\nsdef $TARGET_BUILD_DIR/GitX.app | sdp -fh --basename GitX";
+			shellScript = "# Build the scripting bridge header GitX.h if the GitX.sdef file changes\nsdef \"$TARGET_BUILD_DIR/GitX.app\" | sdp -fh --basename GitX";
 		};
 		F56439F60F792B2100A579C2 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1451,7 +1446,6 @@
 				D8295D2A1130A1DC00C838E8 /* PBGitHistoryList.m in Sources */,
 				D8295DE01130E43900C838E8 /* PBGitHistoryGrapher.m in Sources */,
 				D8E105471157C18200FC28A4 /* PBQLTextView.m in Sources */,
-				D8FBCF19115FA20C0098676A /* PBGitSHA.m in Sources */,
 				D8022FED11E124C8003C21F6 /* PBGitXMessageSheet.m in Sources */,
 				D8EB616A122F643E00FCCAF4 /* GitXRelativeDateFormatter.m in Sources */,
 				D8F01D531218A164007F729F /* NSApplication+GitXScripting.m in Sources */,
@@ -1479,6 +1473,9 @@
 				217FF0BE12A1CB3E00785A65 /* PBRevealWithFinderCommand.m in Sources */,
 				65D58BC7132D48C2003F7290 /* PBResetSheet.m in Sources */,
 				31776089133569350025876E /* SearchWebView.m in Sources */,
+				DDB8FE0113998CE2001A9EE2 /* PBStashContentController.m in Sources */,
+				89087CA613A3E46B00911503 /* PBWebCommitController.m in Sources */,
+				8998B1C613A55B3500121729 /* PBWebStashController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1504,11 +1501,6 @@
 			isa = PBXTargetDependency;
 			target = 913D5E480E55644600CECEA2 /* cli tool */;
 			targetProxy = 913D5E590E5564F400CECEA2 /* PBXContainerItemProxy */;
-		};
-		D8022C1A11DFE8ED003C21F6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D8022B1411DFCE7F003C21F6 /* libgit2 */;
-			targetProxy = D8022C1911DFE8ED003C21F6 /* PBXContainerItemProxy */;
 		};
 		F5643A020F792B4900A579C2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1604,6 +1596,7 @@
 		26FC0A850875C7B200E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1616,13 +1609,14 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = GitX_Prefix.pch;
-				HEADER_SEARCH_PATHS = libgit2/src;
+				HEADER_SEARCH_PATHS = libgit2/include;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INFOPLIST_PREFIX_HEADER = $PROJECT_TEMP_DIR/revision;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = libgit2;
+				LIBRARY_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = GitX;
 				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
@@ -1633,6 +1627,7 @@
 		26FC0A860875C7B200E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1643,13 +1638,13 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = GitX_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
-				HEADER_SEARCH_PATHS = libgit2/src;
+				HEADER_SEARCH_PATHS = libgit2/include;
 				INFOPLIST_FILE = Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INFOPLIST_PREFIX_HEADER = $PROJECT_TEMP_DIR/revision;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = libgit2;
+				LIBRARY_SEARCH_PATHS = "";
 				PRODUCT_NAME = GitX;
 				SDKROOT = "";
 				WRAPPER_EXTENSION = app;
@@ -1695,6 +1690,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -1703,6 +1699,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				INSTALL_PATH = /usr/local/bin;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -1719,6 +1716,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -1743,6 +1741,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1763,6 +1762,7 @@
 		913D5E4B0E55644600CECEA2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -1771,7 +1771,8 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				INSTALL_PATH = /usr/local/bin;
-				LIBRARY_SEARCH_PATHS = libgit2;
+				LIBRARY_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -1788,6 +1789,7 @@
 		913D5E4C0E55644600CECEA2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -1795,7 +1797,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
 				INSTALL_PATH = /usr/local/bin;
-				LIBRARY_SEARCH_PATHS = libgit2;
+				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Foundation,
@@ -1809,32 +1811,10 @@
 			};
 			name = Release;
 		};
-		D8022B1511DFCE7F003C21F6 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = libgit2;
-				SDKROOT = "";
-			};
-			name = Debug;
-		};
-		D8022B1611DFCE7F003C21F6 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = libgit2;
-				SDKROOT = "";
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 		F56439F80F792B2100A579C2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -1846,6 +1826,7 @@
 		F56439F90F792B2100A579C2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
@@ -1892,15 +1873,6 @@
 			buildConfigurations = (
 				913D5E4B0E55644600CECEA2 /* Debug */,
 				913D5E4C0E55644600CECEA2 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		D8022B1C11DFCE98003C21F6 /* Build configuration list for PBXLegacyTarget "libgit2" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D8022B1511DFCE7F003C21F6 /* Debug */,
-				D8022B1611DFCE7F003C21F6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

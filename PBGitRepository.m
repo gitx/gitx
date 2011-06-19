@@ -12,14 +12,17 @@
 #import "PBGitBinary.h"
 
 #import "NSFileHandleExt.h"
-#import "PBEasyPipe.h"
-#import "PBGitRef.h"
-#import "PBGitRevSpecifier.h"
-#import "PBRemoteProgressSheet.h"
-#import "PBGitRevList.h"
-#import "PBGitDefaults.h"
 #import "GitXScriptingConstants.h"
+#import "PBEasyPipe.h"
+#import "PBGitDefaults.h"
+#import "PBGitRef.h"
+#import "PBGitResetController.h"
+#import "PBGitRevList.h"
+#import "PBGitRevSpecifier.h"
 #import "PBHistorySearchController.h"
+#import "PBRemoteProgressSheet.h"
+#import "PBStashController.h"
+#import "PBSubmoduleController.h"
 
 #import "PBGitStash.h"
 #import "PBGitSubmodule.h"
@@ -118,6 +121,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 //this works much better.
 - (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 {
+	@try {
 	if (![PBGitBinary path])
 	{
 		if (outError) {
@@ -153,6 +157,14 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	[self setFileURL:gitDirURL];
 	[self setup];
 	return YES;
+	} @catch(id x) {
+		if (outError) {
+			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"An error occured while trying to open %@.\n%@", [self fileURL],x]
+																 forKey:NSLocalizedRecoverySuggestionErrorKey];
+			*outError = [NSError errorWithDomain:PBGitRepositoryErrorDomain code:0 userInfo:userInfo];
+		}
+		return NO;
+	}
 }
 
 - (void) setup
@@ -265,17 +277,57 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 {
 	NSString* type = [components objectAtIndex:1];
 
-	PBGitSHA *sha;
+	NSString *sha;
 	if ([type isEqualToString:@"tag"] && [components count] == 4)
-		sha = [PBGitSHA shaWithString:[components objectAtIndex:3]];
+		sha = [components objectAtIndex:3];
 	else
-		sha = [PBGitSHA shaWithString:[components objectAtIndex:2]];
+		sha = [components objectAtIndex:2];
+
+	if(!sha) {
+		NSLog(@"sha was nil...? ref=%@, components=%@",ref,components);
+		return;
+	}
 
 	NSMutableArray* curRefs;
 	if ( (curRefs = [refs objectForKey:sha]) != nil )
 		[curRefs addObject:ref];
 	else
 		[refs setObject:[NSMutableArray arrayWithObject:ref] forKey:sha];
+}
+
+// Returns the remote's fetch and pull URLs as an array of two strings.
+- (NSArray*) URLsForRemote:(NSString*)remoteName
+{
+	NSArray *arguments = [NSArray arrayWithObjects:@"remote", @"show", @"-n", remoteName, nil];
+	NSString *output = [self outputForArguments:arguments];
+
+	NSArray *remoteLines = [output componentsSeparatedByString:@"\n"];
+	NSString *fetchURL = [remoteLines objectAtIndex:1];
+	NSString *pushURL = [remoteLines objectAtIndex:2];
+
+	if ([fetchURL hasPrefix:@"  Fetch URL: "] && [pushURL hasPrefix:@"  Push  URL: "])
+		return [NSArray arrayWithObjects:
+				[fetchURL substringFromIndex:13],
+				[pushURL substringFromIndex:13],
+				nil];
+	return nil;
+}
+
+// Extracts the text that should be shown in a help tag.
+- (NSString*) helpTextForRef:(PBGitRef*)ref
+{
+	NSString *output = nil;
+	NSString *name = [ref shortName];
+	NSArray *arguments = nil;
+
+	if ([ref isTag]) {
+		arguments = [NSArray arrayWithObjects:@"tag", @"-ln", name, nil];
+		output = [self outputForArguments:arguments];
+		if (![output hasPrefix:name])
+			return nil;
+		return [[output substringFromIndex:[name length]] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	}
+	return nil;
 }
 
 - (void) reloadRefs
@@ -290,6 +342,13 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	NSString *output = [self outputForArguments:arguments];
 	NSArray *lines = [output componentsSeparatedByString:@"\n"];
 
+	if([output hasPrefix:@"fatal: "]) {
+		NSLog(@"Unable to read refs!");
+		NSLog(@"arguments=%@",arguments);
+		NSLog(@"output=%@",output);
+		@throw output;
+	}
+
 	for (NSString *line in lines) {
 		// If its an empty line, skip it (e.g. with empty repositories)
 		if ([line length] == 0)
@@ -300,6 +359,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		PBGitRef *newRef = [PBGitRef refFromString:[components objectAtIndex:0]];
 		PBGitRevSpecifier *revSpec = [[PBGitRevSpecifier alloc] initWithRef:newRef];
 
+		[revSpec setHelpText:[self helpTextForRef:newRef]];
 		[self addBranch:revSpec];
 		[self addRef:newRef fromParameters:components];
 		[oldBranches removeObject:revSpec];
@@ -353,7 +413,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return _headRef;
 }
 
-- (PBGitSHA *)headSHA
+- (NSString *)headSHA
 {
 	if (! _headSha)
 		[self headRef];
@@ -366,12 +426,12 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return [self commitForSHA:[self headSHA]];
 }
 
-- (PBGitSHA *)shaForRef:(PBGitRef *)ref
+- (NSString *)shaForRef:(PBGitRef *)ref
 {
 	if (!ref)
 		return nil;
 
-	for (PBGitSHA *sha in refs)
+	for (NSString *sha in refs)
 		for (PBGitRef *existingRef in [refs objectForKey:sha])
 			if ([existingRef isEqualToRef:ref])
 				return sha;
@@ -382,7 +442,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	if (retValue || [shaForRef isEqualToString:@""])
 		return nil;
 
-	return [PBGitSHA shaWithString:shaForRef];
+	return shaForRef;
 }
 
 - (PBGitCommit *)commitForRef:(PBGitRef *)ref
@@ -393,7 +453,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return [self commitForSHA:[self shaForRef:ref]];
 }
 
-- (PBGitCommit *)commitForSHA:(PBGitSHA *)sha
+- (PBGitCommit *)commitForSHA:(NSString *)sha
 {
 	if (!sha)
 		return nil;
@@ -410,7 +470,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return nil;
 }
 
-- (BOOL)isOnSameBranch:(PBGitSHA *)branchSHA asSHA:(PBGitSHA *)testSHA
+- (BOOL)isOnSameBranch:(NSString *)branchSHA asSHA:(NSString *)testSHA
 {
 	if (!branchSHA || !testSHA)
 		return NO;
@@ -423,7 +483,7 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	NSMutableSet *searchSHAs = [NSMutableSet setWithObject:branchSHA];
 
 	for (PBGitCommit *commit in revList) {
-		PBGitSHA *commitSHA = [commit sha];
+		NSString *commitSHA = [commit sha];
 		if ([searchSHAs containsObject:commitSHA]) {
 			if ([testSHA isEqual:commitSHA])
 				return YES;
@@ -437,12 +497,12 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 	return NO;
 }
 
-- (BOOL)isSHAOnHeadBranch:(PBGitSHA *)testSHA
+- (BOOL)isSHAOnHeadBranch:(NSString *)testSHA
 {
 	if (!testSHA)
 		return NO;
 
-	PBGitSHA *headSHA = [self headSHA];
+	NSString *headSHA = [self headSHA];
 
 	if ([testSHA isEqual:headSHA])
 		return YES;

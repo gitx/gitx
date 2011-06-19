@@ -12,10 +12,6 @@
 #import "PBGitConfig.h"
 #import "PBGitRefish.h"
 
-#import "PBStashController.h"
-#import "PBGitResetController.h"
-#import "PBSubmoduleController.h"
-
 extern NSString* PBGitRepositoryErrorDomain;
 typedef enum branchFilterTypes {
 	kGitXAllBranchesFilter = 0,
@@ -42,7 +38,9 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 
 @class PBGitWindowController;
 @class PBGitCommit;
-@class PBGitSHA;
+@class PBGitResetController;
+@class PBStashController;
+@class PBSubmoduleController;
 
 @interface PBGitRepository : NSDocument {
 	PBGitHistoryList* revisionList;
@@ -55,7 +53,7 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 	NSMutableDictionary *refs;
 
 	PBGitRevSpecifier *_headRef; // Caching
-	PBGitSHA* _headSha;
+	NSString* _headSha;
 	
 	PBStashController *stashController;
 	PBSubmoduleController *submoduleController;
@@ -88,6 +86,7 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 
 - (NSFileHandle*) handleForCommand:(NSString*) cmd;
 - (NSFileHandle*) handleForArguments:(NSArray*) args;
+- (NSFileHandle*) handleInWorkDirForArguments:(NSArray *)args;
 - (NSFileHandle *) handleInWorkDirForArguments:(NSArray *)args;
 - (NSString*) outputForCommand:(NSString*) cmd;
 - (NSString *)outputForCommand:(NSString *)str retValue:(int *)ret;
@@ -111,13 +110,13 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 - (void) addRef:(PBGitRef *)ref fromParameters:(NSArray *)params;
 - (void) lazyReload;
 - (PBGitRevSpecifier*)headRef;
-- (PBGitSHA *)headSHA;
+- (NSString *)headSHA;
 - (PBGitCommit *)headCommit;
-- (PBGitSHA *)shaForRef:(PBGitRef *)ref;
+- (NSString *)shaForRef:(PBGitRef *)ref;
 - (PBGitCommit *)commitForRef:(PBGitRef *)ref;
-- (PBGitCommit *)commitForSHA:(PBGitSHA *)sha;
-- (BOOL)isOnSameBranch:(PBGitSHA *)baseSHA asSHA:(PBGitSHA *)testSHA;
-- (BOOL)isSHAOnHeadBranch:(PBGitSHA *)testSHA;
+- (PBGitCommit *)commitForSHA:(NSString *)sha;
+- (BOOL)isOnSameBranch:(NSString *)baseSHA asSHA:(NSString *)testSHA;
+- (BOOL)isSHAOnHeadBranch:(NSString *)testSHA;
 - (BOOL)isRefOnHeadBranch:(PBGitRef *)testRef;
 - (BOOL)checkRefFormat:(NSString *)refName;
 - (BOOL)refExists:(PBGitRef *)ref;
@@ -127,6 +126,7 @@ static NSString * PBStringFromBranchFilterType(PBGitXBranchFilterType type) {
 - (BOOL) hasRemotes;
 - (PBGitRef *) remoteRefForBranch:(PBGitRef *)branch error:(NSError **)error;
 - (NSString *) infoForRemote:(NSString *)remoteName;
+- (NSArray*) URLsForRemote:(NSString*)remoteName;
 
 - (void) readCurrentBranch;
 - (PBGitRevSpecifier*) addBranch: (PBGitRevSpecifier*) rev;

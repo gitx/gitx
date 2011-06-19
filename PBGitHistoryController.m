@@ -1,5 +1,5 @@
 //
-//  PBGitHistoryView.m
+//  PBGitHistoryController.m
 //  GitX
 //
 //  Created by Pieter de Bie on 19-09-08.
@@ -94,7 +94,7 @@
     
 
 	[super awakeFromNib];
-    [fileBrowser setDelegate:self];
+	[fileBrowser setDelegate:self];
 }
 
 - (void)updateKeys
@@ -414,7 +414,7 @@
 
 - (void) updateView
 {
-    [self refresh: nil];
+	[self refresh: nil];
 	[self updateKeys];
 }
 
@@ -447,7 +447,7 @@
     commitList.useAdjustScroll = NO;
 }
 
-- (NSArray *) selectedObjectsForSHA:(PBGitSHA *)commitSHA
+- (NSArray *) selectedObjectsForSHA:(NSString *)commitSHA
 {
 	NSPredicate *selection = [NSPredicate predicateWithFormat:@"sha == %@", commitSHA];
 	NSArray *selectedCommits = [[commitController content] filteredArrayUsingPredicate:selection];
@@ -458,7 +458,7 @@
 	return selectedCommits;
 }
 
-- (void)selectCommit:(PBGitSHA *)commitSHA
+- (void)selectCommit:(NSString *)commitSHA
 {
 	if (!forceSelectionUpdate && [[[[commitController selectedObjects] lastObject] sha] isEqual:commitSHA])
 		return;

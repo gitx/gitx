@@ -20,6 +20,7 @@
 }
 
 @property (readonly) __weak PBGitRepository *repository;
+@property (readonly) __weak PBGitWindowController *superController;
 @property(copy) NSString *status;
 @property(assign) BOOL isBusy;
 

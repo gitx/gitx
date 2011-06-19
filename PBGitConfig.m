@@ -99,19 +99,20 @@
     NSArray* arguments;
     
     if (inDir == nil) {
-        arguments = [NSArray arrayWithObjects:@"config", @"--global", @"-l", nil];
+        arguments = [NSArray arrayWithObjects:@"config", @"--global", @"-l", @"-z", nil];
     } else {
-        arguments = [NSArray arrayWithObjects:@"config", @"-l", nil];
+        arguments = [NSArray arrayWithObjects:@"config", @"-l", @"-z", nil];
     }
     
 	int ret = 1;
 	NSString* output = [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:arguments inDir:inDir retValue:&ret];
     NSMutableDictionary *result = [NSMutableDictionary dictionary];
     if (ret==0) {
-        NSArray *lines = [output componentsSeparatedByString:@"\n"];
-        
+        NSArray *lines = [output componentsSeparatedByString:@"\0"];
+
         for (NSString* line in lines) {
-            NSRange equalsPos = [line rangeOfString:@"="];
+			if([line length] == 0) continue;
+            NSRange equalsPos = [line rangeOfString:@"\n"];
             NSString* key = [line substringToIndex:equalsPos.location];
             NSString* value = [line substringFromIndex:equalsPos.location+1];
             [result setObject:value forKey:key];

@@ -23,6 +23,8 @@
 #import "PBCommandMenuItem.h"
 #import "PBGitStash.h"
 #import "PBGitSubmodule.h"
+#import "PBSubmoduleController.h"
+#import "PBStashContentController.h"
 
 static NSString * const kObservingContextStashes = @"stashesChanged";
 static NSString * const kObservingContextSubmodules = @"submodulesChanged";
@@ -42,6 +44,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 @synthesize sourceListControlsView;
 @synthesize historyViewController;
 @synthesize commitViewController;
+@synthesize stashViewController;
 
 - (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
 {
@@ -60,6 +63,9 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	
 	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
+	stashViewController = [[PBStashContentController alloc] initWithRepository:repository superController:superController];
+	
+	[stashViewController loadView];
 	
 	[repository addObserver:self forKeyPath:@"refs" options:0 context:@"updateRefs"];
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
@@ -83,6 +89,7 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 {
 	[historyViewController closeView];
 	[commitViewController closeView];
+	[stashViewController closeView];
 	
 	[repository removeObserver:self forKeyPath:@"currentBranch"];
 	[repository removeObserver:self forKeyPath:@"branches"];
@@ -318,6 +325,12 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 		[PBGitDefaults setShowStageView:YES];
 	}
 	
+	if ([item parent] == stashes) {
+		[superController changeContentController:stashViewController];
+		[PBGitDefaults setShowStageView:NO];
+		[stashViewController showStash:(PBGitStash*)[(PBGitMenuItem*)item sourceObject]];
+	}
+    
 	[self updateActionMenu];
 	[self updateRemoteControls];
 }
@@ -342,6 +355,11 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	[cell setImage:[item icon]];
 }
 
+- (NSString *)outlineView:(NSOutlineView *)outlineView toolTipForCell:(NSCell *)cell rect:(NSRectPointer)rect tableColumn:(NSTableColumn *)tc item:(id)item mouseLocation:(NSPoint)mouseLocation
+{
+	return [item helpText];
+}
+
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
 	return ![item isGroupItem];
@@ -358,6 +376,17 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 - (BOOL) outlineView:(NSOutlineView *)outlineView shouldShowOutlineCellForItem:(id)item
 {
 	return ![item isUncollapsible];
+}
+
+- (NSString*) helpTextForRemoteURLs:(NSArray*)urls
+{
+	NSString *fetchURL = [urls objectAtIndex:0];
+	NSString *pushURL = [urls objectAtIndex:1];
+
+	if ([fetchURL isEqual:pushURL])
+		return fetchURL;
+	else	// Down triangle for fetch, up triangle for push
+		return [NSString stringWithFormat:@"\u25bc %@\n\u25b2", fetchURL, pushURL];
 }
 
 - (void)populateList
@@ -379,6 +408,8 @@ static NSString * const kObservingContextSubmodules = @"submodulesChanged";
 	
 	for (PBGitRevSpecifier *rev in repository.branches)
 		[self addRevSpec:rev];
+	for (PBGitSVRemoteItem *remote in remotes.children)
+		[remote setHelpText:[self helpTextForRemoteURLs:[[self repository] URLsForRemote:[remote title]]]];
 	
 	[items addObject:project];
 	[items addObject:branches];

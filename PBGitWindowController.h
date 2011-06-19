@@ -15,7 +15,7 @@
 @class PBViewController, PBGitSidebarController, PBGitCommitController;
 
 // Controls the main repository window from RepositoryWindow.xib
-@interface PBGitWindowController : NSWindowController /*<NSWindowDelegate>*/{
+@interface PBGitWindowController : NSWindowController PROTOCOL_10_6(NSWindowDelegate){
 	__weak PBGitRepository* repository;
 
 	PBViewController *contentController;
@@ -57,6 +57,8 @@
 - (IBAction) cloneTo:(id)sender;
 - (IBAction) refresh:(id)sender;
 
+- (void)selectCommitForSha:(NSString *)sha;
+- (NSArray *)menuItemsForPaths:(NSArray *)paths;
 - (void)setHistorySearch:(NSString *)searchString mode:(NSInteger)mode;
 
 @end

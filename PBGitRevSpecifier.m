@@ -11,7 +11,7 @@
 
 @implementation PBGitRevSpecifier
 
-@synthesize parameters, description, workingDirectory;
+@synthesize parameters, description, helpText, workingDirectory;
 @synthesize isSimpleRef;
 @synthesize behind,ahead;
 

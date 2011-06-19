@@ -23,9 +23,6 @@
 
 - (void) awakeFromNib
 {
-	NSString *path = [NSString stringWithFormat:@"html/views/%@", startFile];
-	NSString* file = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
-	NSURLRequest * request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:file]];
 	callbacks = [NSMapTable mapTableWithKeyOptions:(NSPointerFunctionsObjectPointerPersonality|NSPointerFunctionsStrongMemory) valueOptions:(NSPointerFunctionsObjectPointerPersonality|NSPointerFunctionsStrongMemory)];
 
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -38,7 +35,12 @@
 	[view setUIDelegate:self];
 	[view setFrameLoadDelegate:self];
 	[view setResourceLoadDelegate:self];
-	[[view mainFrame] loadRequest:request];
+
+	NSURL *resourceURL = [[[NSBundle mainBundle] resourceURL] URLByStandardizingPath];
+	NSURL *baseURL = [[resourceURL URLByAppendingPathComponent:@"html/views" isDirectory:YES] URLByAppendingPathComponent:startFile isDirectory:YES];
+	
+	NSURL *fileURL = [baseURL URLByAppendingPathComponent:@"index.html" isDirectory:NO];
+	[[view mainFrame] loadRequest:[NSURLRequest requestWithURL:fileURL]];
 }
 
 - (WebScriptObject *) script
@@ -91,7 +93,8 @@
 		return request;
 
 	// TODO: Change this to canInitWithRequest
-	if ([[[request URL] scheme] isEqualToString:@"GitX"]) {
+	NSString *scheme = [[[request URL] scheme] lowercaseString];
+	if ([scheme isEqualToString:@"gitx"]) {
 		NSMutableURLRequest *newRequest = [request mutableCopy];
 		[newRequest setRepository:self.repository];
 		return newRequest;

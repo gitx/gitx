@@ -60,10 +60,10 @@
 
 - (BOOL) isCurrentCommit
 {
-	PBGitSHA *thisSha = [self.objectValue sha];
+	NSString *thisSha = [self.objectValue sha];
 
 	PBGitRepository* repository = [self.objectValue repository];
-	PBGitSHA *currentSha = [repository headSHA];
+	NSString *currentSha = [repository headSHA];
 
 	return [currentSha isEqual:thisSha];
 }

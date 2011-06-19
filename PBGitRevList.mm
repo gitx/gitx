@@ -102,11 +102,11 @@ using namespace std;
 	std::map<string, NSStringEncoding> encodingMap;
 	NSThread *currentThread = [NSThread currentThread];
 
-	NSString *formatString = @"--pretty=format:%H\01%e\01%aN\01%cN\01%s\01%P\01%at";
+	NSString *formatString = @"--pretty=format:%H\01%e\01%aN\01%cN\01%P\01%at\01%s";
 	BOOL showSign = [rev hasLeftRight];
 
 	if (showSign)
-		formatString = [formatString stringByAppendingString:@"\01%m"];
+		formatString = [@"%m\01" stringByAppendingString:formatString];
 	
 	NSMutableArray *arguments = [NSMutableArray arrayWithObjects:@"log", @"-z", @"--topo-order", @"--children", formatString, nil];
 
@@ -129,6 +129,16 @@ using namespace std;
 		if ([currentThread isCancelled])
 			break;
 
+        char c;
+        char sign;
+        if (showSign)
+		{
+			stream >> sign;
+			stream >> c; // Remove separator
+			if (sign != '>' && sign != '<' && sign != '^' && sign != '-')
+				DLog(@"Error loading commits: sign not correct");
+		}
+
 		string sha;
 		if (!getline(stream, sha, '\1'))
 			break;
@@ -147,9 +157,14 @@ using namespace std;
 			}
 		}
 
-		git_oid oid;
-		git_oid_mkstr(&oid, sha.c_str());
-		PBGitCommit *newCommit = [PBGitCommit commitWithRepository:repository andSha:[PBGitSHA shaWithOID:oid]];
+		NSString *oid=[NSString stringWithCString:sha.c_str() encoding:encoding];
+        if([oid length]!=40)
+            break;
+        
+		PBGitCommit *newCommit = [PBGitCommit commitWithRepository:repository andSha:oid];
+
+        if (showSign)
+            [newCommit setSign: sign];
 
 		string author;
 		getline(stream, author, '\1');
@@ -157,11 +172,9 @@ using namespace std;
 		string committer;
 		getline(stream, committer, '\1');
 
-		string subject;
-		getline(stream, subject, '\1');
-
 		string parentString;
 		getline(stream, parentString, '\1');
+        
 		if (parentString.size() != 0)
 		{
 			if (((parentString.size() + 1) % 41) != 0) {
@@ -171,35 +184,24 @@ using namespace std;
 			int nParents = (parentString.size() + 1) / 41;
 			NSMutableArray *parents = [NSMutableArray arrayWithCapacity:nParents];
 			int parentIndex;
-			for (parentIndex = 0; parentIndex < nParents; ++parentIndex)
-				[parents addObject:[PBGitSHA shaWithCString:parentString.substr(parentIndex * 41, 40).c_str()]];
-
+			for (parentIndex = 0; parentIndex < nParents; ++parentIndex) {
+                NSString *pOid=[NSString stringWithCString:parentString.substr(parentIndex * 41, 40).c_str() encoding:encoding];
+				[parents addObject:pOid];
+            }
 			[newCommit setParents:parents];
 		}
 
 		int time;
 		stream >> time;
 
+        string subject;
+		getline(stream, subject, '\0');
+        
 		[newCommit setSubject:[NSString stringWithCString:subject.c_str() encoding:encoding]];
 		[newCommit setAuthor:[NSString stringWithCString:author.c_str() encoding:encoding]];
 		[newCommit setCommitter:[NSString stringWithCString:committer.c_str() encoding:encoding]];
 		[newCommit setTimestamp:time];
 		
-		if (showSign)
-		{
-			char c;
-			stream >> c; // Remove separator
-			stream >> c;
-			if (c != '>' && c != '<' && c != '^' && c != '-')
-				DLog(@"Error loading commits: sign not correct");
-			[newCommit setSign: c];
-		}
-
-		char c;
-		stream >> c;
-		if (c != '\0')
-			cout << "Error" << endl;
-
 		[revisions addObject: newCommit];
 		if (isGraphing)
 			[g decorateCommit:newCommit];

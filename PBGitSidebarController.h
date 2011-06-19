@@ -12,17 +12,18 @@
 @class PBSourceViewItem;
 @class PBGitHistoryController;
 @class PBGitCommitController;
+@class PBStashContentController;
 
-@interface PBGitSidebarController : PBViewController /*<NSOutlineViewDelegate>*/{
+@interface PBGitSidebarController : PBViewController PROTOCOL_10_6(NSOutlineViewDelegate, NSMenuDelegate){
 	IBOutlet NSWindow *window;
 	IBOutlet NSOutlineView *sourceView;
 	IBOutlet NSView *sourceListControlsView;
 	IBOutlet NSPopUpButton *actionButton;
 	IBOutlet NSSegmentedControl *remoteControls;
 
-    IBOutlet NSButton* svnFetchButton;
-    IBOutlet NSButton* svnRebaseButton;
-    IBOutlet NSButton* svnDcommitButton;
+	IBOutlet NSButton* svnFetchButton;
+	IBOutlet NSButton* svnRebaseButton;
+	IBOutlet NSButton* svnDcommitButton;
     
 	NSMutableArray *items;
 
@@ -33,6 +34,7 @@
 
 	PBGitHistoryController *historyViewController;
 	PBGitCommitController *commitViewController;
+	PBStashContentController *stashViewController;
 }
 
 - (void) selectStage;
@@ -54,5 +56,6 @@
 @property(readonly) NSView *sourceListControlsView;
 @property(readonly) PBGitHistoryController *historyViewController;
 @property(readonly) PBGitCommitController *commitViewController;
+@property(readonly) PBStashContentController *stashViewController;
 
 @end

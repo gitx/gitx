@@ -170,7 +170,7 @@
 {
 	[commitMessageView setEditable:YES];
 	[commitMessageView setString:@""];
-	[webController setStateMessage:[NSString stringWithFormat:[[notification userInfo] objectForKey:@"description"]]];
+	[webController setStateMessage:[NSString stringWithString:[[notification userInfo] objectForKey:@"description"]]];
 	[repository reloadRefs];
 }	
 
