@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+// Adds the column guide displayed in the commit message field
 @interface PBCommitMessageView : NSTextView {
 
 }

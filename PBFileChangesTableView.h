@@ -9,6 +9,8 @@
 #import <Cocoa/Cocoa.h>
 
 
+// File list used in both the staged and unstaged sides of the commit view.
+// datasource and deletage are PBGitIndexController.
 @interface PBFileChangesTableView : NSTableView {
 }
 
