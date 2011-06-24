@@ -74,6 +74,7 @@ a.servicebutton {
 	padding: 0.1em;
 	border: solid gray 1px;
 	-webkit-border-radius: 2px;
+	display: none;
 }
 
 .gravatar img {
@@ -81,6 +82,7 @@ a.servicebutton {
 	height: 2.9em;
 	max-height: 60px;
 	max-width: 60px;
+	display: none;
 }
 
 .property_name {
@@ -97,10 +99,9 @@ a.servicebutton {
 }
 
 #header p.subject {
-	font-size: 15px;
+	font-size: 13px;
 	padding: 5px;
 	float: none;
-	font-family: Menlo, Monaco;
 }
 
 #files {
@@ -139,7 +140,7 @@ a.servicebutton {
 }
 
 #details {
-	font-family: Monaco;
+	font-family: Menlo;
 	font-size: 10px;
 	overflow: hidden;
 	width: 600px;
@@ -268,12 +269,13 @@ a.showdiff {
 }
 
 #header p.name {
-	font-size: 15px;
+	font-size: 13px;
 	white-space: nowrap;
 }
 
 #header span.rol,p.time {
 	color: gray;
+
 }
 
 #header img.avatar {
@@ -309,12 +311,12 @@ a.showdiff {
 	-webkit-box-shadow: inset 0px 5px 5px #ccc;
 	width: 100%;
 	display: block;
-	padding-top: 20px;
+	padding-top: 10px;
 	overflow: auto;
 }
 
 #diffs table.diff {
-	-webkit-box-shadow: 5px 5px 5px #ccc;
+	-webkit-box-shadow:3px 3px 3px #ccc;
 	width: 98%;
 	margin: auto auto 20px 1%;
 }
