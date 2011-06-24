@@ -37,9 +37,9 @@
 	[view setResourceLoadDelegate:self];
 
 	NSURL *resourceURL = [[[NSBundle mainBundle] resourceURL] URLByStandardizingPath];
-	NSURL *baseURL = [[resourceURL URLByAppendingPathComponent:@"html/views" isDirectory:YES] URLByAppendingPathComponent:startFile isDirectory:YES];
+	NSURL *baseURL = [[resourceURL URLByAppendingPathComponent:@"html/views"] URLByAppendingPathComponent:startFile];
 	
-	NSURL *fileURL = [baseURL URLByAppendingPathComponent:@"index.html" isDirectory:NO];
+	NSURL *fileURL = [baseURL URLByAppendingPathComponent:@"index.html"];
 	[[view mainFrame] loadRequest:[NSURLRequest requestWithURL:fileURL]];
 }
 
