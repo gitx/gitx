@@ -467,7 +467,31 @@ NSString* PBGitRepositoryErrorDomain = @"GitXErrorDomain";
 		if ([[commit sha] isEqual:sha])
 			return commit;
 
-	return nil;
+	// The commit has not been loaded, but it may exist anyway
+	NSArray *args = [NSArray arrayWithObjects:
+			@"show", sha,
+			@"--pretty=format:"
+					"%P%n"         // parents
+					"%aN <%aE>%n"  // author name
+					"%cN <%cE>%n"  // committer name
+					"%ct%n"        // commit date
+					"%s",          // subject
+			nil];
+	int retValue = 1;
+	NSString *output = [self outputInWorkdirForArguments:args retValue:&retValue];
+
+	if ((retValue != 0) || [output hasPrefix:@"fatal:"])
+		return nil;
+
+	NSArray *lines = [output componentsSeparatedByString:@"\n"];
+	PBGitCommit *commit = [PBGitCommit commitWithRepository:self andSha:sha];
+	
+	commit.parents = [[lines objectAtIndex:0] componentsSeparatedByString:@" "];
+	commit.author = [lines objectAtIndex:1];
+	commit.committer = [lines objectAtIndex:2];
+	commit.timestamp = [[lines objectAtIndex:3] intValue];
+	commit.subject = [lines objectAtIndex:4];
+	return commit;
 }
 
 - (BOOL)isOnSameBranch:(NSString *)branchSHA asSHA:(NSString *)testSHA
