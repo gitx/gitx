@@ -232,6 +232,7 @@ const NSString *kAuthorKeyDate = @"date";
 	NSMutableString *auths=[NSMutableString string];
 	NSMutableString *refs=[NSMutableString string];
 	NSMutableString *subject=[NSMutableString string];
+	NSMutableString *all=[NSMutableString string];
 	
 	for (NSDictionary *item in header) {
 		if ([[item objectForKey:kHeaderKeyName] isEqualToString:@"subject"]) {
@@ -269,7 +270,17 @@ const NSString *kAuthorKeyDate = @"date";
 		}
 	}	
 	
-	return [NSString stringWithFormat:@"<div id='header' class='clearfix'><table class='references'>%@</table><p class='subject'>%@</p>%@<div id='badges'>%@</div></div><p>%@</p>",refs,subjectFirst,auths,badges,subject];
+	[all appendString:[NSString stringWithFormat:@"<div id='header' class='clearfix'><table class='references'>%@</table><p class='subject'>%@</p>%@",refs,subjectFirst,auths]];
+
+	if (![badges isEqualToString:@""])
+		[all appendString:[NSString stringWithFormat:@"<div id='badges'>%@</div>",badges]];
+
+	[all appendString:@"</div>"];
+
+	if (![subject isEqualToString:@""])
+		[all appendString:[NSString stringWithFormat:@"<p>%@</p>",subject]];
+
+	return all;
 }
 
 - (NSString *) arbitraryHashForString:(NSString*)concat {
