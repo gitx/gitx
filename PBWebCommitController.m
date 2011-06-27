@@ -228,13 +228,19 @@ const NSString *kAuthorKeyDate = @"date";
 - (NSString *)htmlForHeader:(NSArray *)header withRefs:(NSString *)badges
 {
 	NSString *last_mail = @"";
+	NSMutableString *subjectFirst = [NSMutableString string];
 	NSMutableString *auths=[NSMutableString string];
 	NSMutableString *refs=[NSMutableString string];
 	NSMutableString *subject=[NSMutableString string];
 	
 	for (NSDictionary *item in header) {
 		if ([[item objectForKey:kHeaderKeyName] isEqualToString:@"subject"]) {
-			[subject appendString:[NSString stringWithFormat:@"%@<br/>",[GLFileView escapeHTML:[item objectForKey:kHeaderKeyContent]]]];
+			if ([subjectFirst isEqualToString:@""]) {
+				[subjectFirst appendString:[NSString stringWithFormat:@"%@",[GLFileView escapeHTML:[item objectForKey:kHeaderKeyContent]]]];
+			} else {
+				[subject appendString:[NSString stringWithFormat:@"%@<br/>",[GLFileView escapeHTML:[item objectForKey:kHeaderKeyContent]]]];
+			}
+
 		}else{
 			if([[item objectForKey:kHeaderKeyContent] isKindOfClass:[NSString class]]){
 				[refs appendString:[NSString stringWithFormat:@"<tr><td>%@</td><td><a href='' onclick='selectCommit(this.innerHTML); return false;'>%@</a></td></tr>",[item objectForKey:kHeaderKeyName],[item objectForKey:kHeaderKeyContent]]];
@@ -263,7 +269,7 @@ const NSString *kAuthorKeyDate = @"date";
 		}
 	}	
 	
-	return [NSString stringWithFormat:@"<div id='header' class='clearfix'><table class='references'>%@</table><p class='subject'>%@</p>%@<div id='badges'>%@</div></div>",refs,subject,auths,badges];
+	return [NSString stringWithFormat:@"<div id='header' class='clearfix'><table class='references'>%@</table><p class='subject'>%@</p>%@<div id='badges'>%@</div></div><p>%@</p>",refs,subjectFirst,auths,badges,subject];
 }
 
 - (NSString *) arbitraryHashForString:(NSString*)concat {
