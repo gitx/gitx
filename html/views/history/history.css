@@ -102,6 +102,7 @@ a.servicebutton {
 	font-size: 13px;
 	padding: 5px;
 	float: none;
+	font-weight: bold;
 }
 
 p.subjectDetail {
