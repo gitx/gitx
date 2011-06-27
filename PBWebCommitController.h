@@ -19,11 +19,13 @@
 	
 	NSString* currentSha;
 	NSString* diff;
+	BOOL showLongDiffs;
 }
 
 - (void) changeContentTo: (PBGitCommit *) content;
 - (void) sendKey: (NSString*) key;
 - (void) openFileMerge:(NSString*)file sha:(NSString *)sha sha2:(NSString *)sha2;
+- (void) showLongDiff;
 
 - (void) didLoad;
 // Called when a commit or parent link is clicked.

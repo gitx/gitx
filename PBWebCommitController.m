@@ -32,8 +32,14 @@ const NSString *kAuthorKeyDate = @"date";
 
 @synthesize diff;
 
+- (void) showLongDiff
+{
+	showLongDiffs = TRUE;
+}
+
 - (void) awakeFromNib
 {
+	showLongDiffs = FALSE;
 	startFile = @"history";
 	[super awakeFromNib];
 }
@@ -118,10 +124,16 @@ const NSString *kAuthorKeyDate = @"date";
 	[args addObjectsFromArray:parents];
 	[args addObject:currentSha];
 	NSString *d = [repository outputInWorkdirForArguments:args];
-	NSString *diffs = [GLFileView parseDiff:d];
-	
-	NSString *html = [NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
-	
+	NSString *html;
+	if(showLongDiffs || [d length] < 200000)
+	{
+		showLongDiffs = FALSE;
+		NSString *diffs = [GLFileView parseDiff:d];
+		html = [NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
+	} else {
+		html = [NSString stringWithFormat:@"%@%@<div id='diffs'><p>This is a very large commit. It may take a long time to load the diff. Click <a href='' onclick='showFullDiff(); return false;'>here</a> to show anyway.</p></div>",header,fileList,currentSha];
+	}
+
 	html = [html stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:[NSString stringWithFormat:@"%@^",currentSha]];
 	html = [html stringByReplacingOccurrencesOfString:@"{SHA}" withString:currentSha];
 	

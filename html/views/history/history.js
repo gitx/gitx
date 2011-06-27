@@ -21,3 +21,7 @@ var showCommit = function(data){
 	$("commit").innerHTML=data;
 }
 
+var showFullDiff = function() {
+    Controller.showLongDiff();
+    Controller.updateView();
+}
