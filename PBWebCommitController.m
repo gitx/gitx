@@ -278,7 +278,7 @@ const NSString *kAuthorKeyDate = @"date";
 	[all appendString:@"</div>"];
 
 	if (![subject isEqualToString:@""])
-		[all appendString:[NSString stringWithFormat:@"<p>%@</p>",subject]];
+		[all appendString:[NSString stringWithFormat:@"<p class='subjectDetail'>%@</p>",subject]];
 
 	return all;
 }
