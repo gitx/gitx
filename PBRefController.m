@@ -88,22 +88,14 @@
 	if (remoteRef)
 		[info setObject:remoteRef forKey:kGitXRemoteType];
 
-	[alert beginSheetModalForWindow:[historyController.repository.windowController window]
-					  modalDelegate:self
-					 didEndSelector:@selector(confirmPushRefSheetDidEnd:returnCode:contextInfo:)
-						contextInfo:info];
-}
-
-- (void)confirmPushRefSheetDidEnd:(NSAlert *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
-{
-    [[sheet window] orderOut:nil];
-
-	if ([[sheet suppressionButton] state] == NSOnState)
+    NSInteger returnCode=[alert runModal];
+    
+	if ([[alert suppressionButton] state] == NSOnState)
         [PBGitDefaults suppressDialogWarningForDialog:kDialogConfirmPush];
 
 	if (returnCode == NSAlertDefaultReturn) {
-		PBGitRef *ref = [(NSDictionary *)contextInfo objectForKey:kGitXBranchType];
-		PBGitRef *remoteRef = [(NSDictionary *)contextInfo objectForKey:kGitXRemoteType];
+		PBGitRef *ref = [info objectForKey:kGitXBranchType];
+		PBGitRef *remoteRef = [info objectForKey:kGitXRemoteType];
 
 		[historyController.repository beginPushRef:ref toRemote:remoteRef];
 	}
