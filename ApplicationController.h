@@ -20,6 +20,7 @@
 	NSManagedObjectContext *managedObjectContext;
 
 	PBCloneRepositoryPanel *cloneRepositoryPanel;
+    
 }
 
 - (NSPersistentStoreCoordinator *)persistentStoreCoordinator;
