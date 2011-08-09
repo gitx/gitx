@@ -53,8 +53,14 @@
 	} else if ([menuItem action] == @selector(showHistoryView:)) {
 		[menuItem setState:(contentController != sidebarController.commitViewController) ? YES : NO];
 		return ![repository isBareRepository];
-	}
+	} else if ([menuItem action] == @selector(commit:)){
+        return [contentController isKindOfClass:[PBGitCommitController class]]; 
+    }
 	return YES;
+}
+- (IBAction) commit:(id) sender
+{
+    [(PBGitCommitController *)contentController commit:sender];
 }
 
 - (void) awakeFromNib
