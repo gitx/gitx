@@ -46,7 +46,8 @@ static NSString * const kCommandName = @"stash";
 		if ([stashLine length] == 0)
 			continue;
 		PBGitStash *stash = [[PBGitStash alloc] initWithRawStashLine:stashLine];
-		[loadedStashes addObject:stash];
+		if (stash != nil)
+			[loadedStashes addObject:stash];
 		[stash release];
 	}
 	
