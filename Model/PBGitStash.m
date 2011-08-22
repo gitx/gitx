@@ -19,7 +19,7 @@
 	if ((self = [super init])) {
 		stashRawString = [stashLineFromStashListOutput retain];
 		NSArray *lineComponents = [stashLineFromStashListOutput componentsSeparatedByString:@":"];
-		if (lineComponents != 3) {
+		if ([lineComponents count] != 3) {
 			[self release];
 			return nil;
 		}
