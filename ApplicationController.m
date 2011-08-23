@@ -17,6 +17,7 @@
 #import "PBGitDefaults.h"
 #import "PBCloneRepositoryPanel.h"
 #import "Sparkle/SUUpdater.h"
+#import "AIURLAdditions.h"
 
 @implementation ApplicationController
 
@@ -61,6 +62,14 @@
 	}
 }
 
+- (void)applicationWillFinishLaunching:(NSNotification*)notification
+{
+    [[NSAppleEventManager sharedAppleEventManager] setEventHandler:self
+                                                       andSelector:@selector(getUrl:withReplyEvent:)
+                                                     forEventClass:kInternetEventClass
+                                                        andEventID:kAEGetURL];
+}
+ 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification
 {
 	[[SUUpdater sharedUpdater] setSendsSystemProfile:YES];
@@ -76,7 +85,7 @@
 
     BOOL hasOpenedDocuments = NO;
     NSArray *launchedDocuments = [[[PBRepositoryDocumentController sharedDocumentController] documents] copy];
-
+    
 	// Only try to open a default document if there are no documents open already.
 	// For example, the application might have been launched by double-clicking a .git repository,
 	// or by dragging a folder to the app icon
@@ -114,8 +123,23 @@
 
 	// The current directory was not enabled or could not be opened (most likely it’s not a git repository).
 	// show an open panel for the user to select a repository to view
-	if ([PBGitDefaults showOpenPanelOnLaunch] && !hasOpenedDocuments)
+	if ([PBGitDefaults showOpenPanelOnLaunch] && !hasOpenedDocuments && cloneRepositoryPanel == nil)
 		[[PBRepositoryDocumentController sharedDocumentController] openDocument:self];
+}
+
+- (void)getUrl:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
+{
+	NSString *urlString = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
+    NSURL *url = [NSURL URLWithString:urlString];
+    
+    if ([url.host isEqual:@"clone"]) {
+        NSString * repo = [[url queryArgumentForKey:@"repo"] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+
+        [self showCloneRepository:self];
+        
+        [cloneRepositoryPanel.repositoryURL setStringValue:repo];
+    }
+    
 }
 
 - (void) windowWillClose: sender

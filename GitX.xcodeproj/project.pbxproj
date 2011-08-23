@@ -54,6 +54,7 @@
 		217FF0BB12A1CB3300785A65 /* PBGitResetController.m in Sources */ = {isa = PBXBuildFile; fileRef = 217FF0B712A1CB3300785A65 /* PBGitResetController.m */; };
 		217FF0BE12A1CB3E00785A65 /* PBRevealWithFinderCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = 217FF0BC12A1CB3E00785A65 /* PBRevealWithFinderCommand.m */; };
 		21CF0B24129C7ED90065B37C /* TrackableOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 21CF0B23129C7ED90065B37C /* TrackableOutlineView.m */; };
+		2CC9B39713E86B35002EA416 /* AIURLAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC9B39613E86B35002EA416 /* AIURLAdditions.m */; };
 		310DC1D81240599E0017A0F7 /* GLFileView.m in Sources */ = {isa = PBXBuildFile; fileRef = 310DC1D71240599E0017A0F7 /* GLFileView.m */; };
 		311D4F561370C9A50061CFD3 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 311D4F551370C9A50061CFD3 /* Security.framework */; };
 		311D4F5B1370CD150061CFD3 /* ScriptingBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 311D4F5A1370CD150061CFD3 /* ScriptingBridge.framework */; };
@@ -297,6 +298,8 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		2CC9B39513E86B2F002EA416 /* AIURLAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AIURLAdditions.h; sourceTree = "<group>"; };
+		2CC9B39613E86B35002EA416 /* AIURLAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AIURLAdditions.m; sourceTree = "<group>"; };
 		310DC1D61240599E0017A0F7 /* GLFileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLFileView.h; sourceTree = "<group>"; };
 		310DC1D71240599E0017A0F7 /* GLFileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLFileView.m; sourceTree = "<group>"; };
 		311D4F551370C9A50061CFD3 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
@@ -986,6 +989,8 @@
 		F57CC43E0E05E472000472E2 /* Aux */ = {
 			isa = PBXGroup;
 			children = (
+				2CC9B39613E86B35002EA416 /* AIURLAdditions.m */,
+				2CC9B39513E86B2F002EA416 /* AIURLAdditions.h */,
 				31460C79124185B900B90AED /* MGScopeBar */,
 				47DBDBC80E95016F00671A1E /* PBNSURLPathUserDefaultsTransfomer.h */,
 				47DBDBC90E95016F00671A1E /* PBNSURLPathUserDefaultsTransfomer.m */,
@@ -1479,6 +1484,7 @@
 				DDB8FE0113998CE2001A9EE2 /* PBStashContentController.m in Sources */,
 				89087CA613A3E46B00911503 /* PBWebCommitController.m in Sources */,
 				8998B1C613A55B3500121729 /* PBWebStashController.m in Sources */,
+				2CC9B39713E86B35002EA416 /* AIURLAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
