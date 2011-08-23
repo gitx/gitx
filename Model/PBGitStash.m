@@ -19,6 +19,10 @@
 	if ((self = [super init])) {
 		stashRawString = [stashLineFromStashListOutput retain];
 		NSArray *lineComponents = [stashLineFromStashListOutput componentsSeparatedByString:@":"];
+		if ([lineComponents count] != 3) {
+			[self release];
+			return nil;
+		}
 		name = [[lineComponents objectAtIndex:0] retain];
 		stashSourceMessage = [[[lineComponents objectAtIndex:1] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] retain];
 		message = [[[lineComponents objectAtIndex:2] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] retain];
