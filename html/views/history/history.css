@@ -264,7 +264,12 @@ a.showdiff {
 	background-image: -webkit-gradient(linear,left top,left bottom, color-stop(.7, #EAF2f6), color-stop(1, #e3ebf3));
 }
 
-#header table.references  a {
+#header table.references  td{
+    text-align:right;
+}
+
+#header table.references  a,
+#header table.references  p{
 	font-family: Menlo, Consolas, 'Bitstream Vera Sans Mono', 'Courier New', Courier, monospace;
 }
 

@@ -244,7 +244,12 @@ const NSString *kAuthorKeyDate = @"date";
 
 		}else{
 			if([[item objectForKey:kHeaderKeyContent] isKindOfClass:[NSString class]]){
-				[refs appendString:[NSString stringWithFormat:@"<tr><td>%@</td><td><a href='' onclick='selectCommit(this.innerHTML); return false;'>%@</a></td></tr>",[item objectForKey:kHeaderKeyName],[item objectForKey:kHeaderKeyContent]]];
+                NSString *name=[item objectForKey:kHeaderKeyName];
+                if([name isEqualToString:@"commit"]){
+                    [refs appendString:[NSString stringWithFormat:@"<tr><td>%@&nbsp;:</td><td><p>%@</p></td></tr>",name,[item objectForKey:kHeaderKeyContent]]];
+                }else{
+                    [refs appendString:[NSString stringWithFormat:@"<tr><td>%@&nbsp;:</td><td><a href='' onclick='selectCommit(this.innerHTML); return false;'>%@</a></td></tr>",name,[item objectForKey:kHeaderKeyContent]]];
+                }
 			}else{  // NSDictionary: author or committer
 				NSDictionary *content = [item objectForKey:kHeaderKeyContent];
 				NSString *email = [content objectForKey:kAuthorKeyEmail];
