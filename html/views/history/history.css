@@ -102,6 +102,11 @@ a.servicebutton {
 	font-size: 13px;
 	padding: 5px;
 	float: none;
+	font-weight: bold;
+}
+
+p.subjectDetail {
+    padding: 5px;
 }
 
 #files {
@@ -198,6 +203,7 @@ a.showdiff {
 
 #filelist tr td {
 	border-bottom: 1px solid #ccc;
+	border-top: 1px solid #ccc;
 }
 
 #filelist a {
@@ -308,7 +314,6 @@ a.showdiff {
 }
 
 #diffs {
-	-webkit-box-shadow: inset 0px 5px 5px #ccc;
 	width: 100%;
 	display: block;
 	padding-top: 10px;

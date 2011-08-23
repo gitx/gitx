@@ -32,8 +32,14 @@ const NSString *kAuthorKeyDate = @"date";
 
 @synthesize diff;
 
+- (void) showLongDiff
+{
+	showLongDiffs = TRUE;
+}
+
 - (void) awakeFromNib
 {
+	showLongDiffs = FALSE;
 	startFile = @"history";
 	[super awakeFromNib];
 }
@@ -118,10 +124,16 @@ const NSString *kAuthorKeyDate = @"date";
 	[args addObjectsFromArray:parents];
 	[args addObject:currentSha];
 	NSString *d = [repository outputInWorkdirForArguments:args];
-	NSString *diffs = [GLFileView parseDiff:d];
-	
-	NSString *html = [NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
-	
+	NSString *html;
+	if(showLongDiffs || [d length] < 200000)
+	{
+		showLongDiffs = FALSE;
+		NSString *diffs = [GLFileView parseDiff:d];
+		html = [NSString stringWithFormat:@"%@%@<div id='diffs'>%@</div>",header,fileList,diffs];
+	} else {
+		html = [NSString stringWithFormat:@"%@%@<div id='diffs'><p>This is a very large commit. It may take a long time to load the diff. Click <a href='' onclick='showFullDiff(); return false;'>here</a> to show anyway.</p></div>",header,fileList,currentSha];
+	}
+
 	html = [html stringByReplacingOccurrencesOfString:@"{SHA_PREV}" withString:[NSString stringWithFormat:@"%@^",currentSha]];
 	html = [html stringByReplacingOccurrencesOfString:@"{SHA}" withString:currentSha];
 	
@@ -216,13 +228,20 @@ const NSString *kAuthorKeyDate = @"date";
 - (NSString *)htmlForHeader:(NSArray *)header withRefs:(NSString *)badges
 {
 	NSString *last_mail = @"";
+	NSMutableString *subjectFirst = [NSMutableString string];
 	NSMutableString *auths=[NSMutableString string];
 	NSMutableString *refs=[NSMutableString string];
 	NSMutableString *subject=[NSMutableString string];
+	NSMutableString *all=[NSMutableString string];
 	
 	for (NSDictionary *item in header) {
 		if ([[item objectForKey:kHeaderKeyName] isEqualToString:@"subject"]) {
-			[subject appendString:[NSString stringWithFormat:@"%@<br/>",[GLFileView escapeHTML:[item objectForKey:kHeaderKeyContent]]]];
+			if ([subjectFirst isEqualToString:@""]) {
+				[subjectFirst appendString:[NSString stringWithFormat:@"%@",[GLFileView escapeHTML:[item objectForKey:kHeaderKeyContent]]]];
+			} else {
+				[subject appendString:[NSString stringWithFormat:@"%@<br/>",[GLFileView escapeHTML:[item objectForKey:kHeaderKeyContent]]]];
+			}
+
 		}else{
 			if([[item objectForKey:kHeaderKeyContent] isKindOfClass:[NSString class]]){
 				[refs appendString:[NSString stringWithFormat:@"<tr><td>%@</td><td><a href='' onclick='selectCommit(this.innerHTML); return false;'>%@</a></td></tr>",[item objectForKey:kHeaderKeyName],[item objectForKey:kHeaderKeyContent]]];
@@ -251,7 +270,17 @@ const NSString *kAuthorKeyDate = @"date";
 		}
 	}	
 	
-	return [NSString stringWithFormat:@"<div id='header' class='clearfix'><table class='references'>%@</table><p class='subject'>%@</p>%@<div id='badges'>%@</div></div>",refs,subject,auths,badges];
+	[all appendString:[NSString stringWithFormat:@"<div id='header' class='clearfix'><table class='references'>%@</table><p class='subject'>%@</p>%@",refs,subjectFirst,auths]];
+
+	if (![badges isEqualToString:@""])
+		[all appendString:[NSString stringWithFormat:@"<div id='badges'>%@</div>",badges]];
+
+	[all appendString:@"</div>"];
+
+	if (![subject isEqualToString:@""])
+		[all appendString:[NSString stringWithFormat:@"<p class='subjectDetail'>%@</p>",subject]];
+
+	return all;
 }
 
 - (NSString *) arbitraryHashForString:(NSString*)concat {
