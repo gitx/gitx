@@ -41,7 +41,10 @@
 	if (contentController)
 		[contentController removeObserver:self forKeyPath:@"status"];
 }
-
+- (NSApplicationPresentationOptions)window:(NSWindow *)window willUseFullScreenPresentationOptions:(NSApplicationPresentationOptions)proposedOptions
+{
+    return NSApplicationPresentationAutoHideToolbar | NSApplicationPresentationFullScreen | NSApplicationPresentationAutoHideMenuBar | NSApplicationPresentationAutoHideDock;
+}
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	if ([menuItem action] == @selector(showCommitView:)) {
@@ -50,8 +53,14 @@
 	} else if ([menuItem action] == @selector(showHistoryView:)) {
 		[menuItem setState:(contentController != sidebarController.commitViewController) ? YES : NO];
 		return ![repository isBareRepository];
-	}
+	} else if ([menuItem action] == @selector(commit:)){
+        return [contentController isKindOfClass:[PBGitCommitController class]]; 
+    }
 	return YES;
+}
+- (IBAction) commit:(id) sender
+{
+    [(PBGitCommitController *)contentController commit:sender];
 }
 
 - (void) awakeFromNib
