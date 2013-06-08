@@ -22,8 +22,8 @@
 	<p style="text-align:right;font-size:80%;"><em>By</em> developers, <em>for</em> developers.</p></div>
         <p class="view"><a href="https://github.com/rowanj/gitx">View the Project on GitHub <small>rowanj/gitx</small></a></p>
         <ul>
-          <li><a href="https://github.com/rowanj/gitx/zipball/master">Download <strong>Source</strong></a></li>
-          <li><a href="https://github.com/rowanj/gitx/downloads">Download <strong>Binaries</strong></a></li>
+<!--          <li><a href="https://github.com/rowanj/gitx/zipball/master">Download <strong>Source</strong></a></li>-->
+          <li><a href="http://builds.phere.net/GitX/development/GitX-dev.dmg">Download <strong>Package</strong></a></li>
           <li><a href="https://github.com/rowanj/gitx">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
@@ -70,7 +70,7 @@
 <li>Notably better performance on large repositories</li>
 <li>Reliable in-app updates thanks to <a href="http://sparkle.andymatuschak.org/">Sparkle</a>
 </li>
-<li>Significantly reduced (<a href="rowanj/gitx#2">and shrinking</a>!) use of <code>git</code> command-line tool in favour of direct use of <a href="https://github.com/libgit2/libgit2">libgit2</a> and <a href="https://github.com/libgit2/objective-git">ObjectiveGit.framework</a>
+<li>Significantly reduced (<a href="https://github.com/rowanj/gitx/issues/2">and shrinking</a>!) use of <code>git</code> command-line tool in favour of direct use of <a href="https://github.com/libgit2/libgit2">libgit2</a> and <a href="https://github.com/libgit2/objective-git">ObjectiveGit.framework</a>
 </li>
 <li>Lower, more regular memory footprint due to porting to Objective-C Automatic Reference Counting</li>
 <li>Improvements to the command-line <code>gitx</code> tool</li>
@@ -80,25 +80,29 @@
 
 <ul>
 <li>64-bit Intel only, building for other targets is left as an exercise to the would-be user</li>
-<li>OS X 10.6 Snow Leopard and above.  Honestly, unless somebody volunteers to maintain it, Snow Leopard is <a href="rowanj/gitx#40">likely to be dropped</a> within a few months of OS X 10.8 Mountain Lion general availability; as I will no longer have the facility to build or test on it</li>
+<li>OS X 10.7 Lion and above.</li>
 <li>Not as many graphical niceties as some forks.  Many are lacking only because of the time it would take to find and merge them; some are omitted by conscious decision to keep development focused and the high signal-to-noise ratio of the interface</li>
 </ul><h2>Where can I get it?</h2>
 
 <ol>
-<li>Grab the most-recent binary from the <a href="http://github.com/rowanj/gitx/downloads">GitHub project downloads page</a>.  New builds are uploaded here periodically after significant stability or feature improvements.</li>
-<li>Click the "Check for updates..." item in the GitX menu.  New builds are available through in-app update as part of a Continuous Integration scheme that deploys each time a commit is pushed, so there's bleeding-edge code here.</li>
-</ol><p>GitX (R) uses the <a href="http://sparkle.andymatuschak.org/">Sparkle</a> framework for in-app updates; so once you have version 0.11 or later, you can check for or update to new builds from the GitX menu at any time, or opt-in for automatic updates.</p>
+<li>Grab the <a href="http://builds.phere.net/GitX/development/GitX-dev.dmg">most recent package</a>.
+<ul>
+<li>The last build to support OS X 10.6 Snow Leopard is <a href="http://builds.phere.net/GitX/development/GitX-dev-81.dmg">GitX-dev 0.14.81</a>.  Please see <a href="#10_6">my notes on Snow Leopard support in GitX</a>.</li>
+</ul>
+</li>
+<li>Click the "Check for updates..." item in the GitX menu.  New builds are available through in-app update.</li>
+</ol><p>GitX-dev uses the <a href="http://sparkle.andymatuschak.org/">Sparkle</a> framework for in-app updates; so once you have version 0.11 or later, you can check for or update to new builds from the GitX menu at any time, or opt-in for automatic updates.</p>
 
 <h1>Development</h1>
 
-<p>Developing for GitX (R) has a few requirements above and beyond those
+<p>Developing for GitX-dev has a few requirements above and beyond those
 for mainline GitX.</p>
 
 <p>Most third-party code is referenced with Git submodules, so <a href="http://book.git-scm.com/5_submodules.html">read up</a> on those if you're not familiar.</p>
 
 <ul>
-<li>Very recent Xcode install, 4.3 release strongly recommended.</li>
-<li>Most development is done on OS X Lion, Snow Leopard may or may not work</li>
+<li>Very recent Xcode install, 4.5 release strongly recommended.</li>
+<li>Most development is done on OS X 10.8 Mountain Lion, OS X 10.7 Lion may or may not work.</li>
 <li>
 <code>CMake</code> with a working command-line compiling environment for building <code>libgit2</code>
 </li>
@@ -127,6 +131,20 @@ you are not a programmer you can do useful things. A short selection:</p>
 <li>Give feedback</li>
 <li>File <a href="https://github.com/rowanj/gitx/issues?labels=Bug">bug reports</a> and <a href="https://github.com/rowanj/gitx/issues?labels=Feature">feature requests</a>.</li>
 </ul>
+
+<h2><a id="10_6">OS X 10.6 Snow Leopard support</a></h2>
+<p>I haven't had the ability to test on 10.6 since 2011; GitX support has been maintained until mid 2013 by virtue of timely bug reports and relatively simple fixes, but the aggregate support weight to continue targeting 10.6 now exceeds my threshold for how much I'm willing to jeopardise further feature and performance development.</p>
+<p>If you'd like to see GitX continue to support OS X 10.6, you are most welcome to fork from the <a href="https://github.com/rowanj/gitx/tree/10.6_snow_leopard">10.6_snow_leopard</a> branch I have published on GitHub as a starting point.</p>
+<p>Regrettably, although I feel the pain of being stranded on an old version, I am not interested in continuing to support 10.6; I will outline the main reasons for this here.</p>
+<ol>
+<li>OS X 10.6 does not support ARC <code>weak</code> references, copmlicating memory management</li>
+<li><a href="http://github.com/libgit2/objective-git/">Objective-Git</a> no longer supports 10.6 (and is phasing in the use of <code>weak</code> references)</li>
+<li>Objective-Git is presently introducing features like an SSH remote transport, which will allow us to further dramatically reduce reliance on parsing command-line output of 'git' commands.  This and other new features, along with their usual stream of bug fixes and performance improvements is a substantial reason to not freeze on an old version to continue to support 10.6.</li>
+<li>OS X 10.6 does not support XPC services at all, and these are one of my main avenues of exploration for further increasing performance and reliability.</li>
+<li>Many Snow Leopard users seem to be running hardware that can be upgraded to 10.7 or higher (we've only built for 64-bit Intel for over a year), and have just chosen not to do so.  I'm not saying that your choice isn't valid, but it is a choice.</li>
+<li>If I can't test on 10.6, and I break compatibility in an update, it's broken for all 10.6 users until somebody reports it and typically until I fix it.  I think that's a much worse experience for those 10.6 users than running an old but functional and stable build.</li>
+</ol>
+
       </section>
     </div>
     <footer>
@@ -135,5 +153,5 @@ you are not a programmer you can do useful things. A short selection:</p>
     </footer>
     <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
     
-  </body>
+       </body>
 </html>
