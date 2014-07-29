@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  {% include head.html %}
+  <body>
+    <div class="wrapper">
+      {% include header.html %}
+      <section>
+        {{ content }}
+      </section>
+    </div>
+    {% include footer.html %}
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+  </body>
+</html>
