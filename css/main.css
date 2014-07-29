@@ -46,6 +46,14 @@ p {
   padding: 0;
 }
 
+li > p {
+  margin: 0;
+}
+
+.center {
+  text-align: center;
+}
+
 strong {
   color: #222;
   font-weight: 700;
