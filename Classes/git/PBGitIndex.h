@@ -11,6 +11,8 @@
 @class PBGitRepository;
 @class PBChangedFile;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /*
  * Notifications this class will send
  */
@@ -48,12 +50,12 @@ extern NSString *PBGitIndexOperationFailed;
 @property (assign, getter=isAmend) BOOL amend;
 @property (weak, readonly) PBGitRepository *repository;
 
-- (id)initWithRepository:(PBGitRepository *)repository;
-
 // A list of PBChangedFile's with differences between the work tree and the index
 // This method is KVO-aware, so changes when any of the index-modifying methods are called
 // (including -refresh)
-- (NSArray *)indexChanges;
+@property (readonly, retain) NSArray <PBChangedFile *> *indexChanges;
+
+- (instancetype)initWithRepository:(PBGitRepository *)repository;
 
 // Refresh the index
 - (void)refresh;
@@ -70,3 +72,5 @@ extern NSString *PBGitIndexOperationFailed;
 - (NSString *)diffForFile:(PBChangedFile *)file staged:(BOOL)staged contextLines:(NSUInteger)context;
 
 @end
+
+NS_ASSUME_NONNULL_END

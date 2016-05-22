@@ -48,7 +48,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 }
 
 @property (retain) NSDictionary *amendEnvironment;
-@property (retain) NSMutableArray *files;
+@property (retain) NSMutableArray <PBChangedFile *> *files;
 @end
 
 @implementation PBGitIndex
