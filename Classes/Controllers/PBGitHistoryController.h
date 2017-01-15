@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Find/Search methods
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
+- (IBAction)selectParentCommit:(id)sender;
 
 - (IBAction)copy:(id)sender;
 - (IBAction)copySHA:(id)sender;

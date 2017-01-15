@@ -43,7 +43,10 @@
 	}
 	else if ([character rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"jkcv"]].location == 0)
 		[webController sendKey: character];
-	else
+	else if (([character characterAtIndex:0] == NSDownArrowFunctionKey)
+			 && [event modifierFlags] & NSControlKeyMask) {
+		[controller selectParentCommit:self];
+	} else
 		[super keyDown: event];
 }
 
