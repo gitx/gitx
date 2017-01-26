@@ -149,14 +149,14 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="438" height="30"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <button id="e4Y-vA-x9M">
+                                                                <button toolTip="⇧⌘A" misplaced="YES" id="e4Y-vA-x9M">
                                                                     <rect key="frame" x="-2" y="6" width="82" height="18"/>
                                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                                     <buttonCell key="cell" type="check" title="Amend" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="pYj-lv-tp6">
                                                                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                                         <font key="font" metaFont="system"/>
-                                                                        <string key="keyEquivalent">a</string>
-                                                                        <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                                                        <string key="keyEquivalent">A</string>
+                                                                        <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                                                                     </buttonCell>
                                                                     <connections>
                                                                         <binding destination="-2" name="value" keyPath="index.amend" id="ZRJ-cU-Xy4"/>
