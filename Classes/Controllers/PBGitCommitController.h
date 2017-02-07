@@ -25,9 +25,7 @@
 	IBOutlet NSArrayController *cachedFilesController;
 	IBOutlet NSArrayController *trackedFilesController;
 
-	IBOutlet NSTabView *controlsTabView;
 	IBOutlet NSButton *commitButton;
-	IBOutlet NSButton *stashButton;
 
 	IBOutlet PBGitIndexController *indexController;
 	IBOutlet PBWebChangesController *webController;

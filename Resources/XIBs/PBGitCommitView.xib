@@ -14,7 +14,6 @@
                 <outlet property="commitButton" destination="coC-RC-dhM" id="Zqw-Gy-05Z"/>
                 <outlet property="commitMessageView" destination="133" id="213"/>
                 <outlet property="commitSplitView" destination="186" id="314"/>
-                <outlet property="controlsTabView" destination="4Ld-Yb-msh" id="Ogf-eR-aMr"/>
                 <outlet property="indexController" destination="254" id="256"/>
                 <outlet property="trackedFilesController" destination="EmG-y5-6ms" id="mqT-Qm-7zo"/>
                 <outlet property="unstagedFilesController" destination="81" id="156"/>
@@ -114,18 +113,18 @@
                                         <rect key="frame" x="0.0" y="0.0" width="443" height="231"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <scrollView autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="130">
-                                                <rect key="frame" x="0.0" y="36" width="443" height="190"/>
+                                            <scrollView misplaced="YES" autohidesScrollers="YES" horizontalLineScroll="10" horizontalPageScroll="10" verticalLineScroll="10" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="130">
+                                                <rect key="frame" x="0.0" y="32" width="443" height="194"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <clipView key="contentView" id="0Ty-JR-WNQ">
-                                                    <rect key="frame" x="1" y="1" width="441" height="188"/>
+                                                    <rect key="frame" x="1" y="1" width="441" height="192"/>
                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                     <subviews>
                                                         <textView importsGraphics="NO" richText="NO" allowsUndo="YES" linkDetection="YES" smartInsertDelete="YES" id="133" customClass="PBCommitMessageView">
-                                                            <rect key="frame" x="0.0" y="0.0" width="469" height="188"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="478" height="192"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                            <size key="minSize" width="441" height="188"/>
+                                                            <size key="minSize" width="441" height="192"/>
                                                             <size key="maxSize" width="1161" height="10000000"/>
                                                             <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                                         </textView>
@@ -141,88 +140,32 @@
                                                     <autoresizingMask key="autoresizingMask"/>
                                                 </scroller>
                                             </scrollView>
-                                            <tabView drawsBackground="NO" controlSize="mini" type="noTabsNoBorder" initialItem="cUS-tK-1Kt" id="4Ld-Yb-msh">
-                                                <rect key="frame" x="0.0" y="3" width="443" height="30"/>
-                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                                <font key="font" metaFont="miniSystem"/>
-                                                <tabViewItems>
-                                                    <tabViewItem label="Commit" identifier="1" id="cUS-tK-1Kt">
-                                                        <view key="view" id="TLa-tK-777">
-                                                            <rect key="frame" x="0.0" y="0.0" width="443" height="30"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                            <subviews>
-                                                                <button id="e4Y-vA-x9M">
-                                                                    <rect key="frame" x="-2" y="6" width="82" height="18"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="check" title="Amend" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="pYj-lv-tp6">
-                                                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <connections>
-                                                                        <binding destination="-2" name="value" keyPath="index.amend" id="ZRJ-cU-Xy4"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button verticalHuggingPriority="750" id="010-p4-kzI">
-                                                                    <rect key="frame" x="257" y="-3" width="96" height="32"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="push" title="Sign-Off" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="cp4-9E-oFJ">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <connections>
-                                                                        <action selector="signOff:" target="-2" id="M8v-e0-JaJ"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button verticalHuggingPriority="750" id="coC-RC-dhM">
-                                                                    <rect key="frame" x="353" y="-3" width="96" height="32"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                                                                    <buttonCell key="cell" type="push" title="Commit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wNE-Rq-NpC">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                        <string key="keyEquivalent" base64-UTF8="YES">
+                                            <button verticalHuggingPriority="750" misplaced="YES" id="coC-RC-dhM">
+                                                <rect key="frame" x="353" y="-1" width="96" height="32"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                <buttonCell key="cell" type="push" title="Commit" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wNE-Rq-NpC">
+                                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                    <string key="keyEquivalent" base64-UTF8="YES">
 DQ
 </string>
-                                                                        <modifierMask key="keyEquivalentModifierMask" command="YES"/>
-                                                                    </buttonCell>
-                                                                    <connections>
-                                                                        <action selector="commit:" target="-2" id="csT-V6-zQ9"/>
-                                                                    </connections>
-                                                                </button>
-                                                            </subviews>
-                                                        </view>
-                                                    </tabViewItem>
-                                                    <tabViewItem label="Stash" identifier="2" id="vFn-0a-FZj">
-                                                        <view key="view" id="g7K-cf-iBQ">
-                                                            <rect key="frame" x="0.0" y="0.0" width="438" height="30"/>
-                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                            <subviews>
-                                                                <button verticalHuggingPriority="750" id="FEO-RD-AjR">
-                                                                    <rect key="frame" x="311" y="-3" width="133" height="32"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                                                    <buttonCell key="cell" type="push" title="Stash Changes" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="yBt-2d-x1H">
-                                                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <connections>
-                                                                        <action selector="stashChanges:" target="-2" id="F2R-m6-K8J"/>
-                                                                    </connections>
-                                                                </button>
-                                                                <button id="KlK-1A-LQX">
-                                                                    <rect key="frame" x="-2" y="6" width="93" height="18"/>
-                                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                                                    <buttonCell key="cell" type="check" title="Keep Index" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="9aM-KH-a1l">
-                                                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                                                        <font key="font" metaFont="system"/>
-                                                                    </buttonCell>
-                                                                    <connections>
-                                                                        <binding destination="-2" name="value" keyPath="stashKeepIndex" id="G13-fn-OG7"/>
-                                                                    </connections>
-                                                                </button>
-                                                            </subviews>
-                                                        </view>
-                                                    </tabViewItem>
-                                                </tabViewItems>
-                                            </tabView>
+                                                    <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <action selector="commit:" target="-2" id="csT-V6-zQ9"/>
+                                                </connections>
+                                            </button>
+                                            <button misplaced="YES" id="e4Y-vA-x9M">
+                                                <rect key="frame" x="288" y="8" width="65" height="18"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                                <buttonCell key="cell" type="check" title="Amend" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="pYj-lv-tp6">
+                                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                    <font key="font" metaFont="system"/>
+                                                </buttonCell>
+                                                <connections>
+                                                    <binding destination="-2" name="value" keyPath="index.amend" id="ZRJ-cU-Xy4"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                     </view>
                                 </box>
