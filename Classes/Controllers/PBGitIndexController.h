@@ -7,8 +7,10 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "PBGitCommitController.h"
-#import "PBChangedFile.h"
+
+@class PBGitCommitController;
+@class PBChangedFile;
+@class GTSubmodule;
 
 @interface PBGitIndexController : NSObject {
 	IBOutlet NSArrayController *stagedFilesController;
@@ -33,6 +35,7 @@
 - (void) stageSelectedFiles;
 - (void) unstageSelectedFiles;
 - (void) openFilesAction:(NSArray<PBChangedFile *> *)files;
+- (GTSubmodule *) submoduleAtPath:(NSString *)path;
 - (void) ignoreFilesAction:(NSArray<PBChangedFile *> *)files;
 - (void) showInFinderAction:(NSArray<PBChangedFile *> *)files;
 - (void) discardChangesForFiles:(NSArray<PBChangedFile *> *)files force:(BOOL)force;

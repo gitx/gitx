@@ -11,6 +11,7 @@
 #import "PBGitRepository.h"
 #import "PBGitIndex.h"
 #import "PBOpenFiles.h"
+#import "PBGitCommitController.h"
 
 #define FileChangesTableViewType @"GitFileChangedType"
 
@@ -150,7 +151,40 @@
 
 - (void) openFilesAction:(NSArray<PBChangedFile *> *)files
 {
-	[PBOpenFiles openFiles:files with:commitController.repository.workingDirectoryURL];
+	for (PBChangedFile * file in files) {
+		NSString * path = file.path;
+		GTSubmodule *submodule = [self submoduleAtPath:path];
+		if (submodule == nil) {
+			// normal file
+			[PBOpenFiles openFiles:@[file] with:commitController.repository.workingDirectoryURL];
+		} else {
+			// submodule
+			[self.class openSubmoduleInGitX:submodule];
+		}
+	}
+}
+
+- (GTSubmodule * _Nullable) submoduleAtPath:(NSString *)path
+{
+	NSString *standardizedPath = path.stringByStandardizingPath;
+	for (GTSubmodule *submodule in commitController.repository.submodules) {
+		if ([submodule.path isEqualToString:standardizedPath]) {
+			return submodule;
+		}
+	}
+	return nil;
+}
+
++ (void) openSubmoduleInGitX:(GTSubmodule * _Nonnull) submodule
+{
+	NSURL *submoduleURL = [submodule.parentRepository.fileURL URLByAppendingPathComponent:submodule.path isDirectory:YES];
+	[[NSDocumentController sharedDocumentController]
+	 openDocumentWithContentsOfURL:submoduleURL
+	 display:YES
+	 completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+		 // Do nothing on completion.
+		 return;
+	 }];
 }
 
 - (void) ignoreFilesAction:(NSArray<PBChangedFile *> *)files

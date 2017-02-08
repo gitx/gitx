@@ -91,11 +91,21 @@
 		return self.hasFilesForStaging && self.canDiscardAnyFile;
 	}
 	else if (menuItem.action == @selector(openFilesAction:)) {
-		menuItem.title = [self.class menuItemTitleForSelection:self.selectedFilesInThisTable
-									titleForMenuItemWithSingle:NSLocalizedString(@"Open “%@”", @"Open File menu item (single file with name)")
-													  multiple:NSLocalizedString(@"Open %i Files", @"Open File menu item (multiple files with number)")
-													   default:NSLocalizedString(@"Open", @"Open File menu item (empty selection)")];
-		return self.hasSelectedFilesInThisTable;
+		NSArray<PBChangedFile *> *selectedFiles = self.selectedFilesInThisTable;
+		if (selectedFiles.count > 0) {
+			NSString *filePath = selectedFiles.firstObject.path;
+			if (selectedFiles.count == 1 && [self.indexController submoduleAtPath:filePath] != nil) {
+				menuItem.title = [NSString stringWithFormat:NSLocalizedString(@"Open Submodule “%@” in GitX", @"Open Submodule Repository in GitX menu item (single file with name)"),
+								  filePath.stringByStandardizingPath];
+			} else {
+				menuItem.title = [self.class menuItemTitleForSelection:self.selectedFilesInThisTable
+											titleForMenuItemWithSingle:NSLocalizedString(@"Open “%@”", @"Open File menu item (single file with name)")
+															  multiple:NSLocalizedString(@"Open %i Files", @"Open File menu item (multiple files with number)")
+															   default:NSLocalizedString(@"Open", @"Open File menu item (empty selection)")];
+			}
+			return YES;
+		}
+		return NO;
 	}
 	else if (menuItem.action == @selector(ignoreFilesAction:)) {
 		menuItem.title = [self.class menuItemTitleForSelection:self.selectedFilesInThisTable
@@ -108,13 +118,13 @@
 	}
 	else if (menuItem.action == @selector(showInFinderAction:)) {
 		BOOL active = NO;
-		NSArray<PBChangedFile *> * selectedFiles = self.selectedFilesInThisTable;
+		NSArray<PBChangedFile *> *selectedFiles = self.selectedFilesInThisTable;
 		if (selectedFiles.count == 1) {
-			menuItem.title = [NSString stringWithFormat:NSLocalizedString(@"Reveal “%@” in Finder", @"Reveal File in Finder contextual menu item (single file with name)"),
+			menuItem.title = [NSString stringWithFormat:NSLocalizedString(@"Reveal “%@” in Finder", @"Reveal File in Finder menu item (single file with name)"),
 							  [PBGitIndexController getNameOfFirstFile:selectedFiles]];
 			active = YES;
 		} else {
-			menuItem.title = NSLocalizedString(@"Reveal in Finder", @"Reveal File in Finder contextual menu item (empty selection)");
+			menuItem.title = NSLocalizedString(@"Reveal in Finder", @"Reveal File in Finder menu item (empty selection)");
 		}
 		[self possiblySetHidden:!active forMenuItem:menuItem];
 		return active;

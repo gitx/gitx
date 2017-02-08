@@ -19,7 +19,7 @@
 	BOOL hasViewLoaded;
 }
 
-@property (weak, readonly)  PBGitRepository *repository;
+@property(weak, readonly) PBGitRepository *repository;
 @property(copy) NSString *status;
 @property(assign) BOOL isBusy;
 
