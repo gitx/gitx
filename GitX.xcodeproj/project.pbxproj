@@ -1639,7 +1639,7 @@
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
-				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.GitX;
 				PRODUCT_NAME = GitX;
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = app;
@@ -1657,7 +1657,7 @@
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
-				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
+				PRODUCT_BUNDLE_IDENTIFIER = io.github.GitX;
 				PRODUCT_NAME = GitX;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";

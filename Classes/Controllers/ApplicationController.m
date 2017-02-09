@@ -142,10 +142,10 @@ static OpenRecentController* recentsDialog = nil;
 		[dict addEntriesFromDictionary:[[NSDictionary alloc] initWithObjectsAndKeys:gitversion, @"Version", nil]];
 
 	#ifdef DEBUG_BUILD
-		[dict addEntriesFromDictionary:[[NSDictionary alloc] initWithObjectsAndKeys:@"GitX-dev (DEBUG)", @"ApplicationName", nil]];
+		[dict addEntriesFromDictionary:[[NSDictionary alloc] initWithObjectsAndKeys:@"GitX(N) (DEBUG)", @"ApplicationName", nil]];
 	#endif
 
-	[dict addEntriesFromDictionary:[[NSDictionary alloc] initWithObjectsAndKeys:@"GitX-dev (rowanj fork)", @"ApplicationName", nil]];
+	[dict addEntriesFromDictionary:[[NSDictionary alloc] initWithObjectsAndKeys:@"GitX(N)", @"ApplicationName", nil]];
 
 	[NSApp orderFrontStandardAboutPanelWithOptions:dict];
 }
@@ -224,17 +224,17 @@ static OpenRecentController* recentsDialog = nil;
 
 - (IBAction)showHelp:(id)sender
 {
-	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://rowanj.github.io/gitx/"]];
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://gitx.github.io/"]];
 }
 
 - (IBAction)reportAProblem:(id)sender
 {
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/rowanj/gitx/issues"]];
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/gitx/gitx/issues"]];
 }
 
 - (IBAction)showChangeLog:(id)sender
 {
-	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://builds.phere.net/GitX/development/GitX-dev.html"]];
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/gitx/gitx/commits/master"]];
 }
 
 
