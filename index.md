@@ -2,14 +2,13 @@
 layout: default
 ---
 [gitx]:    http://gitx.frim.nl/
-[git]:     http://git-scm.com/
-[dmg]:     http://builds.phere.net/GitX/development/GitX-dev.dmg
+[git]:     https://git-scm.com/
 [dmgsl]:   http://builds.phere.net/GitX/development/GitX-dev-81.dmg
-[commits]: https://github.com/rowanj/gitx/commits/master
-[builds]:  http://builds.phere.net/GitX/development/GitX-dev.html
-[bug]:     https://github.com/rowanj/gitx/issues?labels=Bug
-[rfe]:     https://github.com/rowanj/gitx/issues?labels=Feature
-[treesl]:  https://github.com/rowanj/gitx/tree/10.6_snow_leopard
+[commits]: https://github.com/gitx/gitx/commits/master
+[builds]:  https://github.com/gitx/gitx/releases
+[bug]:     https://github.com/gitx/gitx/issues?labels=bug
+[rfe]:     https://github.com/gitx/gitx/issues?labels=enhancement
+[treesl]:  https://github.com/gitx/gitx/tree/10.6_snow_leopard
 
 GitX-dev is a fork (variant) of [GitX][gitx], a long-defunct GUI for the
 [Git][git] version-control system. It has been maintained and enhanced with
@@ -56,7 +55,8 @@ on a product. Re-work sucks.
 
 ## How is it better?
 
-[gitl]: http://gitx.laullon.com/
+[gitx_l]: https://gitx.laullon.com/
+[gitx_r]: https://github.com/rowanj/gitx
 [sparkle]: http://sparkle.andymatuschak.org/
 [issue2]: https://github.com/rowanj/gitx/issues/2
 [libgit2]: https://github.com/libgit2/libgit2
@@ -65,8 +65,9 @@ on a product. Re-work sucks.
 GitX-dev includes a selection of improvements from around the GitX fork
 community.
 
-* The awesome branch/remote/tag sidebar from [GitX (L)][gitl]
+* The awesome branch/remote/tag sidebar from [GitX (L)][gitx_l]
 * Clickable commit references in blame view
+* Many awesome improvements from [GitX (R)][gitx_r]
 
 There are also a range of visible and under-the-hood changes to make GitX-dev a
 distinct improvement on other forks you may find.
@@ -103,7 +104,7 @@ reduce the support and maintenance load.
 
 ## Where can I get it?
 
-1. Grab the [most recent package][dmg].
+1. Grab the [most recent package][builds].
 
    * The last build to support OS X 10.6 Snow Leopard is
      [GitX-dev 0.14.81][dmgsl]. Please see
