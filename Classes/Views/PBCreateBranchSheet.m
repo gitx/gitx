@@ -95,14 +95,14 @@
 		return;
 	}
 
-	[self closeCreateBranchSheet:self];
-
 	[self.repository createBranch:name atRefish:self.startRefish];
-	
+
 	[PBGitDefaults setShouldCheckoutBranch:self.shouldCheckoutBranch];
 
 	if (self.shouldCheckoutBranch)
 		[self.repository checkoutRefish:ref];
+
+	[self closeCreateBranchSheet:self];
 }
 
 
