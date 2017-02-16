@@ -7,11 +7,11 @@
 //
 
 #import "PBOpenFiles.h"
+#import "PBChangedFile.h"
 
 @implementation PBOpenFiles
 
-+ (NSArray *)selectedURLsFromSender:(id)sender with:(NSURL *)workingDirectoryURL {
-	NSArray *selectedFiles = [sender representedObject];
++ (NSArray *) selectedURLsFromSender:(NSArray<PBChangedFile *> *)selectedFiles with:(NSURL *)workingDirectoryURL {
 	if ([selectedFiles count] == 0)
 		return nil;
 
@@ -31,25 +31,25 @@
 	return URLs;
 }
 
-+ (void)showInFinderAction:(id)sender with:(NSURL *)workingDirectoryURL {
-	NSArray *URLs = [self selectedURLsFromSender:sender with:workingDirectoryURL];
++ (void) openFiles:(NSArray<PBChangedFile *> *)selectedFiles with:(NSURL *)workingDirectoryURL {
+	NSArray *URLs = [self selectedURLsFromSender:selectedFiles with:workingDirectoryURL];
+	
 	if ([URLs count] == 0)
 		return;
-
-	[[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:URLs];
-}
-
-+ (void)openFilesAction:(id)sender with:(NSURL *)workingDirectoryURL {
-	NSArray *URLs = [self selectedURLsFromSender:sender with:workingDirectoryURL];
-
-	if ([URLs count] == 0)
-		return;
-
+	
 	[[NSWorkspace sharedWorkspace] openURLs:URLs
 					withAppBundleIdentifier:nil
 									options:0
 			 additionalEventParamDescriptor:nil
 						  launchIdentifiers:NULL];
+}
+
++ (void) showInFinder:(NSArray<PBChangedFile *> *)selectedFiles with:(NSURL *)workingDirectoryURL {
+	NSArray *URLs = [self selectedURLsFromSender:selectedFiles with:workingDirectoryURL];
+	if ([URLs count] == 0)
+		return;
+
+	[[NSWorkspace sharedWorkspace] activateFileViewerSelectingURLs:URLs];
 }
 
 @end
