@@ -11,18 +11,19 @@
 #import "PBGitRepository.h"
 #import "PBGitIndex.h"
 #import "PBOpenFiles.h"
+#import "PBGitCommitController.h"
 
 #define FileChangesTableViewType @"GitFileChangedType"
 
 @interface PBGitIndexController ()
-- (void)discardChangesForFiles:(NSArray *)files force:(BOOL)force;
+- (void)discardChangesForFiles:(NSArray<PBChangedFile *> *)files force:(BOOL)force;
 @end
 
 // FIXME: This isn't a view/window/whatever controller, though it acts like one...
 // See for example -menuForTable and its setTarget: calls.
 @implementation PBGitIndexController
 
-@synthesize stagedTable, unstagedTable;
+@synthesize stagedFilesController, unstagedFilesController, stagedTable, unstagedTable;
 
 - (void)awakeFromNib
 {
@@ -37,7 +38,7 @@
 }
 
 // FIXME: Find a proper place for this method -- this is not it.
-- (void)ignoreFiles:(NSArray *)files
+- (void)ignoreFiles:(NSArray<PBChangedFile *> *)files
 {
 	// Build output string
 	NSMutableArray *fileList = [NSMutableArray array];
@@ -89,117 +90,31 @@
 	return YES;
 }
 
-- (NSMenu *) menuForTable:(NSTableView *)table
-{
-	NSMenu *menu = [[NSMenu alloc] init];
-	NSArrayController *controller = table.tag == 0 ? unstagedFilesController : stagedFilesController;
-	NSArray *selectedFiles = controller.selectedObjects;
-	
-	NSUInteger numberOfSelectedFiles = selectedFiles.count;
++ (NSString *) getNameOfFirstFile:(NSArray<PBChangedFile *> *) selectedFiles {
+	return selectedFiles.firstObject.path.lastPathComponent;
+}
 
-	if (numberOfSelectedFiles == 0)
-	{
-		return menu;
-	}
-	
-	// Stage/Unstage changes
-	if (table.tag == 0) {
-		NSString *stageTitle = numberOfSelectedFiles == 1
-			? [NSString stringWithFormat:NSLocalizedString( @"Stage “%@”", @"Stage single file contextual menu item" ), [self getNameOfFirstSelectedFile:selectedFiles]]
-			: [NSString stringWithFormat:NSLocalizedString( @"Stage %i Files", @"Stage multiple files contextual menu item"), numberOfSelectedFiles ];
-		NSMenuItem *stageItem = [[NSMenuItem alloc] initWithTitle:stageTitle action:@selector(stageFilesAction:) keyEquivalent:@"s"];
-		stageItem.target = self;
-		[menu addItem:stageItem];
-	}
-	else if (table.tag == 1) {
-		NSString *stageTitle = numberOfSelectedFiles == 1
-			? [NSString stringWithFormat:NSLocalizedString( @"Unstage “%@”", @"Unstage single file contextual menu item" ), [self getNameOfFirstSelectedFile:selectedFiles]]
-			: [NSString stringWithFormat:NSLocalizedString( @"Unstage %i Files", @"Unstage multiple files contextual menu item"), numberOfSelectedFiles ];
-		NSMenuItem *unstageItem = [[NSMenuItem alloc] initWithTitle:stageTitle action:@selector(unstageFilesAction:) keyEquivalent:@"u"];
-		unstageItem.target = self;
-		[menu addItem:unstageItem];
-	}
 
-	NSString *openTitle = numberOfSelectedFiles == 1
-		? [NSString stringWithFormat:NSLocalizedString( @"Open ”%@“", @"Open single file contextual menu item" ), [self getNameOfFirstSelectedFile:selectedFiles]]
-		: [NSString stringWithFormat:NSLocalizedString( @"Open %i Files", @"Open multiple files contextual menu item"), numberOfSelectedFiles ];
-	NSMenuItem *openItem = [[NSMenuItem alloc] initWithTitle:openTitle action:@selector(openFilesAction:) keyEquivalent:@""];
-	openItem.target = self;
-	[menu addItem:openItem];
-
-	// Attempt to ignore
-	if ([self allSelectedCanBeIgnored:selectedFiles]) {
-		NSString *ignoreText = numberOfSelectedFiles == 1
-			? [NSString stringWithFormat:NSLocalizedString( @"Ignore ”%@“", @"Ignore single file contextual menu item" ), [self getNameOfFirstSelectedFile:selectedFiles]]
-			: [NSString stringWithFormat:NSLocalizedString( @"Ignore %i Files", @"Ignore multiple files contextual menu item"), numberOfSelectedFiles ];
-		NSMenuItem *ignoreItem = [[NSMenuItem alloc] initWithTitle:ignoreText action:@selector(ignoreFilesAction:) keyEquivalent:@""];
-		ignoreItem.target = self;
-		[menu addItem:ignoreItem];
-	}
-
-	if (numberOfSelectedFiles == 1) {
-		NSMenuItem *showInFinderItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Show in Finder", @"Show in Finder contextual menu item") action:@selector(showInFinderAction:) keyEquivalent:@""];
-		showInFinderItem.target = self;
-		[menu addItem:showInFinderItem];
-    }
-
-	BOOL addDiscardMenu = NO;
-	for (PBChangedFile *file in selectedFiles)
++ (BOOL) canDiscardAnyFileIn:(NSArray<PBChangedFile *> *)files {
+	for (PBChangedFile *file in files)
 	{
 		if (file.hasUnstagedChanges)
 		{
-			addDiscardMenu = YES;
-			break;
+			return YES;
 		}
 	}
-
-	if (addDiscardMenu)
-    {
-        NSMenuItem *discardItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Discard changes…", @"Discard changes contextual menu item (will ask for confirmation)") action:@selector(discardFilesAction:) keyEquivalent:@""];
-        [discardItem setAlternate:NO];
-        [discardItem setTarget:self];
-
-        [menu addItem:discardItem];
-
-        NSMenuItem *discardForceItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Discard changes",  @"Force Discard changes contextual menu item (will NOT ask for confirmation)") action:@selector(forceDiscardFilesAction:) keyEquivalent:@""];
-        [discardForceItem setAlternate:YES];
-        [discardForceItem setKeyEquivalentModifierMask:NSAlternateKeyMask];
-        [discardForceItem setTarget:self];
-        [menu addItem:discardForceItem];
-	
-        BOOL trashInsteadOfDiscard = floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_7;
-        if (trashInsteadOfDiscard)
-        {
-            for (PBChangedFile* file in selectedFiles)
-            {
-                if (file.status != NEW)
-                {
-                    trashInsteadOfDiscard = NO;
-                    break;
-                }
-            }
-        }
-
-        if (trashInsteadOfDiscard && [selectedFiles count] > 0)
-        {
-            NSMenuItem* moveToTrashItem = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Move to Trash", @"Move to Trash contextual menu item") action:@selector(moveToTrashAction:) keyEquivalent:@""];
-            [moveToTrashItem setTarget:self];
-            [menu addItem:moveToTrashItem];
-
-            [menu removeItem:discardItem];
-            [menu removeItem:discardForceItem];
-        }
-    }
-
-    for (NSMenuItem *item in [menu itemArray]) {
-        [item setRepresentedObject:selectedFiles];
-    }
-
-	return menu;
+	return NO;
 }
 
-- (NSString *) getNameOfFirstSelectedFile:(NSArray<PBChangedFile *> *) selectedFiles {
-	return selectedFiles.firstObject.path.lastPathComponent;
++ (BOOL) shouldTrashInsteadOfDiscardAnyFileIn:(NSArray<PBChangedFile *> *)files {
+	for (PBChangedFile *file in files)
+	{
+		if (file.status != NEW)
+		{
+			return NO;
+		}
+	}
+	return YES;
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -213,15 +128,6 @@
     return [[commitController nextResponder] validateMenuItem:menuItem];
 }
 
-
-- (IBAction) stageFilesAction:(id) sender {
-	[self stageSelectedFiles];
-}
-
-- (IBAction) unstageFilesAction:(id) sender {
-	[self unstageSelectedFiles];
-}
-
 - (void) stageSelectedFiles
 {
 	[commitController.index stageFiles:unstagedFilesController.selectedObjects];
@@ -230,7 +136,7 @@
 
 - (void) unstageSelectedFiles
 {
-	[commitController.index unstageFiles:[stagedFilesController selectedObjects]];
+	[commitController.index unstageFiles:stagedFilesController.selectedObjects];
 	[self.class establishFutureSelection:stagedFilesController];
 }
 
@@ -243,48 +149,64 @@
 	});
 }
 
-- (void) openFilesAction:(id) sender
+- (void) openFilesAction:(NSArray<PBChangedFile *> *)files
 {
-	[PBOpenFiles openFilesAction:sender with:commitController.repository.workingDirectoryURL];
+	for (PBChangedFile * file in files) {
+		NSString * path = file.path;
+		GTSubmodule *submodule = [self submoduleAtPath:path];
+		if (submodule == nil) {
+			// normal file
+			[PBOpenFiles openFiles:@[file] with:commitController.repository.workingDirectoryURL];
+		} else {
+			// submodule
+			[self.class openSubmoduleInGitX:submodule];
+		}
+	}
 }
 
-- (void) ignoreFilesAction:(id) sender
+- (GTSubmodule * _Nullable) submoduleAtPath:(NSString *)path
 {
-	NSArray *selectedFiles = [sender representedObject];
-	if ([selectedFiles count] == 0)
+	NSString *standardizedPath = path.stringByStandardizingPath;
+	for (GTSubmodule *submodule in commitController.repository.submodules) {
+		if ([submodule.path isEqualToString:standardizedPath]) {
+			return submodule;
+		}
+	}
+	return nil;
+}
+
++ (void) openSubmoduleInGitX:(GTSubmodule * _Nonnull) submodule
+{
+	NSURL *submoduleURL = [submodule.parentRepository.fileURL URLByAppendingPathComponent:submodule.path isDirectory:YES];
+	[[NSDocumentController sharedDocumentController]
+	 openDocumentWithContentsOfURL:submoduleURL
+	 display:YES
+	 completionHandler:^(NSDocument * _Nullable document, BOOL documentWasAlreadyOpen, NSError * _Nullable error) {
+		 // Do nothing on completion.
+		 return;
+	 }];
+}
+
+- (void) ignoreFilesAction:(NSArray<PBChangedFile *> *)files
+{
+	if (files.count == 0)
 		return;
 
-	[self ignoreFiles:selectedFiles];
+	[self ignoreFiles:files];
 	[commitController.index refresh];
 }
 
-- (void) showInFinderAction:(id) sender
+- (void) showInFinderAction:(NSArray<PBChangedFile *> *)files
 {
-	[PBOpenFiles showInFinderAction:sender with:commitController.repository.workingDirectoryURL];
+	[PBOpenFiles showInFinder:files with:commitController.repository.workingDirectoryURL];
 }
 
-- (void)discardFilesAction:(id) sender
+- (void) moveToTrash:(NSArray<PBChangedFile *> *)files
 {
-	NSArray *selectedFiles = [sender representedObject];
-	if ([selectedFiles count] > 0)
-		[self discardChangesForFiles:selectedFiles force:FALSE];
-}
-
-- (void)forceDiscardFilesAction:(id) sender
-{
-	NSArray *selectedFiles = [sender representedObject];
-	if ([selectedFiles count] > 0)
-		[self discardChangesForFiles:selectedFiles force:TRUE];
-}
-
-- (void)moveToTrashAction:(id)sender
-{
-	NSArray *selectedFiles = [sender representedObject];
-
 	NSURL *workingDirectoryURL = commitController.repository.workingDirectoryURL;
 	
 	BOOL anyTrashed = NO;
-	for (PBChangedFile *file in selectedFiles)
+	for (PBChangedFile *file in files)
 	{
 		NSURL* fileURL = [workingDirectoryURL URLByAppendingPathComponent:[file path]];
 		
@@ -312,7 +234,7 @@
 	}
 }
 
-- (void) discardChangesForFiles:(NSArray *)files force:(BOOL)force
+- (void) discardChangesForFiles:(NSArray<PBChangedFile *> *)files force:(BOOL)force
 {
 	if (!force) {
 		NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"Discard changes", @"Title for Discard Changes sheet")

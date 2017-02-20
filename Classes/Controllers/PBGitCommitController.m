@@ -20,8 +20,9 @@
 #import <ObjectiveGit/GTConfiguration.h>
 
 #define kCommitSplitViewPositionDefault @"Commit SplitView Position"
-#define kControlsTabIndexCommit 0
-#define kControlsTabIndexStash  1
+#define kMinimalCommitMessageLength 3
+#define kNotificationDictionaryDescriptionKey @"description"
+#define kNotificationDictionaryMessageKey @"message"
 
 @interface PBGitCommitController () <NSTextViewDelegate>
 - (void)refreshFinished:(NSNotification *)notification;
@@ -38,7 +39,6 @@
 
 @implementation PBGitCommitController
 
-@synthesize index;
 @synthesize stashKeepIndex;
 
 - (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
@@ -46,8 +46,7 @@
 	if (!(self = [super initWithRepository:theRepository superController:controller]))
 		return nil;
 
-	index = [[PBGitIndex alloc] initWithRepository:theRepository];
-	[index refresh];
+	PBGitIndex *index = theRepository.index;
 
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshFinished:) name:PBGitIndexFinishedIndexRefresh object:index];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(commitStatusUpdated:) name:PBGitIndexCommitStatus object:index];
@@ -114,29 +113,33 @@
 {
 	NSError *error = nil;
 	GTConfiguration *config = [repository.gtRepo configurationWithError:&error];
-	NSString* userName = [config stringForKey:@"user.name"];
-	NSString* userEmail = [config stringForKey:@"user.email"];
-	if (!(userName && userEmail))
-		return [[repository windowController] showMessageSheet:@"User's name not set" infoText:@"Signing off a commit requires setting user.name and user.email in your git config"];
-	NSString *SOBline = [NSString stringWithFormat:@"Signed-off-by: %@ <%@>",
-				userName,
-				userEmail];
+	NSString *userName = [config stringForKey:@"user.name"];
+	NSString *userEmail = [config stringForKey:@"user.email"];
+	if (!(userName && userEmail)) {
+		return [[repository windowController]
+				showMessageSheet:NSLocalizedString(@"User‘s name not set",
+												   @"Title for sheet that the user’s name is not set in the git configuration")
+				infoText:NSLocalizedString(@"Signing off a commit requires setting user.name and user.email in your git config",
+										   @"Information text for sheet that the user’s name is not set in the git configuration")];
+	}
+	
+	NSString *SOBline = [NSString stringWithFormat:NSLocalizedString(@"Signed-off-by: %@ <%@>",
+																	 @"Signed off message format. Most likely this should not be localised."),
+						 userName,
+						 userEmail];
 
 	if([commitMessageView.string rangeOfString:SOBline].location == NSNotFound) {
 		NSArray *selectedRanges = [commitMessageView selectedRanges];
-		commitMessageView.string = [NSString stringWithFormat:@"%@\n\n%@",
-				commitMessageView.string, SOBline];
-		[commitMessageView setSelectedRanges: selectedRanges];
+		commitMessageView.string = [NSString stringWithFormat:@"%@\n\n%@", commitMessageView.string, SOBline];
+		[commitMessageView setSelectedRanges:selectedRanges];
 	}
 }
 
-- (void) refresh:(id) sender
+- (IBAction) refresh:(id) sender
 {
-	[controlsTabView selectTabViewItemAtIndex:kControlsTabIndexCommit];
-
 	self.isBusy = YES;
-	self.status = @"Refreshing index…";
-	[index refresh];
+	self.status = NSLocalizedString(@"Refreshing index…", @"Message in status bar while the index is refreshing");
+	[repository.index refresh];
 
 	// Reload refs (in case HEAD changed)
 	[repository reloadRefs];
@@ -166,18 +169,34 @@
 - (void) commitWithVerification:(BOOL) doVerify
 {
 	if ([[NSFileManager defaultManager] fileExistsAtPath:[repository.gitURL.path stringByAppendingPathComponent:@"MERGE_HEAD"]]) {
-		[[repository windowController] showMessageSheet:@"Cannot commit merges" infoText:@"GitX cannot commit merges yet. Please commit your changes from the command line."];
+		NSString * message = NSLocalizedString(@"Cannot commit merges",
+                                               @"Title for sheet that GitX cannot create merge commits");
+        NSString * info = NSLocalizedString(@"GitX cannot commit merges yet. Please commit your changes from the command line.",
+                                            @"Information text for sheet that GitX cannot create merge commits");
+        
+        [repository.windowController showMessageSheet:message infoText:info];
 		return;
 	}
 
 	if ([[cachedFilesController arrangedObjects] count] == 0) {
-		[[repository windowController] showMessageSheet:@"No changes to commit" infoText:@"You must first stage some changes before committing"];
+        NSString * message = NSLocalizedString(@"No changes to commit",
+                                               @"Title for sheet that you need to stage changes before creating a commit");
+        NSString * info = NSLocalizedString(@"You need to stage some changed files before committing by moving them to the list of Staged Changes.",
+                                            @"Information text for sheet that you need to stage changes before creating a commit");
+        
+		[repository.windowController showMessageSheet:message infoText:info];
 		return;
 	}		
 	
 	NSString *commitMessage = [commitMessageView string];
-	if ([commitMessage length] < 3) {
-		[[repository windowController] showMessageSheet:@"Commitmessage missing" infoText:@"Please enter a commit message before committing"];
+	if (commitMessage.length < kMinimalCommitMessageLength) {
+        NSString * message = NSLocalizedString(@"Missing commit message",
+                                               @"Title for sheet that you need to enter a commit message before creating a commit");
+        NSString * info = [NSString stringWithFormat:
+                           NSLocalizedString(@"Please enter a commit message at least %i characters long before commiting.",
+                                             @"Format for sheet that you need to enter a commit message before creating a commit giving the minimum length of the commit message required"),
+                           kMinimalCommitMessageLength ];
+        [repository.windowController showMessageSheet:message infoText:info ];
 		return;
 	}
 
@@ -185,57 +204,75 @@
 	[unstagedFilesController setSelectionIndexes:[NSIndexSet indexSet]];
 
 	self.isBusy = YES;
-	[commitMessageView setEditable:NO];
+	commitMessageView.editable = NO;
 
-	[index commitWithMessage:commitMessage andVerify:doVerify];
+	[repository.index commitWithMessage:commitMessage andVerify:doVerify];
+}
+
+
+- (PBGitIndex *) index {
+	return repository.index;
 }
 
 
 # pragma mark PBGitIndex Notification handling
+
 - (void)refreshFinished:(NSNotification *)notification
 {
 	self.isBusy = NO;
-	self.status = @"Index refresh finished";
+	self.status = NSLocalizedString(@"Index refresh finished", @"Message in status bar when refreshing the index is done");
 }
 
 - (void)commitStatusUpdated:(NSNotification *)notification
 {
-	self.status = [[notification userInfo] objectForKey:@"description"];
+	self.status = notification.userInfo[kNotificationDictionaryDescriptionKey];
 }
 
 - (void)commitFinished:(NSNotification *)notification
 {
-	[commitMessageView setEditable:YES];
-	[commitMessageView setString:@""];
-	[webController setStateMessage:notification.userInfo[@"description"]];
+	commitMessageView.editable = YES;
+	commitMessageView.string = @"";
+	[webController setStateMessage:notification.userInfo[kNotificationDictionaryDescriptionKey]];
 }	
 
 - (void)commitFailed:(NSNotification *)notification
 {
 	self.isBusy = NO;
-	NSString *reason = [[notification userInfo] objectForKey:@"description"];
-	self.status = [@"Commit failed: " stringByAppendingString:reason];
-	[commitMessageView setEditable:YES];
-	[[repository windowController] showMessageSheet:@"Commit failed" infoText:reason];
+	commitMessageView.editable = YES;
+
+	NSString *reason = notification.userInfo[kNotificationDictionaryDescriptionKey];
+	self.status = [NSString stringWithFormat:
+				   NSLocalizedString(@"Commit failed: %@",
+									 @"Message in status bar when creating a commit has failed, including the reason for the failure"),
+				   reason];
+	[repository.windowController showMessageSheet:NSLocalizedString(@"Commit failed", @"Title for sheet that creating a commit has failed")
+										 infoText:reason];
 }
 
 - (void)commitHookFailed:(NSNotification *)notification
 {
 	self.isBusy = NO;
-	NSString *reason = [[notification userInfo] objectForKey:@"description"];
-	self.status = [@"Commit hook failed: " stringByAppendingString:reason];
-	[commitMessageView setEditable:YES];
-	[[repository windowController] showCommitHookFailedSheet:@"Commit hook failed" infoText:reason commitController:self];
+	commitMessageView.editable = YES;
+
+	NSString *reason = notification.userInfo[kNotificationDictionaryDescriptionKey];
+	self.status = [NSString stringWithFormat:
+				   NSLocalizedString(@"Commit hook failed: %@",
+									 @"Message in status bar when running a commit hook failed, including the reason for the failure"),
+				   reason];
+	[repository.windowController showCommitHookFailedSheet:NSLocalizedString(@"Commit hook failed", @"Title for sheet that running a commit hook has failed")
+												  infoText:reason
+										  commitController:self];
 }
 
 - (void)amendCommit:(NSNotification *)notification
 {
 	// Replace commit message with the old one if it's less than 3 characters long.
 	// This is just a random number.
-	if ([[commitMessageView string] length] > 3)
+	if ([[commitMessageView string] length] > 3) {
 		return;
+	}
 	
-	NSString *message = [[notification userInfo] objectForKey:@"message"];
+	NSString *message = notification.userInfo[kNotificationDictionaryMessageKey];
 	commitMessageView.string = message;
 }
 
@@ -244,16 +281,13 @@
 	[cachedFilesController rearrangeObjects];
 	[unstagedFilesController rearrangeObjects];
     
-    NSUInteger tracked = [[trackedFilesController arrangedObjects] count];
-    NSUInteger staged = [[cachedFilesController arrangedObjects] count];
-    
-    [commitButton setEnabled:(staged > 0)];
-    [stashButton setEnabled:(staged > 0 || tracked > 0)];
+    commitButton.enabled = ([[cachedFilesController arrangedObjects] count] > 0);
 }
 
 - (void)indexOperationFailed:(NSNotification *)notification
 {
-	[[repository windowController] showMessageSheet:@"Index operation failed" infoText:[[notification userInfo] objectForKey:@"description"]];
+	[repository.windowController showMessageSheet:NSLocalizedString(@"Index operation failed", @"Title for sheet that running an index operation has failed")
+										 infoText:notification.userInfo[kNotificationDictionaryDescriptionKey]];
 }
 
 
@@ -273,7 +307,7 @@
 - (CGFloat)splitView:(NSSplitView *)splitView constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)dividerIndex
 {
 	if (splitView == commitSplitView)
-		return [splitView frame].size.height - [splitView dividerThickness] - kCommitSplitViewBottomViewMin;
+		return splitView.frame.size.height - splitView.dividerThickness - kCommitSplitViewBottomViewMin;
 
 	return proposedMax;
 }
@@ -330,18 +364,6 @@
 	[commitSplitView setHidden:NO];
 }
 
-#pragma mark Handle "alt" key-down/up events
-// to toggle commit/stash controls
-
-- (void)flagsChanged:(NSEvent *)theEvent
-{
-    BOOL altDown = !!([theEvent modifierFlags] & NSAlternateKeyMask);
-    NSInteger currIndex = [controlsTabView indexOfTabViewItem:controlsTabView.selectedTabViewItem];
-    int desiredIndex = altDown ? kControlsTabIndexStash : kControlsTabIndexCommit;
-    if (currIndex != desiredIndex) {
-        [controlsTabView selectTabViewItemAtIndex:desiredIndex];
-    }
-}
 
 #pragma mark NSTextView delegate methods
 

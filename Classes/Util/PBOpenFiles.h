@@ -8,9 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+@class PBChangedFile;
+
 @interface PBOpenFiles : NSObject
 
-+ (void)showInFinderAction:(id)sender with:(NSURL *)workingDirectoryURL;
-+ (void)openFilesAction:(id)sender with:(NSURL *)workingDirectoryURL;
++ (void)openFiles:(NSArray<PBChangedFile *> *)selectedFiles with:(NSURL *)workingDirectoryURL;
++ (void)showInFinder:(NSArray<PBChangedFile *> *)selectedFiles with:(NSURL *)workingDirectoryURL;
 
 @end

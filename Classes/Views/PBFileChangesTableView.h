@@ -12,4 +12,13 @@
 @interface PBFileChangesTableView : NSTableView {
 }
 
+- (IBAction) stageFilesAction:(id)sender;
+- (IBAction) unstageFilesAction:(id)sender;
+- (IBAction) openFilesAction:(id)sender;
+- (IBAction) ignoreFilesAction:(id)sender;
+- (IBAction) showInFinderAction:(id)sender;
+- (IBAction) discardFilesAction:(id)sender;
+- (IBAction) forceDiscardFilesAction:(id)sender;
+- (IBAction) trashFilesAction:(id)sender;
+
 @end

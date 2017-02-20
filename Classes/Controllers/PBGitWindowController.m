@@ -335,10 +335,6 @@
     }
 }
 
-- (void)flagsChanged:(NSEvent *)theEvent {
-	[sidebarController.commitViewController flagsChanged:theEvent];
-}
-
 
 
 #pragma mark -

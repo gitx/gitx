@@ -595,19 +595,20 @@
 - (void) checkoutFiles:(id)sender
 {
 	NSMutableArray *files = [NSMutableArray array];
-	for (NSString *filePath in [sender representedObject])
+	for (NSString *filePath in [sender representedObject]) {
 		[files addObject:[filePath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+	}
 	[repository checkoutFiles:files fromRefish:self.selectedCommits.firstObject];
 }
 
 - (void) openFilesAction:(id) sender
 {
-	[PBOpenFiles openFilesAction:sender with:repository.workingDirectoryURL];
+	[PBOpenFiles openFiles:[sender representedObject] with:repository.workingDirectoryURL];
 }
 
 - (void) showInFinderAction:(id) sender
 {
-	[PBOpenFiles showInFinderAction:sender with:repository.workingDirectoryURL];
+	[PBOpenFiles showInFinder:[sender representedObject] with:repository.workingDirectoryURL];
 }
 
 - (void) diffFilesAction:(id)sender
