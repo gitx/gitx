@@ -28,4 +28,5 @@ typedef void(^PBFindPanelActionBlock)(id sender);
 @property (readonly) NSPoint mouseDownPoint;
 @property (assign) BOOL useAdjustScroll;
 @property (copy) PBFindPanelActionBlock findPanelActionBlock;
+
 @end

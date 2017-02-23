@@ -47,27 +47,6 @@
 		[super keyDown: event];
 }
 
-- (void) copy:(id)sender
-{
-	[controller copyCommitInfo];
-}
-
-- (void) copySHA:(id)sender
-{
-	[controller copyCommitSHA];
-}
-
-- (void) copyShortName:(id)sender
-{
-	[controller copyCommitShortName];
-}
-
-- (void) copyPatch:(id)sender
-{
-	[controller copyCommitPatch];
-}
-
-
 // !!! Andre Berg 20100330: Used from -scrollSelectionToTopOfViewFrom: of PBGitHistoryController
 // so that when the history controller udpates the branch filter the origin of the superview gets
 // shifted into multiples of the row height. Otherwise the top selected row will always be off by
@@ -80,7 +59,7 @@
     // !!! Andre Berg 20100330: only modify if -scrollSelectionToTopOfViewFrom: has set useAdjustScroll to YES
     // Otherwise we'd also constrain things like middle mouse scrolling.
     if (useAdjustScroll) {
-        NSInteger rh = [self rowHeight];
+        NSInteger rh = (NSInteger)self.rowHeight;
         NSInteger ny = (NSInteger)proposedVisibleRect.origin.y % (NSInteger)rh;
         NSInteger adj = rh - ny;
         // check the targeted row and see if we need to add or subtract the difference (if there is one)...
@@ -176,7 +155,7 @@
 	// draw special highlighting if the row is part of search results
 	if (isRowVisible && [searchController isRowInSearchResults:rowIndex]) {
 		NSRect highlightRect = NSInsetRect(rowRect, 1.0f, 1.0f);
-		float radius = highlightRect.size.height / 2.0f;
+		CGFloat radius = highlightRect.size.height / 2.0f;
 
 		NSBezierPath *highlightPath = [NSBezierPath bezierPathWithRoundedRect:highlightRect xRadius:radius yRadius:radius];
 
