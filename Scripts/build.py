@@ -16,7 +16,7 @@ signing_key = "Developer ID Application: Rowan James"
 artifact_prefix = "%s-%s" % (app, label)
 workspace = "%s.xcodeproj/project.xcworkspace" % (app,)
 debug_scheme = "Debug"
-release_scheme = "Release"
+release_scheme = "GitX"
 agvtool = "xcrun agvtool"
 release_branch = "master"
 
@@ -166,6 +166,6 @@ def package_app(app_path, image_path, image_name):
     package.package(app_path, image_path, image_name)
 
 if __name__ == "__main__":
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    os.chdir(script_dir)
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(root_dir)
     argh.dispatch_commands([clean, build])
