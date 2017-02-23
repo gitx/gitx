@@ -16,7 +16,7 @@ signing_key = "Developer ID Application: Rowan James"
 artifact_prefix = "%s-%s" % (app, label)
 workspace = "%s.xcodeproj/project.xcworkspace" % (app,)
 debug_scheme = "Debug"
-release_scheme = "Release"
+release_scheme = "GitX"
 agvtool = "xcrun agvtool"
 release_branch = "master"
 
