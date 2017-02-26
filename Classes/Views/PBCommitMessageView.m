@@ -33,6 +33,10 @@
                forKeyPath:@"PBCommitMessageViewVerticalBodyLineLength"
                   options:NSKeyValueObservingOptionNew
                   context:NULL];
+
+	// IB seems to ignore these properties when set there since 10.9
+	self.automaticDashSubstitutionEnabled = NO;
+	self.automaticQuoteSubstitutionEnabled = NO;
 }
 
 -(void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
