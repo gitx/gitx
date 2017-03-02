@@ -322,7 +322,7 @@
 	
 	for (GTOID *sha in refs)
 	{
-		NSMutableSet *refsForSha = [refs objectForKey:sha];
+		NSMutableArray<PBGitRef *> *refsForSha = refs[sha];
 		for (PBGitRef *existingRef in refsForSha)
 		{
 			if ([existingRef isEqualToRef:ref])

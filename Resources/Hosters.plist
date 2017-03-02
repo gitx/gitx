@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>Name</key>
+		<string>github</string>
+		<key>Display Name</key>
+		<string>at github</string>
+		<key>git URL Regex</key>
+		<string>(?:git@|https://||git://)github.com[:/](.*)/(.*).git</string>
+		<key>Web URL Replacement Format</key>
+		<string>https://github.com/$1/$2</string>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>GitLab</string>
+		<key>Display Name</key>
+		<string>at GitLab</string>
+		<key>git URL Regex</key>
+		<string>(?:git@|https://)gitlab.com[:/](.*)/(.*).git</string>
+		<key>Web URL Replacement Format</key>
+		<string>https://gitlab.com/$1/%2</string>
+	</dict>
+	<dict>
+		<key>Name</key>
+		<string>Bitbucket</string>
+		<key>Display Name</key>
+		<string>at Bitbucket</string>
+		<key>git URL Regex</key>
+		<string>(.*://)(.*@)(.*bitbucket.org.*)</string>
+		<key>Web URL Replacement Format</key>
+		<string>https://$3</string>
+	</dict>
+</array>
+</plist>

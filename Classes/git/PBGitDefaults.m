@@ -30,42 +30,42 @@
 #define kHistorySearchMode @"PBHistorySearchMode"
 #define kSuppressedDialogWarnings @"Suppressed Dialog Warnings"
 #define kUseRepositoryWatcher @"PBUseRepositoryWatcher"
+#define kRepositoryHosters @"PBRepositoryHosters"
 
 @implementation PBGitDefaults
 
+#pragma mark Initial Defaults
+
 + (void)initialize
 {
-	NSMutableDictionary *defaultValues = [NSMutableDictionary dictionary];
-	[defaultValues setObject:[NSNumber numberWithInt:kDefaultVerticalLineLength]
-                      forKey:kCommitMessageViewVerticalLineLength];
-    [defaultValues setObject:[NSNumber numberWithInt:kDefaultVerticalBodyLineLength]
-                      forKey:kCommitMessageViewVerticalBodyLineLength];
-    [defaultValues setObject:[NSNumber numberWithBool:YES]
-                      forKey:kCommitMessageViewHasVerticalLine];
-	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kEnableGist];
-	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kEnableGravatar];
-	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kConfirmPublicGists];
-	[defaultValues setObject:[NSNumber numberWithBool:NO]
-			  forKey:kPublicGist];
-	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kShowWhitespaceDifferences];
-	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kOpenCurDirOnLaunch];
-	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kShowOpenPanelOnLaunch];
-	[defaultValues setObject:[NSNumber numberWithBool:YES]
-					  forKey:kShouldCheckoutBranch];
-	[defaultValues setObject:[NSNumber numberWithBool:NO]
-                      forKey:kOpenPreviousDocumentsOnLaunch];
-	[defaultValues setObject:[NSNumber numberWithInteger:PBHistorySearchModeBasic]
-                      forKey:kHistorySearchMode];
-	[defaultValues setObject:[NSNumber numberWithBool:YES]
-                      forKey:kUseRepositoryWatcher];
+	NSDictionary<NSString *, NSObject*> *defaultValues = @{
+	    kCommitMessageViewVerticalLineLength: @(kDefaultVerticalLineLength),
+	    kCommitMessageViewVerticalBodyLineLength: @(kDefaultVerticalBodyLineLength),
+	    kCommitMessageViewHasVerticalLine: @YES,
+	    kEnableGist: @YES,
+	    kEnableGravatar: @YES,
+	    kConfirmPublicGists: @YES,
+	    kPublicGist: @NO,
+	    kShowWhitespaceDifferences: @YES,
+	    kOpenCurDirOnLaunch: @YES,
+	    kShowOpenPanelOnLaunch: @YES,
+	    kShouldCheckoutBranch: @YES,
+	    kOpenPreviousDocumentsOnLaunch: @NO,
+	    kHistorySearchMode: @(PBHistorySearchModeBasic),
+	    kUseRepositoryWatcher: @YES,
+	    kRepositoryHosters: [self defaultRepositoryHosters]
+    };
+
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
 }
+
++ (NSArray<NSDictionary<NSString *, NSString *> *> *)defaultRepositoryHosters {
+	NSURL *plistURL = [[NSBundle mainBundle].resourceURL URLByAppendingPathComponent:@"Hosters.plist"];
+	return [NSArray arrayWithContentsOfURL:plistURL];
+}
+
+
+# pragma mark get / set the Preferences
 
 + (NSInteger) commitMessageViewVerticalLineLength
 {
@@ -224,6 +224,12 @@
 + (BOOL) useRepositoryWatcher
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kUseRepositoryWatcher];
+}
+
+
++ (NSArray<NSDictionary<NSString *, NSString *> *> *)hosters
+{
+	return [[NSUserDefaults standardUserDefaults] objectForKey:kRepositoryHosters];
 }
 
 @end

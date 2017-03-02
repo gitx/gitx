@@ -6,6 +6,11 @@
 //  Copyright 2008 Jeff Mesnil (http://jmesnil.net/). All rights reserved.
 //
 
+#define kRepositoryHosterName @"Name"
+#define kRepositoryHosterDisplayName @"Display Name"
+#define kRepositoryHosterRegex @"git URL Regex"
+#define kRepositoryHosterURLFormat @"Web URL Replacement Format"
+
 @interface PBGitDefaults : NSObject
 {
 
@@ -30,7 +35,7 @@
 + (NSInteger)historySearchMode;
 + (void)setHistorySearchMode:(NSInteger)mode;
 + (BOOL)useRepositoryWatcher;
-
++ (NSArray<NSDictionary<NSString *, NSString *> *> *)hosters;
 
 // Suppressed Dialog Warnings
 + (void)suppressDialogWarningForDialog:(NSString *)dialog;

@@ -44,7 +44,7 @@ typedef enum branchFilterTypes {
 @property (nonatomic, readonly, strong) NSArray* branches;
 @property (nonatomic, strong) NSMutableOrderedSet* branchesSet;
 @property (nonatomic, strong) PBGitRevSpecifier* currentBranch;
-@property (nonatomic, strong) NSMutableDictionary* refs;
+@property (nonatomic, strong) NSMutableDictionary<GTOID *, NSMutableArray<PBGitRef *> *>* refs;
 @property (readonly, strong) GTRepository* gtRepo;
 @property (nonatomic, readonly) BOOL isShallowRepository;
 

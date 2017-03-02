@@ -16,6 +16,7 @@
 #import "PBGitRevSpecifier.h"
 #import "PBGitStash.h"
 #import "GitXCommitCopier.h"
+#import "GitXRepositoryURLUtility.h"
 
 #define kDialogAcceptDroppedRef @"Accept Dropped Ref"
 #define kDialogConfirmPush @"Confirm Push"
@@ -352,6 +353,14 @@
 		return nil;
 
 	return [self menuItemsForCommits:@[[commits objectAtIndex:rowIndex]]];
+}
+
+- (IBAction) openWebsiteForRepository:(PBRefMenuItem *)sender {
+	id <PBGitRefish> refish = [sender refishs].firstObject;
+	NSURL * remoteURL = [GitXRepositoryURLUtility remoteURLForRef:refish inRepo:historyController.repository];
+	if (remoteURL != nil) {
+		[[NSWorkspace sharedWorkspace] openURL:remoteURL];
+	}
 }
 
 

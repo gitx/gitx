@@ -154,7 +154,9 @@
 		6C25810B1C2720E60080A89A /* GitXCommitCopier.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C25810A1C2720E60080A89A /* GitXCommitCopier.m */; };
 		6C4855C81D57DCFC0027A7B4 /* PBTerminalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C4855C71D57DCFC0027A7B4 /* PBTerminalUtil.m */; };
 		6C4855DA1D57E4FA0027A7B4 /* PBOpenShallowRepositoryErrorRecoveryAttempter.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C4855D91D57E4FA0027A7B4 /* PBOpenShallowRepositoryErrorRecoveryAttempter.m */; };
+		6C4C84991E68D99A003E212B /* GitXRepositoryURLUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C4C84981E68D99A003E212B /* GitXRepositoryURLUtility.m */; };
 		6C5244131E00C66E0051DE20 /* PBHistorySearchMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C5244121E00C66E0051DE20 /* PBHistorySearchMode.m */; };
+		6CA2F2291E71FC28007CE0F0 /* Hosters.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6CA2F2281E71FC28007CE0F0 /* Hosters.plist */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		911112370E5A097800BF76B4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 911112360E5A097800BF76B4 /* Security.framework */; };
 		913D5E500E55645900CECEA2 /* gitx in Resources */ = {isa = PBXBuildFile; fileRef = 913D5E490E55644600CECEA2 /* gitx */; };
@@ -597,8 +599,11 @@
 		6C4855C71D57DCFC0027A7B4 /* PBTerminalUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBTerminalUtil.m; sourceTree = "<group>"; };
 		6C4855D81D57E4FA0027A7B4 /* PBOpenShallowRepositoryErrorRecoveryAttempter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBOpenShallowRepositoryErrorRecoveryAttempter.h; sourceTree = "<group>"; };
 		6C4855D91D57E4FA0027A7B4 /* PBOpenShallowRepositoryErrorRecoveryAttempter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBOpenShallowRepositoryErrorRecoveryAttempter.m; sourceTree = "<group>"; };
+		6C4C84971E68D99A003E212B /* GitXRepositoryURLUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitXRepositoryURLUtility.h; sourceTree = "<group>"; };
+		6C4C84981E68D99A003E212B /* GitXRepositoryURLUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitXRepositoryURLUtility.m; sourceTree = "<group>"; };
 		6C5244021E00C33F0051DE20 /* PBHistorySearchMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBHistorySearchMode.h; sourceTree = "<group>"; };
 		6C5244121E00C66E0051DE20 /* PBHistorySearchMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBHistorySearchMode.m; sourceTree = "<group>"; };
+		6CA2F2281E71FC28007CE0F0 /* Hosters.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Hosters.plist; sourceTree = "<group>"; };
 		77C82804067257F0000B614F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* GitX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		911112360E5A097800BF76B4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
@@ -750,6 +755,7 @@
 				4A5D75B714A9A90500DF6C68 /* UpdateKey.pem */,
 				4A5D75B914A9A90500DF6C68 /* XIBs */,
 				4DC1853818E6F93200E8DB8F /* Info-gitx.plist */,
+				6CA2F2281E71FC28007CE0F0 /* Hosters.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1002,6 +1008,8 @@
 				4AB71FF714B7EDD400F1DFFC /* RJModalRepoSheet.m */,
 				6C2581091C2720E60080A89A /* GitXCommitCopier.h */,
 				6C25810A1C2720E60080A89A /* GitXCommitCopier.m */,
+				6C4C84971E68D99A003E212B /* GitXRepositoryURLUtility.h */,
+				6C4C84981E68D99A003E212B /* GitXRepositoryURLUtility.m */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -1362,6 +1370,7 @@
 				978357BD189C19A000ADC689 /* PushTemplate.pdf in Resources */,
 				4A5D761A14A9A99E00DF6C68 /* PBCloneRepositoryPanel.xib in Resources */,
 				4A5D761C14A9A99E00DF6C68 /* PBCreateBranchSheet.xib in Resources */,
+				6CA2F2291E71FC28007CE0F0 /* Hosters.plist in Resources */,
 				4A5D761D14A9A99E00DF6C68 /* PBCreateTagSheet.xib in Resources */,
 				4A5D761E14A9A99E00DF6C68 /* PBRemoteProgressSheet.xib in Resources */,
 				4A5D761F14A9A99E00DF6C68 /* Preferences.xib in Resources */,
@@ -1466,6 +1475,7 @@
 				4A5D770914A9A9CC00DF6C68 /* PBGitSVRemoteItem.m in Sources */,
 				4A5D770A14A9A9CC00DF6C68 /* PBGitSVStageItem.m in Sources */,
 				4A5D770B14A9A9CC00DF6C68 /* PBGitSVTagItem.m in Sources */,
+				6C4C84991E68D99A003E212B /* GitXRepositoryURLUtility.m in Sources */,
 				4A5D770C14A9A9CC00DF6C68 /* PBGitTree.m in Sources */,
 				4A5D770D14A9A9CC00DF6C68 /* PBError.m in Sources */,
 				4A5D770E14A9A9CC00DF6C68 /* PBGitXProtocol.m in Sources */,

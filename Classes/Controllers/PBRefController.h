@@ -27,7 +27,7 @@
 - (IBAction) pushDefaultRemoteForRef:(PBRefMenuItem *)sender;
 - (IBAction) pushToRemote:(PBRefMenuItem *)sender;
 - (IBAction) showConfirmPushRefSheet:(PBGitRef *)ref remote:(PBGitRef *)remoteRef;
-- (IBAction)showDeleteRefSheet:(PBRefMenuItem *)sender;
+- (IBAction) showDeleteRefSheet:(PBRefMenuItem *)sender;
 
 - (IBAction) checkout:(PBRefMenuItem *)sender;
 - (IBAction) merge:(PBRefMenuItem *)sender;

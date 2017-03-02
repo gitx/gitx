@@ -9,6 +9,7 @@
 #import "PBRefMenuItem.h"
 #import "PBGitRepository.h"
 #import "PBGitRevSpecifier.h"
+#import "GitXRepositoryURLUtility.h"
 
 @implementation PBRefMenuItem
 @synthesize refishs;
@@ -190,6 +191,20 @@
 		NSString *deleteItemTitle = [NSString stringWithFormat:deleteFormat, refName];
 		PBRefMenuItem *deleteItem = [PBRefMenuItem itemWithTitle:deleteItemTitle action:@selector(showDeleteRefSheet:) enabled:YES];
 		[items addObject:deleteItem];
+	}
+
+	// open URL for remote
+	if (isRemote) {
+		NSString * remoteDisplayName = [GitXRepositoryURLUtility remoteHosterDisplayNameForRef:ref.remoteRef inRepo:repo];
+		if (remoteDisplayName != nil) {
+			NSString * openWebsiteTitle =
+			[NSString stringWithFormat:NSLocalizedString(@"Show Repository %@", @"Contextual Menu Item to show the remote‘s website or open it in Finder. The string going into the placeholder is expected to begin with an initial at/in."), remoteDisplayName];
+			PBRefMenuItem *openWebsiteItem = [PBRefMenuItem itemWithTitle:openWebsiteTitle
+																   action:@selector(openWebsiteForRepository:)
+																  enabled:YES];
+			[items addObject:[PBRefMenuItem separatorItem]];
+			[items addObject:openWebsiteItem];
+		}
 	}
 
 	for (PBRefMenuItem *item in items) {
