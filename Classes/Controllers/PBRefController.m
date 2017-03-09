@@ -331,7 +331,17 @@
 	}
 }
 
+#pragma mark Open in Github
 
+- (NSString* _Nullable) remoteWebsiteNameForRemote:(NSString*)remote
+{
+	return [historyController.repository remoteWebsiteNameForRemote:remote];
+}
+
+- (void) openOnWebsite:(PBRefMenuItem *)sender {
+	NSString* remoteName = [(PBGitRef*)sender.refishs[0] remoteName];
+	[historyController.repository openWebsiteOfRemote:remoteName];
+}
 
 #pragma mark Contextual menus
 

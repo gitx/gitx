@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12117" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="10117"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12117"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ApplicationController"/>
@@ -133,6 +133,87 @@
                             <menuItem title="Print…" hidden="YES" keyEquivalent="p" id="78">
                                 <connections>
                                     <action selector="print:" target="-1" id="86"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Repository" id="936">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Repository" id="937">
+                        <items>
+                            <menuItem title="Create Tag…" keyEquivalent="t" id="949">
+                                <connections>
+                                    <action selector="createTag:" target="-1" id="950"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Create Branch…" keyEquivalent="b" id="938">
+                                <connections>
+                                    <action selector="createBranch:" target="-1" id="941"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Add Remote…" keyEquivalent="r" id="951">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="showAddRemoteSheet:" target="-1" id="953"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="943"/>
+                            <menuItem title="Fetch" id="hAa-UP-Llb">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="fetchRemote:" target="-1" id="zxl-J9-UiW"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Fetch All" id="OAK-L4-wE7">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="fetchAllRemotes:" target="-1" id="gQf-4H-0cg"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="CDX-1D-7tK"/>
+                            <menuItem title="Pull" keyEquivalent="l" id="ka6-UF-ky7">
+                                <connections>
+                                    <action selector="pullRemote:" target="-1" id="Uq3-eV-MxO"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Pull and Rebase" alternate="YES" keyEquivalent="l" id="voe-dZ-hNd">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="pullRebaseRemote:" target="-1" id="QtG-bu-sTO"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Pull From Default Remote" keyEquivalent="L" id="hpV-fp-aO8">
+                                <connections>
+                                    <action selector="pullDefaultRemote:" target="-1" id="X3P-VB-IDo"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Pull From Default Remote and Rebase" alternate="YES" keyEquivalent="L" id="3yY-A6-tCH">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="pullRebaseDefaultRemote:" target="-1" id="4BD-Fh-yDB"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="DoS-f9-CnX"/>
+                            <menuItem title="Open Files" id="v0g-0H-6cS">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openFiles:" target="-1" id="iuN-jM-CtN"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Open in Browser" keyEquivalent="O" id="fC0-KI-AwG">
+                                <connections>
+                                    <action selector="openInWebsite:" target="-1" id="vya-uj-Tq4"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Open in Terminal" keyEquivalent="T" id="942">
+                                <connections>
+                                    <action selector="openInTerminal:" target="-1" id="944"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Reveal in Finder" keyEquivalent="F" id="947">
+                                <connections>
+                                    <action selector="revealInFinder:" target="-1" id="948"/>
                                 </connections>
                             </menuItem>
                         </items>
@@ -366,82 +447,6 @@
                                         </menuItem>
                                     </items>
                                 </menu>
-                            </menuItem>
-                        </items>
-                    </menu>
-                </menuItem>
-                <menuItem title="Repository" id="936">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Repository" id="937">
-                        <items>
-                            <menuItem title="Create Tag…" keyEquivalent="t" id="949">
-                                <connections>
-                                    <action selector="createTag:" target="-1" id="950"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Create Branch…" keyEquivalent="b" id="938">
-                                <connections>
-                                    <action selector="createBranch:" target="-1" id="941"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Add Remote…" keyEquivalent="r" id="951">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="showAddRemoteSheet:" target="-1" id="953"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="943"/>
-                            <menuItem title="Fetch" id="hAa-UP-Llb">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="fetchRemote:" target="-1" id="zxl-J9-UiW"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Fetch All" id="OAK-L4-wE7">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="fetchAllRemotes:" target="-1" id="gQf-4H-0cg"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="CDX-1D-7tK"/>
-                            <menuItem title="Pull" keyEquivalent="l" id="ka6-UF-ky7">
-                                <connections>
-                                    <action selector="pullRemote:" target="-1" id="Uq3-eV-MxO"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Pull and Rebase" alternate="YES" keyEquivalent="l" id="voe-dZ-hNd">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="pullRebaseRemote:" target="-1" id="QtG-bu-sTO"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Pull From Default Remote" keyEquivalent="L" id="hpV-fp-aO8">
-                                <connections>
-                                    <action selector="pullDefaultRemote:" target="-1" id="X3P-VB-IDo"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Pull From Default Remote and Rebase" alternate="YES" keyEquivalent="L" id="3yY-A6-tCH">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="pullRebaseDefaultRemote:" target="-1" id="4BD-Fh-yDB"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem isSeparatorItem="YES" id="DoS-f9-CnX"/>
-                            <menuItem title="Open Files" id="v0g-0H-6cS">
-                                <modifierMask key="keyEquivalentModifierMask"/>
-                                <connections>
-                                    <action selector="openFiles:" target="-1" id="iuN-jM-CtN"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Open in Terminal" keyEquivalent="T" id="942">
-                                <connections>
-                                    <action selector="openInTerminal:" target="-1" id="944"/>
-                                </connections>
-                            </menuItem>
-                            <menuItem title="Reveal in Finder" keyEquivalent="F" id="947">
-                                <connections>
-                                    <action selector="revealInFinder:" target="-1" id="948"/>
-                                </connections>
                             </menuItem>
                         </items>
                     </menu>

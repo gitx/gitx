@@ -688,6 +688,77 @@
 	return output;
 }
 
+- (NSDictionary *) remoteURLs
+{
+	int retValue = 1;
+	NSString *output = [self outputInWorkdirForArguments:@[@"remote", @"-v"] retValue:&retValue];
+	
+	if (retValue)
+		return nil;
+
+	NSArray* lines = [output componentsSeparatedByString:@"\n"];
+	
+	NSMutableDictionary* urls = [[NSMutableDictionary alloc] init];
+	for (NSString* line in lines) {
+		NSArray* split = [line componentsSeparatedByString:@"\t"];
+		NSString* remoteName = split[0];
+		
+		if (split.count < 2) {
+			continue;
+		}
+		
+		NSString* urlString = [split[1] componentsSeparatedByString:@" "][0];
+
+		NSURL* url = [[NSURL alloc] initWithString:urlString];
+		
+		if (!url) {
+			continue;
+		}
+		
+		[urls setObject:url forKey:remoteName];
+	}
+	
+	return urls;
+}
+
+- (void) openWebsiteOfRemote:(NSString*)remoteName {
+	NSDictionary* remotes = self.remoteURLs;
+	
+	NSURL* remoteURL = remotes[remoteName];
+	NSString* path = remoteURL.absoluteString;
+	
+	if ([path containsString:@"github.com"]) {
+		[[NSWorkspace sharedWorkspace] openURL:remoteURL];
+	} else if ([path containsString:@"bitbucket.org"]) {
+		NSString *pattern = @"(.*:\\/\\/)(.*@)(.*)";
+		NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern
+																			   options:0 error:NULL];
+		NSTextCheckingResult *match = [regex firstMatchInString:path options:0 range:NSMakeRange(0, [path length])];
+		if (match != nil) {
+			NSString *s1 = [path substringWithRange:[match rangeAtIndex:1]];
+			NSString *s3 = [path substringWithRange:[match rangeAtIndex:3]];
+			path = [s1 stringByAppendingString:s3];
+			
+			[[NSWorkspace sharedWorkspace] openURL:[[NSURL alloc] initWithString:path]];
+		}
+	}
+}
+
+- (NSString* _Nullable) remoteWebsiteNameForRemote:(NSString*)remote
+{
+	NSDictionary* remotes = self.remoteURLs;
+	NSURL* remoteURL = remotes[remote];
+	NSString* path = remoteURL.absoluteString;
+	
+	if ([path containsString:@"github.com"]) {
+		return @"GitHub";
+	} else if ([path containsString:@"bitbucket.org"]) {
+		return @"Bitbucket";
+	}
+	
+	return nil;
+}
+
 #pragma mark Repository commands
 
 - (void) beginAddRemote:(NSString *)remoteName forURL:(NSString *)remoteURL

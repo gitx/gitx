@@ -9,6 +9,7 @@
 #import "PBRefMenuItem.h"
 #import "PBGitRepository.h"
 #import "PBGitRevSpecifier.h"
+#import "PBRefController.h"
 
 @implementation PBRefMenuItem
 @synthesize refishs;
@@ -157,8 +158,6 @@
 			NSMenu *remotesMenu = [[NSMenu alloc] initWithTitle:NSLocalizedString(@"Remotes Menu", @"Menu listing the repository’s remotes")];
 			for (NSString *remote in remoteNames) {
 				PBRefMenuItem *remoteItem = [PBRefMenuItem itemWithTitle:remote action:@selector(pushToRemote:) enabled:YES];
-				remoteItem.target = target;
-				remoteItem.refishs = @[ref];
 				remoteItem.representedObject = remote;
 				[remotesMenu addItem:remoteItem];
 			}
@@ -179,12 +178,18 @@
 		PBRefMenuItem *deleteItem = [PBRefMenuItem itemWithTitle:deleteTitle action:@selector(showDeleteRefSheet:) enabled:deleteEnabled];
 		[items addObject:deleteItem];
 	}
-
-	for (PBRefMenuItem *item in items) {
-		item.target = target;
-		item.refishs = @[ref];
+	
+	// Open on Website
+	NSString* remoteWebsite = [(PBRefController*)target remoteWebsiteNameForRemote:ref.remoteName];
+	
+	if (remoteWebsite) {
+		[items addObject:[PBRefMenuItem separatorItem]];
+		NSString* title = [NSString stringWithFormat:NSLocalizedString(@"Open %@ in %@", ""), ref.remoteName, remoteWebsite];
+		[items addObject:[PBRefMenuItem  itemWithTitle:title action:@selector(openOnWebsite:) enabled:true]];
 	}
-
+	
+	[self recursivelyAddTarget:target ref:ref toItems:items];
+	
 	return items;
 }
 
@@ -239,5 +244,16 @@
 	return items;
 }
 
++ (void) recursivelyAddTarget:(id) target ref:(PBGitRef*)ref toItems:(NSArray<NSMenuItem*>*)items
+{
+	for (PBRefMenuItem *item in items) {
+		item.target = target;
+		item.refishs = @[ref];
+		
+		if (item.submenu) {
+			[self recursivelyAddTarget:target ref:ref toItems:item.submenu.itemArray];
+		}
+	}
+}
 
 @end

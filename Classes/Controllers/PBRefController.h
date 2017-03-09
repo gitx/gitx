@@ -40,4 +40,6 @@
 - (void) createTag:(PBRefMenuItem *)sender;
 - (void) showTagInfoSheet:(PBRefMenuItem *)sender;
 
+- (NSString* _Nullable) remoteWebsiteNameForRemote:(NSString* _Nullable)remote;
+
 @end
