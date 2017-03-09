@@ -28,12 +28,14 @@ NS_INLINE BOOL ContainsComplexRefCharSequence(NSString *refString)
 // internal designated init
 - (id) initWithParameters:(NSArray *)params description:(NSString *)descrip
 {
+	NSParameterAssert(params != nil);
+
 	self = [super init];
 	if (!self) return nil;
 
 	parameters = params;
 	description = descrip;
-	isSimpleRef = (parameters.count == 1) && !ContainsComplexRefCharSequence(parameters[0]);
+	isSimpleRef = (params.count == 1) && !ContainsComplexRefCharSequence(params[0]);
 
 	return self;
 }
