@@ -20,7 +20,6 @@
 #import "PBGitRef.h"
 #import "PBError.h"
 #import "PBRepositoryDocumentController.h"
-#import "PBRefMenuItem.h"
 
 @interface PBGitWindowController ()
 
