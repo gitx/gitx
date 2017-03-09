@@ -119,8 +119,12 @@ typedef enum branchFilterTypes {
 - (PBGitRef *)refForName:(NSString *)name;
 
 - (NSArray<NSString *> *)remotes;
-- (BOOL)hasRemotes;
-- (PBGitRef *)remoteRefForBranch:(PBGitRef *)branch error:(NSError **)error;
+- (BOOL) hasRemotes;
+- (PBGitRef *) remoteRefForBranch:(PBGitRef *)branch error:(NSError **)error;
+- (NSString *) infoForRemote:(NSString *)remoteName;
+- (NSDictionary *) remoteURLs;
+- (void) openWebsiteOfRemote:(NSString*)remoteName;
+- (NSString* _Nullable) remoteWebsiteNameForRemote:(NSString* _Nullable)remote;
 
 - (void)readCurrentBranch;
 - (PBGitRevSpecifier *)addBranch:(PBGitRevSpecifier *)rev;
