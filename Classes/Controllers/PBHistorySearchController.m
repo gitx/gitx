@@ -68,7 +68,7 @@
 
 - (void)selectSearchMode:(id)sender
 {
-	[self setSearchMode:PBSearchModeForInteger([(NSView*)sender tag])];
+	[self setSearchMode:PBSearchModeForInteger([(NSView *)sender tag])];
 	[self updateSearch:self];
 }
 
@@ -127,10 +127,13 @@
 
 	[self updateUI];
 
-	[commitController addObserver:self keyPath:@"arrangedObjects" options:0 block:^(MAKVONotification *notification) {
-		// the objects in the commitlist changed so the result indexes are no longer valid
-		[self clearSearch];
-	}];
+	[commitController addObserver:self
+						  keyPath:@"arrangedObjects"
+						  options:0
+							block:^(MAKVONotification *notification) {
+								// the objects in the commitlist changed so the result indexes are no longer valid
+								[self clearSearch];
+							}];
 }
 
 #pragma mark -
@@ -184,8 +187,8 @@
 		return NSLocalizedString(@"1 match", @"Search count (left of search field): exactly one result");
 
 	return [NSString stringWithFormat:
-			NSLocalizedString(@"%lu matches", @"Search count (left of search field): number of results"),
-			numberOfMatches];
+						 NSLocalizedString(@"%lu matches", @"Search count (left of search field): number of results"),
+						 numberOfMatches];
 }
 
 - (void)updateUI
@@ -193,8 +196,7 @@
 	if ([[searchField stringValue] isEqualToString:@""]) {
 		[numberOfMatchesField setHidden:YES];
 		[stepper setHidden:YES];
-	}
-	else {
+	} else {
 		[numberOfMatchesField setStringValue:[self numberOfMatchesString]];
 		[numberOfMatchesField setHidden:NO];
 		[stepper setHidden:NO];
@@ -225,26 +227,26 @@
 - (void)setupSearchMenuTemplate
 {
 	NSMenu *searchMenu = [[NSMenu alloc] initWithTitle:NSLocalizedString(@"Search Menu", @"Title of the Search menu.")];
-    NSMenuItem *item;
+	NSMenuItem *item;
 
 	item = [[NSMenuItem alloc] initWithTitle:kGitXBasicSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
 	[item setTarget:self];
-    [item setTag:PBHistorySearchModeBasic];
-    [searchMenu addItem:item];
+	[item setTag:PBHistorySearchModeBasic];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:kGitXPickaxeSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
 	[item setTarget:self];
-    [item setTag:PBHistorySearchModePickaxe];
-    [searchMenu addItem:item];
+	[item setTag:PBHistorySearchModePickaxe];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:kGitXRegexSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
 	[item setTarget:self];
-    [item setTag:PBHistorySearchModeRegex];
-    [searchMenu addItem:item];
+	[item setTag:PBHistorySearchModeRegex];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:kGitXPathSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
 	[item setTarget:self];
-    [item setTag:PBHistorySearchModePath];
+	[item setTag:PBHistorySearchModePath];
 	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:kGitXRawSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
@@ -252,30 +254,30 @@
 	[item setTag:PBHistorySearchModeRaw];
 	[searchMenu addItem:item];
 
-    item = [NSMenuItem separatorItem];
-    [searchMenu addItem:item];
+	item = [NSMenuItem separatorItem];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Recent Searches", @"Searches menu: title of inactive headline item for Recent Searches section") action:NULL keyEquivalent:@""];
-    [item setTag:NSSearchFieldRecentsTitleMenuItemTag];
-    [searchMenu addItem:item];
+	[item setTag:NSSearchFieldRecentsTitleMenuItemTag];
+	[searchMenu addItem:item];
 
-    item = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
-    [item setTag:NSSearchFieldRecentsMenuItemTag];
-    [searchMenu addItem:item];
+	item = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
+	[item setTag:NSSearchFieldRecentsMenuItemTag];
+	[searchMenu addItem:item];
 
-    item = [NSMenuItem separatorItem];
-    [item setTag:NSSearchFieldRecentsTitleMenuItemTag];
-    [searchMenu addItem:item];
+	item = [NSMenuItem separatorItem];
+	[item setTag:NSSearchFieldRecentsTitleMenuItemTag];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Clear Recent Searches", @"Searches menu: title of clear recent searches item") action:NULL keyEquivalent:@""];
-    [item setTag:NSSearchFieldClearRecentsMenuItemTag];
-    [searchMenu addItem:item];
+	[item setTag:NSSearchFieldClearRecentsMenuItemTag];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"No Recent Searches", @"Searches menu: title of dummy item displayed in recent searches section when there are no recent searches") action:NULL keyEquivalent:@""];
-    [item setTag:NSSearchFieldNoRecentsMenuItemTag];
-    [searchMenu addItem:item];
+	[item setTag:NSSearchFieldNoRecentsMenuItemTag];
+	[searchMenu addItem:item];
 
-    [[searchField cell] setSearchMenuTemplate:searchMenu];
+	[[searchField cell] setSearchMenuTemplate:searchMenu];
 }
 
 - (void)updateSearchMenuState
@@ -290,13 +292,14 @@
 	[self updateSearchModeMenuItemWithTag:PBHistorySearchModePath inMenu:searchMenu];
 	[self updateSearchModeMenuItemWithTag:PBHistorySearchModeRaw inMenu:searchMenu];
 
-    [[searchField cell] setSearchMenuTemplate:searchMenu];
+	[[searchField cell] setSearchMenuTemplate:searchMenu];
 
 	[PBGitDefaults setHistorySearchMode:searchMode];
 }
 
-- (void) updateSearchModeMenuItemWithTag:(PBHistorySearchMode)menuItemSearchMode inMenu:(NSMenu *) searchMenu {
-	NSMenuItem * menuItem = [searchMenu itemWithTag:menuItemSearchMode];
+- (void)updateSearchModeMenuItemWithTag:(PBHistorySearchMode)menuItemSearchMode inMenu:(NSMenu *)searchMenu
+{
+	NSMenuItem *menuItem = [searchMenu itemWithTag:menuItemSearchMode];
 	[menuItem setState:(searchMode == menuItemSearchMode) ? NSOnState : NSOffState];
 }
 
@@ -335,7 +338,7 @@
 	[self updateSearchPlaceholderString];
 }
 
-- (void)searchTimerFired:(NSTimer*)theTimer
+- (void)searchTimerFired:(NSTimer *)theTimer
 {
 	[self.progressIndicator setHidden:NO];
 	[self.progressIndicator startAnimation:self];
@@ -356,7 +359,6 @@
 	[stepper setHidden:YES];
 	searchTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(searchTimerFired:) userInfo:nil repeats:NO];
 }
-
 
 
 #pragma mark Basic Search
@@ -383,7 +385,6 @@
 
 	[self updateSelectedResult];
 }
-
 
 
 #pragma mark Background Search
@@ -471,7 +472,6 @@
 }
 
 
-
 #pragma mark -
 #pragma mark Rewind Panel
 
@@ -528,8 +528,8 @@
 {
 	CAKeyframeAnimation *animation = [CAKeyframeAnimation animation];
 	animation.duration = 1.0f;
-	animation.values = @[@1.0f, @1.0f, @0.0f, @0.0f];
-	animation.keyTimes = @[@0.1f, @0.3f, @0.7f, [NSNumber numberWithDouble:animation.duration]];
+	animation.values = @[ @1.0f, @1.0f, @0.0f, @0.0f ];
+	animation.keyTimes = @[ @0.1f, @0.3f, @0.7f, [NSNumber numberWithDouble:animation.duration] ];
 	return animation;
 }
 
@@ -550,9 +550,9 @@
 	NSImage *reversedRewindImage = [NSImage imageWithSize:rewindImage.size
 												  flipped:isReversed
 										   drawingHandler:^BOOL(NSRect destRect) {
-		[rewindImage drawInRect:destRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
-		return YES;
-	}];
+											   [rewindImage drawInRect:destRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
+											   return YES;
+										   }];
 	NSImageView *rewindImageView = [rewindPanel.contentView viewWithTag:kRewindPanelImageViewTag];
 	[rewindImageView setImage:reversedRewindImage];
 

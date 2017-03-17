@@ -14,7 +14,7 @@
 @class PBGitHistoryController;
 
 @interface GLFileView : PBWebController <MGScopeBarDelegate> {
-	__weak IBOutlet PBGitHistoryController* historyController;
+	__weak IBOutlet PBGitHistoryController *historyController;
 	__weak IBOutlet MGScopeBar *typeBar;
 	NSMutableArray *groups;
 	__weak IBOutlet NSView *accessoryView;

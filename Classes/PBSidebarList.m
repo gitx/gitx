@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 	NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
 	NSInteger row = [self rowAtPoint:point];
 
-	PBGitSidebarController *controller = (PBGitSidebarController*)[self delegate];
+	PBGitSidebarController *controller = (PBGitSidebarController *)[self delegate];
 
 	return [controller menuForRow:row];
 }

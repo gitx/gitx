@@ -38,69 +38,69 @@
 {
 	NSMutableDictionary *defaultValues = [NSMutableDictionary dictionary];
 	[defaultValues setObject:[NSNumber numberWithInt:kDefaultVerticalLineLength]
-                      forKey:kCommitMessageViewVerticalLineLength];
-    [defaultValues setObject:[NSNumber numberWithInt:kDefaultVerticalBodyLineLength]
-                      forKey:kCommitMessageViewVerticalBodyLineLength];
-    [defaultValues setObject:[NSNumber numberWithBool:YES]
-                      forKey:kCommitMessageViewHasVerticalLine];
+					  forKey:kCommitMessageViewVerticalLineLength];
+	[defaultValues setObject:[NSNumber numberWithInt:kDefaultVerticalBodyLineLength]
+					  forKey:kCommitMessageViewVerticalBodyLineLength];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kEnableGist];
+					  forKey:kCommitMessageViewHasVerticalLine];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kEnableGravatar];
+					  forKey:kEnableGist];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kConfirmPublicGists];
+					  forKey:kEnableGravatar];
+	[defaultValues setObject:[NSNumber numberWithBool:YES]
+					  forKey:kConfirmPublicGists];
 	[defaultValues setObject:[NSNumber numberWithBool:NO]
-			  forKey:kPublicGist];
+					  forKey:kPublicGist];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kShowWhitespaceDifferences];
+					  forKey:kShowWhitespaceDifferences];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kOpenCurDirOnLaunch];
+					  forKey:kOpenCurDirOnLaunch];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-			  forKey:kShowOpenPanelOnLaunch];
+					  forKey:kShowOpenPanelOnLaunch];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
 					  forKey:kShouldCheckoutBranch];
 	[defaultValues setObject:[NSNumber numberWithBool:NO]
-                      forKey:kOpenPreviousDocumentsOnLaunch];
+					  forKey:kOpenPreviousDocumentsOnLaunch];
 	[defaultValues setObject:[NSNumber numberWithInteger:PBHistorySearchModeBasic]
-                      forKey:kHistorySearchMode];
+					  forKey:kHistorySearchMode];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
-                      forKey:kUseRepositoryWatcher];
+					  forKey:kUseRepositoryWatcher];
 	[defaultValues setObject:@"com.apple.Terminal"
 					  forKey:kTerminalHandler];
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
 }
 
-+ (NSInteger) commitMessageViewVerticalLineLength
++ (NSInteger)commitMessageViewVerticalLineLength
 {
 	return [[NSUserDefaults standardUserDefaults] integerForKey:kCommitMessageViewVerticalLineLength];
 }
 
-+ (BOOL) commitMessageViewHasVerticalLine
++ (BOOL)commitMessageViewHasVerticalLine
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kCommitMessageViewHasVerticalLine];
 }
 
-+ (NSInteger) commitMessageViewVerticalBodyLineLength
++ (NSInteger)commitMessageViewVerticalBodyLineLength
 {
 	return [[NSUserDefaults standardUserDefaults] integerForKey:kCommitMessageViewVerticalBodyLineLength];
 }
 
-+ (BOOL) isGistEnabled
++ (BOOL)isGistEnabled
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kEnableGist];
 }
 
-+ (BOOL) isGravatarEnabled
++ (BOOL)isGravatarEnabled
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kEnableGravatar];
 }
 
-+ (BOOL) confirmPublicGists
++ (BOOL)confirmPublicGists
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kConfirmPublicGists];
 }
 
-+ (BOOL) isGistPublic
++ (BOOL)isGistPublic
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kPublicGist];
 }
@@ -120,61 +120,61 @@
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kShowOpenPanelOnLaunch];
 }
 
-+ (BOOL) shouldCheckoutBranch
++ (BOOL)shouldCheckoutBranch
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kShouldCheckoutBranch];
 }
 
-+ (void) setShouldCheckoutBranch:(BOOL)shouldCheckout
++ (void)setShouldCheckoutBranch:(BOOL)shouldCheckout
 {
 	[[NSUserDefaults standardUserDefaults] setBool:shouldCheckout forKey:kShouldCheckoutBranch];
 }
 
-+ (NSString *) recentCloneDestination
++ (NSString *)recentCloneDestination
 {
 	return [[NSUserDefaults standardUserDefaults] stringForKey:kRecentCloneDestination];
 }
 
-+ (void) setRecentCloneDestination:(NSString *)path
++ (void)setRecentCloneDestination:(NSString *)path
 {
 	[[NSUserDefaults standardUserDefaults] setObject:path forKey:kRecentCloneDestination];
 }
 
-+ (BOOL) showStageView
++ (BOOL)showStageView
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kShowStageView];
 }
 
-+ (void) setShowStageView:(BOOL)suppress
++ (void)setShowStageView:(BOOL)suppress
 {
 	return [[NSUserDefaults standardUserDefaults] setBool:suppress forKey:kShowStageView];
 }
 
-+ (BOOL) openPreviousDocumentsOnLaunch
++ (BOOL)openPreviousDocumentsOnLaunch
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kOpenPreviousDocumentsOnLaunch];
 }
 
-+ (void) setPreviousDocumentPaths:(NSArray *)documentPaths
++ (void)setPreviousDocumentPaths:(NSArray *)documentPaths
 {
 	[[NSUserDefaults standardUserDefaults] setObject:documentPaths forKey:kPreviousDocumentPaths];
 }
 
-+ (NSArray *) previousDocumentPaths
++ (NSArray *)previousDocumentPaths
 {
 	return [[NSUserDefaults standardUserDefaults] arrayForKey:kPreviousDocumentPaths];
 }
 
-+ (void) removePreviousDocumentPaths
++ (void)removePreviousDocumentPaths
 {
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:kPreviousDocumentPaths];
 }
-+ (NSInteger) branchFilter
++ (NSInteger)branchFilter
 {
 	return [[NSUserDefaults standardUserDefaults] integerForKey:kBranchFilterState];
 }
 
-+ (void) setBranchFilter:(NSInteger)state
++ (void)setBranchFilter:(NSInteger)state
 {
 	[[NSUserDefaults standardUserDefaults] setInteger:state forKey:kBranchFilterState];
 }
@@ -188,7 +188,6 @@
 {
 	[[NSUserDefaults standardUserDefaults] setInteger:mode forKey:kHistorySearchMode];
 }
-
 
 
 // Suppressed Dialog Warnings
@@ -224,7 +223,7 @@
 }
 
 
-+ (BOOL) useRepositoryWatcher
++ (BOOL)useRepositoryWatcher
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kUseRepositoryWatcher];
 }

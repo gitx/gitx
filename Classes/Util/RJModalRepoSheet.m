@@ -42,7 +42,8 @@
 	return self;
 }
 
-- (PBGitRepositoryDocument *)document {
+- (PBGitRepositoryDocument *)document
+{
 	return self.windowController.document;
 }
 

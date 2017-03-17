@@ -38,7 +38,6 @@ extern NSString *PBGitIndexAmendMessageAvailable;
 extern NSString *PBGitIndexOperationFailed;
 
 
-
 // Represents a git index for a given work tree.
 // As a single git repository can have multiple trees,
 // the tree has to be given explicitly, even though
@@ -53,14 +52,14 @@ extern NSString *PBGitIndexOperationFailed;
 // A list of PBChangedFile's with differences between the work tree and the index
 // This method is KVO-aware, so changes when any of the index-modifying methods are called
 // (including -refresh)
-@property (readonly, retain) NSArray <PBChangedFile *> *indexChanges;
+@property (readonly, retain) NSArray<PBChangedFile *> *indexChanges;
 
 - (instancetype)initWithRepository:(PBGitRepository *)repository;
 
 // Refresh the index
 - (void)refresh;
 
-- (void)commitWithMessage:(NSString *)commitMessage andVerify:(BOOL) doVerify;
+- (void)commitWithMessage:(NSString *)commitMessage andVerify:(BOOL)doVerify;
 
 // Inter-file changes:
 - (BOOL)stageFiles:(NSArray<PBChangedFile *> *)stageFiles;

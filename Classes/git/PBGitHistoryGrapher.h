@@ -22,7 +22,7 @@
 
 
 @interface PBGitHistoryGrapher : NSObject {
-	__weak id <PBGitHistoryGrapherDelegate> delegate;
+	__weak id<PBGitHistoryGrapherDelegate> delegate;
 	NSOperationQueue *currentQueue;
 
 	NSMutableSet *searchOIDs;
@@ -30,7 +30,7 @@
 	BOOL viewAllBranches;
 }
 
-- (instancetype) initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id <PBGitHistoryGrapherDelegate>)theDelegate;
-- (void) graphCommits:(NSArray *)revList;
+- (instancetype)initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id<PBGitHistoryGrapherDelegate>)theDelegate;
+- (void)graphCommits:(NSArray *)revList;
 
 @end

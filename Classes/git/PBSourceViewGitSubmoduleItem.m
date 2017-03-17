@@ -16,19 +16,19 @@
 
 @implementation PBSourceViewGitSubmoduleItem
 
-+ (instancetype) itemWithSubmodule:(GTSubmodule *)submodule
++ (instancetype)itemWithSubmodule:(GTSubmodule *)submodule
 {
 	return [[self alloc] initWithSubmodule:submodule];
 }
 
 - (instancetype)initWithSubmodule:(GTSubmodule *)submodule
 {
-    self = [self initWithTitle:submodule.name revSpecifier:nil];
+	self = [self initWithTitle:submodule.name revSpecifier:nil];
 	if (!self) return nil;
 
 	_submodule = submodule;
 
-    return self;
+	return self;
 }
 
 - (NSString *)title

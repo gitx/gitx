@@ -14,7 +14,7 @@
 
 @implementation PBPrefsWindowController
 
-# pragma mark DBPrefsWindowController overrides
+#pragma mark DBPrefsWindowController overrides
 
 - (void)setupToolbar
 {
@@ -45,13 +45,13 @@
 #pragma mark -
 #pragma mark Delegate methods
 
-- (IBAction) checkGitValidity: sender
+- (IBAction)checkGitValidity:sender
 {
 	// FIXME: This does not work reliably, probably due to: http://www.cocoabuilder.com/archive/message/cocoa/2008/9/10/217850
 	//[badGitPathIcon setHidden:[PBGitRepository validateGit:[[NSValueTransformer valueTransformerForName:@"PBNSURLPathUserDefaultsTransfomer"] reverseTransformedValue:[gitPathController URL]]]];
 }
 
-- (IBAction) resetGitPath: sender
+- (IBAction)resetGitPath:sender
 {
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"gitExecutable"];
 }
@@ -77,7 +77,7 @@
 #pragma mark -
 #pragma mark Git Path open panel actions
 
-- (IBAction) showHideAllFiles: sender
+- (IBAction)showHideAllFiles:sender
 {
 	/* FIXME: This uses undocumented OpenPanel features to show hidden files! */
 	NSNumber *showHidden = [NSNumber numberWithBool:[sender state] == NSOnState];

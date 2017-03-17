@@ -26,7 +26,7 @@ NS_INLINE BOOL ContainsComplexRefCharSequence(NSString *refString)
 }
 
 // internal designated init
-- (id) initWithParameters:(NSArray *)params description:(NSString *)descrip
+- (id)initWithParameters:(NSArray *)params description:(NSString *)descrip
 {
 	NSParameterAssert(params != nil);
 
@@ -40,40 +40,40 @@ NS_INLINE BOOL ContainsComplexRefCharSequence(NSString *refString)
 	return self;
 }
 
-- (id) initWithParameters:(NSArray *)params
+- (id)initWithParameters:(NSArray *)params
 {
 	return [self initWithParameters:params description:nil];
 }
 
-- (id) initWithRef:(PBGitRef *)ref
+- (id)initWithRef:(PBGitRef *)ref
 {
 	return [self initWithParameters:[NSArray arrayWithObject:ref.ref] description:ref.shortName];
 }
 
-- (id) initWithCoder:(NSCoder *)coder
+- (id)initWithCoder:(NSCoder *)coder
 {
 	return [self initWithParameters:[coder decodeObjectForKey:@"Parameters"] description:[coder decodeObjectForKey:@"Description"]];
 }
 
 + (PBGitRevSpecifier *)allBranchesRevSpec
 {
-    // Using --all here would include refs like refs/notes/commits, which probably isn't what we want.
-	return [[PBGitRevSpecifier alloc] initWithParameters:@[@"--branches", @"--remotes", @"--tags", @"--glob=refs/stash*", @"HEAD"] description:@"All branches"];
+	// Using --all here would include refs like refs/notes/commits, which probably isn't what we want.
+	return [[PBGitRevSpecifier alloc] initWithParameters:@[ @"--branches", @"--remotes", @"--tags", @"--glob=refs/stash*", @"HEAD" ] description:@"All branches"];
 }
 
 + (PBGitRevSpecifier *)localBranchesRevSpec
 {
-	return [[PBGitRevSpecifier alloc] initWithParameters:@[@"--branches", @"HEAD"] description:@"Local branches"];
+	return [[PBGitRevSpecifier alloc] initWithParameters:@[ @"--branches", @"HEAD" ] description:@"Local branches"];
 }
 
-- (NSString*) simpleRef
+- (NSString *)simpleRef
 {
 	if (![self isSimpleRef])
 		return nil;
 	return [parameters objectAtIndex:0];
 }
 
-- (PBGitRef *) ref
+- (PBGitRef *)ref
 {
 	if (![self isSimpleRef])
 		return nil;
@@ -81,7 +81,7 @@ NS_INLINE BOOL ContainsComplexRefCharSequence(NSString *refString)
 	return [PBGitRef refFromString:[self simpleRef]];
 }
 
-- (NSString *) description
+- (NSString *)description
 {
 	if (!description)
 		return [parameters componentsJoinedByString:@" "];
@@ -89,16 +89,16 @@ NS_INLINE BOOL ContainsComplexRefCharSequence(NSString *refString)
 	return description;
 }
 
-- (void) setDescription:(NSString *)newDescription
+- (void)setDescription:(NSString *)newDescription
 {
 	description = newDescription;
 }
 
 
-- (NSString *) title
+- (NSString *)title
 {
 	NSString *title = nil;
-	
+
 	if ([self.description isEqualToString:@"HEAD"])
 		title = @"detached HEAD";
 	else if ([self isSimpleRef])
@@ -111,30 +111,30 @@ NS_INLINE BOOL ContainsComplexRefCharSequence(NSString *refString)
 		title = [self.description substringFromIndex:[@"-- " length]];
 	else
 		title = self.description;
-	
+
 	return [NSString stringWithFormat:@"“%@”", title];
 }
 
-- (BOOL) hasPathLimiter;
+- (BOOL)hasPathLimiter;
 {
-	for (NSString* param in parameters)
+	for (NSString *param in parameters)
 		if ([param isEqualToString:@"--"])
 			return YES;
 	return NO;
 }
 
-- (BOOL) isEqual:(PBGitRevSpecifier *)other
+- (BOOL)isEqual:(PBGitRevSpecifier *)other
 {
 	if ([self isSimpleRef] ^ [other isSimpleRef])
 		return NO;
-	
+
 	if ([self isSimpleRef])
 		return [[[self parameters] objectAtIndex:0] isEqualToString:[other.parameters objectAtIndex:0]];
 
 	return [self.description isEqualToString:other.description];
 }
 
-- (NSUInteger) hash
+- (NSUInteger)hash
 {
 	if ([self isSimpleRef])
 		return [[[self parameters] objectAtIndex:0] hash];
@@ -142,17 +142,17 @@ NS_INLINE BOOL ContainsComplexRefCharSequence(NSString *refString)
 	return [self.description hash];
 }
 
-- (BOOL) isAllBranchesRev
+- (BOOL)isAllBranchesRev
 {
 	return [self isEqual:[PBGitRevSpecifier allBranchesRevSpec]];
 }
 
-- (BOOL) isLocalBranchesRev
+- (BOOL)isLocalBranchesRev
 {
 	return [self isEqual:[PBGitRevSpecifier localBranchesRevSpec]];
 }
 
-- (void) encodeWithCoder:(NSCoder *)coder
+- (void)encodeWithCoder:(NSCoder *)coder
 {
 	[coder encodeObject:description forKey:@"Description"];
 	[coder encodeObject:parameters forKey:@"Parameters"];
@@ -160,11 +160,11 @@ NS_INLINE BOOL ContainsComplexRefCharSequence(NSString *refString)
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    PBGitRevSpecifier *copy = [[[self class] allocWithZone:zone] initWithParameters:[self.parameters copy]];
-    copy.description = [self.description copy];
+	PBGitRevSpecifier *copy = [[[self class] allocWithZone:zone] initWithParameters:[self.parameters copy]];
+	copy.description = [self.description copy];
 	copy.workingDirectory = [self.workingDirectory copy];
 
-    return copy;
+	return copy;
 }
 
 @end

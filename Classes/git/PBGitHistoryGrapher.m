@@ -13,9 +13,9 @@
 @implementation PBGitHistoryGrapher
 
 
-- (instancetype) initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id <PBGitHistoryGrapherDelegate>)theDelegate
+- (instancetype)initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id<PBGitHistoryGrapherDelegate>)theDelegate
 {
-    self = [super init];
+	self = [super init];
 	if (!self) return nil;
 
 	delegate = theDelegate;
@@ -31,12 +31,12 @@
 - (void)sendCommits:(NSArray *)commits
 {
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[self->delegate updateCommitsFromGrapher:@{ kCurrentQueueKey: self->currentQueue, kNewCommitsKey: commits }];
+		[self->delegate updateCommitsFromGrapher:@{kCurrentQueueKey : self->currentQueue, kNewCommitsKey : commits}];
 	});
 }
 
 
-- (void) graphCommits:(NSArray *)revList
+- (void)graphCommits:(NSArray *)revList
 {
 	if (!revList || [revList count] == 0)
 		return;

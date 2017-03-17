@@ -40,8 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showErrorSheet:(NSError *)error;
 
 
-- (void)openURLs:(NSArray <NSURL *> *)fileURLs;
-- (void)revealURLsInFinder:(NSArray <NSURL *> *)fileURLs;
+- (void)openURLs:(NSArray<NSURL *> *)fileURLs;
+- (void)revealURLsInFinder:(NSArray<NSURL *> *)fileURLs;
 
 - (IBAction)showCommitView:(id)sender;
 - (IBAction)showHistoryView:(id)sender;
@@ -74,9 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)pushDefaultRemoteForRef:(id)sender;
 - (IBAction)pushToRemote:(id)sender;
 
-- (IBAction)stashSave:(id) sender;
-- (IBAction)stashSaveWithKeepIndex:(id) sender;
-- (IBAction)stashPop:(id) sender;
+- (IBAction)stashSave:(id)sender;
+- (IBAction)stashSaveWithKeepIndex:(id)sender;
+- (IBAction)stashPop:(id)sender;
 - (IBAction)stashApply:(id)sender;
 - (IBAction)stashDrop:(id)sender;
 

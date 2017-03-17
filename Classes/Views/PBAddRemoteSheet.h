@@ -16,10 +16,10 @@
 
 + (void)beginSheetWithWindowController:(PBGitWindowController *)windowController completionHandler:(RJSheetCompletionHandler)handler;
 
-- (IBAction) browseFolders:(id)sender;
-- (IBAction) addRemote:(id)sender;
-- (IBAction) showHideHiddenFiles:(id)sender;
-- (IBAction) cancelOperation:(id)sender;
+- (IBAction)browseFolders:(id)sender;
+- (IBAction)addRemote:(id)sender;
+- (IBAction)showHideHiddenFiles:(id)sender;
+- (IBAction)cancelOperation:(id)sender;
 
 @property (readwrite, weak) IBOutlet NSTextField *remoteName;
 @property (readwrite, weak) IBOutlet NSTextField *remoteURL;

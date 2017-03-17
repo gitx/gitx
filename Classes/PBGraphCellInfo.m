@@ -16,11 +16,11 @@
 {
 	position = p;
 	lines = l;
-	
+
 	return self;
 }
 
-- (struct PBGitGraphLine*)lines
+- (struct PBGitGraphLine *)lines
 {
 	return lines;
 }
@@ -31,21 +31,24 @@
 	lines = l;
 }
 
-- (NSString *)description { return [self debugDescription]; }
+- (NSString *)description
+{
+	return [self debugDescription];
+}
 
 - (NSString *)debugDescription
 {
 	NSMutableString *desc = [NSMutableString stringWithFormat:@"<%@: %p position: %ld numColumns: %ld nLines: %ld sign: '%c'>",
-							 NSStringFromClass([self class]), self, position, numColumns, nLines, sign];
+															  NSStringFromClass([self class]), self, position, numColumns, nLines, sign];
 	for (int lineIndex = 0; lineIndex < nLines; lineIndex++) {
 		struct PBGitGraphLine line = lines[lineIndex];
 		[desc appendString:[NSString stringWithFormat:@"\n\t<upper: %d from: %d to: %d colorIndex: %d>",
-							line.upper, line.from, line.to, line.colorIndex]];
+													  line.upper, line.from, line.to, line.colorIndex]];
 	}
 	return desc;
 }
 
--(void) dealloc
+- (void)dealloc
 {
 	free(lines);
 }

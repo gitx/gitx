@@ -21,9 +21,9 @@
 }
 
 @property (weak) IBOutlet WebView *view;
-@property  NSString *startFile;
+@property NSString *startFile;
 @property (weak) id repository;
 
-- (WebScriptObject *) script;
-- (void) closeView;
+- (WebScriptObject *)script;
+- (void)closeView;
 @end

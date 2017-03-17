@@ -15,10 +15,10 @@ NSString *const PBTaskTerminationOutputKey = @"PBTaskTerminationOutputKey";
 
 const BOOL PBTaskDebugEnable = NO;
 
-#define PBTaskLog(...) \
-do { \
-	if (PBTaskDebugEnable) NSLog(__VA_ARGS__); \
-} while (0)
+#define PBTaskLog(...)                             \
+	do {                                           \
+		if (PBTaskDebugEnable) NSLog(__VA_ARGS__); \
+	} while (0)
 
 @interface PBTask ()
 
@@ -29,7 +29,8 @@ do { \
 
 @implementation PBTask
 
-+ (instancetype)taskWithLaunchPath:(NSString *)launchPath arguments:(NSArray *)arguments inDirectory:(NSString *)directory {
++ (instancetype)taskWithLaunchPath:(NSString *)launchPath arguments:(NSArray *)arguments inDirectory:(NSString *)directory
+{
 	return [[self alloc] initWithLaunchPath:launchPath arguments:arguments inDirectory:directory];
 }
 
@@ -45,10 +46,10 @@ do { \
 	// Prepare ourselves a nicer environment
 	NSMutableDictionary *env = [[[NSProcessInfo processInfo] environment] mutableCopy];
 	[env removeObjectsForKeys:@[
-								@"DYLD_INSERT_LIBRARIES", @"DYLD_LIBRARY_PATH",
-								@"MallocGuardEdges", @"MallocNanoZone", @"MallocScribble", @"MallocStackLogging", @"MallocStackLoggingNoCompact",
-								@"NSZombieEnabled"]
-	 ];
+		@"DYLD_INSERT_LIBRARIES", @"DYLD_LIBRARY_PATH",
+		@"MallocGuardEdges", @"MallocNanoZone", @"MallocScribble", @"MallocStackLogging", @"MallocStackLoggingNoCompact",
+		@"NSZombieEnabled"
+	]];
 	if (self.additionalEnvironment) {
 		[env addEntriesFromDictionary:self.additionalEnvironment];
 	}
@@ -74,7 +75,7 @@ do { \
 
 		NSData *data = handle.availableData;
 		if (data.length) {
-			@synchronized (weakSelf) {
+			@synchronized(weakSelf) {
 				[(NSMutableData *)weakSelf.standardOutputData appendData:data];
 			}
 		} else {
@@ -88,12 +89,14 @@ do { \
 	return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
 	PBTaskLog(@"task %p: dealloc", self);
 }
 
 
-- (void)performTaskOnQueue:(dispatch_queue_t)queue terminationHandler:(void (^)(NSError * _Nullable))terminationHandler {
+- (void)performTaskOnQueue:(dispatch_queue_t)queue terminationHandler:(void (^)(NSError *_Nullable))terminationHandler
+{
 	NSParameterAssert(terminationHandler != nil);
 
 	__weak PBTask *weakSelf = self;
@@ -103,12 +106,12 @@ do { \
 			PBTaskLog(@"task %p: caught signal", weakSelf);
 
 			NSString *desc = @"Task killed";
-			NSArray *taskArguments = [@[task.launchPath] arrayByAddingObjectsFromArray:task.arguments];
+			NSArray *taskArguments = [@[ task.launchPath ] arrayByAddingObjectsFromArray:task.arguments];
 			NSString *failureReason = [NSString stringWithFormat:@"The task \"%@\" caught a termination signal", [taskArguments componentsJoinedByString:@" "]];
 			NSDictionary *userInfo = @{
-									   NSLocalizedDescriptionKey: desc,
-									   NSLocalizedFailureReasonErrorKey: failureReason,
-									   };
+				NSLocalizedDescriptionKey : desc,
+				NSLocalizedFailureReasonErrorKey : failureReason,
+			};
 			error = [NSError errorWithDomain:PBTaskErrorDomain code:PBTaskCaughtSignalError userInfo:userInfo];
 
 		} else if (task.terminationReason == NSTaskTerminationReasonExit && task.terminationStatus != 0) {
@@ -120,17 +123,17 @@ do { \
 			weakSelf.standardOutputData = nil;
 
 			NSString *desc = @"Task exited unsuccessfully";
-			NSArray *taskArguments = [@[task.launchPath] arrayByAddingObjectsFromArray:task.arguments];
+			NSArray *taskArguments = [@[ task.launchPath ] arrayByAddingObjectsFromArray:task.arguments];
 			NSString *failureReason = [NSString stringWithFormat:@"The task \"%@\" returned a non-zero return code", [taskArguments componentsJoinedByString:@" "]];
 			int status = task.terminationStatus;
 			NSNumber *terminationStatus = (status < 255 ? [NSNumber numberWithShort:(short)status] : @(status));
 
 			NSDictionary *userInfo = @{
-									   NSLocalizedDescriptionKey: desc,
-									   NSLocalizedFailureReasonErrorKey: failureReason,
-									   PBTaskTerminationStatusKey: terminationStatus,
-									   PBTaskTerminationOutputKey: outputString,
-									   };
+				NSLocalizedDescriptionKey : desc,
+				NSLocalizedFailureReasonErrorKey : failureReason,
+				PBTaskTerminationStatusKey : terminationStatus,
+				PBTaskTerminationOutputKey : outputString,
+			};
 			error = [NSError errorWithDomain:PBTaskErrorDomain code:PBTaskNonZeroExitCodeError userInfo:userInfo];
 		} else {
 			PBTaskLog(@"task %p: exit success", weakSelf);
@@ -162,10 +165,10 @@ do { \
 		NSString *desc = @"Exception raised while launching task";
 		NSString *failureReason = [NSString stringWithFormat:@"The task \"%@\" failed to launch", self.task.launchPath];
 		NSDictionary *info = @{
-							   NSLocalizedDescriptionKey: desc,
-							   NSLocalizedFailureReasonErrorKey: failureReason,
-							   PBTaskUnderlyingExceptionKey: exception,
-							   };
+			NSLocalizedDescriptionKey : desc,
+			NSLocalizedFailureReasonErrorKey : failureReason,
+			PBTaskUnderlyingExceptionKey : exception,
+		};
 		NSError *error = [NSError errorWithDomain:PBTaskErrorDomain
 											 code:PBTaskLaunchError
 										 userInfo:info];
@@ -176,34 +179,36 @@ do { \
 	}
 }
 
-- (void)performTaskOnQueue:(dispatch_queue_t)queue completionHandler:(void (^)(NSData *readData, NSError *error))completionHandler {
-	[self performTaskOnQueue:queue terminationHandler:^(NSError *error) {
-		if (error) {
-			completionHandler(nil, error);
-			return;
-		}
+- (void)performTaskOnQueue:(dispatch_queue_t)queue completionHandler:(void (^)(NSData *readData, NSError *error))completionHandler
+{
+	[self performTaskOnQueue:queue
+		  terminationHandler:^(NSError *error) {
+			  if (error) {
+				  completionHandler(nil, error);
+				  return;
+			  }
 
-		@synchronized (self) {
-			PBTaskLog(@"task %p: completed, removing read handler", self);
-			[self.task.standardOutput fileHandleForReading].readabilityHandler = nil;
-		}
+			  @synchronized(self) {
+				  PBTaskLog(@"task %p: completed, removing read handler", self);
+				  [self.task.standardOutput fileHandleForReading].readabilityHandler = nil;
+			  }
 
-		completionHandler(self.standardOutputData, nil);
-	}];
+			  completionHandler(self.standardOutputData, nil);
+		  }];
 }
 
-- (BOOL)launchTask:(NSError **)error {
+- (BOOL)launchTask:(NSError **)error
+{
 	dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 
 	__block NSError *taskError = nil;
-	
+
 	[self performTaskOnQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)
 		   completionHandler:^(NSData *readData, NSError *error) {
+			   taskError = error;
 
-		taskError = error;
-
-		dispatch_semaphore_signal(sem);
-	}];
+			   dispatch_semaphore_signal(sem);
+		   }];
 
 	dispatch_time_t timeout = dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC);
 	PBTaskLog(@"task %p: waiting for completion", self);
@@ -215,12 +220,12 @@ do { \
 
 		if (error) {
 			NSString *desc = @"Timeout while running task";
-			NSArray *taskArguments = [@[self.task.launchPath] arrayByAddingObjectsFromArray:self.task.arguments];
+			NSArray *taskArguments = [@[ self.task.launchPath ] arrayByAddingObjectsFromArray:self.task.arguments];
 			NSString *failureReason = [NSString stringWithFormat:@"The task \"%@\" failed to complete before its timeout", [taskArguments componentsJoinedByString:@" "]];
 			NSDictionary *userInfo = @{
-									   NSLocalizedDescriptionKey: desc,
-									   NSLocalizedFailureReasonErrorKey: failureReason,
-									   };
+				NSLocalizedDescriptionKey : desc,
+				NSLocalizedFailureReasonErrorKey : failureReason,
+			};
 			*error = [NSError errorWithDomain:PBTaskErrorDomain code:PBTaskTimeoutError userInfo:userInfo];
 		}
 
@@ -231,27 +236,30 @@ do { \
 	return (taskError == nil);
 }
 
-- (void)terminate {
+- (void)terminate
+{
 	[self.task terminate];
 }
 
-- (NSString *)description {
-	NSArray *taskArguments = [@[self.task.launchPath] arrayByAddingObjectsFromArray:self.task.arguments];
+- (NSString *)description
+{
+	NSArray *taskArguments = [@[ self.task.launchPath ] arrayByAddingObjectsFromArray:self.task.arguments];
 	return [NSString stringWithFormat:@"<%@ %p command: %@ stdin: %@>", NSStringFromClass([self class]), self,
-			[taskArguments componentsJoinedByString:@" "],
-			(self.standardInputData ? @"YES" : @"NO")
-			];
+									  [taskArguments componentsJoinedByString:@" "],
+									  (self.standardInputData ? @"YES" : @"NO")];
 }
 
 @end
 
 @implementation PBTask (PBBellsAndWhistles)
 
-+ (NSString *)outputForCommand:(NSString *)launchPath arguments:(NSArray *)arguments error:(NSError **)error {
++ (NSString *)outputForCommand:(NSString *)launchPath arguments:(NSArray *)arguments error:(NSError **)error
+{
 	return [self outputForCommand:launchPath arguments:arguments inDirectory:nil error:error];
 }
 
-+ (NSString *)outputForCommand:(NSString *)launchPath arguments:(NSArray *)arguments inDirectory:(NSString *)directory error:(NSError **)error {
++ (NSString *)outputForCommand:(NSString *)launchPath arguments:(NSArray *)arguments inDirectory:(NSString *)directory error:(NSError **)error
+{
 	PBTask *task = [self taskWithLaunchPath:launchPath arguments:arguments inDirectory:directory];
 	BOOL success = [task launchTask:error];
 	if (!success) return nil;
@@ -259,12 +267,14 @@ do { \
 	return task.standardOutputString;
 }
 
-+ (void)launchTask:(NSString *)launchPath arguments:(NSArray *)arguments inDirectory:(NSString *)directory completionHandler:(void (^)(NSData *readData, NSError *error))completionHandler {
++ (void)launchTask:(NSString *)launchPath arguments:(NSArray *)arguments inDirectory:(NSString *)directory completionHandler:(void (^)(NSData *readData, NSError *error))completionHandler
+{
 	PBTask *task = [self taskWithLaunchPath:launchPath arguments:arguments inDirectory:directory];
 	[task performTaskWithCompletionHandler:completionHandler];
 }
 
-- (NSString *)standardOutputString {
+- (NSString *)standardOutputString
+{
 	return [[NSString alloc] initWithData:self.standardOutputData encoding:NSUTF8StringEncoding];
 }
 
@@ -272,11 +282,13 @@ do { \
 
 @implementation PBTask (PBMainQueuePerform)
 
-- (void)performTaskWithTerminationHandler:(void (^)(NSError *error))terminationHandler {
+- (void)performTaskWithTerminationHandler:(void (^)(NSError *error))terminationHandler
+{
 	[self performTaskOnQueue:dispatch_get_main_queue() terminationHandler:terminationHandler];
 }
 
-- (void)performTaskWithCompletionHandler:(void (^)(NSData * __nullable readData, NSError * __nullable error))completionHandler {
+- (void)performTaskWithCompletionHandler:(void (^)(NSData *__nullable readData, NSError *__nullable error))completionHandler
+{
 	[self performTaskOnQueue:dispatch_get_main_queue() completionHandler:completionHandler];
 }
 

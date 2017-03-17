@@ -20,13 +20,12 @@
 	IBOutlet NSImageView *badGitPathIcon;
 	IBOutlet NSView *gitPathOpenAccessory;
 	NSOpenPanel *gitPathOpenPanel;
-
 }
 
-- (IBAction) checkGitValidity: sender;
+- (IBAction)checkGitValidity:sender;
 - (void)pathCell:(NSPathCell *)pathCell willDisplayOpenPanel:(NSOpenPanel *)openPanel;
-- (IBAction) showHideAllFiles: sender;
-- (IBAction) resetGitPath: sender;
+- (IBAction)showHideAllFiles:sender;
+- (IBAction)resetGitPath:sender;
 - (IBAction)resetAllDialogWarnings:(id)sender;
 
 @end

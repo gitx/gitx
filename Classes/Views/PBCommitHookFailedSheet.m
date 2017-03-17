@@ -23,23 +23,23 @@
 			commitController:(PBGitCommitController *)controller
 		   completionHandler:(RJSheetCompletionHandler)handler;
 {
-	PBCommitHookFailedSheet* sheet = [[self alloc] initWithWindowNibName:@"PBCommitHookFailedSheet"
+	PBCommitHookFailedSheet *sheet = [[self alloc] initWithWindowNibName:@"PBCommitHookFailedSheet"
 														   andController:controller];
 	[sheet beginMessageSheetWithMessageText:message
 								   infoText:info
 						  completionHandler:handler];
 }
 
-- (id)initWithWindowNibName:(NSString*)windowNibName
-			  andController:(PBGitCommitController*)controller;
+- (id)initWithWindowNibName:(NSString *)windowNibName
+			  andController:(PBGitCommitController *)controller;
 {
-    self = [self initWithWindowNibName:windowNibName windowController:controller.windowController];
+	self = [self initWithWindowNibName:windowNibName windowController:controller.windowController];
 	if (!self)
 		return nil;
-	
+
 	self.commitController = controller;
 
-    return self;
+	return self;
 }
 
 - (IBAction)forceCommit:(id)sender

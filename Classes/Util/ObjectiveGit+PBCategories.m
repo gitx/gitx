@@ -13,9 +13,10 @@
 
 // This is an optimisation for the grapher.
 // We're only interested in OIDs, and we don't need objects
-- (NSArray <GTOID *> *)parentOIDs {
+- (NSArray<GTOID *> *)parentOIDs
+{
 	unsigned numberOfParents = git_commit_parentcount(self.git_commit);
-	NSMutableArray <GTOID *> *parents = [NSMutableArray arrayWithCapacity:numberOfParents];
+	NSMutableArray<GTOID *> *parents = [NSMutableArray arrayWithCapacity:numberOfParents];
 
 	for (unsigned i = 0; i < numberOfParents; i++) {
 		const git_oid *parent = git_commit_parent_id(self.git_commit, i);
@@ -24,7 +25,6 @@
 	}
 
 	return parents;
-
 }
 
 @end

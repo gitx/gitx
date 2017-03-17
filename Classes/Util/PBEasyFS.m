@@ -11,10 +11,10 @@
 
 @implementation PBEasyFS
 
-+ (NSString*) tmpDirWithPrefix: (NSString*) path
++ (NSString *)tmpDirWithPrefix:(NSString *)path
 {
-	NSString* newName = [NSString stringWithFormat: @"%@%@.XXXXXX", NSTemporaryDirectory(), path];
-	char *template = (char*) [newName fileSystemRepresentation];
+	NSString *newName = [NSString stringWithFormat:@"%@%@.XXXXXX", NSTemporaryDirectory(), path];
+	char *template = (char *)[newName fileSystemRepresentation];
 	template = mkdtemp(template);
 	return [NSString stringWithUTF8String:template];
 }

@@ -20,8 +20,8 @@
 
 @protocol PBGitRefish <NSObject>
 
-- (NSString *) refishName;
-- (NSString *) shortName;
-- (NSString *) refishType;
+- (NSString *)refishName;
+- (NSString *)shortName;
+- (NSString *)refishType;
 
 @end

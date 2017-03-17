@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init NS_UNAVAILABLE;
 
-typedef void(^RJSheetCompletionHandler)(id sheet, NSModalResponse returnCode);
+typedef void (^RJSheetCompletionHandler)(id sheet, NSModalResponse returnCode);
 
 - (void)beginSheetWithCompletionHandler:(nullable RJSheetCompletionHandler)handler;
 

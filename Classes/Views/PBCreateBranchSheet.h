@@ -18,12 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PBCreateBranchSheet : RJModalRepoSheet
 
-+ (void)beginSheetWithRefish:(id <PBGitRefish>)ref windowController:(PBGitWindowController *)windowController completionHandler:(nullable RJSheetCompletionHandler)handler;
++ (void)beginSheetWithRefish:(id<PBGitRefish>)ref windowController:(PBGitWindowController *)windowController completionHandler:(nullable RJSheetCompletionHandler)handler;
 
-- (IBAction) createBranch:(nullable id)sender;
-- (IBAction) closeCreateBranchSheet:(nullable id)sender;
+- (IBAction)createBranch:(nullable id)sender;
+- (IBAction)closeCreateBranchSheet:(nullable id)sender;
 
-@property (nonatomic, strong) id <PBGitRefish> startRefish;
+@property (nonatomic, strong) id<PBGitRefish> startRefish;
 @property (nonatomic, strong) PBGitRef *selectedRef;
 @property (nonatomic, assign) BOOL shouldCheckoutBranch;
 

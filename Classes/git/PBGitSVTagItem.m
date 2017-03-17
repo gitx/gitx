@@ -18,7 +18,7 @@
 
 - (NSString *)iconName
 {
-    return @"TagTemplate";
+	return @"TagTemplate";
 }
 
 @end

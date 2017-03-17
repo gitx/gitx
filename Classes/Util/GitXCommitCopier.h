@@ -13,11 +13,11 @@
 
 @interface GitXCommitCopier : NSValueTransformer
 
-+ (NSString * _Nonnull) toFullSHA:(NSArray<PBGitCommit *> * _Nonnull)commits;
-+ (NSString * _Nonnull) toShortName:(NSArray<PBGitCommit *> * _Nonnull)commits;
-+ (NSString * _Nonnull) toSHAAndHeadingString:(NSArray<PBGitCommit *> * _Nonnull)commits;
-+ (NSString * _Nonnull) toPatch:(NSArray<PBGitCommit *> * _Nonnull)commits;
++ (NSString *_Nonnull)toFullSHA:(NSArray<PBGitCommit *> *_Nonnull)commits;
++ (NSString *_Nonnull)toShortName:(NSArray<PBGitCommit *> *_Nonnull)commits;
++ (NSString *_Nonnull)toSHAAndHeadingString:(NSArray<PBGitCommit *> *_Nonnull)commits;
++ (NSString *_Nonnull)toPatch:(NSArray<PBGitCommit *> *_Nonnull)commits;
 
-+ (void) putStringToPasteboard:(NSString * _Nullable)string;
++ (void)putStringToPasteboard:(NSString *_Nullable)string;
 
 @end

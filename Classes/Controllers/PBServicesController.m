@@ -16,10 +16,9 @@
 - (NSString *)completeSHA1For:(NSString *)sha error:(NSString **)error
 {
 	NSArray *documents = [[NSApplication sharedApplication] orderedDocuments];
-	for (PBGitRepositoryDocument *doc in documents)
-	{
+	for (PBGitRepositoryDocument *doc in documents) {
 		NSError *error = nil;
-		NSString *s = [doc.repository outputOfTaskWithArguments:@[@"log", @"-1", @"--pretty=format:%h (%s)", sha] error:&error];
+		NSString *s = [doc.repository outputOfTaskWithArguments:@[ @"log", @"-1", @"--pretty=format:%h (%s)", sha ] error:&error];
 		if (s) {
 			return s;
 		}
@@ -54,8 +53,7 @@
 - (void)completeSha:(NSPasteboard *)pboard userData:(NSString *)userData error:(NSString **)error
 {
 	NSArray *types = [pboard types];
-	if (![types containsObject:NSStringPboardType])
-	{
+	if (![types containsObject:NSStringPboardType]) {
 		*error = @"Could not get data";
 		return;
 	}

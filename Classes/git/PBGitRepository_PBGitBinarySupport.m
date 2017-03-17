@@ -15,7 +15,7 @@
 
 - (PBTask *)taskWithArguments:(NSArray *)arguments
 {
-	NSArray *realArgs = @[[@"--git-dir=" stringByAppendingString:self.gitURL.path]];
+	NSArray *realArgs = @[ [@"--git-dir=" stringByAppendingString:self.gitURL.path] ];
 
 	// Prepend a --git-dir argument in case we're running against a bare repository
 	realArgs = [realArgs arrayByAddingObjectsFromArray:arguments];
@@ -59,39 +59,39 @@
 
 @implementation PBGitRepository (PBGitBinarySupportDeprecated)
 
-- (NSString*) outputForCommand:(NSString *)cmd
+- (NSString *)outputForCommand:(NSString *)cmd
 {
-	NSArray* arguments = [cmd componentsSeparatedByString:@" "];
+	NSArray *arguments = [cmd componentsSeparatedByString:@" "];
 	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:NULL];
 }
 
-- (NSString*) outputForCommand:(NSString *)str retValue:(int *)ret;
+- (NSString *)outputForCommand:(NSString *)str retValue:(int *)ret;
 {
-	NSArray* arguments = [str componentsSeparatedByString:@" "];
+	NSArray *arguments = [str componentsSeparatedByString:@" "];
 	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:ret];
 }
 
-- (NSString*) outputForArguments:(NSArray*) arguments
-{
-	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:NULL];
-}
-
-- (NSString*) outputInWorkdirForArguments:(NSArray*) arguments
+- (NSString *)outputForArguments:(NSArray *)arguments
 {
 	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:NULL];
 }
 
-- (NSString*) outputInWorkdirForArguments:(NSArray *)arguments retValue:(int *)ret
+- (NSString *)outputInWorkdirForArguments:(NSArray *)arguments
+{
+	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:NULL];
+}
+
+- (NSString *)outputInWorkdirForArguments:(NSArray *)arguments retValue:(int *)ret
 {
 	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:ret];
 }
 
-- (NSString*) outputForArguments:(NSArray *)arguments retValue:(int *)ret
+- (NSString *)outputForArguments:(NSArray *)arguments retValue:(int *)ret
 {
 	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:ret];
 }
 
-- (NSString*) outputForArguments:(NSArray *)arguments inputString:(NSString *)input retValue:(int *)ret
+- (NSString *)outputForArguments:(NSArray *)arguments inputString:(NSString *)input retValue:(int *)ret
 {
 	return [self outputForArguments:arguments inputString:input byExtendingEnvironment:nil retValue:ret];
 }

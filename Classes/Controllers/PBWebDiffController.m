@@ -11,22 +11,25 @@
 
 @implementation PBWebDiffController
 
-- (void) awakeFromNib
+- (void)awakeFromNib
 {
 	startFile = @"diff";
 	[super awakeFromNib];
-	[diffController addObserver:self keyPath:@"diff" options:0 block:^(MAKVONotification *notification) {
-		PBDiffWindowController *target = notification.target;
-		[notification.observer showDiff:target.diff];
-	}];
+	[diffController addObserver:self
+						keyPath:@"diff"
+						options:0
+						  block:^(MAKVONotification *notification) {
+							  PBDiffWindowController *target = notification.target;
+							  [notification.observer showDiff:target.diff];
+						  }];
 }
 
-- (void) didLoad
+- (void)didLoad
 {
 	[self showDiff:diffController.diff];
 }
 
-- (void) showDiff: (NSString *) diff
+- (void)showDiff:(NSString *)diff
 {
 	if (diff == nil || !finishedLoading)
 		return;

@@ -7,7 +7,8 @@
 
 #import "PBHistorySearchMode.h"
 
-PBHistorySearchMode PBSearchModeForInteger(NSInteger modeInteger) {
+PBHistorySearchMode PBSearchModeForInteger(NSInteger modeInteger)
+{
 	if (modeInteger >= PBHistorySearchModeBasic && modeInteger < PBHistorySearchModeMax) {
 		return (PBHistorySearchMode)modeInteger;
 	}

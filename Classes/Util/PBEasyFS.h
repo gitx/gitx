@@ -10,9 +10,8 @@
 
 
 @interface PBEasyFS : NSObject {
-
 }
 
-+ (NSString*) tmpDirWithPrefix: (NSString*) path;
++ (NSString *)tmpDirWithPrefix:(NSString *)path;
 
 @end

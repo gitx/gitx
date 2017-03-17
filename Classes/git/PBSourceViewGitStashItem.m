@@ -34,8 +34,9 @@
 	return self;
 }
 
-- (PBGitRef *)ref {
-    return self.stash.ref;
+- (PBGitRef *)ref
+{
+	return self.stash.ref;
 }
 
 @end

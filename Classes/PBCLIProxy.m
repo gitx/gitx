@@ -26,18 +26,17 @@
 
 		if ([self.connection registerName:ConnectionName] == NO)
 			NSBeep();
-
 	}
 	return self;
 }
 
-- (BOOL)openRepository:(NSURL*)repositoryPath arguments: (NSArray*) args error:(NSError**)error;
+- (BOOL)openRepository:(NSURL *)repositoryPath arguments:(NSArray *)args error:(NSError **)error;
 {
 	// FIXME I found that creating this redundant NSURL reference was necessary to
 	// work around an apparent bug with GC and Distributed Objects
 	// I am not familiar with GC though, so perhaps I was doing something wrong.
-	NSURL* url = [NSURL fileURLWithPath:[repositoryPath path]];
-	NSArray* arguments = [NSArray arrayWithArray:args];
+	NSURL *url = [NSURL fileURLWithPath:[repositoryPath path]];
+	NSArray *arguments = [NSArray arrayWithArray:args];
 
 	PBGitRepositoryDocument *document = [[NSDocumentController sharedDocumentController] documentForURL:url];
 	if (!document) {
@@ -52,11 +51,10 @@
 		return NO;
 	}
 
-	if ([arguments count] > 0 && ([[arguments objectAtIndex:0] isEqualToString:@"--commit"] ||
-		[[arguments objectAtIndex:0] isEqualToString:@"-c"]))
+	if ([arguments count] > 0 && ([[arguments objectAtIndex:0] isEqualToString:@"--commit"] || [[arguments objectAtIndex:0] isEqualToString:@"-c"]))
 		[document showCommitView:self];
 	else {
-		PBGitRevSpecifier* rev = [[PBGitRevSpecifier alloc] initWithParameters:arguments];
+		PBGitRevSpecifier *rev = [[PBGitRevSpecifier alloc] initWithParameters:arguments];
 		rev.workingDirectory = url;
 		[document selectRevisionSpecifier:rev];
 	}

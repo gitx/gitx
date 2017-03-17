@@ -18,7 +18,7 @@
 
 - (NSString *)iconName
 {
-    return @"RemoteBranchTemplate";
+	return @"RemoteBranchTemplate";
 }
 
 @end

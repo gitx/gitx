@@ -14,6 +14,6 @@
  * Runs the given command in OS X’s Terminal.app
  * at the given directory.
  */
-+ (void) runCommand:(NSString *)command inDirectory:(NSURL *)directory;
++ (void)runCommand:(NSString *)command inDirectory:(NSURL *)directory;
 
 @end

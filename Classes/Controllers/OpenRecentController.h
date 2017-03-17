@@ -9,20 +9,20 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface OpenRecentController : NSWindowController<NSTableViewDataSource, NSTableViewDelegate> {
-	IBOutlet NSSearchField* searchField;
-	NSURL* selectedResult;
-	IBOutlet NSTableView* resultViewer;	
+@interface OpenRecentController : NSWindowController <NSTableViewDataSource, NSTableViewDelegate> {
+	IBOutlet NSSearchField *searchField;
+	NSURL *selectedResult;
+	IBOutlet NSTableView *resultViewer;
 }
 
-@property (strong) NSMutableArray* currentResults;
-@property (strong) NSMutableArray* possibleResults;
+@property (strong) NSMutableArray *currentResults;
+@property (strong) NSMutableArray *possibleResults;
 
-- (void) hide;
-- (void) show;
+- (void)hide;
+- (void)show;
 
-- (IBAction)doSearch:(id) sender;
-- (IBAction)changeSelection:(id) sender;
+- (IBAction)doSearch:(id)sender;
+- (IBAction)changeSelection:(id)sender;
 - (IBAction)tableDoubleClick:(id)sender;
 
 

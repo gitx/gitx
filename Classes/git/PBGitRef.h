@@ -11,16 +11,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString * const kGitXTagType;
-extern NSString * const kGitXBranchType;
-extern NSString * const kGitXRemoteType;
-extern NSString * const kGitXRemoteBranchType;
-extern NSString * const kGitXStashType;
+extern NSString *const kGitXTagType;
+extern NSString *const kGitXBranchType;
+extern NSString *const kGitXRemoteType;
+extern NSString *const kGitXRemoteBranchType;
+extern NSString *const kGitXStashType;
 
-extern NSString * const kGitXTagRefPrefix;
-extern NSString * const kGitXBranchRefPrefix;
-extern NSString * const kGitXRemoteRefPrefix;
-extern NSString * const kGitXStashRefPrefix;
+extern NSString *const kGitXTagRefPrefix;
+extern NSString *const kGitXBranchRefPrefix;
+extern NSString *const kGitXRemoteRefPrefix;
+extern NSString *const kGitXStashRefPrefix;
 
 @interface PBGitRef : NSObject <PBGitRefish>
 
@@ -45,7 +45,7 @@ extern NSString * const kGitXStashRefPrefix;
 
 - (BOOL)isEqualToRef:(PBGitRef *)otherRef;
 
-@property(nonatomic, strong, readonly) NSString *ref;
+@property (nonatomic, strong, readonly) NSString *ref;
 
 @end
 

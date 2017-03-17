@@ -14,5 +14,5 @@
 	IBOutlet PBDiffWindowController *diffController;
 }
 
-- (void) showDiff:(NSString *)diff;
+- (void)showDiff:(NSString *)diff;
 @end

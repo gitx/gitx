@@ -11,7 +11,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation PBGitCommitTableViewCell
 
-- (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle {
+- (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle
+{
 	switch (backgroundStyle) {
 		case NSBackgroundStyleDark:
 			self.textField.textColor = NSColor.whiteColor;

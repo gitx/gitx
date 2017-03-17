@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) PBHistorySearchController *searchController;
 
 @property (assign) NSInteger selectedCommitDetailsIndex;
-@property PBGitTree* gitTree;
+@property PBGitTree *gitTree;
 @property NSArray<PBGitCommit *> *webCommits;
 @property NSArray<PBGitCommit *> *selectedCommits;
 
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)hasNonlinearPath;
 - (NSMenu *)tableColumnMenu;
 - (void)selectCommit:(GTOID *)commit;
-- (void)updateQuicklookForce: (BOOL) force;
+- (void)updateQuicklookForce:(BOOL)force;
 
 - (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode;
 
@@ -77,4 +77,3 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-

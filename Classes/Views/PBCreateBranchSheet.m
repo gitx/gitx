@@ -19,16 +19,16 @@
 #pragma mark -
 #pragma mark PBCreateBranchSheet
 
-+ (void)beginSheetWithRefish:(id <PBGitRefish>)ref windowController:(PBGitWindowController *)windowController
++ (void)beginSheetWithRefish:(id<PBGitRefish>)ref windowController:(PBGitWindowController *)windowController
 {
 	[self beginSheetWithRefish:ref windowController:windowController completionHandler:nil];
 }
 
-+ (void)beginSheetWithRefish:(id <PBGitRefish>)ref windowController:(PBGitWindowController *)windowController completionHandler:(RJSheetCompletionHandler)handler {
++ (void)beginSheetWithRefish:(id<PBGitRefish>)ref windowController:(PBGitWindowController *)windowController completionHandler:(RJSheetCompletionHandler)handler
+{
 	PBCreateBranchSheet *sheet = [[self alloc] initWithWindowController:windowController atRefish:ref];
 	[sheet beginCreateBranchSheetAtRefish:ref completionHandler:handler];
 }
-
 
 
 - (id)initWithWindowController:(PBGitWindowController *)windowController atRefish:(id<PBGitRefish>)ref
@@ -41,11 +41,11 @@
 		return nil;
 
 	self.startRefish = ref;
-	
+
 	return self;
 }
 
-- (void) beginCreateBranchSheetAtRefish:(id <PBGitRefish>)ref completionHandler:(RJSheetCompletionHandler)handler
+- (void)beginCreateBranchSheetAtRefish:(id<PBGitRefish>)ref completionHandler:(RJSheetCompletionHandler)handler
 {
 	[self window]; // loads the window (if it wasn't already)
 	[self.errorMessageField setStringValue:@""];
@@ -64,10 +64,9 @@
 }
 
 
-
 #pragma mark IBActions
 
-- (IBAction) createBranch:(id)sender
+- (IBAction)createBranch:(id)sender
 {
 	NSString *name = [self.branchNameField stringValue];
 	self.selectedRef = [PBGitRef refFromString:[kGitXBranchRefPrefix stringByAppendingString:name]];
@@ -88,7 +87,7 @@
 }
 
 
-- (IBAction) closeCreateBranchSheet:(id)sender
+- (IBAction)closeCreateBranchSheet:(id)sender
 {
 	[self cancelSheet:sender];
 }

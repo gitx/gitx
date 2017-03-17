@@ -17,21 +17,21 @@
 	BOOL isBare;
 }
 
-+ (id) panel;
++ (id)panel;
 + (void)beginCloneRepository:(NSString *)repository toURL:(NSURL *)targetURL isBare:(BOOL)bare;
 
 - (void)showErrorSheet:(NSError *)error;
 
-- (IBAction) closeCloneRepositoryPanel:(id)sender;
-- (IBAction) clone:(id)sender;
-- (IBAction) browseRepository:(id)sender;
-- (IBAction) showHideHiddenFiles:(id)sender;
-- (IBAction) browseDestination:(id)sender;
+- (IBAction)closeCloneRepositoryPanel:(id)sender;
+- (IBAction)clone:(id)sender;
+- (IBAction)browseRepository:(id)sender;
+- (IBAction)showHideHiddenFiles:(id)sender;
+- (IBAction)browseDestination:(id)sender;
 
 @property (nonatomic, weak) IBOutlet NSTextField *repositoryURL;
 @property (nonatomic, weak) IBOutlet NSTextField *destinationPath;
 @property (nonatomic, weak) IBOutlet NSTextField *errorMessage;
-@property (nonatomic, weak) IBOutlet NSView      *repositoryAccessoryView;
+@property (nonatomic, weak) IBOutlet NSView *repositoryAccessoryView;
 
 @property (assign) BOOL isBare;
 

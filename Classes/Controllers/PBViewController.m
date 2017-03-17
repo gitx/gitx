@@ -15,8 +15,8 @@
 
 @implementation PBViewController
 
-@synthesize repository=repository;
-@synthesize windowController=superController;
+@synthesize repository = repository;
+@synthesize windowController = superController;
 
 - (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
 {
@@ -27,7 +27,7 @@
 
 	repository = theRepository;
 	superController = controller;
-	
+
 	return self;
 }
 
@@ -35,7 +35,7 @@
 {
 	[self unbind:@"repository"];
 	if (_hasViewLoaded)
-		[[self view] removeFromSuperview];	// remove the current view
+		[[self view] removeFromSuperview]; // remove the current view
 }
 
 - (void)awakeFromNib
@@ -48,7 +48,7 @@
 	return nil;
 }
 
-- (IBAction) refresh: sender
+- (IBAction)refresh:sender
 {
 }
 

@@ -19,14 +19,14 @@
 #pragma mark -
 #pragma mark PBCreateTagSheet
 
-+ (void) beginSheetWithRefish:(id <PBGitRefish>)refish windowController:(PBGitWindowController *)windowController completionHandler:(RJSheetCompletionHandler)handler
++ (void)beginSheetWithRefish:(id<PBGitRefish>)refish windowController:(PBGitWindowController *)windowController completionHandler:(RJSheetCompletionHandler)handler
 {
 	PBCreateTagSheet *sheet = [[self alloc] initWithWindowNibName:@"PBCreateTagSheet" windowController:windowController];
 	[sheet beginCreateTagSheetAtRefish:refish completionHandler:handler];
 }
 
 
-- (void) beginCreateTagSheetAtRefish:(id <PBGitRefish>)refish completionHandler:(RJSheetCompletionHandler)handler
+- (void)beginCreateTagSheetAtRefish:(id<PBGitRefish>)refish completionHandler:(RJSheetCompletionHandler)handler
 {
 	self.targetRefish = refish;
 
@@ -37,10 +37,9 @@
 }
 
 
-
 #pragma mark IBActions
 
-- (IBAction) createTag:(id)sender
+- (IBAction)createTag:(id)sender
 {
 	NSString *tagName = [self.tagNameField stringValue];
 	[self.errorMessageField setHidden:YES];
@@ -64,11 +63,10 @@
 }
 
 
-- (IBAction) closeCreateTagSheet:(id)sender
+- (IBAction)closeCreateTagSheet:(id)sender
 {
 	[self cancelSheet:sender];
 }
-
 
 
 @end

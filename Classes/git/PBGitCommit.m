@@ -14,7 +14,7 @@
 #import "PBGitDefaults.h"
 #import "ObjectiveGit+PBCategories.h"
 
-NSString * const kGitXCommitType = @"commit";
+NSString *const kGitXCommitType = @"commit";
 
 @interface PBGitCommit ()
 
@@ -30,7 +30,8 @@ NSString * const kGitXCommitType = @"commit";
 
 @implementation PBGitCommit
 
-+ (NSDateFormatter *)longDateFormatter {
++ (NSDateFormatter *)longDateFormatter
+{
 	static NSDateFormatter *formatter = nil;
 	static dispatch_once_t token;
 	dispatch_once(&token, ^{
@@ -42,20 +43,20 @@ NSString * const kGitXCommitType = @"commit";
 	return formatter;
 }
 
-- (NSDate *) date
+- (NSDate *)date
 {
 	return self.gtCommit.commitDate;
 	// previous behaviour was equiv. to:  return self.gtCommit.author.time;
 }
 
-- (NSString *) dateString
+- (NSString *)dateString
 {
-	NSDateFormatter * formatter = [[NSDateFormatter alloc] init];
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 	[formatter setLocalizedDateFormatFromTemplate:@"%Y-%m-%d %H:%M:%S"];
 	return [formatter stringFromDate:self.date];
 }
 
-- (NSArray*) treeContents
+- (NSArray *)treeContents
 {
 	return self.tree.children;
 }
@@ -68,12 +69,12 @@ NSString * const kGitXCommitType = @"commit";
 	}
 	self.repository = repo;
 	self.gtCommit = gtCommit;
-	
+
 	return self;
 }
 
 
-- (NSArray <GTOID *>*)parents
+- (NSArray<GTOID *> *)parents
 {
 	if (!self->_parents) {
 		self.parents = self.gtCommit.parentOIDs;
@@ -126,19 +127,17 @@ NSString * const kGitXCommitType = @"commit";
 - (NSString *)SVNRevision
 {
 	NSString *result = nil;
-	if ([self.repository hasSVNRemote])
-	{
+	if ([self.repository hasSVNRemote]) {
 		// get the git-svn-id from the message
 		NSArray *matches = nil;
 		NSString *string = self.gtCommit.message;
 		NSError *error = nil;
 		// Regular expression for pulling out the SVN revision from the git log
-        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^git-svn-id: .*@(\\d+) .*$" options:NSRegularExpressionAnchorsMatchLines error:&error];
-		
+		NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"^git-svn-id: .*@(\\d+) .*$" options:NSRegularExpressionAnchorsMatchLines error:&error];
+
 		if (string) {
 			matches = [regex matchesInString:string options:0 range:NSMakeRange(0, [string length])];
-			for (NSTextCheckingResult *match in matches)
-			{
+			for (NSTextCheckingResult *match in matches) {
 				NSRange matchRange = [match rangeAtIndex:1];
 				NSString *matchString = [string substringWithRange:matchRange];
 				result = matchString;
@@ -161,7 +160,7 @@ NSString * const kGitXCommitType = @"commit";
 	return self.OID.SHA;
 }
 
-- (BOOL) isOnSameBranchAs:(PBGitCommit *)otherCommit
+- (BOOL)isOnSameBranchAs:(PBGitCommit *)otherCommit
 {
 	if (!otherCommit)
 		return NO;
@@ -172,7 +171,7 @@ NSString * const kGitXCommitType = @"commit";
 	return [self.repository isOIDOnSameBranch:otherCommit.OID asOID:self.OID];
 }
 
-- (BOOL) isOnHeadBranch
+- (BOOL)isOnHeadBranch
 {
 	return [self isOnSameBranchAs:[self.repository headCommit]];
 }
@@ -190,26 +189,26 @@ NSString * const kGitXCommitType = @"commit";
 	return self.OID.hash;
 }
 
-- (NSString *) patch
+- (NSString *)patch
 {
 	if (self->_patch != nil)
 		return _patch;
 
 	NSError *error = nil;
-	NSString *p = [self.repository outputOfTaskWithArguments:@[@"format-patch",  @"-1", @"--stdout", self.SHA] error:&error];
+	NSString *p = [self.repository outputOfTaskWithArguments:@[ @"format-patch", @"-1", @"--stdout", self.SHA ] error:&error];
 	if (!p) {
 		PBLogError(error);
 		return nil;
 	}
 
 	// Add a GitX identifier to the patch ;)
-	self.patch = [[p substringToIndex:[p length] -1] stringByAppendingString:@"+GitX"];
+	self.patch = [[p substringToIndex:[p length] - 1] stringByAppendingString:@"+GitX"];
 	return self->_patch;
 }
 
-- (PBGitTree*) tree
+- (PBGitTree *)tree
 {
-	return [PBGitTree rootForCommit: self];
+	return [PBGitTree rootForCommit:self];
 }
 
 - (void)addRef:(PBGitRef *)ref
@@ -228,7 +227,7 @@ NSString * const kGitXCommitType = @"commit";
 	[self.refs removeObject:ref];
 }
 
-- (BOOL) hasRef:(PBGitRef *)ref
+- (BOOL)hasRef:(PBGitRef *)ref
 {
 	if (!self.refs)
 		return NO;
@@ -245,7 +244,7 @@ NSString * const kGitXCommitType = @"commit";
 	return self.repository.refs[self.OID];
 }
 
-- (void) setRefs:(NSMutableArray *)refs
+- (void)setRefs:(NSMutableArray *)refs
 {
 	self.repository.refs[self.OID] = [NSMutableArray arrayWithArray:refs];
 }
@@ -256,24 +255,25 @@ NSString * const kGitXCommitType = @"commit";
 	return NO;
 }
 
-+ (BOOL)isKeyExcludedFromWebScript:(const char *)name {
++ (BOOL)isKeyExcludedFromWebScript:(const char *)name
+{
 	return NO;
 }
 
 
 #pragma mark <PBGitRefish>
 
-- (NSString *) refishName
+- (NSString *)refishName
 {
 	return self.SHA;
 }
 
-- (NSString *) shortName
+- (NSString *)shortName
 {
 	return self.gtCommit.shortSHA;
 }
 
-- (NSString *) refishType
+- (NSString *)refishType
 {
 	return kGitXCommitType;
 }

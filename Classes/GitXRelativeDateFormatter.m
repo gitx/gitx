@@ -10,7 +10,7 @@
 
 
 #define MINUTE 60
-#define HOUR   (60 * MINUTE)
+#define HOUR (60 * MINUTE)
 
 #define WEEK 7
 
@@ -21,15 +21,15 @@
 	if (![date isKindOfClass:[NSDate class]])
 		return nil;
 
-    NSDate *now = [NSDate date];
+	NSDate *now = [NSDate date];
 
-    NSInteger secondsAgo = lround([now timeIntervalSinceDate:date]);
+	NSInteger secondsAgo = lround([now timeIntervalSinceDate:date]);
 
-    if (secondsAgo < 0)
-        return @"In the future!";
+	if (secondsAgo < 0)
+		return @"In the future!";
 
 	if (secondsAgo < MINUTE)
-        return @"seconds ago";
+		return @"seconds ago";
 
 	if (secondsAgo < (2 * MINUTE))
 		return @"1 minute ago";

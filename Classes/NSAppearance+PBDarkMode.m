@@ -14,7 +14,7 @@ NSString *const PBEffectiveAppearanceChanged = @"PBEffectiveAppearanceChanged";
 - (BOOL)isDarkMode
 {
 	if (@available(macOS 10.14, *)) {
-		if ([self bestMatchFromAppearancesWithNames:@[NSAppearanceNameDarkAqua, NSAppearanceNameAqua]] == NSAppearanceNameDarkAqua)
+		if ([self bestMatchFromAppearancesWithNames:@[ NSAppearanceNameDarkAqua, NSAppearanceNameAqua ]] == NSAppearanceNameDarkAqua)
 			return YES;
 		return NO;
 	} else {
@@ -40,9 +40,12 @@ NSString *const PBEffectiveAppearanceChanged = @"PBEffectiveAppearanceChanged";
 	if (@available(macOS 10.14, *)) {
 		/* This leaks the observation, but since it's tied to the life of NSApp
 		 * it doesn't matter ;-) */
-		[[NSApplication sharedApplication] addObserver:observer keyPath:@"effectiveAppearance" options:0 block:^(MAKVONotification *notification) {
-			[[NSNotificationCenter defaultCenter] postNotificationName:PBEffectiveAppearanceChanged object:observer];
-		}];
+		[[NSApplication sharedApplication] addObserver:observer
+											   keyPath:@"effectiveAppearance"
+											   options:0
+												 block:^(MAKVONotification *notification) {
+													 [[NSNotificationCenter defaultCenter] postNotificationName:PBEffectiveAppearanceChanged object:observer];
+												 }];
 	}
 }
 

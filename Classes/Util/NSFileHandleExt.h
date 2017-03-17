@@ -15,6 +15,6 @@
 #include <netdb.h>
 #include <fcntl.h>
 
-@interface NSFileHandle(NSFileHandleExt)
--(NSString*)readLine;
+@interface NSFileHandle (NSFileHandleExt)
+- (NSString *)readLine;
 @end

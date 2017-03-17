@@ -16,7 +16,7 @@
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent
 {
 	if ([self delegate]) {
-		NSPoint eventLocation = [self convertPoint:[theEvent locationInWindow] fromView: nil];
+		NSPoint eventLocation = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 		NSInteger rowIndex = [self rowAtPoint:eventLocation];
 		[self selectRowIndexes:[NSIndexSet indexSetWithIndex:rowIndex] byExtendingSelection:YES];
 		return [super menuForEvent:theEvent];
@@ -32,9 +32,9 @@
 
 #pragma mark NSView overrides
 
--(BOOL)acceptsFirstResponder
+- (BOOL)acceptsFirstResponder
 {
-    return [self numberOfRows] > 0;
+	return [self numberOfRows] > 0;
 }
 
 @end

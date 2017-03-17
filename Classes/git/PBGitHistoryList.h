@@ -36,16 +36,16 @@
 	BOOL isUpdating;
 }
 
-- (id) initWithRepository:(PBGitRepository *)repo;
-- (void) forceUpdate;
-- (void) updateHistory;
+- (id)initWithRepository:(PBGitRepository *)repo;
+- (void)forceUpdate;
+- (void)updateHistory;
 - (void)cleanup;
 
-- (void) updateCommitsFromGrapher:(NSDictionary *)commitData;
+- (void)updateCommitsFromGrapher:(NSDictionary *)commitData;
 
 
-@property  PBGitRevList *projectRevList;
-@property  NSMutableArray *commits;
+@property PBGitRevList *projectRevList;
+@property NSMutableArray *commits;
 @property (readonly) NSArray *projectCommits;
 @property (assign) BOOL isUpdating;
 

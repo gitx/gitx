@@ -8,16 +8,15 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface PBCLIProxy : NSObject
-{
+@interface PBCLIProxy : NSObject {
 	NSConnection *connection;
 }
-@property (retain) NSConnection* connection;
+@property (retain) NSConnection *connection;
 @end
 
 #define ConnectionName @"GitX DO Connection"
 
 @protocol GitXCliToolProtocol
-- (BOOL)openRepository:(NSURL*)repositoryPath arguments: (NSArray*) args error:(NSError**)error;
+- (BOOL)openRepository:(NSURL *)repositoryPath arguments:(NSArray *)args error:(NSError **)error;
 - (void)openDiffWindowWithDiff:(NSString *)diff;
 @end

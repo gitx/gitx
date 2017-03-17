@@ -17,8 +17,8 @@ typedef NS_ENUM(NSInteger, PBHistorySearchMode) {
 	PBHistorySearchModeRegex,
 	PBHistorySearchModePath,
 	PBHistorySearchModeRaw,
-	PBHistorySearchModeMax    // always keep this item last
-} ;
+	PBHistorySearchModeMax // always keep this item last
+};
 
 
 PBHistorySearchMode PBSearchModeForInteger(NSInteger modeInteger);
