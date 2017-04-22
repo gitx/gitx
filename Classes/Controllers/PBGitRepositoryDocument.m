@@ -44,12 +44,18 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 	BOOL isDirectory = FALSE;
 	[[NSFileManager defaultManager] fileExistsAtPath:[absoluteURL path] isDirectory:&isDirectory];
 	if (!isDirectory) {
-		if (outError) {
-			NSDictionary* userInfo = [NSDictionary dictionaryWithObject:@"Reading files is not supported."
-																 forKey:NSLocalizedRecoverySuggestionErrorKey];
-			*outError = [NSError errorWithDomain:PBGitXErrorDomain code:0 userInfo:userInfo];
+		// Try to open the directory containing the file instead. Could be smarter and walk up to
+		// find .git but who really needs that.
+		absoluteURL = absoluteURL.URLByDeletingLastPathComponent;
+		[[NSFileManager defaultManager] fileExistsAtPath:[absoluteURL path] isDirectory:&isDirectory];
+		if (!isDirectory) {
+			if (outError) {
+				NSDictionary* userInfo = [NSDictionary dictionaryWithObject:@"Reading files is not supported."
+																	 forKey:NSLocalizedRecoverySuggestionErrorKey];
+				*outError = [NSError errorWithDomain:PBGitXErrorDomain code:0 userInfo:userInfo];
+			}
+			return NO;
 		}
-		return NO;
 	}
 
 	_repository = [[PBGitRepository alloc] initWithURL:absoluteURL error:outError];
