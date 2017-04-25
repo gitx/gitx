@@ -53,8 +53,10 @@
 {
     [super synchronizeWindowTitleWithDocumentName];
 
-    // Point window proxy icon at project directory, not internal .git dir
-    [[self window] setRepresentedURL:self.repository.workingDirectoryURL];
+	if ([self isWindowLoaded]) {
+		// Point window proxy icon at project directory, not internal .git dir
+		[[self window] setRepresentedURL:self.repository.workingDirectoryURL];
+	}
 }
 
 - (void)windowWillClose:(NSNotification *)notification
@@ -106,9 +108,14 @@
 }
 
 
-- (void) awakeFromNib
+- (void) windowDidLoad
 {
-	[[self window] setDelegate:self];
+	[super windowDidLoad];
+
+	// Explicitly set the frame using the autosave name
+	// Opening the first and second documents works fine, but the third and subsequent windows aren't positioned correctly
+	[[self window] setFrameUsingName:@"GitX"];
+	[[self window] setRepresentedURL:self.repository.workingDirectoryURL];
 
 	sidebarController = [[PBGitSidebarController alloc] initWithRepository:repository superController:self];
 	[[sidebarController view] setFrame:[sourceSplitView bounds]];
@@ -122,7 +129,6 @@
 
 	[[statusField cell] setBackgroundStyle:NSBackgroundStyleRaised];
 	[progressIndicator setUsesThreadedAnimation:YES];
-
 	[self updateFlexibleSpace];
 	
 	[self showWindow:nil];

@@ -50,7 +50,7 @@
                             <real value="250"/>
                         </holdingPriorities>
                         <connections>
-                            <outlet property="delegate" destination="3" id="C1D-Mb-CDw"/>
+                            <outlet property="delegate" destination="-2" id="g9T-cZ-iza"/>
                         </connections>
                     </splitView>
                 </subviews>
