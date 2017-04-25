@@ -283,8 +283,8 @@
                                         <rect key="frame" x="0.0" y="261" width="955" height="16"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
-                                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="0.68421052631578949" horizontal="NO" id="28">
-                                        <rect key="frame" x="939" y="14" width="16" height="0.0"/>
+                                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="28">
+                                        <rect key="frame" x="-15" y="23" width="15" height="0.0"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                     <tableHeaderView key="headerView" id="30" customClass="PBUnsortableTableHeader">
@@ -476,6 +476,92 @@ IA
                         <outlet property="delegate" destination="-2" id="107"/>
                     </connections>
                 </splitView>
+                <customView ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="316" userLabel="History Upper Toolbar" customClass="PBGitGradientBarView">
+                    <rect key="frame" x="0.0" y="404" width="955" height="30"/>
+                    <subviews>
+                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="317">
+                            <rect key="frame" x="0.0" y="-2" width="955" height="5"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        </box>
+                        <button toolTip="Create Branch" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="330">
+                            <rect key="frame" x="10" y="3" width="37" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" title="Create Branch" bezelStyle="texturedRounded" image="AddBranchTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="331">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="createBranch:" target="-2" id="335"/>
+                                <binding destination="-2" name="enabled" keyPath="singleCommitSelected" id="Ens-Tw-TDc"/>
+                            </connections>
+                        </button>
+                        <button toolTip="Create Tag" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="332">
+                            <rect key="frame" x="55" y="3" width="37" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" title="Create Tag" bezelStyle="texturedRounded" image="AddLabelTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="333">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="createTag:" target="-2" id="334"/>
+                                <binding destination="-2" name="enabled" keyPath="singleCommitSelected" id="aQb-dV-d2k"/>
+                            </connections>
+                        </button>
+                        <button toolTip="Merge" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="337">
+                            <rect key="frame" x="116" y="3" width="37" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" title="Merge" bezelStyle="texturedRounded" image="MergeTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="338">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="merge:" target="-2" id="349"/>
+                                <binding destination="-2" name="enabled" keyPath="singleNonHeadCommitSelected" id="yyB-D4-ei2"/>
+                            </connections>
+                        </button>
+                        <button toolTip="Cherry Pick" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="340">
+                            <rect key="frame" x="161" y="3" width="37" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" title="Cherry Pick" bezelStyle="texturedRounded" image="CherryPickTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="341">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="cherryPick:" target="-2" id="350"/>
+                                <binding destination="-2" name="enabled" keyPath="singleNonHeadCommitSelected" id="lJ1-dd-gMR"/>
+                            </connections>
+                        </button>
+                        <button toolTip="Rebase" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="343">
+                            <rect key="frame" x="206" y="3" width="37" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            <buttonCell key="cell" type="roundTextured" title="Rebase" bezelStyle="texturedRounded" image="RebaseTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="344">
+                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                <font key="font" metaFont="system"/>
+                            </buttonCell>
+                            <connections>
+                                <action selector="rebase:" target="-2" id="351"/>
+                                <binding destination="-2" name="enabled" keyPath="singleNonHeadCommitSelected" id="Q5e-kX-JL3"/>
+                            </connections>
+                        </button>
+                        <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="48">
+                            <rect key="frame" x="268" y="3" width="67" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <segmentedCell key="cell" state="on" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="selectOne" id="51">
+                                <font key="font" metaFont="system"/>
+                                <segments>
+                                    <segment toolTip="Detailed View" image="DetailViewTemplate" imageScaling="none" width="32" selected="YES"/>
+                                    <segment toolTip="Tree View" image="TreeViewTemplate" imageScaling="none" width="32" tag="9"/>
+                                </segments>
+                            </segmentedCell>
+                            <connections>
+                                <binding destination="-2" name="selectedIndex" keyPath="selectedCommitDetailsIndex" id="83"/>
+                            </connections>
+                        </segmentedControl>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="fpn-5C-Gky"/>
+                    </constraints>
+                </customView>
             </subviews>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="2" secondAttribute="trailing" id="IQk-Io-l7v"/>
@@ -501,6 +587,13 @@ IA
         </customObject>
     </objects>
     <resources>
+        <image name="AddBranchTemplate" width="25" height="18"/>
+        <image name="AddLabelTemplate" width="25" height="18"/>
+        <image name="CherryPickTemplate" width="25" height="18"/>
+        <image name="DetailViewTemplate" width="25" height="18"/>
+        <image name="MergeTemplate" width="25" height="18"/>
         <image name="NSQuickLookTemplate" width="19" height="12"/>
+        <image name="RebaseTemplate" width="25" height="18"/>
+        <image name="TreeViewTemplate" width="25" height="18"/>
     </resources>
 </document>
