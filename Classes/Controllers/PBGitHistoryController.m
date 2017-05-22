@@ -356,21 +356,15 @@
     return [[self nextResponder] validateMenuItem:menuItem];
 }
 
-- (IBAction) setDetailedView:(id)sender
+- (void) setViewMode:(NSSegmentedControl*)sender
 {
-	self.selectedCommitDetailsIndex = kHistoryDetailViewIndex;
+	self.selectedCommitDetailsIndex = sender.selectedSegment;
 	forceSelectionUpdate = YES;
 }
 
-- (IBAction) setTreeView:(id)sender
+- (void) setBranchFilter:(NSSegmentedControl*)sender
 {
-	self.selectedCommitDetailsIndex = kHistoryTreeViewIndex;
-	forceSelectionUpdate = YES;
-}
-
-- (IBAction) setBranchFilter:(id)sender
-{
-	repository.currentBranchFilter = [(NSView*)sender tag];
+	repository.currentBranchFilter = sender.selectedSegment;
 	[PBGitDefaults setBranchFilter:repository.currentBranchFilter];
 	[self updateBranchFilterMatrix];
 	forceSelectionUpdate = YES;
@@ -683,50 +677,6 @@
 
 	[historySplitView setPosition:position ofDividerAtIndex:0];
 	[historySplitView setHidden:NO];
-}
-
-
-#pragma mark Repository Methods
-
-- (IBAction) createBranch:(id)sender
-{
-	PBGitRef *currentRef = [repository.currentBranch ref];
-	
-	PBGitCommit *selectedCommit = self.selectedCommits.firstObject;
-	if (!selectedCommits.firstObject || [selectedCommit hasRef:currentRef])
-		[PBCreateBranchSheet beginSheetWithRefish:currentRef windowController:self.windowController];
-	else
-		[PBCreateBranchSheet beginSheetWithRefish:selectedCommit windowController:self.windowController];
-}
-
-- (IBAction) createTag:(id)sender
-{
-	PBGitCommit *selectedCommit = self.selectedCommits.firstObject;
-	if (!selectedCommit)
-		[PBCreateTagSheet beginSheetWithRefish:[repository.currentBranch ref] windowController:self.windowController];
-	else
-		[PBCreateTagSheet beginSheetWithRefish:selectedCommit windowController:self.windowController];
-}
-
-- (IBAction) merge:(id)sender
-{
-	PBGitCommit *selectedCommit = self.selectedCommits.firstObject;
-	if (selectedCommit)
-		[repository mergeWithRefish:selectedCommit];
-}
-
-- (IBAction) cherryPick:(id)sender
-{
-	PBGitCommit *selectedCommit = self.selectedCommits.firstObject;
-	if (selectedCommit)
-		[repository cherryPickRefish:selectedCommit];
-}
-
-- (IBAction) rebase:(id)sender
-{
-	PBGitCommit *selectedCommit = self.selectedCommits.firstObject;
-	if (selectedCommit)
-		[repository rebaseBranch:nil onRefish:selectedCommit];
 }
 
 #pragma mark -

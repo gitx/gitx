@@ -17,7 +17,6 @@
 @interface PBGitSidebarController : PBViewController<NSOutlineViewDelegate> {
 	__weak IBOutlet NSWindow *window;
 	__weak IBOutlet NSOutlineView *sourceView;
-	__weak IBOutlet NSView *sourceListControlsView;
 	__weak IBOutlet NSPopUpButton *actionButton;
 	__weak IBOutlet NSSegmentedControl *remoteControls;
 
@@ -45,7 +44,7 @@
 @property(readonly) NSMutableArray *items;
 @property(readonly) PBSourceViewItem *remotes;
 @property(readonly) NSOutlineView *sourceView;
-@property(readonly) NSView *sourceListControlsView;
+@property(readonly) NSSegmentedControl *remoteControls;
 @property(readonly) PBGitHistoryController *historyViewController;
 @property(readonly) PBGitCommitController *commitViewController;
 

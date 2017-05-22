@@ -63,9 +63,8 @@
 @property (readonly) BOOL singleCommitSelected;
 @property (readonly) BOOL singleNonHeadCommitSelected;
 
-- (IBAction) setDetailedView:(id)sender;
-- (IBAction) setTreeView:(id)sender;
-- (IBAction) setBranchFilter:(id)sender;
+- (void) setViewMode:(NSSegmentedControl*)sender;
+- (void) setBranchFilter:(NSSegmentedControl*)sender;
 
 - (void)selectCommit:(GTOID *)commit;
 - (IBAction) refresh:(id)sender;
@@ -77,13 +76,6 @@
 - (NSMenu *)contextMenuForTreeView;
 - (NSArray *)menuItemsForPaths:(NSArray *)paths;
 - (void)showCommitsFromTree:(id)sender;
-
-// Repository Methods
-- (IBAction) createBranch:(id)sender;
-- (IBAction) createTag:(id)sender;
-- (IBAction) merge:(id)sender;
-- (IBAction) cherryPick:(id)sender;
-- (IBAction) rebase:(id)sender;
 
 // Find/Search methods
 - (IBAction)selectNext:(id)sender;

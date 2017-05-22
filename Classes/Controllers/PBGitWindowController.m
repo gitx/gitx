@@ -19,9 +19,16 @@
 #import "PBGitRevSpecifier.h"
 #import "PBGitRef.h"
 #import "PBError.h"
+#import "PBGitCommit.h"
+#import "PBCreateBranchSheet.h"
+#import "PBCreateTagSheet.h"
 #import "PBRepositoryDocumentController.h"
+#import "PBHistorySearchController.h"
 
-@interface PBGitWindowController ()
+
+#define SourceListViewToolbarIdentifier @"sourceListControlsView"
+
+@interface PBGitWindowController () <NSToolbarDelegate, NSSplitViewDelegate>
 
 @property (nonatomic, strong) RJModalRepoSheet* currentModalSheet;
 
@@ -108,11 +115,18 @@
 	sidebarController = [[PBGitSidebarController alloc] initWithRepository:repository superController:self];
 	[[sidebarController view] setFrame:[sourceSplitView bounds]];
 	[sourceSplitView addSubview:[sidebarController view]];
-	[sourceListControlsView addSubview:sidebarController.sourceListControlsView];
+	
+	[[[self window] toolbar] setDelegate:self];
+	
+	[[[self window] toolbar] insertItemWithItemIdentifier:SourceListViewToolbarIdentifier atIndex:0];
+	
+//[sourceListControlsView addSubview:sidebarController.sourceListControlsView];
 
 	[[statusField cell] setBackgroundStyle:NSBackgroundStyleRaised];
 	[progressIndicator setUsesThreadedAnimation:YES];
 
+	[self updateFlexibleSpace];
+	
 	[self showWindow:nil];
 }
 
@@ -213,6 +227,8 @@
 		[progressIndicator stopAnimation:self];
 		[progressIndicator setHidden:YES];
 	}
+	
+	[branchFilterSegmentedControl setLabel:[repository.currentBranch title] forSegment:2];
 }
 
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -398,6 +414,80 @@
 	[contentController refresh:self];
 }
 
+#pragma mark Repository Methods
+
+- (IBAction) createBranch:(id)sender
+{
+	PBGitRef *currentRef = [repository.currentBranch ref];
+	
+	NSArray<PBGitCommit *> *selectedCommits = sidebarController.historyViewController.selectedCommits;
+	PBGitCommit *selectedCommit = selectedCommits.firstObject;
+	if (!selectedCommits.firstObject || [selectedCommit hasRef:currentRef])
+		[PBCreateBranchSheet beginSheetWithRefish:currentRef windowController:self];
+	else
+		[PBCreateBranchSheet beginSheetWithRefish:selectedCommit windowController:self];
+}
+
+- (IBAction) createTag:(id)sender
+{
+	PBGitCommit *selectedCommit = sidebarController.historyViewController.selectedCommits.firstObject;
+	if (!selectedCommit)
+		[PBCreateTagSheet beginSheetWithRefish:[repository.currentBranch ref] windowController:self];
+	else
+		[PBCreateTagSheet beginSheetWithRefish:selectedCommit windowController:self];
+}
+
+- (IBAction) merge:(id)sender
+{
+	PBGitCommit *selectedCommit = sidebarController.historyViewController.selectedCommits.firstObject;
+	if (selectedCommit)
+		[repository mergeWithRefish:selectedCommit];
+}
+
+- (IBAction) cherryPick:(id)sender
+{
+	PBGitCommit *selectedCommit = sidebarController.historyViewController.selectedCommits.firstObject;
+	if (selectedCommit)
+		[repository cherryPickRefish:selectedCommit];
+}
+
+- (IBAction) rebase:(id)sender
+{
+	PBGitCommit *selectedCommit = sidebarController.historyViewController.selectedCommits.firstObject;
+	if (selectedCommit)
+		[repository rebaseBranch:nil onRefish:selectedCommit];
+}
+
+#pragma mark Visual actions
+
+- (IBAction)setViewMode:(NSSegmentedControl *)sender {
+	[sidebarController.historyViewController setViewMode:sender];
+}
+
+- (IBAction) setBranchFilter:(NSSegmentedControl*)sender
+{
+	[sidebarController.historyViewController setBranchFilter:sender];
+}
+
+- (IBAction)updateSearch:(NSSearchField *)sender
+{
+	[sidebarController.historyViewController.searchController updateSearch:sender];
+}
+
+#pragma mark - Visual Updates
+
+- (void) updateFlexibleSpace
+{
+	CGFloat width = sidebarController.view.frame.size.width;
+	
+	// Left and right padding
+	width -= 8 * 2;
+	width -= [sidebarController remoteControls].frame.size.width;
+	
+	[flexibleToolbarSpace setMaxSize:NSMakeSize(width, 10)];
+	[flexibleToolbarSpace setMinSize:NSMakeSize(width, 10)];
+}
+
 #pragma mark -
 #pragma mark SplitView Delegates
 
@@ -442,6 +532,22 @@
 
 	[sourceView setFrame:sourceFrame];
 	[mainView setFrame:mainFrame];
+}
+
+- (void)splitViewWillResizeSubviews:(NSNotification *)notification {
+	[self updateFlexibleSpace];
+}
+
+#pragma mark - Toolbar Delegate
+
+- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag {
+	if ([itemIdentifier  isEqual:SourceListViewToolbarIdentifier]) {
+		NSToolbarItem* item = [[NSToolbarItem alloc] initWithItemIdentifier:SourceListViewToolbarIdentifier];
+		[item setView:[sidebarController remoteControls]];
+		return item;
+	}
+	
+	return nil;
 }
 
 @end

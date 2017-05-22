@@ -33,9 +33,9 @@
 @synthesize items;
 @synthesize remotes;
 @synthesize sourceView;
-@synthesize sourceListControlsView;
-@synthesize historyViewController;
+@synthesize remoteControls;
 @synthesize commitViewController;
+@synthesize historyViewController;
 
 - (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
 {
@@ -54,7 +54,7 @@
 
 	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
-
+	
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
 	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
    	[repository addObserver:self forKeyPath:@"stashes" options:0 context:@"stashesModified"];
