@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
@@ -9,18 +9,13 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PBGitHistoryController">
             <connections>
-                <outlet property="allBranchesFilterItem" destination="355" id="381"/>
                 <outlet property="commitController" destination="39" id="42"/>
                 <outlet property="commitList" destination="27" id="43"/>
                 <outlet property="fileBrowser" destination="15" id="87"/>
                 <outlet property="fileView" destination="452" id="488"/>
                 <outlet property="historySplitView" destination="2" id="275"/>
-                <outlet property="localRemoteBranchesFilterItem" destination="387" id="393"/>
                 <outlet property="refController" destination="231" id="329"/>
-                <outlet property="scopeBarView" destination="311" id="328"/>
                 <outlet property="searchController" destination="423" id="446"/>
-                <outlet property="searchField" destination="297" id="315"/>
-                <outlet property="selectedBranchFilterItem" destination="359" id="383"/>
                 <outlet property="treeController" destination="38" id="41"/>
                 <outlet property="view" destination="46" id="53"/>
                 <outlet property="webHistoryController" destination="40" id="402"/>
@@ -87,107 +82,24 @@
             </connections>
         </customObject>
         <customView focusRingType="none" id="46" userLabel="History">
-            <rect key="frame" x="0.0" y="0.0" width="955" height="434"/>
+            <rect key="frame" x="0.0" y="0.0" width="955" height="650"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <splitView focusRingType="none" misplaced="YES" dividerStyle="thin" id="2" userLabel="History Content View" customClass="PBCollapsibleSplitView">
-                    <rect key="frame" x="0.0" y="0.0" width="955" height="434"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                <splitView focusRingType="none" autosaveName="History" translatesAutoresizingMaskIntoConstraints="NO" id="2" userLabel="History Content View">
+                    <rect key="frame" x="0.0" y="0.0" width="955" height="650"/>
                     <subviews>
                         <customView id="309" userLabel="Commits Split View">
-                            <rect key="frame" x="0.0" y="0.0" width="955" height="183"/>
+                            <rect key="frame" x="0.0" y="0.0" width="955" height="276"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <customView hidden="YES" id="311" userLabel="Commits Scope Bar" customClass="PBGitGradientBarView">
-                                    <rect key="frame" x="0.0" y="159" width="955" height="24"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <subviews>
-                                        <button toolTip="View commits from all branches" verticalHuggingPriority="750" id="355">
-                                            <rect key="frame" x="11" y="2" width="30" height="17"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="recessed" title="All" bezelStyle="recessed" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="356">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
-                                                <font key="font" metaFont="smallSystemBold"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="setBranchFilter:" target="-2" id="386"/>
-                                            </connections>
-                                        </button>
-                                        <button toolTip="View commits from the selected branch only" verticalHuggingPriority="750" tag="2" id="359">
-                                            <rect key="frame" x="114" y="2" width="107" height="17"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="recessed" title="Selected Branch" bezelStyle="recessed" alignment="left" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="360">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
-                                                <font key="font" metaFont="smallSystemBold"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="setBranchFilter:" target="-2" id="384"/>
-                                            </connections>
-                                        </button>
-                                        <button toolTip="View commits from only local or remote branches" verticalHuggingPriority="750" tag="1" id="387">
-                                            <rect key="frame" x="49" y="2" width="57" height="17"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                            <buttonCell key="cell" type="recessed" title="Remote" bezelStyle="recessed" alignment="center" controlSize="small" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="388">
-                                                <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
-                                                <font key="font" metaFont="smallSystemBold"/>
-                                            </buttonCell>
-                                            <connections>
-                                                <action selector="setBranchFilter:" target="-2" id="391"/>
-                                            </connections>
-                                        </button>
-                                        <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="430">
-                                            <rect key="frame" x="630" y="5" width="80" height="14"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                            <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="# of matches" id="431">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                            </textFieldCell>
-                                        </textField>
-                                        <segmentedControl verticalHuggingPriority="750" id="427">
-                                            <rect key="frame" x="714" y="3" width="43" height="18"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                            <segmentedCell key="cell" controlSize="small" borderStyle="border" alignment="left" style="roundRect" trackingMode="momentary" id="428">
-                                                <font key="font" metaFont="miniSystem"/>
-                                                <segments>
-                                                    <segment label="◀" toolTip="Previous search result" width="18"/>
-                                                    <segment label="▶" toolTip="Next search result" width="18" tag="1"/>
-                                                </segments>
-                                            </segmentedCell>
-                                            <connections>
-                                                <action selector="stepperPressed:" target="423" id="435"/>
-                                            </connections>
-                                        </segmentedControl>
-                                        <searchField wantsLayer="YES" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" id="297">
-                                            <rect key="frame" x="765" y="2" width="180" height="19"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                            <searchFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" bezelStyle="round" recentsAutosaveName="Recent History Searches" id="298">
-                                                <font key="font" metaFont="smallSystem"/>
-                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                <connections>
-                                                    <action selector="updateSearch:" target="423" id="434"/>
-                                                </connections>
-                                            </searchFieldCell>
-                                            <connections>
-                                                <outlet property="delegate" destination="423" id="433"/>
-                                            </connections>
-                                        </searchField>
-                                        <progressIndicator hidden="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" id="447">
-                                            <rect key="frame" x="740" y="3" width="16" height="16"/>
-                                            <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
-                                        </progressIndicator>
-                                    </subviews>
-                                </customView>
-                                <scrollView focusRingType="none" misplaced="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="3" userLabel="Commits Scroll View">
-                                    <rect key="frame" x="1" y="0.0" width="955" height="183"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <scrollView focusRingType="none" borderType="none" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3" userLabel="Commits Scroll View">
+                                    <rect key="frame" x="0.0" y="0.0" width="955" height="277"/>
                                     <clipView key="contentView" drawsBackground="NO" copiesOnScroll="NO" id="S8C-PP-4nT">
-                                        <rect key="frame" x="0.0" y="0.0" width="955" height="183"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="955" height="277"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" autosaveName="CommitView" headerView="30" id="27" userLabel="Commit List" customClass="PBCommitList">
-                                                <rect key="frame" x="0.0" y="0.0" width="1056" height="160"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="1056" height="254"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <size key="intercellSpacing" width="3" height="2"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -368,11 +280,11 @@
                                         </subviews>
                                     </clipView>
                                     <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="29">
-                                        <rect key="frame" x="0.0" y="167" width="955" height="16"/>
+                                        <rect key="frame" x="0.0" y="261" width="955" height="16"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
-                                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="28">
-                                        <rect key="frame" x="837" y="17" width="15" height="179"/>
+                                    <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="0.68421052631578949" horizontal="NO" id="28">
+                                        <rect key="frame" x="939" y="14" width="16" height="0.0"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                     <tableHeaderView key="headerView" id="30" customClass="PBUnsortableTableHeader">
@@ -383,30 +295,35 @@
                                         </connections>
                                     </tableHeaderView>
                                 </scrollView>
-                                <box verticalHuggingPriority="750" boxType="separator" id="327">
-                                    <rect key="frame" x="0.0" y="156" width="955" height="5"/>
+                                <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="327">
+                                    <rect key="frame" x="0.0" y="249" width="955" height="5"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 </box>
                             </subviews>
+                            <constraints>
+                                <constraint firstAttribute="trailing" secondItem="3" secondAttribute="trailing" id="3u8-QY-0Jc"/>
+                                <constraint firstItem="3" firstAttribute="top" secondItem="309" secondAttribute="top" constant="-1" id="83u-Eg-zmx"/>
+                                <constraint firstAttribute="bottom" secondItem="3" secondAttribute="bottom" id="SDb-a7-mir"/>
+                                <constraint firstItem="3" firstAttribute="leading" secondItem="309" secondAttribute="leading" id="vlN-As-ePU"/>
+                            </constraints>
                         </customView>
                         <customView id="310" userLabel="Details Split View">
-                            <rect key="frame" x="0.0" y="184" width="955" height="250"/>
+                            <rect key="frame" x="0.0" y="285" width="955" height="365"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <tabView type="noTabsNoBorder" id="4" userLabel="Detail / Tree Tab View">
-                                    <rect key="frame" x="0.0" y="0.0" width="955" height="250"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <tabView type="noTabsNoBorder" translatesAutoresizingMaskIntoConstraints="NO" id="4" userLabel="Detail / Tree Tab View">
+                                    <rect key="frame" x="0.0" y="0.0" width="955" height="365"/>
                                     <font key="font" metaFont="system"/>
                                     <tabViewItems>
                                         <tabViewItem label="Details" identifier="1" id="6" userLabel="Details Tab">
                                             <view key="view" focusRingType="none" id="20">
-                                                <rect key="frame" x="0.0" y="0.0" width="955" height="250"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="955" height="365"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <webView focusRingType="none" id="21">
-                                                        <rect key="frame" x="1" y="0.0" width="954" height="251"/>
+                                                    <webView focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="21">
+                                                        <rect key="frame" x="1" y="0.0" width="954" height="366"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO">
+                                                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                                             <nil key="identifier"/>
                                                         </webPreferences>
                                                         <connections>
@@ -420,28 +337,27 @@
                                         </tabViewItem>
                                         <tabViewItem label="Tree" identifier="Item 2" id="7" userLabel="Tree Tab">
                                             <view key="view" focusRingType="none" id="8">
-                                                <rect key="frame" x="0.0" y="0.0" width="955" height="233"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="955" height="214"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <splitView focusRingType="none" dividerStyle="thin" vertical="YES" id="9">
-                                                        <rect key="frame" x="-1" y="-1" width="957" height="235"/>
-                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                    <splitView focusRingType="none" autosaveName="TreeTab" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="9">
+                                                        <rect key="frame" x="0.0" y="0.0" width="955" height="214"/>
                                                         <subviews>
-                                                            <scrollView focusRingType="none" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="10" userLabel="File List Scroll View">
-                                                                <rect key="frame" x="0.0" y="0.0" width="233" height="235"/>
+                                                            <scrollView focusRingType="none" fixedFrame="YES" borderType="none" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" id="10" userLabel="File List Scroll View">
+                                                                <rect key="frame" x="0.0" y="0.0" width="233" height="214"/>
                                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                                                 <clipView key="contentView" id="TgF-cp-2Rq">
-                                                                    <rect key="frame" x="1" y="1" width="231" height="233"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="233" height="214"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                     <subviews>
                                                                         <outlineView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" autosaveColumns="NO" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="18" id="15" customClass="PBQLOutlineView">
-                                                                            <rect key="frame" x="0.0" y="0.0" width="231" height="233"/>
+                                                                            <rect key="frame" x="0.0" y="0.0" width="233" height="214"/>
                                                                             <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
                                                                             <size key="intercellSpacing" width="3" height="2"/>
                                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                                             <tableColumns>
-                                                                                <tableColumn editable="NO" width="228" minWidth="16" maxWidth="1000" id="18">
+                                                                                <tableColumn editable="NO" width="212" minWidth="16" maxWidth="1000" id="18">
                                                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                                                         <font key="font" metaFont="smallSystem"/>
                                                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -473,30 +389,30 @@
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                 </scroller>
                                                                 <scroller key="verticalScroller" verticalHuggingPriority="750" horizontal="NO" id="17">
-                                                                    <rect key="frame" x="216" y="1" width="16" height="233"/>
+                                                                    <rect key="frame" x="217" y="0.0" width="16" height="214"/>
                                                                     <autoresizingMask key="autoresizingMask"/>
                                                                 </scroller>
                                                             </scrollView>
-                                                            <customView id="449" userLabel="Viewer">
-                                                                <rect key="frame" x="234" y="0.0" width="723" height="235"/>
+                                                            <customView fixedFrame="YES" id="449" userLabel="Viewer">
+                                                                <rect key="frame" x="234" y="0.0" width="721" height="214"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
-                                                                    <webView id="450" userLabel="FileViewer">
-                                                                        <rect key="frame" x="0.0" y="0.0" width="723" height="210"/>
+                                                                    <webView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="450" userLabel="FileViewer">
+                                                                        <rect key="frame" x="0.0" y="0.0" width="721" height="189"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12" plugInsEnabled="NO" javaEnabled="NO" javaScriptCanOpenWindowsAutomatically="NO">
+                                                                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                                                             <nil key="identifier"/>
                                                                         </webPreferences>
                                                                     </webView>
-                                                                    <customView id="475" userLabel="TypeBar" customClass="MGScopeBar">
-                                                                        <rect key="frame" x="0.0" y="211" width="723" height="24"/>
+                                                                    <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="475" userLabel="TypeBar" customClass="MGScopeBar">
+                                                                        <rect key="frame" x="0.0" y="190" width="721" height="24"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                                                         <subviews>
-                                                                            <customView id="486">
-                                                                                <rect key="frame" x="639" y="0.0" width="84" height="24"/>
+                                                                            <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="486">
+                                                                                <rect key="frame" x="637" y="0.0" width="84" height="24"/>
                                                                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                                                                                 <subviews>
-                                                                                    <button toolTip="Quick Look" verticalHuggingPriority="750" id="49">
+                                                                                    <button toolTip="Quick Look" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49">
                                                                                         <rect key="frame" x="41" y="1.5" width="29" height="19"/>
                                                                                         <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                                                         <buttonCell key="cell" type="recessed" title="QuickLook" bezelStyle="recessed" image="NSQuickLookTemplate" imagePosition="only" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="50">
@@ -522,7 +438,7 @@ IA
                                                             </customView>
                                                         </subviews>
                                                         <holdingPriorities>
-                                                            <real value="250"/>
+                                                            <real value="251"/>
                                                             <real value="250"/>
                                                         </holdingPriorities>
                                                         <connections>
@@ -530,6 +446,12 @@ IA
                                                         </connections>
                                                     </splitView>
                                                 </subviews>
+                                                <constraints>
+                                                    <constraint firstAttribute="bottom" secondItem="9" secondAttribute="bottom" id="4bR-A4-t7M"/>
+                                                    <constraint firstItem="9" firstAttribute="leading" secondItem="8" secondAttribute="leading" id="M85-K1-Sds"/>
+                                                    <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" id="YS0-SJ-UH1"/>
+                                                    <constraint firstItem="9" firstAttribute="top" secondItem="8" secondAttribute="top" id="yR5-Xo-0ew"/>
+                                                </constraints>
                                             </view>
                                         </tabViewItem>
                                     </tabViewItems>
@@ -538,10 +460,16 @@ IA
                                     </connections>
                                 </tabView>
                             </subviews>
+                            <constraints>
+                                <constraint firstAttribute="bottom" secondItem="4" secondAttribute="bottom" id="GW5-rn-Br1"/>
+                                <constraint firstItem="4" firstAttribute="top" secondItem="310" secondAttribute="top" id="KGR-yF-zDn"/>
+                                <constraint firstItem="4" firstAttribute="leading" secondItem="310" secondAttribute="leading" id="e6h-3P-PuT"/>
+                                <constraint firstAttribute="trailing" secondItem="4" secondAttribute="trailing" id="pWV-fF-nn3"/>
+                            </constraints>
                         </customView>
                     </subviews>
                     <holdingPriorities>
-                        <real value="250"/>
+                        <real value="251"/>
                         <real value="250"/>
                     </holdingPriorities>
                     <connections>
@@ -549,7 +477,13 @@ IA
                     </connections>
                 </splitView>
             </subviews>
-            <point key="canvasLocation" x="511.5" y="20"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="2" secondAttribute="trailing" id="IQk-Io-l7v"/>
+                <constraint firstAttribute="bottom" secondItem="2" secondAttribute="bottom" id="Js3-Zc-2Im"/>
+                <constraint firstItem="2" firstAttribute="top" secondItem="46" secondAttribute="top" id="nGd-lk-N2o"/>
+                <constraint firstItem="2" firstAttribute="leading" secondItem="46" secondAttribute="leading" id="wKl-ht-Djh"/>
+            </constraints>
+            <point key="canvasLocation" x="511.5" y="128"/>
         </customView>
         <customObject id="231" customClass="PBRefController">
             <connections>
@@ -563,10 +497,6 @@ IA
             <connections>
                 <outlet property="commitController" destination="39" id="424"/>
                 <outlet property="historyController" destination="-2" id="425"/>
-                <outlet property="numberOfMatchesField" destination="430" id="432"/>
-                <outlet property="progressIndicator" destination="447" id="448"/>
-                <outlet property="searchField" destination="297" id="426"/>
-                <outlet property="stepper" destination="427" id="429"/>
             </connections>
         </customObject>
     </objects>

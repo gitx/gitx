@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16F73" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
@@ -23,34 +23,43 @@
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="4" y="290" width="890" height="514"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1058"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1050"/>
             <value key="minSize" type="size" width="600" height="450"/>
             <view key="contentView" id="5">
                 <rect key="frame" x="0.0" y="0.0" width="890" height="514"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <splitView misplaced="YES" autosaveName="sourceSplitView" dividerStyle="thin" vertical="YES" id="351">
+                    <splitView autosaveName="sourceSplitView" dividerStyle="thin" vertical="YES" translatesAutoresizingMaskIntoConstraints="NO" id="351">
                         <rect key="frame" x="0.0" y="0.0" width="890" height="514"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <customView id="353" userLabel="Source SplitView">
                                 <rect key="frame" x="0.0" y="0.0" width="184" height="514"/>
                                 <autoresizingMask key="autoresizingMask" heightSizable="YES"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="150" id="SeR-ak-Dcd"/>
+                                    <constraint firstAttribute="width" relation="lessThanOrEqual" constant="300" id="d1O-hE-tiX"/>
+                                </constraints>
                             </customView>
-                            <customView id="352" userLabel="Content SplitView">
+                            <customView fixedFrame="YES" id="352" userLabel="Content SplitView">
                                 <rect key="frame" x="185" y="0.0" width="705" height="514"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </customView>
                         </subviews>
                         <holdingPriorities>
-                            <real value="250"/>
+                            <real value="251"/>
                             <real value="250"/>
                         </holdingPriorities>
                         <connections>
-                            <outlet property="delegate" destination="-2" id="354"/>
+                            <outlet property="delegate" destination="3" id="C1D-Mb-CDw"/>
                         </connections>
                     </splitView>
                 </subviews>
+                <constraints>
+                    <constraint firstItem="351" firstAttribute="top" secondItem="5" secondAttribute="top" id="2S1-Si-krf"/>
+                    <constraint firstItem="351" firstAttribute="leading" secondItem="5" secondAttribute="leading" id="DVR-Db-T5J"/>
+                    <constraint firstAttribute="trailing" secondItem="351" secondAttribute="trailing" id="VJA-d6-nLw"/>
+                    <constraint firstAttribute="bottom" secondItem="351" secondAttribute="bottom" id="rCi-6X-zjv"/>
+                </constraints>
             </view>
             <toolbar key="toolbar" implicitIdentifier="ECB6EA55-8923-4C85-AEDF-F003B571A8CB" autosavesConfiguration="NO" displayMode="iconOnly" sizeMode="regular" id="dw4-QO-oVP">
                 <allowedToolbarItems>
@@ -200,7 +209,7 @@
                         <nil key="toolTip"/>
                         <size key="minSize" width="163" height="16"/>
                         <size key="maxSize" width="163" height="96"/>
-                        <customView key="view" misplaced="YES" id="FxQ-3q-66t">
+                        <customView key="view" id="FxQ-3q-66t">
                             <rect key="frame" x="0.0" y="14" width="163" height="16"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         </customView>
