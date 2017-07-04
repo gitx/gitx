@@ -11,7 +11,6 @@
 
 @class PBGitCommit;
 @class PBGitTree;
-@class PBCollapsibleSplitView;
 
 @class PBGitSidebarController;
 @class PBWebHistoryController;
@@ -33,7 +32,7 @@
 	__weak IBOutlet NSSearchField *searchField;
 	__weak IBOutlet NSOutlineView *fileBrowser;
 	__weak IBOutlet PBCommitList *commitList;
-	__weak IBOutlet PBCollapsibleSplitView *historySplitView;
+	__weak IBOutlet NSSplitView *historySplitView;
 	__weak IBOutlet PBGitGradientBarView *upperToolbarView;
 	__weak IBOutlet PBGitGradientBarView *scopeBarView;
 	__weak IBOutlet NSButton *allBranchesFilterItem;
@@ -63,9 +62,8 @@
 @property (readonly) BOOL singleCommitSelected;
 @property (readonly) BOOL singleNonHeadCommitSelected;
 
-- (IBAction) setDetailedView:(id)sender;
-- (IBAction) setTreeView:(id)sender;
-- (IBAction) setBranchFilter:(id)sender;
+- (void) setViewMode:(NSSegmentedControl*)sender;
+- (void) setBranchFilter:(NSSegmentedControl*)sender;
 
 - (void)selectCommit:(GTOID *)commit;
 - (IBAction) refresh:(id)sender;
@@ -78,13 +76,6 @@
 - (NSArray *)menuItemsForPaths:(NSArray *)paths;
 - (void)showCommitsFromTree:(id)sender;
 
-// Repository Methods
-- (IBAction) createBranch:(id)sender;
-- (IBAction) createTag:(id)sender;
-- (IBAction) merge:(id)sender;
-- (IBAction) cherryPick:(id)sender;
-- (IBAction) rebase:(id)sender;
-
 // Find/Search methods
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
@@ -93,10 +84,5 @@
 - (BOOL) hasNonlinearPath;
 
 - (NSMenu *)tableColumnMenu;
-
-- (BOOL)splitView:(NSSplitView *)sender canCollapseSubview:(NSView *)subview;
-- (BOOL)splitView:(NSSplitView *)splitView shouldCollapseSubview:(NSView *)subview forDoubleClickOnDividerAtIndex:(NSInteger)dividerIndex;
-- (CGFloat)splitView:(NSSplitView *)sender constrainMinCoordinate:(CGFloat)proposedMin ofSubviewAt:(NSInteger)offset;
-- (CGFloat)splitView:(NSSplitView *)sender constrainMaxCoordinate:(CGFloat)proposedMax ofSubviewAt:(NSInteger)offset;
 
 @end

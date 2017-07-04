@@ -16,11 +16,13 @@
 	__weak PBViewController *contentController;
 
 	PBGitSidebarController *sidebarController;
-	__weak IBOutlet NSView *sourceListControlsView;
 	__weak IBOutlet NSSplitView *splitView;
 	__weak IBOutlet NSView *sourceSplitView;
 	__weak IBOutlet NSView *contentSplitView;
 
+	__weak IBOutlet NSSegmentedControl *branchFilterSegmentedControl;
+	__weak IBOutlet NSToolbarItem *flexibleToolbarSpace;
+	
 	__weak IBOutlet NSTextField *statusField;
 	__weak IBOutlet NSProgressIndicator *progressIndicator;
 }
@@ -57,6 +59,16 @@
 - (IBAction) pullRebaseRemote:(id)sender;
 - (IBAction) pullDefaultRemote:(id)sender;
 - (IBAction) pullRebaseDefaultRemote:(id)sender;
+
+// Repository Methods
+- (IBAction) createBranch:(id)sender;
+- (IBAction) createTag:(id)sender;
+- (IBAction) merge:(id)sender;
+- (IBAction) cherryPick:(id)sender;
+- (IBAction) rebase:(id)sender;
+
+- (IBAction) setViewMode:(NSSegmentedControl*)sender;
+- (IBAction) setBranchFilter:(NSSegmentedControl*)sender;
 
 - (IBAction) stashSave:(id) sender;
 - (IBAction) stashSaveWithKeepIndex:(id) sender;
