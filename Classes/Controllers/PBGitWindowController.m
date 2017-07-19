@@ -75,6 +75,8 @@
 		return [self validateMenuItem:menuItem remoteTitle:@"Pull From “%@”" plainTitle:@"Pull"];
 	} else if (menuItem.action == @selector(pullRebaseRemote:)) {
 		return [self validateMenuItem:menuItem remoteTitle:@"Pull From “%@” and Rebase" plainTitle:@"Pull and Rebase"];
+	} else if (menuItem.action == @selector(openInWebsite:)) {
+		return [self validateMenuItem:menuItem remoteTitle:@"Open “%@” in %@" plainTitle:@"Open on Website"];
 	}
 	
 	return YES;
@@ -90,8 +92,18 @@
 	}
 	
 	if (ref.isRemote) {
-		menuItem.title = [NSString stringWithFormat:NSLocalizedString(localisationKeyWithRemote, @""), ref.remoteName];
-		return YES;
+		if (menuItem.action == @selector(openInWebsite:)) {
+			NSString* remoteWebsite = [repository remoteWebsiteNameForRemote:ref.remoteName];
+			
+			if (remoteWebsite) {
+				menuItem.title = [NSString stringWithFormat:NSLocalizedString(localisationKeyWithRemote, @""), ref.remoteName, remoteWebsite];
+				
+				return YES;
+			}
+		} else {
+			menuItem.title = [NSString stringWithFormat:NSLocalizedString(localisationKeyWithRemote, @""), ref.remoteName];
+			return YES;
+		}
 	}
 
 	menuItem.title = NSLocalizedString(localizationKeyWithoutRemote, @"");
@@ -391,6 +403,12 @@
 - (IBAction) openInTerminal:(id)sender
 {
 	[PBTerminalUtil runCommand:@"git status" inDirectory:self.repository.workingDirectoryURL];
+}
+
+- (IBAction) openInWebsite:(id)sender
+{
+	NSString *remoteName = [self selectedItem].ref.remoteName;
+	[repository openWebsiteOfRemote:remoteName];
 }
 
 - (IBAction) refresh:(id)sender

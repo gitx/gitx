@@ -41,4 +41,6 @@
 - (IBAction) createTag:(PBRefMenuItem *)sender;
 - (IBAction) showTagInfoSheet:(PBRefMenuItem *)sender;
 
+- (NSString* _Nullable) remoteWebsiteNameForRemote:(NSString* _Nullable)remote;
+
 @end
