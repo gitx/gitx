@@ -26,7 +26,7 @@
             <rect key="contentRect" x="4" y="290" width="890" height="514"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
             <value key="minSize" type="size" width="600" height="450"/>
-            <view key="contentView" id="5">
+            <view key="contentView" wantsLayer="YES" id="5">
                 <rect key="frame" x="0.0" y="0.0" width="890" height="514"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
