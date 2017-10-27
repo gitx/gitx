@@ -38,10 +38,14 @@
 #define kHistoryTreeViewIndex 1
 
 @interface PBGitHistoryController ()
+{
+	BOOL _wokeUpFromNib;
+}
 
 - (void) updateBranchFilterMatrix;
 - (void) restoreFileBrowserSelection;
 - (void) saveFileBrowserSelection;
+
 
 @end
 
@@ -55,11 +59,18 @@
 
 - (void)awakeFromNib
 {
+	if (_wokeUpFromNib) {
+		return;
+	}
+	
+	_wokeUpFromNib = YES;
+	
 	[historySplitView pb_restoreAutosavedPositions];
 
 	self.selectedCommitDetailsIndex = [[NSUserDefaults standardUserDefaults] integerForKey:kHistorySelectedDetailIndexKey];
 
 	[commitController addObserver:self forKeyPath:@"selection" options:0 context:@"commitChange"];
+	[commitController addObserver:self forKeyPath:@"arrangedObjects.@count" options:NSKeyValueObservingOptionInitial context:@"updateCommitCount"];
 	[treeController addObserver:self forKeyPath:@"selection" options:0 context:@"treeChange"];
 
 	[repository.revisionList addObserver:self forKeyPath:@"isUpdating" options:0 context:@"revisionListUpdating"];
@@ -299,7 +310,7 @@
 		return;
 	}
 
-	if([strContext isEqualToString:@"revisionListUpdating"]) {
+	if([strContext isEqualToString:@"updateCommitCount"] || [(__bridge NSString *)context isEqualToString:@"revisionListUpdating"]) {
 		[self updateStatus];
 
 		if ([repository.currentBranch isSimpleRef])
