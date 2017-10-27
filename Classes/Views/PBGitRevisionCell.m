@@ -265,7 +265,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	NSArray *refs = self.objectValue.refs;
 	PBGitRef *ref = [refs objectAtIndex:index];
 	
-	NSMutableDictionary* attributes = [self attributesForRefLabelSelected:[self isHighlighted]];
+	NSMutableDictionary* attributes = [self attributesForRefLabelSelected:false];
 	NSBezierPath *border = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:2 yRadius:2];
 	[[self colorForRef:ref] set];
 	
@@ -344,7 +344,6 @@ const BOOL SHUFFLE_COLORS = NO;
 	//_contents = [self.objectValue subject];
 	//[super drawWithFrame:rect inView:view];
 	[textCell setObjectValue: [self.objectValue subject]];
-	[textCell setHighlighted: [self isHighlighted]];
 	[textCell drawWithFrame:rect inView: view];
 }
 

@@ -12,7 +12,7 @@
 #import "PBGitHistoryController.h"
 #import "PBRefContextDelegate.h"
 
-@interface PBGitRevisionCell : NSActionCell {
+@interface PBGitRevisionCell : NSTableCellView {
 	PBGitCommit *objectValue;
 	PBGraphCellInfo *cellInfo;
 	NSTextFieldCell *textCell;
