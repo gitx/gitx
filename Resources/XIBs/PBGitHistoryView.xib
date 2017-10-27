@@ -78,6 +78,19 @@
                 <outlet property="view" destination="21" id="44"/>
             </connections>
         </customObject>
+        <menu id="eTP-cx-OCg">
+            <items>
+                <menuItem title="Item 1" id="ayq-ej-6rA">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="Item 2" id="6qg-fx-oY5">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+                <menuItem title="Item 3" id="p4U-CT-0Eh">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                </menuItem>
+            </items>
+        </menu>
         <customObject id="452" customClass="GLFileView">
             <connections>
                 <outlet property="accessoryView" destination="486" id="487"/>
@@ -184,7 +197,7 @@
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="S8C-PP-4nT">
                                         <rect key="frame" x="0.0" y="0.0" width="955" height="165"/>
-                                        <autoresizingMask key="autoresizingMask"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
                                             <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" autosaveName="CommitView" rowSizeStyle="automatic" headerView="30" viewBased="YES" id="27" userLabel="Commit List" customClass="PBCommitList">
                                                 <rect key="frame" x="0.0" y="0.0" width="1056" height="142"/>
@@ -199,13 +212,10 @@
                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" alignment="left" id="419" customClass="GitXTextFieldCell">
+                                                        <textFieldCell key="dataCell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" alignment="left" id="419">
                                                             <font key="font" size="12" name="Monaco"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            <connections>
-                                                                <outlet property="contextMenuDelegate" destination="231" id="442"/>
-                                                            </connections>
                                                         </textFieldCell>
                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                         <prototypeCellViews>
@@ -216,13 +226,12 @@
                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="iGP-qz-VRM">
                                                                         <rect key="frame" x="0.0" y="0.0" width="62" height="17"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="7tX-ih-QOV" customClass="GitXTextFieldCell">
+                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="7tX-ih-QOV">
                                                                             <font key="font" size="12" name="Menlo-Regular"/>
                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             <connections>
                                                                                 <binding destination="S5L-Nf-A1w" name="value" keyPath="objectValue.shortName" id="e89-Za-htX"/>
-                                                                                <outlet property="contextMenuDelegate" destination="231" id="hm4-Gq-dhh"/>
                                                                             </connections>
                                                                         </textFieldCell>
                                                                     </textField>
@@ -250,10 +259,6 @@
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            <connections>
-                                                                <outlet property="contextMenuDelegate" destination="231" id="259"/>
-                                                                <outlet property="controller" destination="-2" id="110"/>
-                                                            </connections>
                                                         </textFieldCell>
                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                         <prototypeCellViews>
@@ -264,13 +269,12 @@
                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OF0-ZO-8uI">
                                                                         <rect key="frame" x="0.0" y="0.0" width="589" height="17"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="FhZ-Kg-jBJ" customClass="GitXTextFieldCell">
+                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="FhZ-Kg-jBJ">
                                                                             <font key="font" metaFont="system"/>
                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             <connections>
                                                                                 <binding destination="QW1-Ci-DxI" name="value" keyPath="objectValue.subject" id="Lky-0b-ooF"/>
-                                                                                <outlet property="contextMenuDelegate" destination="231" id="QNp-kx-Gpx"/>
                                                                             </connections>
                                                                         </textFieldCell>
                                                                     </textField>
@@ -294,13 +298,10 @@
                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" white="0.33333298560000002" alpha="1" colorSpace="calibratedWhite"/>
                                                         </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="36" customClass="GitXTextFieldCell">
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="36">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            <connections>
-                                                                <outlet property="contextMenuDelegate" destination="231" id="438"/>
-                                                            </connections>
                                                         </textFieldCell>
                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                         <prototypeCellViews>
@@ -311,13 +312,12 @@
                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OLP-oG-AlI">
                                                                         <rect key="frame" x="0.0" y="0.0" width="129" height="17"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="UaX-Ow-BR2" customClass="GitXTextFieldCell">
+                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="UaX-Ow-BR2">
                                                                             <font key="font" metaFont="system"/>
                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             <connections>
                                                                                 <binding destination="zBQ-pj-UmV" name="value" keyPath="objectValue.author" id="1bX-mK-R6z"/>
-                                                                                <outlet property="contextMenuDelegate" destination="231" id="gES-kj-hkD"/>
                                                                             </connections>
                                                                         </textFieldCell>
                                                                     </textField>
@@ -341,14 +341,10 @@
                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="34" customClass="GitXTextFieldCell">
-                                                            <dateFormatter key="formatter" dateStyle="long" timeStyle="short" id="414"/>
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="34">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            <connections>
-                                                                <outlet property="contextMenuDelegate" destination="231" id="439"/>
-                                                            </connections>
                                                         </textFieldCell>
                                                         <sortDescriptor key="sortDescriptorPrototype" selector="compare:" sortKey="date"/>
                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
@@ -360,14 +356,13 @@
                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4VL-Cc-uc7">
                                                                         <rect key="frame" x="0.0" y="0.0" width="165" height="17"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="KnY-zD-JUu" customClass="GitXTextFieldCell">
+                                                                        <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="KnY-zD-JUu">
+                                                                            <dateFormatter key="formatter" dateStyle="long" timeStyle="short" id="414"/>
                                                                             <font key="font" metaFont="system"/>
                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             <connections>
                                                                                 <binding destination="7cc-Xn-2kQ" name="value" keyPath="objectValue.date" id="q4f-iz-hEG"/>
-                                                                                <outlet property="contextMenuDelegate" destination="231" id="QHf-sX-LHZ"/>
-                                                                                <outlet property="formatter" destination="407" id="pu0-L7-XBe"/>
                                                                             </connections>
                                                                         </textFieldCell>
                                                                     </textField>
@@ -391,14 +386,10 @@
                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" alignment="left" id="410" customClass="GitXTextFieldCell">
+                                                        <textFieldCell key="dataCell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" alignment="left" id="410">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            <connections>
-                                                                <outlet property="contextMenuDelegate" destination="231" id="440"/>
-                                                                <outlet property="formatter" destination="407" id="416"/>
-                                                            </connections>
                                                         </textFieldCell>
                                                         <sortDescriptor key="sortDescriptorPrototype" selector="compare:" sortKey="date"/>
                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
@@ -439,13 +430,10 @@
                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="288" customClass="GitXTextFieldCell">
+                                                        <textFieldCell key="dataCell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="288">
                                                             <font key="font" size="12" name="Monaco"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            <connections>
-                                                                <outlet property="contextMenuDelegate" destination="231" id="441"/>
-                                                            </connections>
                                                         </textFieldCell>
                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                         <prototypeCellViews>
@@ -485,13 +473,10 @@
                                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                                         </tableHeaderCell>
-                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="493" customClass="GitXTextFieldCell">
+                                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="493">
                                                             <font key="font" metaFont="cellTitle"/>
                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
-                                                            <connections>
-                                                                <outlet property="contextMenuDelegate" destination="231" id="495"/>
-                                                            </connections>
                                                         </textFieldCell>
                                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                         <prototypeCellViews>
@@ -523,9 +508,11 @@
                                                     </tableColumn>
                                                 </tableColumns>
                                                 <connections>
+                                                    <outlet property="contextMenuDelegate" destination="231" id="DtG-Dl-ygU"/>
                                                     <outlet property="controller" destination="-2" id="111"/>
                                                     <outlet property="dataSource" destination="231" id="445"/>
                                                     <outlet property="delegate" destination="-2" id="444"/>
+                                                    <outlet property="menu" destination="eTP-cx-OCg" id="xzi-Ng-ecd"/>
                                                     <outlet property="searchController" destination="423" id="436"/>
                                                     <outlet property="webController" destination="40" id="95"/>
                                                     <outlet property="webView" destination="21" id="37"/>
@@ -534,7 +521,7 @@
                                         </subviews>
                                     </clipView>
                                     <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="29">
-                                        <rect key="frame" x="0.0" y="7" width="0.0" height="16"/>
+                                        <rect key="frame" x="0.0" y="149" width="955" height="16"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                     </scroller>
                                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="28">
@@ -820,7 +807,7 @@ IA
                 <constraint firstItem="316" firstAttribute="top" secondItem="46" secondAttribute="top" id="o5u-rI-HvB"/>
                 <constraint firstItem="2" firstAttribute="leading" secondItem="46" secondAttribute="leading" id="wKl-ht-Djh"/>
             </constraints>
-            <point key="canvasLocation" x="511.5" y="20"/>
+            <point key="canvasLocation" x="266" y="-24"/>
         </customView>
         <customObject id="231" customClass="PBRefController">
             <connections>

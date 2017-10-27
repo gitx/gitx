@@ -10,7 +10,6 @@
 #import "PBGitRef.h"
 #import "PBGitCommit.h"
 #import "PBGitRevSpecifier.h"
-#import "GitXTextFieldCell.h"
 
 #import "NSColor+RGB.h"
 
@@ -367,38 +366,6 @@ const BOOL SHUFFLE_COLORS = NO;
 	NSRect refRect = NSMakeRect(pathWidth, 0, 1000, 10000);
 
 	return [[[self rectsForRefsinRect:refRect] objectAtIndex:index] rectValue];
-}
-
-# pragma mark context menu delegate methods
-
-- (NSMenu *) menuForEvent:(NSEvent *)event inRect:(NSRect)rect ofView:(NSView *)view
-{
-	if (!contextMenuDelegate)
-		return [self menu];
-
-	PBGitRef *clickedRef = [self findClickedRefFor:event rect:rect ofView:view];
-	
-	NSArray<NSMenuItem *> *items = nil;
-	if (clickedRef)
-		items = [contextMenuDelegate menuItemsForRef:clickedRef];
-	else {
-		NSArray<PBGitCommit *> *relevantCommits = [controller.selectedCommits containsObject:self.objectValue]
-			? controller.selectedCommits
-			: @[self.objectValue];
-		items = [contextMenuDelegate menuItemsForCommits:relevantCommits];
-	}
-	
-	NSMenu *menu = [[NSMenu alloc] init];
-	[menu setAutoenablesItems:NO];
-	for (NSMenuItem *item in items)
-		[menu addItem:item];
-	return menu;
-}
-
-- (PBGitRef *) findClickedRefFor:(NSEvent *)event rect:(NSRect)rect ofView:(NSView *)view
-{
-	int i = [self indexAtX:[view convertPoint:[event locationInWindow] fromView:nil].x - rect.origin.x];
-	return (i >= 0) ? [self.objectValue.refs objectAtIndex:i] : nil;
 }
 
 @end

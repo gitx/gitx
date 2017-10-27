@@ -120,6 +120,35 @@
 }
 
 
+#pragma mark Menu
+
+- (NSMenu *)menuForEvent:(NSEvent *)event
+{
+	[super menuForEvent:event];
+	NSInteger index = self.clickedRow;
+	
+	NSInteger column = [self columnWithIdentifier:@"SubjectColumn"];
+	PBGitRevisionCell *cell = [self viewAtColumn:column row:index makeIfNecessary:NO];
+	PBGitCommit *commit = cell.objectValue;
+	
+	NSArray <PBGitCommit*>* selectedCommits = controller.selectedCommits;
+	NSArray <NSMenuItem *>* items;
+	
+	if ([selectedCommits containsObject:commit]) {
+		items = [contextMenuDelegate menuItemsForCommits:controller.selectedCommits];
+	} else {
+		items = [contextMenuDelegate menuItemsForCommits:@[commit]];
+	}
+	
+	NSMenu *menu = [[NSMenu alloc] init];
+	[menu setAutoenablesItems:NO];
+	for (NSMenuItem *item in items)
+		[menu addItem:item];
+	
+	return menu;
+}
+
+
 #pragma mark Row highlighting
 
 - (NSColor *)searchResultHighlightColorForRow:(NSInteger)rowIndex

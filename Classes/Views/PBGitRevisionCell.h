@@ -16,7 +16,6 @@
 	PBGitCommit *objectValue;
 	PBGraphCellInfo *cellInfo;
 	__weak IBOutlet PBGitHistoryController *controller;
-	__weak IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
 }
 
 - (int) indexAtX:(CGFloat)x;
