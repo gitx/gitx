@@ -15,7 +15,6 @@
 @interface PBGitRevisionCell : NSTableCellView {
 	PBGitCommit *objectValue;
 	PBGraphCellInfo *cellInfo;
-	NSTextFieldCell *textCell;
 	__weak IBOutlet PBGitHistoryController *controller;
 	__weak IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
 }

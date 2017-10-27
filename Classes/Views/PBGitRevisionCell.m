@@ -20,11 +20,8 @@ const BOOL SHUFFLE_COLORS = NO;
 
 @implementation PBGitRevisionCell
 
-- (id) initWithCoder: (id) coder
-{
-	self = [super initWithCoder:coder];
-	textCell = [[GitXTextFieldCell alloc] initWithCoder:coder];
-	return self;
+- (BOOL)isFlipped {
+	return YES;
 }
 
 + (NSArray *)laneColors
@@ -191,22 +188,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	[attributes setObject:style forKey:NSParagraphStyleAttributeName];
 	
 	[attributes setObject:[NSFont systemFontOfSize:10] forKey:NSFontAttributeName];
-
-	NSShadow *shadow = nil;
-
-	if (selected && false) { // white text is a bit too hard to read (even with shadow) on refs
-		[attributes setObject:[NSColor alternateSelectedControlTextColor] forKey:NSForegroundColorAttributeName];
-		if (ENABLE_SHADOW) {
-			shadow = [NSShadow new];
-			[shadow setShadowColor:[NSColor blackColor]];
-			[shadow setShadowBlurRadius:2.0f];
-		}
-	}
-
-	if (shadow) {
-		attributes[NSShadowAttributeName] = shadow;
-	}
-
+	
 	return attributes;
 }
 
@@ -311,8 +293,9 @@ const BOOL SHUFFLE_COLORS = NO;
     }
 }
 
-- (void) drawWithFrame:(NSRect)rect inView:(NSView *)view
-{
+- (void)drawRect:(NSRect)dirtyRect
+{	
+	NSRect rect = self.bounds;
 	cellInfo = [self.objectValue lineInfo];
 	
 	if (cellInfo && ![controller hasNonlinearPath]) {
@@ -336,19 +319,19 @@ const BOOL SHUFFLE_COLORS = NO;
 			[self drawCircleInRect: ownRect];
 	}
 
-
 	if ([self.objectValue refs] && [[self.objectValue refs] count])
 		[self drawRefsInRect:&rect];
-
-	// Still use this superclass because of hilighting differences
-	//_contents = [self.objectValue subject];
-	//[super drawWithFrame:rect inView:view];
-	[textCell setObjectValue: [self.objectValue subject]];
-	[textCell drawWithFrame:rect inView: view];
+	
+	
+	NSRect textFieldFrame = self.textField.frame;
+	textFieldFrame.origin.x = rect.origin.x;
+	self.textField.frame = textFieldFrame;
 }
 
 - (void) setObjectValue: (PBGitCommit*)object {
 	[super setObjectValue:[NSValue valueWithNonretainedObject:object]];
+	
+	[self setNeedsDisplay:YES];
 }
 
 - (PBGitCommit*) objectValue {
