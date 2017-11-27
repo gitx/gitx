@@ -178,7 +178,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	[path stroke];
 }
 
-- (NSMutableDictionary*) attributesForRefLabelSelected: (BOOL) selected
+- (NSMutableDictionary*) attributesForRefLabel
 {
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] initWithCapacity:2];
 	NSMutableParagraphStyle* style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -223,7 +223,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	lastRect.origin.y = round(lastRect.origin.y);
 	
 	for (PBGitRef *ref in self.objectValue.refs) {
-		NSMutableDictionary* attributes = [self attributesForRefLabelSelected:NO];
+		NSMutableDictionary* attributes = [self attributesForRefLabel];
 		NSSize textSize = [[ref shortName] sizeWithAttributes:attributes];
 		
 		NSRect newRect = lastRect;
@@ -246,7 +246,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	NSArray *refs = self.objectValue.refs;
 	PBGitRef *ref = [refs objectAtIndex:index];
 	
-	NSMutableDictionary* attributes = [self attributesForRefLabelSelected:false];
+	NSMutableDictionary* attributes = [self attributesForRefLabel];
 	NSBezierPath *border = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:2 yRadius:2];
 	[[self colorForRef:ref] set];
 	
