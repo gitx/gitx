@@ -17,6 +17,12 @@ const int COLUMN_WIDTH = 10;
 const BOOL ENABLE_SHADOW = NO;
 const BOOL SHUFFLE_COLORS = NO;
 
+@interface PBGitRevisionCell (){
+	CGFloat _leftMargin;
+}
+
+@end
+
 @implementation PBGitRevisionCell
 
 - (BOOL)isFlipped {
@@ -321,10 +327,9 @@ const BOOL SHUFFLE_COLORS = NO;
 	if ([self.objectValue refs] && [[self.objectValue refs] count])
 		[self drawRefsInRect:&rect];
 	
-	
-	NSRect textFieldFrame = self.textField.frame;
-	textFieldFrame.origin.x = rect.origin.x;
-	self.textField.frame = textFieldFrame;
+	// FIXME: Changing the constraints constant in drawRect does not seem to be a goog idea. It slightly decreases scrolling performance
+	// and sometimes you see the constraint constant of 0 flickering through for a split second during fast scrolling..
+	leftMarginTextConstraint.constant = rect.origin.x;
 }
 
 - (void) setObjectValue: (PBGitCommit*)object {

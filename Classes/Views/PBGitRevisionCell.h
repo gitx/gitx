@@ -16,6 +16,7 @@
 	PBGitCommit *objectValue;
 	PBGraphCellInfo *cellInfo;
 	__weak IBOutlet PBGitHistoryController *controller;
+	__weak IBOutlet NSLayoutConstraint *leftMarginTextConstraint;
 }
 
 - (int) indexAtX:(CGFloat)x;
