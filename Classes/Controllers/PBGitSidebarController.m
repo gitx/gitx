@@ -19,6 +19,8 @@
 #import "PBGitStash.h"
 #import "PBGitSVStashItem.h"
 
+#define PBSidebarCellIdentifier @"PBSidebarCellIdentifier"
+
 @interface PBGitSidebarController ()
 
 - (void)populateList;
@@ -278,10 +280,13 @@
 	return [item isGroupItem];
 }
 
-- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(PBSourceViewCell *)cell forTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem *)item
-{
-	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
-	[cell setImage:[item icon]];
+- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem*)item {
+	NSTableCellView *view = [outlineView makeViewWithIdentifier:PBSidebarCellIdentifier owner:outlineView];
+	
+	view.textField.stringValue = [[item title] copy];
+	view.imageView.image = item.icon;
+	
+	return view;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
