@@ -43,19 +43,19 @@
                                             <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" white="0.33333299" alpha="1" colorSpace="calibratedWhite"/>
                                         </tableHeaderCell>
-                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" alignment="left" title="Text Cell" id="16" customClass="PBSourceViewCell">
+                                        <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" alignment="left" title="Text Cell" id="16">
                                             <font key="font" metaFont="smallSystem"/>
                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                         </textFieldCell>
                                         <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                         <prototypeCellViews>
-                                            <tableCellView identifier="PBSidebarCellIdentifier" id="Cdv-On-cA7" customClass="PBGitCommitTableViewCell">
+                                            <tableCellView identifier="PBSidebarCellIdentifier" id="Cdv-On-cA7" customClass="PBSidebarTableViewCell">
                                                 <rect key="frame" x="1" y="0.0" width="150" height="20"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="4" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vBB-XE-6S0">
-                                                        <rect key="frame" x="4" y="0.0" width="146" height="20"/>
+                                                    <stackView distribution="fill" orientation="horizontal" alignment="top" spacing="3" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vBB-XE-6S0">
+                                                        <rect key="frame" x="2" y="0.0" width="148" height="20"/>
                                                         <subviews>
                                                             <imageView horizontalHuggingPriority="900" verticalHuggingPriority="900" horizontalCompressionResistancePriority="300" verticalCompressionResistancePriority="100" translatesAutoresizingMaskIntoConstraints="NO" id="34z-m4-QBF">
                                                                 <rect key="frame" x="0.0" y="0.0" width="17" height="17"/>
@@ -65,23 +65,34 @@
                                                                 <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="axesIndependently" id="kPt-Wl-txd"/>
                                                             </imageView>
                                                             <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="uoa-dW-V7T">
-                                                                <rect key="frame" x="19" y="3" width="129" height="14"/>
-                                                                <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingMiddle" sendsActionOnEndEditing="YES" title="Table View Cell" id="LLd-4b-6nS">
+                                                                <rect key="frame" x="18" y="0.0" width="99" height="20"/>
+                                                                <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" allowsUndo="NO" sendsActionOnEndEditing="YES" alignment="left" title="Table View Cell" id="LLd-4b-6nS">
                                                                     <font key="font" metaFont="smallSystem"/>
                                                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                 </textFieldCell>
                                                             </textField>
+                                                            <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1UH-jf-DTl">
+                                                                <rect key="frame" x="118" y="0.0" width="30" height="20"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="width" constant="30" id="sgq-KZ-AdI"/>
+                                                                </constraints>
+                                                                <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" id="3NK-wq-s6J"/>
+                                                            </imageView>
                                                         </subviews>
                                                         <constraints>
+                                                            <constraint firstItem="1UH-jf-DTl" firstAttribute="centerY" secondItem="vBB-XE-6S0" secondAttribute="centerY" id="BRY-BX-y69"/>
                                                             <constraint firstItem="34z-m4-QBF" firstAttribute="top" secondItem="vBB-XE-6S0" secondAttribute="top" constant="3" id="b5H-AM-INm"/>
                                                             <constraint firstItem="uoa-dW-V7T" firstAttribute="centerY" secondItem="vBB-XE-6S0" secondAttribute="centerY" id="bLb-wa-ggd"/>
+                                                            <constraint firstItem="1UH-jf-DTl" firstAttribute="height" secondItem="uoa-dW-V7T" secondAttribute="height" id="vkX-xa-IAN"/>
                                                         </constraints>
                                                         <visibilityPriorities>
                                                             <integer value="1000"/>
                                                             <integer value="1000"/>
+                                                            <integer value="1000"/>
                                                         </visibilityPriorities>
                                                         <customSpacing>
+                                                            <real value="3.4028234663852886e+38"/>
                                                             <real value="3.4028234663852886e+38"/>
                                                             <real value="3.4028234663852886e+38"/>
                                                         </customSpacing>
@@ -91,9 +102,10 @@
                                                     <constraint firstAttribute="trailing" secondItem="vBB-XE-6S0" secondAttribute="trailing" id="20A-U4-j3i"/>
                                                     <constraint firstItem="vBB-XE-6S0" firstAttribute="top" secondItem="Cdv-On-cA7" secondAttribute="top" id="TZS-C9-5rF"/>
                                                     <constraint firstAttribute="bottom" secondItem="vBB-XE-6S0" secondAttribute="bottom" id="jp9-U0-U5v"/>
-                                                    <constraint firstItem="vBB-XE-6S0" firstAttribute="leading" secondItem="Cdv-On-cA7" secondAttribute="leading" constant="4" id="wcP-EE-eYc"/>
+                                                    <constraint firstItem="vBB-XE-6S0" firstAttribute="leading" secondItem="Cdv-On-cA7" secondAttribute="leading" constant="2" id="wcP-EE-eYc"/>
                                                 </constraints>
                                                 <connections>
+                                                    <outlet property="checkedOutImageView" destination="1UH-jf-DTl" id="ubQ-LI-Y9T"/>
                                                     <outlet property="imageView" destination="34z-m4-QBF" id="KSn-3i-c8r"/>
                                                     <outlet property="textField" destination="uoa-dW-V7T" id="fc1-Gg-HMx"/>
                                                 </connections>
@@ -114,7 +126,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                     <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="9">
-                        <rect key="frame" x="137" y="1" width="15" height="338"/>
+                        <rect key="frame" x="-16" y="0.0" width="16" height="0.0"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </scroller>
                 </scrollView>
@@ -143,7 +155,7 @@
                     </popUpButtonCell>
                 </popUpButton>
                 <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="47">
-                    <rect key="frame" x="96" y="1" width="157" height="25"/>
+                    <rect key="frame" x="96" y="1" width="157" height="23"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <segmentedCell key="cell" state="on" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="momentary" id="48">
                         <font key="font" metaFont="system"/>

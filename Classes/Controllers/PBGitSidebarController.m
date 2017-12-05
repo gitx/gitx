@@ -11,13 +11,13 @@
 #import "PBGitHistoryController.h"
 #import "PBGitCommitController.h"
 #import "PBRefController.h"
-#import "PBSourceViewCell.h"
 #import "NSOutlineViewExt.h"
 #import "PBAddRemoteSheet.h"
 #import "PBGitDefaults.h"
 #import "PBHistorySearchController.h"
 #import "PBGitStash.h"
 #import "PBGitSVStashItem.h"
+#import "PBSidebarTableViewCell.h"
 
 #define PBSidebarCellIdentifier @"PBSidebarCellIdentifier"
 
@@ -281,12 +281,13 @@
 }
 
 - (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem*)item {
-	NSTableCellView *view = [outlineView makeViewWithIdentifier:PBSidebarCellIdentifier owner:outlineView];
+	PBSidebarTableViewCell *cell = [outlineView makeViewWithIdentifier:PBSidebarCellIdentifier owner:outlineView];
 	
-	view.textField.stringValue = [[item title] copy];
-	view.imageView.image = item.icon;
+	cell.textField.stringValue = [[item title] copy];
+	cell.imageView.image = item.icon;
+	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
 	
-	return view;
+	return cell;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item

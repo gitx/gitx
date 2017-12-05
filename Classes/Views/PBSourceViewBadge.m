@@ -7,7 +7,6 @@
 //
 
 #import "PBSourceViewBadge.h"
-#import "PBSourceViewCell.h"
 
 
 @implementation PBSourceViewBadge
@@ -25,33 +24,30 @@
 }
 
 
-+ (NSColor *) badgeColorForCell:(NSTextFieldCell *)cell
++ (NSColor *) badgeColorForCell:(NSTableCellView *)cell
 {
-	if ([cell isHighlighted])
+	if ([cell backgroundStyle] == NSBackgroundStyleDark)
 		return [NSColor whiteColor];
 
-	if ([[[cell controlView] window] isMainWindow])
+	if ([[cell window] isMainWindow])
 		return [self badgeHighlightColor];
 
 	return [self badgeBackgroundColor];
 }
 
 
-+ (NSColor *) badgeTextColorForCell:(NSTextFieldCell *)cell
++ (NSColor *) badgeTextColorForCell:(NSTableCellView *)cell
 {
-	if (![cell isHighlighted])
+	if ([cell backgroundStyle] != NSBackgroundStyleDark)
 		return [NSColor whiteColor];
 
-	if (![[[cell controlView] window] isKeyWindow]) {
-		if ([[[cell controlView] window] isMainWindow]) {
+	if (![[cell window] isKeyWindow]) {
+		if ([[cell window] isMainWindow]) {
 			return [self badgeHighlightColor];
 		} else {
 			return [self badgeBackgroundColor];
         }
     }
-
-	if ([[[cell controlView] window] firstResponder] == [cell controlView])
-		return [self badgeHighlightColor];
 
 	return [self badgeBackgroundColor];
 }
@@ -77,7 +73,7 @@
 #pragma mark -
 #pragma mark badges
 
-+ (NSImage *) badge:(NSString *)badge forCell:(NSTextFieldCell *)cell
++ (NSImage *) badge:(NSString *)badge forCell:(NSTableCellView *)cell
 {
 	NSColor *badgeColor = [self badgeColorForCell:cell];
 
@@ -110,12 +106,12 @@
 	return badgeImage;
 }
 
-+ (NSImage *) checkedOutBadgeForCell:(NSTextFieldCell *)cell
++ (NSImage *) checkedOutBadgeForCell:(NSTableCellView *)cell
 {
 	return [self badge:@"✔" forCell:cell];
 }
 
-+ (NSImage *) numericBadge:(NSInteger)number forCell:(NSTextFieldCell *)cell
++ (NSImage *) numericBadge:(NSInteger)number forCell:(NSTableCellView *)cell
 {
 	return [self badge:[NSString stringWithFormat:@"%ld", number] forCell:cell];
 }
