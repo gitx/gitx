@@ -144,6 +144,7 @@
 		4D3FB3E7198AEAAF000B4A58 /* PBGitRepositoryDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D3FB3E6198AEAAF000B4A58 /* PBGitRepositoryDocument.m */; };
 		4D6E4F7A1E56851A004C3A6F /* PBMacros.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D6E4F781E56851A004C3A6F /* PBMacros.m */; };
 		4DECFBB21E662962004C3A6F /* ObjectiveGit+PBCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DECFBB11E662962004C3A6F /* ObjectiveGit+PBCategories.m */; };
+		50660A551FD6F48A004342B0 /* PBSidebarList.m in Sources */ = {isa = PBXBuildFile; fileRef = 50660A541FD6F48A004342B0 /* PBSidebarList.m */; };
 		507367411FD1F54E003F73E1 /* PBGitCommitTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 507367401FD1F54E003F73E1 /* PBGitCommitTableViewCell.m */; };
 		508E268D1FD317FC00CE9FE0 /* PBSidebarTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 508E268C1FD317FC00CE9FE0 /* PBSidebarTableViewCell.m */; };
 		551BF176112F3F4B00265053 /* gitx_askpasswd in Resources */ = {isa = PBXBuildFile; fileRef = 551BF111112F371800265053 /* gitx_askpasswd */; };
@@ -573,6 +574,8 @@
 		4DE23D051CF31252004C3A6F /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; name = include; path = "objective-git/External/libgit2/include"; sourceTree = "<group>"; };
 		4DECFBB01E662962004C3A6F /* ObjectiveGit+PBCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ObjectiveGit+PBCategories.h"; sourceTree = "<group>"; };
 		4DECFBB11E662962004C3A6F /* ObjectiveGit+PBCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ObjectiveGit+PBCategories.m"; sourceTree = "<group>"; };
+		50660A531FD6F48A004342B0 /* PBSidebarList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBSidebarList.h; sourceTree = "<group>"; };
+		50660A541FD6F48A004342B0 /* PBSidebarList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PBSidebarList.m; sourceTree = "<group>"; };
 		5073673F1FD1F54E003F73E1 /* PBGitCommitTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBGitCommitTableViewCell.h; sourceTree = "<group>"; };
 		507367401FD1F54E003F73E1 /* PBGitCommitTableViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PBGitCommitTableViewCell.m; sourceTree = "<group>"; };
 		508E268B1FD317FC00CE9FE0 /* PBSidebarTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBSidebarTableViewCell.h; sourceTree = "<group>"; };
@@ -855,6 +858,8 @@
 				4A5D768F14A9A9CC00DF6C68 /* PBCLIProxy.m */,
 				4A5D769014A9A9CC00DF6C68 /* PBCommitList.h */,
 				4A5D769114A9A9CC00DF6C68 /* PBCommitList.m */,
+				50660A531FD6F48A004342B0 /* PBSidebarList.h */,
+				50660A541FD6F48A004342B0 /* PBSidebarList.m */,
 				4A5D769214A9A9CC00DF6C68 /* PBGraphCellInfo.h */,
 				4A5D769314A9A9CC00DF6C68 /* PBGraphCellInfo.m */,
 				4A5D769414A9A9CC00DF6C68 /* PBNSURLPathUserDefaultsTransfomer.h */,
@@ -1514,6 +1519,7 @@
 				4AB71FF814B7EDD400F1DFFC /* RJModalRepoSheet.m in Sources */,
 				643952771603EF9B00BB7AFF /* PBGitSVSubmoduleItem.m in Sources */,
 				4AB057E31652652000DE751D /* PBRepositoryFinder.m in Sources */,
+				50660A551FD6F48A004342B0 /* PBSidebarList.m in Sources */,
 				4A2125A417C0C78A00B5B582 /* NSColor+RGB.m in Sources */,
 				A2F8D0DF17AAB32500580B84 /* PBGitStash.m in Sources */,
 				A2F8D0EB17AAB95E00580B84 /* PBGitSVStashItem.m in Sources */,

@@ -15,18 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark context menu delegate methods
 
-- (nullable NSMenu *)menuForEvent:(NSEvent *)event
-{
-	NSTableView *view = [[self enclosingScrollView] documentView];
-	
-	NSPoint point = [view convertPoint:[event locationInWindow] fromView:nil];
-	NSInteger row = [view rowAtPoint:point];
-
-	PBGitSidebarController *controller = (PBGitSidebarController*)[view delegate];
-
-	return [controller menuForRow:row];
-}
-
 - (void)setIsCheckedOut:(BOOL)isCheckedOut
 {
 	_isCheckedOut = isCheckedOut;
