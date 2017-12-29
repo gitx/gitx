@@ -54,6 +54,8 @@
 	window.contentView = self.view;
 	[self populateList];
 
+	self.sourceView.wantsLayer = NO;
+	
 	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
 

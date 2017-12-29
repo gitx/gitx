@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -24,9 +24,9 @@
             <windowCollectionBehavior key="collectionBehavior" fullScreenPrimary="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="4" y="290" width="890" height="514"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1177"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
             <value key="minSize" type="size" width="600" height="450"/>
-            <view key="contentView" wantsLayer="YES" id="5">
+            <view key="contentView" id="5">
                 <rect key="frame" x="0.0" y="0.0" width="890" height="514"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
@@ -41,7 +41,7 @@
                                     <constraint firstAttribute="width" relation="lessThanOrEqual" constant="300" id="d1O-hE-tiX"/>
                                 </constraints>
                             </customView>
-                            <customView fixedFrame="YES" id="352" userLabel="Content SplitView">
+                            <customView wantsLayer="YES" fixedFrame="YES" id="352" userLabel="Content SplitView">
                                 <rect key="frame" x="185" y="0.0" width="705" height="483"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             </customView>
@@ -51,17 +51,17 @@
                             <real value="250"/>
                         </holdingPriorities>
                     </splitView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="393" userLabel="Source List Controls View">
+                    <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="393" userLabel="Source List Controls View">
                         <rect key="frame" x="0.0" y="1" width="270" height="31"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="270" id="R1X-0L-Y63"/>
                             <constraint firstAttribute="height" constant="31" id="TO5-KE-aRg"/>
                         </constraints>
                     </customView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="396" userLabel="Status View">
+                    <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="396" userLabel="Status View">
                         <rect key="frame" x="322" y="0.0" width="246" height="31"/>
                         <subviews>
-                            <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="397">
+                            <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="397">
                                 <rect key="frame" x="41" y="8" width="188" height="14"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                                 <textFieldCell key="cell" controlSize="small" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" alignment="left" title="Label" id="398">
@@ -80,7 +80,7 @@
                             <constraint firstAttribute="width" constant="246" id="RzT-KH-8gx"/>
                         </constraints>
                     </customView>
-                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="443" userLabel="RefreshTermFind View">
+                    <customView wantsLayer="YES" translatesAutoresizingMaskIntoConstraints="NO" id="443" userLabel="RefreshTermFind View">
                         <rect key="frame" x="624" y="0.0" width="246" height="31"/>
                         <subviews>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="430">
