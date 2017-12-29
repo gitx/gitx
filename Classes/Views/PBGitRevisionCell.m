@@ -13,6 +13,8 @@
 
 #import "NSColor+RGB.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 const int COLUMN_WIDTH = 10;
 const BOOL ENABLE_SHADOW = NO;
 const BOOL SHUFFLE_COLORS = NO;
@@ -217,9 +219,9 @@ const BOOL SHUFFLE_COLORS = NO;
 	return [NSColor yellowColor];
 }
 
--(NSArray *)rectsForRefsinRect:(NSRect) rect;
+-(NSArray<NSValue *> *)rectsForRefsinRect:(NSRect) rect;
 {
-	NSMutableArray *array = [NSMutableArray array];
+	NSMutableArray<NSValue *> *array = [NSMutableArray array];
 	
 	static const int ref_padding = 4;
 	static const int ref_spacing = 4;
@@ -327,9 +329,13 @@ const BOOL SHUFFLE_COLORS = NO;
 	if ([self.objectValue refs] && [[self.objectValue refs] count])
 		[self drawRefsInRect:&rect];
 	
-	// FIXME: Changing the constraints constant in drawRect does not seem to be a goog idea. It slightly decreases scrolling performance
-	// and sometimes you see the constraint constant of 0 flickering through for a split second during fast scrolling..
-	leftMarginTextConstraint.constant = rect.origin.x;
+	NSRect frame = self.textField.frame;
+	
+	frame.origin.x = rect.origin.x;
+	frame.origin.y = (self.bounds.size.height - frame.size.height) / 2;
+	frame.size.width = self.bounds.size.width - frame.origin.x;
+	
+	self.textField.frame = frame;
 }
 
 - (void) setObjectValue: (PBGitCommit*)object {
@@ -374,3 +380,5 @@ const BOOL SHUFFLE_COLORS = NO;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

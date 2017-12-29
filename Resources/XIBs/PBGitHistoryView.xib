@@ -270,8 +270,9 @@
                                                                 <rect key="frame" x="66" y="1" width="300" height="20"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
-                                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="OF0-ZO-8uI">
+                                                                    <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="OF0-ZO-8uI">
                                                                         <rect key="frame" x="0.0" y="2" width="300" height="17"/>
+                                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="FhZ-Kg-jBJ">
                                                                             <font key="font" metaFont="system"/>
                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -282,14 +283,8 @@
                                                                         </textFieldCell>
                                                                     </textField>
                                                                 </subviews>
-                                                                <constraints>
-                                                                    <constraint firstAttribute="trailing" secondItem="OF0-ZO-8uI" secondAttribute="trailing" constant="2" id="Bmv-If-mYw"/>
-                                                                    <constraint firstItem="OF0-ZO-8uI" firstAttribute="centerY" secondItem="QW1-Ci-DxI" secondAttribute="centerY" id="DG3-Ob-bYM"/>
-                                                                    <constraint firstItem="OF0-ZO-8uI" firstAttribute="leading" secondItem="QW1-Ci-DxI" secondAttribute="leading" constant="2" id="Pja-PU-efW"/>
-                                                                </constraints>
                                                                 <connections>
                                                                     <outlet property="controller" destination="-2" id="G5u-vo-kDk"/>
-                                                                    <outlet property="leftMarginTextConstraint" destination="Pja-PU-efW" id="aIl-RR-Dj0"/>
                                                                     <outlet property="textField" destination="OF0-ZO-8uI" id="gQt-CH-QDF"/>
                                                                 </connections>
                                                             </tableCellView>

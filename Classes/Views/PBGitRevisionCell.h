@@ -12,11 +12,12 @@
 #import "PBGitHistoryController.h"
 #import "PBRefContextDelegate.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface PBGitRevisionCell : NSTableCellView {
 	PBGitCommit *objectValue;
 	PBGraphCellInfo *cellInfo;
 	__weak IBOutlet PBGitHistoryController *controller;
-	__weak IBOutlet NSLayoutConstraint *leftMarginTextConstraint;
 }
 
 - (int) indexAtX:(CGFloat)x;
@@ -24,4 +25,7 @@
 - (void) drawLabelAtIndex:(int)index inRect:(NSRect)rect;
 
 @property (copy) PBGitCommit* objectValue;
+
 @end
+
+NS_ASSUME_NONNULL_END
