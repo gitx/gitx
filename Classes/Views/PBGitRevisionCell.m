@@ -272,27 +272,17 @@ const BOOL SHUFFLE_COLORS = NO;
 	[[ref shortName] drawInRect:rect withAttributes:attributes];
 }
 
-- (void) drawRefsInRect:(NSRect *)refRect
+- (void) drawRefsInRect:(NSRect)refRect
 {
 	[[NSColor blackColor] setStroke];
 
-	NSRect lastRect = NSMakeRect(0, 0, 0, 0);
 	int index = 0;
-	for (NSValue *rectValue in [self rectsForRefsinRect:*refRect])
+	for (NSValue *rectValue in [self rectsForRefsinRect:refRect])
 	{
 		NSRect rect = [rectValue rectValue];
 		[self drawLabelAtIndex:index inRect:rect];
-		lastRect = rect;
 		++index;
 	}
-
-    // Only update rect to account for drawn refs if necessary to push
-    // subsequent content to the right.
-    if (index > 0) {
-		const CGFloat PADDING = 4;
-        refRect->size.width -= lastRect.origin.x - refRect->origin.x + lastRect.size.width - PADDING;
-        refRect->origin.x    = lastRect.origin.x + lastRect.size.width + PADDING;
-    }
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -322,21 +312,46 @@ const BOOL SHUFFLE_COLORS = NO;
 	}
 
 	if ([self.objectValue refs] && [[self.objectValue refs] count])
-		[self drawRefsInRect:&rect];
-	
-	NSRect frame = self.textField.frame;
-	
-	frame.origin.x = rect.origin.x;
-	frame.origin.y = (self.bounds.size.height - frame.size.height) / 2;
-	frame.size.width = self.bounds.size.width - frame.origin.x;
-	
-	self.textField.frame = frame;
+		[self drawRefsInRect:rect];
 }
 
 - (void) setObjectValue: (PBGitCommit*)object {
 	[super setObjectValue:[NSValue valueWithNonretainedObject:object]];
 	
 	[self setNeedsDisplay:YES];
+	[self setNeedsLayout:YES];
+}
+
+- (void)layout {
+	[super layout];
+	
+	NSRect rect = self.bounds;
+	cellInfo = [self.objectValue lineInfo];
+	
+	if (cellInfo) {
+		float pathWidth = 10 + COLUMN_WIDTH * cellInfo.numColumns;
+		
+		NSRect ownRect;
+		NSDivideRect(rect, &ownRect, &rect, pathWidth, NSMinXEdge);
+		
+		NSArray <NSValue *>* rectValues = [self rectsForRefsinRect:rect];
+		
+		if (rectValues.count > 0) {
+			const CGFloat PADDING = 4;
+			NSRect lastRect = rectValues.lastObject.rectValue;
+			
+			rect.size.width -= lastRect.origin.x - rect.origin.x + lastRect.size.width - PADDING;
+			rect.origin.x    = lastRect.origin.x + lastRect.size.width + PADDING;
+		}
+		
+		NSRect frame = self.textField.frame;
+		
+		frame.origin.x = floor(rect.origin.x);
+		frame.origin.y = floor((self.bounds.size.height - frame.size.height) / 2) - 1;
+		frame.size.width = floor(self.bounds.size.width - frame.origin.x);
+		
+		self.textField.frame = frame;
+	}
 }
 
 - (PBGitCommit*) objectValue {

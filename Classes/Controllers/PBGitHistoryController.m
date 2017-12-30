@@ -38,14 +38,10 @@
 #define kHistoryTreeViewIndex 1
 
 @interface PBGitHistoryController ()
-{
-	BOOL _wokeUpFromNib;
-}
 
 - (void) updateBranchFilterMatrix;
 - (void) restoreFileBrowserSelection;
 - (void) saveFileBrowserSelection;
-
 
 @end
 
@@ -57,13 +53,8 @@
 @synthesize treeController;
 @synthesize selectedCommits;
 
-- (void)awakeFromNib
-{
-	if (_wokeUpFromNib) {
-		return;
-	}
-	
-	_wokeUpFromNib = YES;
+- (void)loadView {
+	[super loadView];
 	
 	[historySplitView pb_restoreAutosavedPositions];
 
