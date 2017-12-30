@@ -16,7 +16,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 const int COLUMN_WIDTH = 10;
-const BOOL ENABLE_SHADOW = NO;
 const BOOL SHUFFLE_COLORS = NO;
 
 @interface PBGitRevisionCell (){
@@ -83,27 +82,22 @@ const BOOL SHUFFLE_COLORS = NO;
 	NSPoint source = NSMakePoint(origin.x + COLUMN_WIDTH * from, origin.y + offset);
 	NSPoint center = NSMakePoint( origin.x + COLUMN_WIDTH * to, origin.y + r.size.height * 0.5 + 0.5);
 
-	if (ENABLE_SHADOW)
-	{
-		[NSGraphicsContext saveGraphicsState];
-
-		NSShadow *shadow = [NSShadow new];
-		[shadow setShadowColor:[[self class] lineShadowColor]];
-		[shadow setShadowOffset:NSMakeSize(0.5f, -0.5f)];
-		[shadow set];
-	}
 	NSArray* colors = [PBGitRevisionCell laneColors];
 	[(NSColor*)[colors objectAtIndex: (c % [colors count])] set];
-	
-	NSBezierPath * path = [NSBezierPath bezierPath];
-	[path setLineWidth:2];
-	[path setLineCapStyle:NSRoundLineCapStyle];
-	[path moveToPoint: source];
-	[path lineToPoint: center];
-	[path stroke];
 
-	if (ENABLE_SHADOW) {
-		[NSGraphicsContext restoreGraphicsState];
+	if (from == to) {
+		// We're drawing a straight line, we can use NSRectFill as a fast path
+		CGFloat yOrigin = center.y > source.y ? source.y : center.y;
+		CGFloat height = center.y > source.y ? (center.y - source.y) : (source.y - center.y);
+
+		NSRectFill(NSMakeRect(source.x - 1, yOrigin, 2, height));
+	} else {
+		NSBezierPath * path = [NSBezierPath bezierPath];
+		[path setLineWidth:2];
+		[path setLineCapStyle:NSRoundLineCapStyle];
+		[path moveToPoint: source];
+		[path lineToPoint: center];
+		[path stroke];
 	}
 }
 
@@ -119,39 +113,52 @@ const BOOL SHUFFLE_COLORS = NO;
 
 - (void) drawCircleInRect: (NSRect) r
 {
+	const CGFloat outlineWidth = 1.4f;
+	static NSImage *circleImage;
+	static NSImage *currentCommitCircleImage;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		circleImage = [NSImage imageWithSize:NSMakeSize(10, 10) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+			NSBezierPath *path = [NSBezierPath bezierPathWithOvalInRect:dstRect];
+
+			[[NSColor blackColor] set];
+			[path fill];
+
+			NSRect smallOval = CGRectInset(dstRect, outlineWidth, outlineWidth);
+			NSBezierPath *smallPath = [NSBezierPath bezierPathWithOvalInRect:smallOval];
+
+			[[NSColor whiteColor] set];
+			[smallPath fill];
+
+			return YES;
+		}];
+
+		currentCommitCircleImage = [NSImage imageWithSize:NSMakeSize(10, 10) flipped:NO drawingHandler:^BOOL(NSRect dstRect) {
+			NSBezierPath *path = [NSBezierPath bezierPathWithOvalInRect:dstRect];
+
+			[[NSColor blackColor] set];
+			[path fill];
+
+			NSRect smallOval = CGRectInset(dstRect, outlineWidth, outlineWidth);
+			NSBezierPath *smallPath = [NSBezierPath bezierPathWithOvalInRect:smallOval];
+
+			[[NSColor colorWithCalibratedRed: 0Xfc/256.0 green:0Xa6/256.0 blue: 0X4f/256.0 alpha: 1.0] set];
+			[smallPath fill];
+
+			return YES;
+		}];
+	});
+
 	long c = cellInfo.position;
 	NSPoint origin = r.origin;
 	NSPoint columnOrigin = { origin.x + COLUMN_WIDTH * c, origin.y};
-
 	NSRect oval = { columnOrigin.x - 5, columnOrigin.y + r.size.height * 0.5 - 5, 10, 10};
 
-	NSBezierPath * path = [NSBezierPath bezierPathWithOvalInRect:oval];
-	if (ENABLE_SHADOW && false) {
-		[NSGraphicsContext saveGraphicsState];
-		NSShadow *shadow = [NSShadow new];
-		[shadow setShadowColor:[[self class] shadowColor]];
-		[shadow setShadowOffset:NSMakeSize(0.5f, -0.5f)];
-		[shadow setShadowBlurRadius:2.0f];
-		[shadow set];
-	}
-	[[NSColor blackColor] set];
-	[path fill];
-	if (ENABLE_SHADOW && false) {
-		[NSGraphicsContext restoreGraphicsState];
-	}
-
-	CGFloat outlineWidth = 1.4f;
-	NSRect smallOval = CGRectInset(oval, outlineWidth, outlineWidth);
-
-	if ( [self isCurrentCommit ] ) {
-		[[NSColor colorWithCalibratedRed: 0Xfc/256.0 green:0Xa6/256.0 blue: 0X4f/256.0 alpha: 1.0] set];
+	if ([self isCurrentCommit]) {
+		[currentCommitCircleImage drawInRect:oval];
 	} else {
-		[[NSColor whiteColor] set];
+		[circleImage drawInRect:oval];
 	}
-
-	NSBezierPath *smallPath = [NSBezierPath bezierPathWithOvalInRect:smallOval];
-	[smallPath fill];
-
 }
 
 - (void) drawTriangleInRect: (NSRect) r sign: (char) sign
@@ -257,21 +264,9 @@ const BOOL SHUFFLE_COLORS = NO;
 	NSMutableDictionary* attributes = [self attributesForRefLabel];
 	NSBezierPath *border = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:2 yRadius:2];
 	[[self colorForRef:ref] set];
-	
 
-	if (ENABLE_SHADOW) {
-		[NSGraphicsContext saveGraphicsState];
-
-		NSShadow *shadow = [NSShadow new];
-		[shadow setShadowColor:[NSColor grayColor]];//[[self class] shadowColor]];
-		[shadow setShadowOffset:NSMakeSize(0.5f, -0.5f)];
-		[shadow setShadowBlurRadius:2.0f];
-		[shadow set];
-	}
 	[border fill];
-	if (ENABLE_SHADOW) {
-		[NSGraphicsContext restoreGraphicsState];
-	}
+
 //	[[NSColor blackColor] set];
 //	[border stroke];
 	[[ref shortName] drawInRect:rect withAttributes:attributes];
