@@ -214,7 +214,11 @@
 		[numberOfMatchesField setStringValue:[self numberOfMatchesString]];
 		[numberOfMatchesField setHidden:NO];
 		[stepper setHidden:NO];
+		
+		// Preserve selection
+		NSIndexSet *selectedRowIndexes = historyController.commitList.selectedRowIndexes;
 		[historyController.commitList reloadData];
+		[historyController.commitList selectRowIndexes:selectedRowIndexes byExtendingSelection:NO];
 	}
 	[self clearProgressIndicator];
 }
