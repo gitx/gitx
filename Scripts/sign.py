@@ -10,6 +10,9 @@ import os
 import glob
 import stat
 
+class CodeSignError(RuntimeError):
+    pass
+
 def sign(target, key, verbose=0):
     print('Signing ' + os.path.basename(target))
     codesign = ['codesign', '--force', '--verify']
@@ -17,7 +20,9 @@ def sign(target, key, verbose=0):
         for i in range(verbose):
             codesign.append('--verbose')
     codesign = codesign + ['--sign', key]
-    subprocess.call(codesign + [target])
+    ret = subprocess.call(codesign + [target])
+    if ret != 0:
+        raise CodeSignError
 
 def sign_frameworks_in_app(app_path, key, verbose=0):
     frameworkDir = os.path.join(app_path, 'Contents/Frameworks')
