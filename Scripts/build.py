@@ -169,9 +169,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
 
-    parser_config = subparsers.add_parser('config')
-    parser_config.add_argument('config', choices=['debug', 'release'])
-    parser_config.set_defaults(func=clean)
+    parser_clean = subparsers.add_parser('clean')
+    parser_clean.add_argument('config', choices=['debug', 'release'])
+    parser_clean.set_defaults(func=clean)
 
     parser_build = subparsers.add_parser('build')
     parser_build.add_argument('config', choices=['debug', 'release'])
