@@ -34,35 +34,27 @@ build_base_dir = os.path.join(project_root, "build")
 class BuildError(RuntimeError):
     pass
 
-def clean(args):
-    clean_scheme(scheme, args.config)
-
-def release():
+def build(config):
     try:
-        assert_clean()
-        assert_branch(release_branch)
-        build_number = commit_count()
-        set_versions(base_version, build_number, "dev")
+        if config == "debug":
+            build_scheme(scheme, debug_config)
+        else:
+            assert_clean()
+            assert_branch(release_branch)
+            build_number = commit_count()
+            set_versions(base_version, build_number, "dev")
 
-        build_scheme(scheme, release_config)
+            build_scheme(scheme, release_config)
 
-        build_dir = os.path.join(build_base_dir, release_config)
-        built_product = os.path.join(build_dir, product)
-        sign_app(built_product)
+            build_dir = os.path.join(build_base_dir, release_config)
+            built_product = os.path.join(build_dir, product)
+            sign_app(built_product)
 
-        image_path = os.path.join(build_dir, "%s-%s.dmg" % (artifact_prefix, build_number))
-        image_name = "%s %s" % (app, build_number)
-        package_app(built_product, image_path, image_name)
+            image_path = os.path.join(build_dir, "%s-%s.dmg" % (artifact_prefix, build_number))
+            image_name = "%s %s" % (app, build_number)
+            package_app(built_product, image_path, image_name)
 
-        prepare_release(build_number, image_path)
-
-    except BuildError as e:
-        print("error: %s" % (str(e),))
-
-
-def debug():
-    try:
-        build_scheme(scheme, debug_config)
+            prepare_release(build_number, image_path)
 
     except BuildError as e:
         print("error: %s" % (str(e),))
@@ -95,14 +87,6 @@ def prepare_release(build_number, image_source_path):
     publish_release_notes_filebase, publish_release_notes_ext = os.path.splitext(publish_release_notes_file)
     publish_release_notes_version_file = "%s-%s%s" % (publish_release_notes_filebase, build_number, publish_release_notes_ext)
     shutil.copyfile(release_notes_file, publish_release_notes_version_file)
-
-
-def build(args):
-    if args.config == "debug":
-        debug()
-    if args.config == "release":
-        release()
-
 
 def assert_clean():
     0
@@ -161,6 +145,15 @@ def sign_app(app_path):
 def package_app(app_path, image_path, image_name):
     package.package(app_path, image_path, image_name)
 
+
+def clean_cmd(args):
+    clean_scheme(scheme, args.config)
+
+
+def build_cmd(args):
+    build(args.config)
+
+
 if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -169,11 +162,11 @@ if __name__ == "__main__":
 
     parser_clean = subparsers.add_parser('clean')
     parser_clean.add_argument('config', choices=['debug', 'release'])
-    parser_clean.set_defaults(func=clean)
+    parser_clean.set_defaults(func=clean_cmd)
 
     parser_build = subparsers.add_parser('build')
     parser_build.add_argument('config', choices=['debug', 'release'])
-    parser_build.set_defaults(func=build)
+    parser_build.set_defaults(func=build_cmd)
 
     args = parser.parse_args()
     args.func(args)
