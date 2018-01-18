@@ -29,8 +29,6 @@ release_notes_file = os.path.join(project_root, 'updates', 'GitX-dev.html')
 updates_signing_key_file = os.path.join(project_root, 'updates', 'gitx-updates.key')
 updates_appcast_file = 'GitX-dev.xml'
 
-pause = 3
-
 build_base_dir = os.path.join(project_root, "build")
 
 class BuildError(RuntimeError):
