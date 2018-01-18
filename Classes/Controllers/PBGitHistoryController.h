@@ -21,7 +21,7 @@
 @class GTOID;
 @class PBHistorySearchController;
 
-@interface PBGitHistoryController : PBViewController {
+@interface PBGitHistoryController : PBViewController <NSTableViewDelegate> {
 	IBOutlet NSArrayController *commitController;
 	IBOutlet NSTreeController *treeController;
 	IBOutlet PBWebHistoryController *webHistoryController;

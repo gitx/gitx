@@ -31,6 +31,7 @@
 #import "GitXCommitCopier.h"
 #import "NSSplitView+GitX.h"
 #import <Quartz/Quartz.h>
+#import "PBGitRevisionRow.h"
 
 
 #define kHistorySelectedDetailIndexKey @"PBHistorySelectedDetailIndex"
@@ -117,6 +118,20 @@
       // refresh if the .git repository is modified
       [self refresh:NULL];
     }
+}
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
+	NSTableRowView *view = [tableView rowViewAtRow:row makeIfNecessary:false];
+	
+	if (view) {
+		return view;
+	}
+	
+	PBGitRevisionRow *rowView = [PBGitRevisionRow new];
+	
+	rowView.controller = self;
+	
+	return rowView;
 }
 
 - (void) updateKeys
