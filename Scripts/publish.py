@@ -19,6 +19,9 @@ def generate_changelog(project):
         # If this is a normal "release", ignore all labelled tags
         released_tags = list(filter(lambda tag: "-" not in tag, released_tags))
 
+    # Also ignore our own "current tag"
+    released_tags = list(filter(lambda tag: tag != project.release_tag_name(), released_tags))
+
     last_released_tag = released_tags[-1]
     print "Using {} as the changelog baseline".format(last_released_tag)
 
