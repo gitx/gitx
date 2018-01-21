@@ -56,12 +56,13 @@ def tag_release(release_name, force=False):
     pass
 
 
-def publish_release(project, as_draft):
+def publish_release(project, as_prerelease, as_draft):
+    print("Publishing {}{}{}".format("draft of " if as_draft else "", project.release_name(), " as prerelease" if as_prerelease else ""))
     hub_release = ['hub', 'release',
         'create', project.release_tag_name(),
         '-a', project.image_path(),
         '-f', project.release_notes_file()]
-    if project.label() == "pre":
+    if as_prerelease:
         hub_release.append('-p')
     if as_draft:
         hub_release.append('-d')
@@ -95,8 +96,7 @@ def publish_cmd(args):
     print("Tagging \"{}\"".format(project.release_tag_name()))
     tag_release(project.release_tag_name())
 
-    print("Publishing {}".format(project.release_name()))
-    publish_release(project, args.draft)
+    publish_release(project, args.prerelease, args.draft)
 
 
 if __name__ == "__main__":
