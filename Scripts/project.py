@@ -90,15 +90,15 @@ class Project:
 
 
     def image_path(self):
-        return os.path.join(self.artifacts_dir(), "%s-%s.dmg" % (self.artifact_prefix(), self.build_number()))
+        return os.path.join(self.artifacts_dir(), "%s-%s.dmg" % (self.project_name(), self.labelled_build_version()))
 
 
     def image_name(self):
-        return "%s %s" % (self.project_name(), self.build_number())
+        return "%s %s" % (self.project_name(), self.labelled_build_version())
 
 
     def release_notes_file(self):
-        file_name = "%s-%s.markdown" % (self.artifact_prefix(), self.build_number())
+        file_name = "%s-%s.markdown" % (self.project_name(), self.labelled_build_version())
         return os.path.join(self.artifacts_dir(), file_name)
 
 
@@ -110,6 +110,8 @@ class Project:
         strings['build_number'] = self.build_number()
         
         tag = self.release_tag_prefix() + Template(self.release_tag_format()).substitute(strings)
+        if self.__label:
+            tag += '-' + self.__label
         return tag
 
 
