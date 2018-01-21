@@ -43,10 +43,9 @@ def generate_release_notes(project):
     artifact_signature = helpers.sign_file(project.image_path(), project.update_signing_keyfile())
 
     attrs = dict()
-    attrs['app'] = project.artifact_prefix()
-    attrs['version'] = project.build_number()
+    attrs['version'] = project.build_version()
     attrs['changelog'] = generate_changelog(project)
-    attrs['signature'] = "" if artifact_signature == None else "Signature: %s" % (artifact_signature)
+    attrs['signature'] = "" if artifact_signature == None else "DMG Signature: %s" % (artifact_signature)
 
     template_source = open(project.release_notes_tmpl(), 'r').read()
     release_notes_text = Template(template_source).substitute(attrs)
