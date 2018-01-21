@@ -3,5 +3,6 @@
     "base_version": "0.16",
     "release_branch": "master",
     "codesign_identity": "",
-    "update_signing_key": ""
+    "update_signing_key": "",
+    "release_tag_format": "$build_version"
 }

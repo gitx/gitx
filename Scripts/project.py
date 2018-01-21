@@ -2,6 +2,7 @@
 
 import json
 import os
+from string import Template
 
 import helpers
 
@@ -25,6 +26,7 @@ class Project:
         self.settings['build_base_dir'] = os.path.join(project_root, "build")
         self.settings['build_product_name'] = "%s.app" % (project_name)
         self.settings['artifacts_dir'] = os.path.join(project_root, "release")
+        self.settings['release_tag_prefix'] = ""
 
         self.settings.update(project_settings)
 
@@ -101,7 +103,14 @@ class Project:
 
 
     def release_tag_name(self):
-        return 'builds/%s/%s' % (self.base_version(), self.build_number())
+        strings = {}
+        strings.update(self.settings)
+        # FIXME: those are method only, and this is already too messy
+        strings['build_version'] = self.build_version()
+        strings['build_number'] = self.build_number()
+        
+        tag = self.release_tag_prefix() + Template(self.release_tag_format()).substitute(strings)
+        return tag
 
 
     def release_name(self):
