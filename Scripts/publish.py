@@ -3,6 +3,7 @@
 import argparse
 import subprocess
 import os
+from string import Template
 
 import helpers
 from project import Project
@@ -11,15 +12,33 @@ from package import package
 import sign
 
 
-def generate_release_notes(project):
-    from string import Template
+def generate_changelog(project):
+    tag_format = project.release_tag_prefix() + "*"
+    released_tags = helpers.check_string_output(["git", "tag", "-l", tag_format, '--sort', 'v:tag'])
+    print released_tags
+    last_released_tag = released_tags.split("\n")[-2]
 
+    revspec = "%s..%s" % (last_released_tag, project.release_branch())
+    git_log = helpers.check_string_output(['git', 'log', revspec,
+        '--format=- %h %<(100,trunc)%s',
+        '--grep', 'Fix',
+        '--grep', 'Merge pull request'
+    ])
+
+    # We have to trim each line because of %< above
+    changelog = str.join("\n", list(map(lambda line: line.strip(), git_log.split("\n"))))
+
+    return changelog
+
+
+
+def generate_release_notes(project):
     artifact_signature = helpers.sign_file(project.image_path(), project.update_signing_keyfile())
 
     attrs = dict()
     attrs['app'] = project.artifact_prefix()
     attrs['version'] = project.build_number()
-    attrs['changelog'] = ""
+    attrs['changelog'] = generate_changelog(project)
     attrs['signature'] = "" if artifact_signature == None else "Signature: %s" % (artifact_signature)
 
     template_source = open(project.release_notes_tmpl(), 'r').read()
