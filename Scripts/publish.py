@@ -29,8 +29,11 @@ def generate_release_notes(project):
         release_notes_file.write(release_notes_text)
 
 
-def tag_release(project):
-    # subprocess.check_call(['git', 'tag', project.release_tag_name()])
+def tag_release(release_name, force=False):
+    tag = ['git', 'tag', release_name]
+    if force:
+        tag.append('-f')
+    subprocess.check_call(tag)
     pass
 
 
@@ -71,7 +74,7 @@ def publish_cmd(args):
     generate_release_notes(project)
 
     print("Tagging \"{}\"".format(project.release_tag_name()))
-    tag_release(project)
+    tag_release(project.release_tag_name())
 
     print("Publishing {}".format(project.release_name()))
     publish_release(project, args.draft)
