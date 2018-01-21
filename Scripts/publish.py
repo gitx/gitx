@@ -94,7 +94,7 @@ def publish_cmd(args):
     generate_release_notes(project)
 
     print("Tagging \"{}\"".format(project.release_tag_name()))
-    tag_release(project.release_tag_name())
+    tag_release(project.release_tag_name(), args.force)
 
     publish_release(project, args.prerelease, args.draft)
 
@@ -103,6 +103,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--prerelease', action='store_true')
     parser.add_argument('-d', '--draft', action='store_true')
+    parser.add_argument('-f', '--force', action='store_true')
     parser.set_defaults(func=publish_cmd)
 
     args = parser.parse_args()
