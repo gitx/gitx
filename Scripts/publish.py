@@ -60,7 +60,7 @@ def tag_release(release_name, force=False):
     pass
 
 
-def publish_release(project, as_prerelease, as_draft):
+def publish_release(project, as_prerelease, as_draft, dry_run):
     print("Publishing {}{}{}".format("draft of " if as_draft else "", project.release_name(), " as prerelease" if as_prerelease else ""))
     hub_release = ['hub', 'release',
         'create', project.release_tag_name(),
@@ -71,8 +71,10 @@ def publish_release(project, as_prerelease, as_draft):
     if as_draft:
         hub_release.append('-d')
 
-    print("hub: {}".format(hub_release))
-    # subprocess.check_call(hub_release)
+    if dry_run:
+        print "dry-run: {}".format(hub_release)
+    else:
+        subprocess.check_call(hub_release)
  
 
 def publish_cmd(args):
@@ -100,7 +102,7 @@ def publish_cmd(args):
     print("Tagging \"{}\"".format(project.release_tag_name()))
     tag_release(project.release_tag_name(), args.force)
 
-    publish_release(project, args.prerelease, args.draft)
+    publish_release(project, args.prerelease, args.draft, args.dry_run)
 
 
 if __name__ == "__main__":
@@ -108,6 +110,7 @@ if __name__ == "__main__":
     parser.add_argument('-p', '--prerelease', action='store_true')
     parser.add_argument('-d', '--draft', action='store_true')
     parser.add_argument('-f', '--force', action='store_true')
+    parser.add_argument('-n', '--dry-run', action='store_true')
     parser.set_defaults(func=publish_cmd)
 
     args = parser.parse_args()
