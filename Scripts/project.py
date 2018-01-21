@@ -11,6 +11,7 @@ class Project:
     def __init__(self,  project_root, config, label=None):
         self.__label = label
         self.__config = config
+        self.__build_number = None
         self.settings = {}
 
         updates_dir = os.path.join(project_root, 'updates')
@@ -60,7 +61,13 @@ class Project:
 
 
     def build_number(self):
-        return helpers.check_string_output(["git", "rev-list", "HEAD", "--count"])
+        # We stash the value because if everything goes fine, we'll make a
+        # release commit and change the build number
+        if self.__build_number == None:
+            self.__build_number = helpers.check_string_output(["git", "rev-list", "HEAD", "--count"])
+
+        return self.__build_number
+
 
 
     def build_version(self):

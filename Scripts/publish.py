@@ -54,6 +54,23 @@ def generate_release_notes(project):
         release_notes_file.write(release_notes_text)
 
 
+def commit_release(project):
+    add = ['git', 'add']
+    add += [
+        "GitX.xcodeproj/project.pbxproj",
+        "Resources/Info-gitx.plist",
+        "Resources/Info.plist",
+    ]
+    subprocess.check_call(add)
+
+    commit_msg = "Release {}".format(project.labelled_build_version())
+    commit = ['git', 'commit', '-m', commit_msg]
+    subprocess.check_call(commit)
+
+    helpers.assert_clean()
+
+
+
 def tag_release(release_name, force=False):
     tag = ['git', 'tag', release_name]
     if force:
@@ -101,7 +118,9 @@ def publish_cmd(args):
     print("Generating release notes...")
     generate_release_notes(project)
 
-    print("Tagging \"{}\"".format(project.release_tag_name()))
+
+    print("Committing and tagging \"{}\"".format(project.release_tag_name()))
+    commit_release(project)
     tag_release(project.release_tag_name(), args.force)
 
     publish_release(project, args.prerelease, args.draft, args.dry_run)
