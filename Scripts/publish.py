@@ -14,9 +14,13 @@ import sign
 
 def generate_changelog(project):
     tag_format = project.release_tag_prefix() + "*"
-    released_tags = helpers.check_string_output(["git", "tag", "-l", tag_format, '--sort', 'v:tag'])
-    print released_tags
-    last_released_tag = released_tags.split("\n")[-2]
+    released_tags = helpers.check_string_output(["git", "tag", "-l", tag_format, '--sort', 'v:tag']).split("\n")
+    if project.label() == None:
+        # If this is a normal "release", ignore all labelled tags
+        released_tags = list(filter(lambda tag: "-" not in tag, released_tags))
+
+    last_released_tag = released_tags[-1]
+    print "Using {} as the changelog baseline".format(last_released_tag)
 
     revspec = "%s..%s" % (last_released_tag, project.release_branch())
     git_log = helpers.check_string_output(['git', 'log', revspec,
