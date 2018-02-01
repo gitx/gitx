@@ -175,9 +175,13 @@ var loadCommit = function(commitObject, currentRef) {
 		$("committerDate").parentNode.style.display = "none";
 	}
 
+    var cveBaseURL = "https://cve.mitre.org/cgi-bin/cvename.cgi?name="
+    var awsBulletinsURL = "https://aws.amazon.com/security/security-bulletins/"
     var textToHTML = function (txt) {
         return (" "+txt+" ")
             .replace(/(https?:\/\/([^\s\.\)\]\<]+|\.[^\s])+)/ig, "<a href=\"$1\">$1</a>")
+            .replace(/(\s)(CVE-\d{4}-\d+)\b/ig, "$1<a href=\""+cveBaseURL+"$2\">$2</a>")
+            .replace(/(\s)(AWS-\d{4}-\d+)\b/ig, "$1<a href=\""+awsBulletinsURL+"$2\">$2</a>")
             .replace(/\n/g,"<br>")
             .trim();
     }
