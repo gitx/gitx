@@ -175,15 +175,35 @@ var loadCommit = function(commitObject, currentRef) {
 		$("committerDate").parentNode.style.display = "none";
 	}
 
-    var cveBaseURL = "https://cve.mitre.org/cgi-bin/cvename.cgi?name="
-    var awsBulletinsURL = "https://aws.amazon.com/security/security-bulletins/"
+    var markup = {
+        "CVE":{regex: "(\\s)(CVE-\\d{4}-\\d+)\\b", substitution: "$1<a href=\"https://cve.mitre.org/cgi-bin/cvename.cgi?name=$2\">$2</a>"},
+        "AWS":{regex: "(\\s)(AWS-\\d{4}-\\d+)\\b", substitution: "$1<a href=\"https://aws.amazon.com/security/security-bulletins/$2/\">$2</a>"},
+    };
+    /*
+    markup can be extended via git config:
+    
+    [gitx.markup "CVE"]
+        regex = "(\\s)(CVE-\\d{4}-\\d+)\\b"
+        substitution = "$1<a href=\"https://cve.mitre.org/cgi-bin/cvename.cgi?name=$2\">$2</a>"
+    
+    */
+    Controller.getConfigKeys().forEach(s => {
+        var [key,name,attr]=s.match(/^gitx\.markup\.([^\.]+)\.(regex|substitution)$/)||[];
+        if (key) {
+            if (!markup[name]) markup[name] = {};
+            markup[name][attr] = Controller.getConfig_(key);
+        }
+    });
     var textToHTML = function (txt) {
-        return (" "+txt+" ")
-            .replace(/(https?:\/\/([^\s\.\)\]\<]+|\.[^\s])+)/ig, "<a href=\"$1\">$1</a>")
-            .replace(/(\s)(CVE-\d{4}-\d+)\b/ig, "$1<a href=\""+cveBaseURL+"$2\">$2</a>")
-            .replace(/(\s)(AWS-\d{4}-\d+)\b/ig, "$1<a href=\""+awsBulletinsURL+"$2\">$2</a>")
-            .replace(/\n/g,"<br>")
-            .trim();
+        txt = (" "+txt+" ").replace(/(https?:\/\/([^\s\.\)\]\<]+|\.[^\s])+)/ig, "<a href=\"$1\">$1</a>")
+        for (var name in markup) if (markup.hasOwnProperty(name) && markup[name].regex && markup[name].substitution) {
+            try {
+                txt = txt.replace(new RegExp(markup[name].regex, "g"), markup[name].substitution);
+            } catch (e) {
+                console.log("Regex Error in gitx.markup."+name+".regex", e)
+            }
+        }
+        return txt.replace(/\n/g,"<br>").trim();
     }
 
     $("message").innerHTML = textToHTML(commit.message);

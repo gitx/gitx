@@ -328,6 +328,13 @@ contextMenuItemsForElement:(NSDictionary *)element
 	return [config stringForKey:key];
 }
 
+- getConfigKeys
+{
+	NSError *error = nil;
+	GTConfiguration* config = [historyController.repository.gtRepo configurationWithError:&error];
+	return [config configurationKeys];
+}
+
 
 - (void) preferencesChanged
 {
