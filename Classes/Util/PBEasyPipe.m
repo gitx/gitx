@@ -59,8 +59,6 @@ NSString *const PBEasyPipeUnderlyingExceptionKey = @"PBEasyPipeUnderlyingExcepti
 	NSParameterAssert(command != nil);
 
 	NSTask *task = [self taskForCommand:command arguments:arguments inDirectory:directory];
-	NSPipe *pipe = task.standardOutput;
-	pipe.dataOutput = [NSMutableData data];
 
 	task.terminationHandler = ^(NSTask *task) {
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -94,9 +92,10 @@ NSString *const PBEasyPipeUnderlyingExceptionKey = @"PBEasyPipeUnderlyingExcepti
 			return;
 		}
 
-		[pipe clear];
+		NSFileHandle * read = [pipe fileHandleForReading];
+		NSData * dataRead = [read readDataToEndOfFile];
 
-		completionHandler(task, pipe.dataOutput, nil);
+		completionHandler(task, dataRead, nil);
 	}];
 }
 
