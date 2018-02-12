@@ -503,7 +503,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 	[self postIndexUpdated];
 }
 
-- (BOOL)applyPatch:(NSString *)hunk stage:(BOOL)stage reverse:(BOOL)reverse;
+- (BOOL)applyPatch:(NSString *)hunk forFile:(PBChangedFile *)file stage:(BOOL)stage reverse:(BOOL)reverse;
 {
 	NSMutableArray *array = [NSMutableArray arrayWithObjects:@"apply", @"--unidiff-zero", nil];
 	if (stage)
@@ -521,8 +521,24 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 		return NO;
 	}
 
-	// TODO: Try to be smarter about what to refresh
-	[self refresh];
+	// Get the status for the updated file and update the index
+	BOOL success = NO;
+	GTFileStatusFlags status = [[[self repository] gtRepo] statusForFile:[file path] success:&success error:NULL];
+
+	if (success) {
+		// Search for file in [self files]
+		// file is probably a member of [self files], but let's not assume that to be safe
+		for (PBChangedFile *nextFile in [self files]) {
+			if (nextFile == file || [[nextFile path] isEqualToString:[file path]]) {
+				[nextFile setHasUnstagedChanges:(status & GTFileStatusModifiedInWorktree) != 0];
+				[nextFile setHasStagedChanges:(status & GTFileStatusModifiedInIndex) != 0];
+
+				[self postIndexUpdated];
+				break;
+			}
+		}
+	}
+
 	return YES;
 }
 
