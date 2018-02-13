@@ -176,19 +176,26 @@ var loadCommit = function(commitObject, currentRef) {
 	}
 
     var markup = {
-        "CVE":{regex: "(\\s)(CVE-\\d{4}-\\d+)\\b", substitution: "$1<a href=\"https://cve.mitre.org/cgi-bin/cvename.cgi?name=$2\">$2</a>"},
-        "AWS":{regex: "(\\s)(AWS-\\d{4}-\\d+)\\b", substitution: "$1<a href=\"https://aws.amazon.com/security/security-bulletins/$2/\">$2</a>"},
+        // "CVE":{regex: "(\\s)(CVE-\\d{4}-\\d+)\\b", "html-substitution": "$1<a href=\"https://cve.mitre.org/cgi-bin/cvename.cgi?name=$2\">$2</a>"},
+        "CVE":{pattern: "(CVE-\\d{4}-\\d+)", href: "https://cve.mitre.org/cgi-bin/cvename.cgi?name=$1"},
+        "AWS":{pattern: "(AWS-\\d{4}-\\d+)", href: "https://aws.amazon.com/security/security-bulletins/$1/"},
     };
     /*
     markup can be extended via git config:
     
     [gitx.markup "CVE"]
         regex = "(\\s)(CVE-\\d{4}-\\d+)\\b"
-        substitution = "$1<a href=\"https://cve.mitre.org/cgi-bin/cvename.cgi?name=$2\">$2</a>"
-    
+        html-substitution = "$1<a href=\"https://cve.mitre.org/cgi-bin/cvename.cgi?name=$2\">$2</a>"
+     
+    ...OR...
+     
+    [gitx.markup "CVE"]
+        pattern = "(CVE-\\d{4}-\\d+)"
+        href = "https://cve.mitre.org/cgi-bin/cvename.cgi?name=$1"
+     
     */
     Controller.getConfigKeys().forEach(s => {
-        var [key,name,attr]=s.match(/^gitx\.markup\.([^\.]+)\.(regex|substitution)$/)||[];
+        var [key,name,attr]=s.match(/^gitx\.markup\.([^\.]+)\.(regex|html-substitution|pattern|href)$/)||[];
         if (key) {
             if (!markup[name]) markup[name] = {};
             markup[name][attr] = Controller.getConfig_(key);
@@ -196,11 +203,22 @@ var loadCommit = function(commitObject, currentRef) {
     });
     var textToHTML = function (txt) {
         txt = (" "+txt+" ").replace(/(https?:\/\/([^\s\.\)\]\<]+|\.[^\s])+)/ig, "<a href=\"$1\">$1</a>")
-        for (var name in markup) if (markup.hasOwnProperty(name) && markup[name].regex && markup[name].substitution) {
-            try {
-                txt = txt.replace(new RegExp(markup[name].regex, "g"), markup[name].substitution);
-            } catch (e) {
-                console.log("Regex Error in gitx.markup."+name+".regex", e)
+        for (var name in markup) if (markup.hasOwnProperty(name)) {
+            var m = markup[name];
+            if (m.regex && m['html-substitution']) {
+                try {
+                    txt = txt.replace(new RegExp(m.regex, "g"), m['html-substitution']);
+                } catch (e) {
+                    console.log("Regex Error in gitx.markup."+name+".regex", e)
+                }
+            } else if (m.pattern && m.href) {
+                try {
+                    // turn "$1" to "$3", as we wrap the pattern in a regex that adds 2 capture groups
+                    var href = m.href.replace(/\\.|(\$)(\d)/g, (m,a,b) => a ? a+((Number)(b)+2) : m);
+                    txt = txt.replace(new RegExp("(\\s)(" + m.pattern + ")\\b", "g"), "$1<a href=\""+href+"\">$2</a>");
+                } catch (e) {
+                    console.log("Regex Error in gitx.markup."+name+".pattern", e)
+                }
             }
         }
         return txt.replace(/\n/g,"<br>").trim();
