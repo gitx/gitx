@@ -526,16 +526,20 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 	GTFileStatusFlags status = [[[self repository] gtRepo] statusForFile:[file path] success:&success error:NULL];
 
 	if (success) {
-		// Search for file in [self files]
-		// file is probably a member of [self files], but let's not assume that to be safe
-		for (PBChangedFile *nextFile in [self files]) {
-			if (nextFile == file || [[nextFile path] isEqualToString:[file path]]) {
-				[nextFile setHasUnstagedChanges:(status & GTFileStatusModifiedInWorktree) != 0];
-				[nextFile setHasStagedChanges:(status & GTFileStatusModifiedInIndex) != 0];
+		// Search for file in self.files
+		// file is probably a member of self.files, but let's not assume that to be safe
+		NSUInteger index = [self.files indexOfObjectPassingTest:^BOOL(PBChangedFile *_Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
+			return obj == file || [[obj path] isEqualToString:[file path]];
+		}];
 
-				[self postIndexUpdated];
-				break;
-			}
+		if (index != NSNotFound) {
+			PBChangedFile *fileToUpdate = self.files[index];
+
+			// Update the file in the index so that it reflects its new status after staging or unstaging a patch
+			[fileToUpdate setHasUnstagedChanges:(status & GTFileStatusModifiedInWorktree) != 0];
+			[fileToUpdate setHasStagedChanges:(status & GTFileStatusModifiedInIndex) != 0];
+
+			[self postIndexUpdated];
 		}
 	}
 
