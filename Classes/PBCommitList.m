@@ -120,66 +120,36 @@
 }
 
 
+#pragma mark Menu
+
+- (NSMenu *)menuForEvent:(NSEvent *)event
+{
+	[super menuForEvent:event];
+	NSInteger index = self.clickedRow;
+
+	NSInteger column = [self columnWithIdentifier:@"SubjectColumn"];
+	PBGitRevisionCell *cell = [self viewAtColumn:column row:index makeIfNecessary:NO];
+	PBGitCommit *commit = cell.objectValue;
+
+	NSArray <PBGitCommit*>* selectedCommits = controller.selectedCommits;
+	NSArray <NSMenuItem *>* items;
+
+	if ([selectedCommits containsObject:commit]) {
+		items = [contextMenuDelegate menuItemsForCommits:controller.selectedCommits];
+	} else {
+		items = [contextMenuDelegate menuItemsForCommits:@[commit]];
+	}
+
+	NSMenu *menu = [[NSMenu alloc] init];
+	[menu setAutoenablesItems:NO];
+	for (NSMenuItem *item in items)
+		[menu addItem:item];
+
+	return menu;
+}
+
+
 #pragma mark Row highlighting
-
-- (NSColor *)searchResultHighlightColorForRow:(NSInteger)rowIndex
-{
-	// if the row is selected use default colors
-	if ([self isRowSelected:rowIndex]) {
-		if ([[self window] isKeyWindow]) {
-			if ([[self window] firstResponder] == self) {
-				return [NSColor alternateSelectedControlColor];
-			}
-			return [NSColor selectedControlColor];
-		}
-		return [NSColor secondarySelectedControlColor];
-	}
-
-	// light blue color highlighting search results
-	return [NSColor colorWithCalibratedRed:0.751f green:0.831f blue:0.943f alpha:0.800f];
-}
-
-- (NSColor *)searchResultHighlightStrokeColorForRow:(NSInteger)rowIndex
-{
-	if ([self isRowSelected:rowIndex])
-		return [NSColor colorWithCalibratedWhite:0.0f alpha:0.30f];
-
-	return [NSColor colorWithCalibratedWhite:0.0f alpha:0.05f];
-}
-
-- (void)drawRow:(NSInteger)rowIndex clipRect:(NSRect)tableViewClipRect
-{
-	NSRect rowRect = [self rectOfRow:rowIndex];
-	BOOL isRowVisible = NSIntersectsRect(rowRect, tableViewClipRect);
-
-	// draw special highlighting if the row is part of search results
-	if (isRowVisible && [searchController isRowInSearchResults:rowIndex]) {
-		NSRect highlightRect = NSInsetRect(rowRect, 1.0f, 1.0f);
-		CGFloat radius = highlightRect.size.height / 2.0f;
-
-		NSBezierPath *highlightPath = [NSBezierPath bezierPathWithRoundedRect:highlightRect xRadius:radius yRadius:radius];
-
-		[[self searchResultHighlightColorForRow:rowIndex] set];
-		[highlightPath fill];
-
-		[[self searchResultHighlightStrokeColorForRow:rowIndex] set];
-		[highlightPath stroke];
-	}
-
-	// draws the content inside the row
-	[super drawRow:rowIndex clipRect:tableViewClipRect];
-}
-
-- (void)highlightSelectionInClipRect:(NSRect)tableViewClipRect
-{
-	// disable highlighting if the selected row is part of search results
-	// instead do the highlighting in drawRow:clipRect: above
-	if ([searchController isRowInSearchResults:[self selectedRow]])
-		return;
-
-	[super highlightSelectionInClipRect:tableViewClipRect];
-}
-
 
 - (IBAction)performFindPanelAction:(id)sender
 {

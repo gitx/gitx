@@ -31,6 +31,7 @@
 #import "GitXCommitCopier.h"
 #import "NSSplitView+GitX.h"
 #import <Quartz/Quartz.h>
+#import "PBGitRevisionRow.h"
 
 
 #define kHistorySelectedDetailIndexKey @"PBHistorySelectedDetailIndex"
@@ -53,8 +54,9 @@
 @synthesize treeController;
 @synthesize selectedCommits;
 
-- (void)awakeFromNib
-{
+- (void)loadView {
+	[super loadView];
+
 	[historySplitView pb_restoreAutosavedPositions];
 
 	self.selectedCommitDetailsIndex = [[NSUserDefaults standardUserDefaults] integerForKey:kHistorySelectedDetailIndexKey];
@@ -95,7 +97,7 @@
 	[[commitList headerView] setMenu:[self tableColumnMenu]];
 
 	[upperToolbarView setTopShade:237/255.0f bottomShade:216/255.0f];
-	[scopeBarView setTopColor:[NSColor colorWithCalibratedHue:0.579 saturation:0.068 brightness:0.898 alpha:1.000] 
+	[scopeBarView setTopColor:[NSColor colorWithCalibratedHue:0.579 saturation:0.068 brightness:0.898 alpha:1.000]
 				  bottomColor:[NSColor colorWithCalibratedHue:0.579 saturation:0.119 brightness:0.765 alpha:1.000]];
 	[self updateBranchFilterMatrix];
 
@@ -116,6 +118,20 @@
       // refresh if the .git repository is modified
       [self refresh:NULL];
     }
+}
+
+- (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
+	NSTableRowView *view = [tableView rowViewAtRow:row makeIfNecessary:false];
+
+	if (view) {
+		return view;
+	}
+
+	PBGitRevisionRow *rowView = [PBGitRevisionRow new];
+
+	rowView.controller = self;
+
+	return rowView;
 }
 
 - (void) updateKeys

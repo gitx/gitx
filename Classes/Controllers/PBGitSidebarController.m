@@ -11,13 +11,15 @@
 #import "PBGitHistoryController.h"
 #import "PBGitCommitController.h"
 #import "PBRefController.h"
-#import "PBSourceViewCell.h"
 #import "NSOutlineViewExt.h"
 #import "PBAddRemoteSheet.h"
 #import "PBGitDefaults.h"
 #import "PBHistorySearchController.h"
 #import "PBGitStash.h"
 #import "PBGitSVStashItem.h"
+#import "PBSidebarTableViewCell.h"
+
+#define PBSidebarCellIdentifier @"PBSidebarCellIdentifier"
 
 @interface PBGitSidebarController ()
 
@@ -51,6 +53,8 @@
 	[super awakeFromNib];
 	window.contentView = self.view;
 	[self populateList];
+
+	self.sourceView.wantsLayer = NO;
 
 	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
@@ -278,10 +282,14 @@
 	return [item isGroupItem];
 }
 
-- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(PBSourceViewCell *)cell forTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem *)item
-{
+- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem*)item {
+	PBSidebarTableViewCell *cell = [outlineView makeViewWithIdentifier:PBSidebarCellIdentifier owner:outlineView];
+	
+	cell.textField.stringValue = [[item title] copy];
+	cell.imageView.image = item.icon;
 	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
-	[cell setImage:[item icon]];
+	
+	return cell;
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item

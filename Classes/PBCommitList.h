@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "PBRefContextDelegate.h"
 #import <WebKit/WebView.h>
 
 @class PBGitHistoryController;
@@ -20,6 +21,7 @@ typedef void(^PBFindPanelActionBlock)(id sender);
 	__weak IBOutlet PBWebHistoryController *webController;
 	__weak IBOutlet PBGitHistoryController *controller;
 	__weak IBOutlet PBHistorySearchController *searchController;
+	__weak IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
 
     BOOL useAdjustScroll;
 	NSPoint mouseDownPoint;
