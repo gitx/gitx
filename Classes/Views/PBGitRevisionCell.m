@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 const int COLUMN_WIDTH = 10;
 const BOOL SHUFFLE_COLORS = NO;
 
-@interface PBGitRevisionCell (){
+@interface PBGitRevisionCell () {
 	CGFloat _leftMargin;
 }
 

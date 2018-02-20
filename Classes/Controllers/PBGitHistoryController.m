@@ -121,7 +121,7 @@
 }
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
-	NSTableRowView *view = [tableView rowViewAtRow:row makeIfNecessary:false];
+	NSTableRowView *view = [tableView rowViewAtRow:row makeIfNecessary:NO];
 	
 	if (view) {
 		return view;
