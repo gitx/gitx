@@ -69,7 +69,13 @@
 	if (!ref || !repo || !target) {
 		return nil;
 	}
-	
+
+	/* FIXME: this is a workaround so we don't show a non-working menu when
+	 * right-clicking the "actual" stash ref
+	 */
+	if ([ref.refishName isEqualToString:@"refs/stash"]) {
+		return nil;
+	}
     if (ref.isStash) {
         return [self defaultMenuItemsForStashRef:ref inRepository:repo target:target];
     }
