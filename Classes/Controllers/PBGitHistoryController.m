@@ -54,6 +54,14 @@
 @synthesize treeController;
 @synthesize selectedCommits;
 
+- (void)awakeFromNib
+{
+	/* FIXME: Be careful with this method: since PBGitRevisionRow & PBGitRevisionCell
+	 * have this controller in their outlets, this method is called *really* often
+	 * (vs. the expected *once*)
+	 */
+}
+
 - (void)loadView {
 	[super loadView];
 	
