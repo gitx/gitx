@@ -93,7 +93,7 @@
 	NSPoint location = mouseDownPoint;
 	NSInteger row = [self rowAtPoint:location];
 	NSInteger column = [self columnAtPoint:location];
-	PBGitRevisionCell *cell = (PBGitRevisionCell *)[self preparedCellAtColumn:column row:row];
+	PBGitRevisionCell *cell = (PBGitRevisionCell *)[self viewAtColumn:column row:row makeIfNecessary:NO];
 	NSRect cellFrame = [self frameOfCellAtColumn:column row:row];
 
 	int index = -1;

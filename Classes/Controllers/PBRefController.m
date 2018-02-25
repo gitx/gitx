@@ -365,7 +365,7 @@
 	NSInteger row = [tv rowAtPoint:location];
 	NSInteger column = [tv columnAtPoint:location];
 	
-	PBGitRevisionCell *cell = (PBGitRevisionCell *)[tv preparedCellAtColumn:column row:row];
+	PBGitRevisionCell *cell = (PBGitRevisionCell *)[tv viewAtColumn:column row:row makeIfNecessary:NO];
 	PBGitCommit *commit = [[commitController arrangedObjects] objectAtIndex:row];
 
 	int index = -1;
