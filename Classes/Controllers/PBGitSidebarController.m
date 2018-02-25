@@ -18,6 +18,7 @@
 #import "PBGitStash.h"
 #import "PBGitSVStashItem.h"
 #import "PBSidebarTableViewCell.h"
+#import "PBGitRef.h"
 
 #define PBSidebarCellIdentifier @"PBSidebarCellIdentifier"
 
