@@ -13,7 +13,7 @@ import stat
 class CodeSignError(RuntimeError):
     pass
 
-def sign(target, key, verbose=0):
+def sign(target, key, verbose=0, deep=False):
     print('Signing ' + os.path.basename(target))
     codesign = ['codesign', '--force', '--verify']
     if verbose:
@@ -24,9 +24,30 @@ def sign(target, key, verbose=0):
     if ret != 0:
         raise CodeSignError
 
+def sign_bins_in_app(path, key, verbose=0):
+    subdir = os.path.join(path, 'Contents/MacOS')
+    main_bin = None
+    for binary in glob.glob(subdir + '/*'):
+        if os.access(binary, os.X_OK):
+            # Signing must occur in hierarchical order.
+            # FIXME: Read the Info.plist instead of guessing the main binary's name.
+            if os.path.basename(binary) + '.app' == os.path.basename(path):
+                main_bin = binary
+            else:
+                sign(binary, key, verbose=verbose)
+    if main_bin is not None:
+        sign(main_bin, key, verbose=verbose)
+
+def sign_apps_in_framework(path, key, verbose=0):
+    subdir = os.path.join(path, 'Versions/Current/Resources')
+    for app in glob.glob(subdir + '/*.app'):
+        sign_bins_in_app(app, key, verbose=verbose)
+        sign(app, key, verbose=verbose)
+
 def sign_frameworks_in_app(app_path, key, verbose=0):
     frameworkDir = os.path.join(app_path, 'Contents/Frameworks')
     for framework in glob.glob(frameworkDir + '/*.framework'):
+        sign_apps_in_framework(framework, key, verbose)
         sign(framework, key, verbose=verbose)
 
 def sign_resources_in_app(app_path, key, verbose=0):
