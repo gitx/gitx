@@ -1,22 +1,18 @@
 #!/usr/bin/env python
 
 import subprocess
-from hashlib import sha1
 import base64
 
 class BuildError(RuntimeError):
     pass
 
 
-def sign_file(file, signing_key_file):
-    hash = sha1(file).digest()
-    signProc = subprocess.Popen(['openssl',
-                                 'dgst',
-                                 '-dss1',
-                                 '-sign',
-                                 signing_key_file],
-                                stdin=subprocess.PIPE,
+def sign_file(filename, signing_key_file):
+    hashProc = subprocess.Popen(['openssl', 'dgst', '-sha1', '-binary', filename],
                                 stdout=subprocess.PIPE)
+    hash = hashProc.communicate()[0]
+    signProc = subprocess.Popen(['openssl', 'dgst', '-dss1', '-sign', signing_key_file],
+                                stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     signProc.stdin.write(hash)
     binsig = signProc.communicate()[0]
     return base64.b64encode(binsig).decode()
