@@ -20,6 +20,7 @@
 #import "PBGitDefaults.h"
 #import "PBHistorySearchController.h"
 #import "PBGitRepositoryWatcher.h"
+#import "PBGitRevisionCell.h"
 #import "PBQLTextView.h"
 #import "GLFileView.h"
 #import "GitXCommitCopier.h"
@@ -85,6 +86,9 @@
 	[[commitList tableColumnWithIdentifier:@"SubjectColumn"] setSortDescriptorPrototype:[[NSSortDescriptor alloc] initWithKey:@"subject" ascending:YES]];
 	// Add a menu that allows a user to select which columns to view
 	[[commitList headerView] setMenu:[self tableColumnMenu]];
+	
+	[commitList setTarget:self];
+	[commitList setDoubleAction:@selector(didDoubleClickCommit:)];
 
 	[upperToolbarView setTopShade:237/255.0f bottomShade:216/255.0f];
 	[scopeBarView setTopColor:[NSColor colorWithCalibratedHue:0.579 saturation:0.068 brightness:0.898 alpha:1.000] 
@@ -626,6 +630,42 @@
 	}
 
 	return menuItems;
+}
+
+- (void)didDoubleClickCommit:(id)sender
+{
+	id refish = nil;
+	
+	// If they double-clicked the row with ref labels in we need to check if they clicked a ref label.
+	if ([commitList.tableColumns[commitList.clickedColumn].identifier isEqualToString:@"SubjectColumn"])
+	{
+		// Get the cell.
+		PBGitRevisionCell *cell = (PBGitRevisionCell*)[commitList preparedCellAtColumn:commitList.clickedColumn row:commitList.clickedRow];
+
+		// Get the click position relative to the cell.
+		NSEvent* event = [NSApp currentEvent];
+		NSPoint windowClickLoc = event.locationInWindow;
+		NSPoint tableClickLoc = [commitList convertPoint:windowClickLoc fromView:nil];
+		
+		CGFloat columnX = [commitList rectOfColumn:commitList.clickedColumn].origin.x;
+		CGFloat cellX = tableClickLoc.x - columnX;
+		
+		// IF they clicked a ref, get it.
+		int refIdx = [cell indexAtX:cellX];
+		if (refIdx >= 0)
+			refish = [cell.objectValue.refs objectAtIndex:refIdx];
+	}
+	
+	// If they didn't click a ref, get the commit for that row.
+	if (refish == nil)
+		refish = [commitController.arrangedObjects objectAtIndex:commitList.clickedRow];
+	
+	// Check out the commit or ref.
+	NSError *error = nil;
+	BOOL success = [repository checkoutRefish:refish error:&error];
+	if (!success) {
+		[self.windowController showErrorSheet:error];
+	}
 }
 
 #pragma mark -
