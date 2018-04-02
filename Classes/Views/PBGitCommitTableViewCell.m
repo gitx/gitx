@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 			self.textField.textColor = NSColor.labelColor;
 			break;
 	}
-	
+
 	[super setBackgroundStyle:backgroundStyle];
 }
 

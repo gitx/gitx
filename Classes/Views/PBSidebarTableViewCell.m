@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 	} else {
 		[checkedOutImageView setImage: nil];
 	}
-	
+
 	[checkedOutImageView setHidden: !_isCheckedOut];
 }
 

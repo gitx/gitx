@@ -751,7 +751,7 @@ IA
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                             <connections>
-                                <action selector="createBranch:" target="-2" id="335"/>
+                                <action selector="createBranch:" target="-1" id="ewF-3I-r7c"/>
                                 <binding destination="-2" name="enabled" keyPath="singleCommitSelected" id="Ens-Tw-TDc"/>
                             </connections>
                         </button>
@@ -763,7 +763,7 @@ IA
                                 <font key="font" metaFont="system"/>
                             </buttonCell>
                             <connections>
-                                <action selector="createTag:" target="-2" id="334"/>
+                                <action selector="createTag:" target="-1" id="qxl-dw-StB"/>
                                 <binding destination="-2" name="enabled" keyPath="singleCommitSelected" id="aQb-dV-d2k"/>
                             </connections>
                         </button>

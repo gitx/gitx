@@ -93,7 +93,7 @@
 	NSPoint location = mouseDownPoint;
 	NSInteger row = [self rowAtPoint:location];
 	NSInteger column = [self columnAtPoint:location];
-	PBGitRevisionCell *cell = (PBGitRevisionCell *)[self preparedCellAtColumn:column row:row];
+	PBGitRevisionCell *cell = (PBGitRevisionCell *)[self viewAtColumn:column row:row makeIfNecessary:NO];
 	NSRect cellFrame = [self frameOfCellAtColumn:column row:row];
 
 	int index = -1;
@@ -126,25 +126,31 @@
 {
 	[super menuForEvent:event];
 	NSInteger index = self.clickedRow;
-	
+
 	NSInteger column = [self columnWithIdentifier:@"SubjectColumn"];
 	PBGitRevisionCell *cell = [self viewAtColumn:column row:index makeIfNecessary:NO];
 	PBGitCommit *commit = cell.objectValue;
+
+	NSPoint point = [self.window.contentView convertPoint:[event locationInWindow] toView:cell];
+	int i = [cell indexAtX:point.x];
+	PBGitRef *clickedRef = (i >= 0 ? commit.refs[0] : nil);
 	
 	NSArray <PBGitCommit*>* selectedCommits = controller.selectedCommits;
 	NSArray <NSMenuItem *>* items;
-	
-	if ([selectedCommits containsObject:commit]) {
+
+	if (clickedRef) {
+		items = [contextMenuDelegate menuItemsForRef:clickedRef];
+	} else if ([selectedCommits containsObject:commit]) {
 		items = [contextMenuDelegate menuItemsForCommits:controller.selectedCommits];
 	} else {
 		items = [contextMenuDelegate menuItemsForCommits:@[commit]];
 	}
-	
+
 	NSMenu *menu = [[NSMenu alloc] init];
 	[menu setAutoenablesItems:NO];
 	for (NSMenuItem *item in items)
 		[menu addItem:item];
-	
+
 	return menu;
 }
 

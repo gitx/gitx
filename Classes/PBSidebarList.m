@@ -15,12 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSMenu *)menuForEvent:(NSEvent *)event
 {
 	[super menuForEvent:event];
-	
+
 	NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
 	NSInteger row = [self rowAtPoint:point];
-	
+
 	PBGitSidebarController *controller = (PBGitSidebarController*)[self delegate];
-	
+
 	return [controller menuForRow:row];
 }
 

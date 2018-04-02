@@ -78,7 +78,7 @@ const BOOL SHUFFLE_COLORS = NO;
 - (void) drawLineFromColumn: (int) from toColumn: (int) to inRect: (NSRect) r offset: (int) offset color: (int) c
 {
 	NSPoint origin = r.origin;
-	
+
 	NSPoint source = NSMakePoint(origin.x + COLUMN_WIDTH * from, origin.y + offset);
 	NSPoint center = NSMakePoint( origin.x + COLUMN_WIDTH * to, origin.y + r.size.height * 0.5 + 0.5);
 
@@ -197,12 +197,12 @@ const BOOL SHUFFLE_COLORS = NO;
 {
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] initWithCapacity:2];
 	NSMutableParagraphStyle* style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-	
+
 	[style setAlignment:NSCenterTextAlignment];
 	[attributes setObject:style forKey:NSParagraphStyleAttributeName];
-	
+
 	[attributes setObject:[NSFont systemFontOfSize:10] forKey:NSFontAttributeName];
-	
+
 	return attributes;
 }
 
@@ -222,37 +222,37 @@ const BOOL SHUFFLE_COLORS = NO;
 	} else if ([type isEqualToString:@"tag"]) {
 		return [NSColor colorWithCalibratedRed: 0Xfc/256.0 green:0Xed/256.0 blue: 0X6f/256.0 alpha: 1.0];
 	}
-	
+
 	return [NSColor yellowColor];
 }
 
 -(NSArray<NSValue *> *)rectsForRefsinRect:(NSRect) rect;
 {
 	NSMutableArray<NSValue *> *array = [NSMutableArray array];
-	
+
 	static const int ref_padding = 4;
 	static const int ref_spacing = 4;
-	
+
 	NSRect lastRect = rect;
 	lastRect.origin.x = round(lastRect.origin.x);
 	lastRect.origin.y = round(lastRect.origin.y);
-	
+
 	for (PBGitRef *ref in self.objectValue.refs) {
 		NSMutableDictionary* attributes = [self attributesForRefLabel];
 		NSSize textSize = [[ref shortName] sizeWithAttributes:attributes];
-		
+
 		NSRect newRect = lastRect;
 		newRect.size.width = textSize.width + ref_padding * 2;
 		newRect.size.height = textSize.height;
 		newRect.origin.y = rect.origin.y + (rect.size.height - newRect.size.height) / 2;
-		
+
 		if (NSContainsRect(rect, newRect)) {
 			[array addObject:[NSValue valueWithRect:newRect]];
 			lastRect = newRect;
 			lastRect.origin.x += (int)lastRect.size.width + ref_spacing;
 		}
 	}
-	
+
 	return array;
 }
 
@@ -260,7 +260,7 @@ const BOOL SHUFFLE_COLORS = NO;
 {
 	NSArray *refs = self.objectValue.refs;
 	PBGitRef *ref = [refs objectAtIndex:index];
-	
+
 	NSMutableDictionary* attributes = [self attributesForRefLabel];
 	NSBezierPath *border = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:2 yRadius:2];
 	[[self colorForRef:ref] set];
@@ -286,10 +286,10 @@ const BOOL SHUFFLE_COLORS = NO;
 }
 
 - (void)drawRect:(NSRect)dirtyRect
-{	
+{
 	NSRect rect = self.bounds;
 	cellInfo = [self.objectValue lineInfo];
-	
+
 	if (cellInfo && ![controller hasNonlinearPath]) {
 		float pathWidth = 10 + COLUMN_WIDTH * cellInfo.numColumns;
 
@@ -317,39 +317,39 @@ const BOOL SHUFFLE_COLORS = NO;
 
 - (void) setObjectValue: (PBGitCommit*)object {
 	[super setObjectValue:[NSValue valueWithNonretainedObject:object]];
-	
+
 	[self setNeedsDisplay:YES];
 	[self setNeedsLayout:YES];
 }
 
 - (void)layout {
 	[super layout];
-	
+
 	NSRect rect = self.bounds;
 	cellInfo = [self.objectValue lineInfo];
-	
+
 	if (cellInfo) {
 		float pathWidth = 10 + COLUMN_WIDTH * cellInfo.numColumns;
-		
+
 		NSRect ownRect;
 		NSDivideRect(rect, &ownRect, &rect, pathWidth, NSMinXEdge);
-		
+
 		NSArray <NSValue *>* rectValues = [self rectsForRefsinRect:rect];
-		
+
 		if (rectValues.count > 0) {
 			const CGFloat PADDING = 4;
 			NSRect lastRect = rectValues.lastObject.rectValue;
-			
+
 			rect.size.width -= lastRect.origin.x - rect.origin.x + lastRect.size.width - PADDING;
 			rect.origin.x    = lastRect.origin.x + lastRect.size.width + PADDING;
 		}
-		
+
 		NSRect frame = self.textField.frame;
-		
+
 		frame.origin.x = floor(rect.origin.x);
 		frame.origin.y = floor((self.bounds.size.height - frame.size.height) / 2) - 1;
 		frame.size.width = floor(self.bounds.size.width - frame.origin.x);
-		
+
 		self.textField.frame = frame;
 	}
 }

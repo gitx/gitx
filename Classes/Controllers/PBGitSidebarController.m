@@ -18,6 +18,7 @@
 #import "PBGitStash.h"
 #import "PBGitSVStashItem.h"
 #import "PBSidebarTableViewCell.h"
+#import "PBGitRef.h"
 
 #define PBSidebarCellIdentifier @"PBSidebarCellIdentifier"
 
@@ -55,7 +56,7 @@
 	[self populateList];
 
 	self.sourceView.wantsLayer = NO;
-	
+
 	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
 	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
 
@@ -232,7 +233,7 @@
 {
 	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:submoduleURL display:YES completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
 		if (error) {
-			[self.repository.windowController showErrorSheet:error];
+			[self.windowController showErrorSheet:error];
 		}
 	}];
 }
@@ -485,7 +486,7 @@ enum  {
 	NSInteger selectedSegment = [sender selectedSegment];
 
 	if (selectedSegment == kAddRemoteSegment) {
-		[[[PBAddRemoteSheet alloc] initWithWindowController:self.windowController] show];
+		[self tryToPerform:@selector(addRemote:) with:self];
 		return;
 	}
 
@@ -503,15 +504,14 @@ enum  {
 	if (!remoteRef)
 		return;
 
-	if (selectedSegment == kFetchSegment)
-		[repository beginFetchFromRemoteForRef:ref];
-	else if (selectedSegment == kPullSegment)
-		[repository beginPullFromRemote:remoteRef forRef:ref rebase:NO];
-	else if (selectedSegment == kPushSegment) {
-		if ([ref isRemote])
-			[historyViewController.refController showConfirmPushRefSheet:nil remote:remoteRef];
-		else if ([ref isBranch])
-			[historyViewController.refController showConfirmPushRefSheet:ref remote:remoteRef];
+	if (selectedSegment == kFetchSegment) {
+		[self.windowController performFetchForRef:ref];
+	} else if (selectedSegment == kPullSegment) {
+		[self.windowController performPullForBranch:ref remote:remoteRef rebase:NO];
+	} else if (selectedSegment == kPushSegment && ref.isRemote) {
+		[self.windowController performPushForBranch:nil toRemote:remoteRef];
+	} else if (selectedSegment == kPushSegment && ref.isBranch) {
+		[self.windowController performPushForBranch:ref toRemote:remoteRef];
 	}
 }
 
