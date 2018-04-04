@@ -100,7 +100,6 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if ([@"currentBranchChange" isEqualToString:(__bridge NSString*)context]) {
-		[sourceView reloadData];
 		[self selectCurrentBranch];
 		return;
 	}
@@ -165,8 +164,6 @@
 
 	PBSourceViewItem *item = [self addRevSpec:rev];
     if (item) {
-        [sourceView reloadData];
-	
         [sourceView PBExpandItem:item expandParents:YES];
         NSIndexSet *index = [NSIndexSet indexSetWithIndex:[sourceView rowForItem:item]];
 	
