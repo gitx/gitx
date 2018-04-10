@@ -891,6 +891,31 @@
 	return YES;
 }
 
+- (BOOL) resetSoftRefish:(id <PBGitRefish>)ref error:(NSError **)error
+{
+	if (!ref)
+		return NO;
+	
+	NSString *refName = [ref refishName];
+	
+	NSError *gitError = nil;
+	NSArray *arguments = @[@"reset", @"--soft", refName];
+	NSLog(@"Resetting to %@", refName);
+	
+	NSString *output = [self outputOfTaskWithArguments:arguments error:&gitError];
+	if (!output) {
+		NSString *title = @"Reset failed!";
+		NSString *message = [NSString stringWithFormat:@"There was an error resetting to %@ '%@'.", [ref refishType], [ref shortName]];
+		
+		return PBReturnError(error, title, message, gitError);
+	}
+	
+	[self reloadRefs];
+	[self readCurrentBranch];
+	return YES;
+}
+
+
 - (BOOL) rebaseBranch:(id <PBGitRefish>)branch onRefish:(id <PBGitRefish>)upstream error:(NSError **)error
 {
 	NSParameterAssert(upstream != nil);
