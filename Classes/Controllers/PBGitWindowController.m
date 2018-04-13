@@ -191,10 +191,12 @@
 	}
 	else
 	{
-		[[NSAlert alertWithError:error] beginSheetModalForWindow:[self window]
-												   modalDelegate:self
-												  didEndSelector:nil
-													 contextInfo:nil];
+		NSAlert *alert = [NSAlert alertWithError:error];
+
+		[alert beginSheetModalForWindow:self.window
+					  completionHandler:^(NSModalResponse returnCode) {
+
+					  }];
 	}
 }
 
@@ -516,11 +518,12 @@
 
 	NSString *ref_desc = [NSString stringWithFormat:@"%@ '%@'", [ref refishType], [ref shortName]];
 
-	NSAlert *alert = [NSAlert alertWithMessageText:[NSString stringWithFormat:@"Delete %@?", ref_desc]
-									 defaultButton:@"Delete"
-								   alternateButton:@"Cancel"
-									   otherButton:nil
-						 informativeTextWithFormat:@"Are you sure you want to remove the %@?", ref_desc];
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = [NSString stringWithFormat:@"Delete %@?", ref_desc];
+	alert.informativeText = [NSString stringWithFormat:@"Are you sure you want to remove the %@?", ref_desc];
+
+	[alert addButtonWithTitle:@"Delete"];
+	[alert addButtonWithTitle:@"Cancel"];
 	[alert setShowsSuppressionButton:YES];
 
 	[alert beginSheetModalForWindow:self.window
@@ -528,7 +531,7 @@
 					  if ([[alert suppressionButton] state] == NSOnState)
 						  [PBGitDefaults suppressDialogWarningForDialog:kDialogDeleteRef];
 
-					  if (returnCode == NSModalResponseOK) {
+					  if (returnCode == NSAlertFirstButtonReturn) {
 						  performDelete();
 					  }
 				  }];
