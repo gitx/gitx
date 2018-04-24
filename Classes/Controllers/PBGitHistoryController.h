@@ -77,12 +77,8 @@
 - (NSArray *)menuItemsForPaths:(NSArray *)paths;
 - (void)showCommitsFromTree:(id)sender;
 
-// Repository Methods
-- (IBAction) merge:(id)sender;
-- (IBAction) cherryPick:(id)sender;
-- (IBAction) rebase:(id)sender;
-
 // Find/Search methods
+- (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode;
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
 

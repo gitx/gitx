@@ -9,14 +9,22 @@
 #import <Cocoa/Cocoa.h>
 #import "PBHistorySearchMode.h"
 
-@class PBViewController, PBGitSidebarController, PBGitCommitController, PBGitRepository;
+@class PBViewController;
+@class PBGitSidebarController;
+@class PBGitCommitController;
+@class PBGitHistoryController;
+@class PBGitRepository;
 @class RJModalRepoSheet;
 @class PBGitRef;
+@class PBGitRepositoryDocument;
 
 @interface PBGitWindowController : NSWindowController<NSWindowDelegate> {
 	__weak PBViewController *contentController;
 
 	PBGitSidebarController *sidebarController;
+	PBGitHistoryController *_historyViewController;
+	PBGitCommitController *_commitViewController;
+
 	__weak IBOutlet NSView *sourceListControlsView;
 	__weak IBOutlet NSSplitView *splitView;
 	__weak IBOutlet NSView *sourceSplitView;
@@ -26,9 +34,13 @@
 	__weak IBOutlet NSProgressIndicator *progressIndicator;
 }
 
-@property (nonatomic, strong)  PBGitRepository *repository;
+@property (nonatomic, strong) PBGitRepository *repository;
+/* This is assign because that's what NSWindowController says :-S */
+@property (assign) PBGitRepositoryDocument *document;
+@property (readonly) PBGitHistoryController *historyViewController;
+@property (readonly) PBGitCommitController *commitViewController;
 
-- (id)initWithRepository:(PBGitRepository*)theRepository displayDefault:(BOOL)display;
+- (instancetype)init;
 
 - (void)changeContentController:(PBViewController *)controller;
 

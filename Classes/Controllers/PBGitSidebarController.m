@@ -37,8 +37,6 @@
 @synthesize remotes;
 @synthesize sourceView;
 @synthesize sourceListControlsView;
-@synthesize historyViewController;
-@synthesize commitViewController;
 
 - (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
 {
@@ -56,9 +54,6 @@
 	[self populateList];
 
 	self.sourceView.wantsLayer = NO;
-
-	historyViewController = [[PBGitHistoryController alloc] initWithRepository:repository superController:superController];
-	commitViewController = [[PBGitCommitController alloc] initWithRepository:repository superController:superController];
 
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
 	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
@@ -87,9 +82,6 @@
 
 - (void)closeView
 {
-	[historyViewController closeView];
-	[commitViewController closeView];
-
 	[repository removeObserver:self forKeyPath:@"currentBranch"];
 	[repository removeObserver:self forKeyPath:@"branches"];
 	[repository removeObserver:self forKeyPath:@"stashes"];
@@ -216,11 +208,6 @@
 	[sourceView reloadData];
 }
 
-- (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode
-{
-	[historyViewController.searchController setHistorySearch:searchString mode:mode];
-}
-
 - (void) openSubmoduleFromMenuItem:(NSMenuItem *)menuItem
 {
     [self openSubmoduleAtURL:[menuItem representedObject]];
@@ -245,12 +232,12 @@
 	if ([item revSpecifier]) {
 		if (![repository.currentBranch isEqual:[item revSpecifier]])
 			repository.currentBranch = [item revSpecifier];
-		[superController changeContentController:historyViewController];
+		[superController changeContentController:superController.historyViewController];
 		[PBGitDefaults setShowStageView:NO];
 	}
 
 	if (item == stage) {
-		[superController changeContentController:commitViewController];
+		[superController changeContentController:superController.commitViewController];
 		[PBGitDefaults setShowStageView:YES];
 	}
 
@@ -259,12 +246,22 @@
 }
 
 - (void)doubleClicked:(id)object {
-    NSInteger rowNumber = [sourceView selectedRow];
-    if ([[sourceView itemAtRow:rowNumber] isKindOfClass:[PBGitSVSubmoduleItem class]]) {
-        PBGitSVSubmoduleItem *subModule = [sourceView itemAtRow:rowNumber];
+	NSInteger rowNumber = [sourceView selectedRow];
+	
+	id item = [sourceView itemAtRow:rowNumber];
+	if ([item isKindOfClass:[PBGitSVSubmoduleItem class]]) {
+		PBGitSVSubmoduleItem *subModule = item;
 
-        [self openSubmoduleAtURL:[subModule path]];
-    }
+		[self openSubmoduleAtURL:[subModule path]];
+	} else if ([item isKindOfClass:[PBGitSVBranchItem class]]) {
+		PBGitSVBranchItem *branch = item;
+		
+		NSError *error = nil;
+		BOOL success = [repository checkoutRefish:[branch ref] error:&error];
+		if (!success) {
+			[self.windowController showErrorSheet:error];
+		}
+	}
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item
@@ -397,7 +394,7 @@
 	if (!ref)
 		return;
 
-	for (NSMenuItem *menuItem in [historyViewController.refController menuItemsForRef:ref])
+	for (NSMenuItem *menuItem in [superController.historyViewController.refController menuItemsForRef:ref])
 		[menu addItem:menuItem];
 }
 

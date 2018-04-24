@@ -277,16 +277,18 @@
 		return _headRef;
 
 	NSError *error = nil;
-	GTReference *headRef = [self.gtRepo headReferenceWithError:&error];
+	GTReference *headRef = [self.gtRepo lookUpReferenceWithName:@"HEAD" error:&error];
 	if (!headRef) {
 		PBLogError(error);
 		return nil;
 	}
 
 	GTReference *branchRef = [headRef resolvedReferenceWithError:&error];
-	if (!branchRef) {
+	if (!branchRef && !self.gtRepo.isHEADUnborn) {
 		PBLogError(error);
 		return nil;
+	} else if (self.gtRepo.isHEADUnborn) {
+		branchRef = headRef;
 	}
 
 	_headRef = [[PBGitRevSpecifier alloc] initWithRef:[PBGitRef refFromString:branchRef.name]];
@@ -446,7 +448,7 @@
 	return [PBGitRef refFromString:refName];
 }
 
-- (NSArray*)branches
+- (NSArray <PBGitRevSpecifier *> *)branches
 {
     return [self.branchesSet array];
 }
@@ -508,7 +510,7 @@
 
 #pragma mark Stashes
 
-- (NSArray *)stashes
+- (NSArray <PBGitStash *> *)stashes
 {
 	NSMutableArray *stashes = [NSMutableArray array];
 	[self.gtRepo enumerateStashesUsingBlock:^(NSUInteger index, NSString *message, GTOID *oid, BOOL *stop) {
@@ -621,7 +623,7 @@
 
 #pragma mark Remotes
 
-- (NSArray *) remotes
+- (NSArray <NSString *> *)remotes
 {
 	NSError *error = nil;
 	NSArray *remotes = [self.gtRepo remoteNamesWithError:&error];
@@ -943,8 +945,14 @@
 	GTObject *object = [self.gtRepo lookUpObjectByRevParse:[target refishName] error:error];
 	if (!object) return NO;
 
-	GTTag *newTag  = [self.gtRepo createTagNamed:tagName target:object tagger:self.gtRepo.userSignatureForNow message:message error:error];
-	if (!newTag) return NO;
+	BOOL success = NO;
+	if (message.length == 0) {
+		success = [self.gtRepo createLightweightTagNamed:tagName target:object error:error];
+	} else {
+		GTTag *tag = [self.gtRepo createTagNamed:tagName target:object tagger:self.gtRepo.userSignatureForNow message:message error:error];
+		success = (tag != nil);
+	}
+	if (!success) return NO;
 
 	[self reloadRefs];
 	return YES;
@@ -1060,14 +1068,6 @@
 }
 
 #pragma mark Hooks
-
-- (BOOL)executeHook:(NSString *)name output:(NSString **)output {
-	return [self executeHook:name withArgs:[NSArray array] output:output];
-}
-
-- (BOOL)executeHook:(NSString *)name withArgs:(NSArray *)arguments output:(NSString **)outputPtr {
-	return [self executeHook:name arguments:arguments output:outputPtr error:NULL];
-}
 
 - (BOOL)executeHook:(NSString *)name error:(NSError **)error {
 	return [self executeHook:name arguments:@[] error:error];

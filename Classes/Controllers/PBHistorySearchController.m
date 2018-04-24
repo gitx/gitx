@@ -15,6 +15,7 @@
 #import "PBGitDefaults.h"
 #import "PBCommitList.h"
 #import "PBGitCommit.h"
+#import "PBError.h"
 
 @interface PBHistorySearchController ()
 
@@ -408,7 +409,7 @@
 
 	results = nil;
 
-	NSMutableArray *searchArguments = [NSMutableArray arrayWithObjects:@"log", @"--pretty=format:%H", nil];
+	NSMutableArray *searchArguments = [NSMutableArray arrayWithObjects:@"log", @"--pretty=format:%H", @"--no-textconv", nil];
 	switch (self.searchMode) {
 		case PBHistorySearchModeRegex:
 			[searchArguments addObject:@"--pickaxe-regex"];
@@ -424,8 +425,20 @@
 	}
 
 	backgroundSearchTask = [historyController.repository taskWithArguments:searchArguments];
-	[backgroundSearchTask performTaskWithCompletionHandler:^(NSData * _Nullable readData, NSError * _Nullable error) {
+	[backgroundSearchTask performTaskWithCompletionHandler:^(NSData *readData, NSError *taskError) {
+		if (taskError.domain == PBTaskErrorDomain && taskError.code == PBTaskCaughtSignalError) {
+			/* Silently ignore task termination */
+			return;
+		}
+
 		if (!readData) {
+			[self clearProgressIndicator];
+			NSString *desc = NSLocalizedString(@"Search failed", @"Search Controller - Background search failed error description");
+			NSString *reason = NSLocalizedString(@"The search for \"%@\" failed.", @"Search Controller - Background search failed error reason");
+			reason = [NSString stringWithFormat:reason, searchString];
+			NSError *error = [NSError pb_errorWithDescription:desc
+												failureReason:reason
+											  underlyingError:taskError];
 			[historyController.windowController showErrorSheet:error];
 			return;
 		}

@@ -42,10 +42,10 @@ typedef enum branchFilterTypes {
 @property (readonly, getter = getIndexURL) NSURL* indexURL;
 
 @property (nonatomic, strong) PBGitHistoryList *revisionList;
-@property (nonatomic, readonly, strong) NSArray* stashes;
-@property (nonatomic, readonly, strong) NSArray* branches;
-@property (nonatomic, strong) NSMutableOrderedSet* branchesSet;
-@property (nonatomic, strong) PBGitRevSpecifier* currentBranch;
+@property (nonatomic, readonly, strong) NSArray <PBGitStash *> *stashes;
+@property (nonatomic, readonly, strong) NSArray <PBGitRevSpecifier *> *branches;
+@property (nonatomic, strong) NSMutableOrderedSet <PBGitRevSpecifier *> *branchesSet;
+@property (nonatomic, strong) PBGitRevSpecifier *currentBranch;
 @property (nonatomic, strong) NSMutableDictionary* refs;
 @property (readonly, strong) GTRepository* gtRepo;
 @property (nonatomic, readonly) BOOL isShallowRepository;
@@ -84,9 +84,6 @@ typedef enum branchFilterTypes {
 
 - (NSURL *) gitURL ;
 
-- (BOOL)executeHook:(NSString *)name output:(NSString **)output GITX_DEPRECATED;
-- (BOOL)executeHook:(NSString *)name withArgs:(NSArray*) arguments output:(NSString **)output GITX_DEPRECATED;
-
 - (BOOL)executeHook:(NSString *)name error:(NSError **)error;
 - (BOOL)executeHook:(NSString *)name arguments:(NSArray *)arguments error:(NSError **)error;
 - (BOOL)executeHook:(NSString *)name arguments:(NSArray *)arguments output:(NSString **)outputPtr error:(NSError **)error;
@@ -116,7 +113,7 @@ typedef enum branchFilterTypes {
 - (BOOL)refExists:(PBGitRef *)ref;
 - (PBGitRef *)refForName:(NSString *)name;
 
-- (NSArray *) remotes;
+- (NSArray <NSString *> *) remotes;
 - (BOOL) hasRemotes;
 - (PBGitRef *) remoteRefForBranch:(PBGitRef *)branch error:(NSError **)error;
 
