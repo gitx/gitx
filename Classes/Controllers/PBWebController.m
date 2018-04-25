@@ -35,6 +35,16 @@
 		   name:NSUserDefaultsDidChangeNotification
 		 object:nil];
 
+	[nc addObserver:self
+		   selector:@selector(windowWillStartLiveResitzeWithNotification:)
+			   name:NSWindowWillStartLiveResizeNotification
+			 object:self.view.window];
+	
+	[nc addObserver:self
+		   selector:@selector(windowDidEndLiveResitzeWithNotification:)
+			   name:NSWindowDidEndLiveResizeNotification
+			 object:self.view.window];
+	
 	finishedLoading = NO;
 	[self.view setUIDelegate:self];
 	[self.view setFrameLoadDelegate:self];
@@ -196,14 +206,28 @@ dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
 {
 }
 
+- (void)makeWebViewFirstResponder
+{
+	[self.view.window makeFirstResponder:self.view];
+}
+
+
+#pragma mark - Notifications
+
 - (void)preferencesChangedWithNotification:(NSNotification *)theNotification
 {
 	[self preferencesChanged];
 }
 
-- (void)makeWebViewFirstResponder
+- (void)windowWillStartLiveResitzeWithNotification:(NSNotification *)theNotification
 {
-	[self.view.window makeFirstResponder:self.view];
+	self.view.autoresizingMask = NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewHeightSizable;
+}
+
+- (void)windowDidEndLiveResitzeWithNotification:(NSNotification *)theNotification
+{
+	self.view.autoresizingMask = NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable | NSViewHeightSizable;
+	self.view.frame = self.view.superview.bounds;
 }
 
 @end
