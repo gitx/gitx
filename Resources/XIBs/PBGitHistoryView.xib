@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
-        <plugIn identifier="com.apple.WebKitIBPlugin" version="13771"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14109"/>
+        <plugIn identifier="com.apple.WebKitIBPlugin" version="14109"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -193,7 +194,7 @@
                                     </subviews>
                                 </customView>
                                 <scrollView focusRingType="none" fixedFrame="YES" borderType="none" autohidesScrollers="YES" horizontalLineScroll="22" horizontalPageScroll="10" verticalLineScroll="22" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3" userLabel="Commits Scroll View">
-                                    <rect key="frame" x="1" y="0.0" width="955" height="165"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="955" height="165"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <clipView key="contentView" ambiguous="YES" drawsBackground="NO" copiesOnScroll="NO" id="S8C-PP-4nT">
                                         <rect key="frame" x="0.0" y="0.0" width="955" height="165"/>
@@ -580,18 +581,29 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="955" height="206"/>
                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
-                                                    <webView focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="21">
-                                                        <rect key="frame" x="1" y="0.0" width="954" height="207"/>
+                                                    <box fixedFrame="YES" boxType="custom" borderType="none" cornerRadius="4" title="Box" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="pOJ-lK-IMc">
+                                                        <rect key="frame" x="0.0" y="0.0" width="955" height="207"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
-                                                            <nil key="identifier"/>
-                                                        </webPreferences>
-                                                        <connections>
-                                                            <outlet property="UIDelegate" destination="40" id="85"/>
-                                                            <outlet property="frameLoadDelegate" destination="40" id="84"/>
-                                                            <outlet property="policyDelegate" destination="40" id="109"/>
-                                                        </connections>
-                                                    </webView>
+                                                        <view key="contentView" ambiguous="YES" id="haK-2t-fcp">
+                                                            <rect key="frame" x="0.0" y="0.0" width="955" height="207"/>
+                                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                            <subviews>
+                                                                <webView focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="21">
+                                                                    <rect key="frame" x="-1" y="-1" width="957" height="209"/>
+                                                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                                    <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
+                                                                        <nil key="identifier"/>
+                                                                    </webPreferences>
+                                                                    <connections>
+                                                                        <outlet property="UIDelegate" destination="40" id="85"/>
+                                                                        <outlet property="frameLoadDelegate" destination="40" id="84"/>
+                                                                        <outlet property="policyDelegate" destination="40" id="109"/>
+                                                                    </connections>
+                                                                </webView>
+                                                            </subviews>
+                                                        </view>
+                                                        <color key="fillColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    </box>
                                                 </subviews>
                                             </view>
                                         </tabViewItem>
