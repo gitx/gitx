@@ -102,9 +102,10 @@ def publish_cmd(args):
     project = Project(os.getcwd(), "release", label)
 
     print "Preparing release {}".format(project.release_tag_name())
-    helpers.assert_clean()
-    helpers.assert_branch(project.release_branch())
-    helpers.set_version(project.build_version(), project.label())
+    if not args.force:
+        helpers.assert_clean()
+        helpers.assert_branch(project.release_branch())
+        helpers.set_version(project.build_version(), project.label())
 
     print("Building: {}".format(project.build_product()))
     build.build(project)
