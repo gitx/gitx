@@ -53,8 +53,6 @@
 	window.contentView = self.view;
 	[self populateList];
 
-	self.sourceView.wantsLayer = NO;
-
 	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
 	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
    	[repository addObserver:self forKeyPath:@"stashes" options:0 context:@"stashesModified"];
@@ -92,6 +90,9 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if ([@"currentBranchChange" isEqualToString:(__bridge NSString*)context]) {
+		NSInteger row = sourceView.selectedRow;
+		[sourceView reloadData];
+		[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 		[self selectCurrentBranch];
 		return;
 	}
@@ -154,13 +155,16 @@
 		return;
 	}
 
-	PBSourceViewItem *item = [self addRevSpec:rev];
-    if (item) {
-        [sourceView PBExpandItem:item expandParents:YES];
-        NSIndexSet *index = [NSIndexSet indexSetWithIndex:[sourceView rowForItem:item]];
-	
-        [sourceView selectRowIndexes:index byExtendingSelection:NO];
-    }
+	dispatch_async(dispatch_get_main_queue(), ^{
+		PBSourceViewItem *item = [self addRevSpec:rev];
+		if (item) {
+			[sourceView PBExpandItem:item expandParents:YES];
+			NSIndexSet *index = [NSIndexSet indexSetWithIndex:[sourceView rowForItem:item]];
+		
+			[sourceView deselectAll:nil];
+			[sourceView selectRowIndexes:index byExtendingSelection:NO];
+		}
+	});
 }
 
 - (PBSourceViewItem *) itemForRev:(PBGitRevSpecifier *)rev
@@ -230,8 +234,10 @@
 	PBSourceViewItem *item = [sourceView itemAtRow:index];
 
 	if ([item revSpecifier]) {
-		if (![repository.currentBranch isEqual:[item revSpecifier]])
+		if (![repository.currentBranch isEqual:[item revSpecifier]]) {
 			repository.currentBranch = [item revSpecifier];
+		}
+		
 		[superController changeContentController:superController.historyViewController];
 		[PBGitDefaults setShowStageView:NO];
 	}
@@ -285,6 +291,16 @@
 	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
 	
 	return cell;
+}
+
+- (NSTableRowView *)outlineView:(NSOutlineView *)outlineView rowViewForItem:(id)item {
+	NSTableRowView *view = [sourceView rowViewAtRow:[sourceView rowForItem:item] makeIfNecessary:NO];
+	
+	if (view) {
+		return view;
+	}
+	
+	return [NSTableRowView new];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
