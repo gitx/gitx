@@ -40,6 +40,7 @@
 #define kGitXPickaxeSearchLabel NSLocalizedString(@"Commit (pickaxe)", @"Option in Search menu to use the pickaxe search")
 #define kGitXRegexSearchLabel NSLocalizedString(@"Commit (pickaxe regex)", @"Option in Search menu to use the pickaxe search with regular expressions")
 #define kGitXPathSearchLabel NSLocalizedString(@"File path", @"Option in Search menu to search for file paths in the commit")
+#define kGitXRawSearchLabel NSLocalizedString(@"Raw", @"Option in Search menu to search for raw git log options")
 
 @implementation PBHistorySearchController
 
@@ -244,7 +245,12 @@
 	item = [[NSMenuItem alloc] initWithTitle:kGitXPathSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
 	[item setTarget:self];
     [item setTag:PBHistorySearchModePath];
-    [searchMenu addItem:item];
+	[searchMenu addItem:item];
+
+	item = [[NSMenuItem alloc] initWithTitle:kGitXRawSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
+	[item setTarget:self];
+	[item setTag:PBHistorySearchModeRaw];
+	[searchMenu addItem:item];
 
     item = [NSMenuItem separatorItem];
     [searchMenu addItem:item];
@@ -282,6 +288,7 @@
 	[self updateSearchModeMenuItemWithTag:PBHistorySearchModePickaxe inMenu:searchMenu];
 	[self updateSearchModeMenuItemWithTag:PBHistorySearchModeRegex inMenu:searchMenu];
 	[self updateSearchModeMenuItemWithTag:PBHistorySearchModePath inMenu:searchMenu];
+	[self updateSearchModeMenuItemWithTag:PBHistorySearchModeRaw inMenu:searchMenu];
 
     [[searchField cell] setSearchMenuTemplate:searchMenu];
 
@@ -304,6 +311,9 @@
 			break;
 		case PBHistorySearchModePath:
 			[[searchField cell] setPlaceholderString:kGitXPathSearchLabel];
+			break;
+		case PBHistorySearchModeRaw:
+			[[searchField cell] setPlaceholderString:kGitXRawSearchLabel];
 			break;
 		default:
 			[[searchField cell] setPlaceholderString:kGitXBasicSearchLabel];
@@ -401,6 +411,9 @@
 			break;
 		case PBHistorySearchModePath:
 			[searchArguments addObject:@"--"];
+			[searchArguments addObjectsFromArray:[searchString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+			break;
+		case PBHistorySearchModeRaw:
 			[searchArguments addObjectsFromArray:[searchString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
 			break;
 		default:
