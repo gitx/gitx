@@ -290,6 +290,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 	
 	[self postCommitUpdate:@"Creating tree"];
 	NSString *tree = [self.repository outputForCommand:@"write-tree"];
+	tree = [tree stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	if ([tree length] != 40)
 		return [self postCommitFailure:@"Creating tree failed"];
 	
@@ -337,7 +338,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 										  inputString:commitMessage
 							   byExtendingEnvironment:self.amendEnvironment
 											 retValue: &ret];
-	
+	commit = [commit stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	if (ret || [commit length] != 40)
 		return [self postCommitFailure:@"Could not create a commit object"];
 	

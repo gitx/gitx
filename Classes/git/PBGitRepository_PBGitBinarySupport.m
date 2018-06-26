@@ -71,51 +71,63 @@
 - (NSString*) outputForCommand:(NSString *)cmd
 {
 	NSArray* arguments = [cmd componentsSeparatedByString:@" "];
-	return [self outputForArguments: arguments];
+	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:NULL];
 }
 
 - (NSString*) outputForCommand:(NSString *)str retValue:(int *)ret;
 {
 	NSArray* arguments = [str componentsSeparatedByString:@" "];
-	return [self outputForArguments: arguments retValue: ret];
+	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:ret];
 }
 
 - (NSString*) outputForArguments:(NSArray*) arguments
 {
-	return [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:arguments inDir: self.workingDirectory];
+	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:NULL];
 }
 
 - (NSString*) outputInWorkdirForArguments:(NSArray*) arguments
 {
-	return [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:arguments inDir:self.workingDirectory];
+	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:NULL];
 }
 
 - (NSString*) outputInWorkdirForArguments:(NSArray *)arguments retValue:(int *)ret
 {
-	return [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:arguments inDir:self.workingDirectory retValue: ret];
+	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:ret];
 }
 
 - (NSString*) outputForArguments:(NSArray *)arguments retValue:(int *)ret
 {
-	return [PBEasyPipe outputForCommand:[PBGitBinary path] withArgs:arguments inDir: self.workingDirectory retValue: ret];
+	return [self outputForArguments:arguments inputString:nil byExtendingEnvironment:nil retValue:ret];
 }
 
 - (NSString*) outputForArguments:(NSArray *)arguments inputString:(NSString *)input retValue:(int *)ret
 {
-	return [PBEasyPipe outputForCommand:[PBGitBinary path]
-							   withArgs:arguments
-								  inDir:self.workingDirectory
-							inputString:input
-							   retValue: ret];
+	return [self outputForArguments:arguments inputString:input byExtendingEnvironment:nil retValue:ret];
 }
 
 - (NSString *)outputForArguments:(NSArray *)arguments inputString:(NSString *)input byExtendingEnvironment:(NSDictionary *)dict retValue:(int *)ret
 {
-	return [PBEasyPipe outputForCommand:[PBGitBinary path]
-							   withArgs:arguments
-								  inDir:self.workingDirectory
-				 byExtendingEnvironment:dict
-							inputString:input
-							   retValue: ret];
+	PBTask *task = [self taskWithArguments:arguments];
+	if (input)
+		task.standardInputData = [input dataUsingEncoding:NSUTF8StringEncoding];
+	if (dict)
+		task.additionalEnvironment = dict;
+
+	NSError *error = nil;
+	BOOL success = [task launchTask:&error];
+	if (!success) {
+		PBLogError(error);
+		NSNumber *status;
+		if (ret && (status = error.userInfo[PBTaskTerminationStatusKey])) {
+			*ret = [status intValue];
+		} else if (ret) {
+			*ret = 1;
+		}
+
+		return nil;
+	}
+	if (ret) *ret = 0;
+
+	return task.standardOutputString;
 }
 @end

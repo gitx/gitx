@@ -23,15 +23,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface PBGitRepository (PBGitBinarySupportDeprecated)
 - (NSFileHandle*) handleForArguments:(NSArray*) args GITX_DEPRECATED;
 - (NSString*) outputForCommand:(NSString*) cmd GITX_DEPRECATED;
-- (NSString *)outputForCommand:(NSString *)str retValue:(int *)ret GITX_DEPRECATED;
-- (NSString *)outputForArguments:(NSArray *)arguments inputString:(NSString *)input retValue:(int *)ret GITX_DEPRECATED;
-- (NSString *)outputForArguments:(NSArray *)arguments inputString:(NSString *)input byExtendingEnvironment:(NSDictionary *)dict retValue:(int *)ret GITX_DEPRECATED;
+- (NSString *)outputForCommand:(NSString *)str retValue:(nullable int *)ret GITX_DEPRECATED;
+- (NSString *)outputForArguments:(NSArray *)arguments inputString:(nullable NSString *)input retValue:(nullable int *)ret GITX_DEPRECATED;
+- (NSString *)outputForArguments:(NSArray *)arguments inputString:(nullable NSString *)input byExtendingEnvironment:(nullable NSDictionary *)dict retValue:(nullable int *)ret GITX_DEPRECATED;
 
 
 - (NSString*) outputForArguments:(NSArray*) args GITX_DEPRECATED;
-- (NSString*) outputForArguments:(NSArray*) args retValue:(int *)ret GITX_DEPRECATED;
+- (NSString*) outputForArguments:(NSArray*) args retValue:(nullable int *)ret GITX_DEPRECATED;
 - (NSString *)outputInWorkdirForArguments:(NSArray*) arguments GITX_DEPRECATED;
-- (NSString *)outputInWorkdirForArguments:(NSArray*) arguments retValue:(int *)ret GITX_DEPRECATED;
+- (NSString *)outputInWorkdirForArguments:(NSArray*) arguments retValue:(nullable int *)ret GITX_DEPRECATED;
 @end
 
 NS_ASSUME_NONNULL_END
