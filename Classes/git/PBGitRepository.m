@@ -900,7 +900,6 @@
 	
 	NSError *gitError = nil;
 	NSArray *arguments = @[@"reset", @"--soft", refName];
-	NSLog(@"Resetting to %@", refName);
 	
 	NSString *output = [self outputOfTaskWithArguments:arguments error:&gitError];
 	if (!output) {

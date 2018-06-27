@@ -684,7 +684,6 @@
 
 - (IBAction)resetSoft:(id)sender
 {
-	NSLog(@"resetSoft()");
 	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXBranchType, kGitXCommitType]];
 	if (!refish) return;
 	
