@@ -688,7 +688,7 @@
 	if (!refish) return;
 	
 	NSError *error = nil;
-	BOOL success = [self.repository resetSoftRefish:refish error:&error];
+	BOOL success = [self.repository resetRefish:GTRepositoryResetTypeSoft to:refish error:&error];
 	if (!success) {
 		[self showErrorSheet:error];
 	}

@@ -891,15 +891,28 @@
 	return YES;
 }
 
-- (BOOL) resetSoftRefish:(id <PBGitRefish>)ref error:(NSError **)error
+- (BOOL) resetRefish:(GTRepositoryResetType)mode to:(id <PBGitRefish>)ref error:(NSError **)error
 {
 	if (!ref)
 		return NO;
 	
 	NSString *refName = [ref refishName];
 	
+	NSString *modeParam;
+	switch (mode) {
+		case GTRepositoryResetTypeSoft:
+			modeParam = @"--soft";
+			break;
+		case GTRepositoryResetTypeMixed:
+			modeParam = @"--mixed";
+			break;
+		case GTRepositoryResetTypeHard:
+			modeParam = @"--hard";
+			break;
+	}
+
 	NSError *gitError = nil;
-	NSArray *arguments = @[@"reset", @"--soft", refName];
+	NSArray *arguments = @[@"reset", modeParam, refName];
 	
 	NSString *output = [self outputOfTaskWithArguments:arguments error:&gitError];
 	if (!output) {
