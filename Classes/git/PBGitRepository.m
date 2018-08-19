@@ -710,8 +710,8 @@
 	NSError *taskError = nil;
 	BOOL success = [task launchTask:&taskError];
 	if (!success) {
-		NSString *desc = NSLocalizedString(@"Fetch failed", @"PBGitRepository - push error description");
-		NSString *reason = [NSString stringWithFormat:NSLocalizedString(@"An error occurred while fetching remote \"%@\".", @"PBGitRepostory - push error reason"), ref.remoteName];
+		NSString *desc = NSLocalizedString(@"Fetch failed", @"PBGitRepository - fetch error description");
+		NSString *reason = [NSString stringWithFormat:NSLocalizedString(@"An error occurred while fetching remote \"%@\".", @"PBGitRepostory - fetch error reason"), ref.remoteName];
 		PBReturnError(error, desc, reason, taskError);
 	}
 
@@ -742,10 +742,10 @@
 
 	PBTask *task = [self taskWithArguments:arguments];
 	NSError *taskError = nil;
-	BOOL success = [task launchTask:error];
+	BOOL success = [task launchTask:&taskError];
 	if (!success) {
-		NSString *desc = NSLocalizedString(@"Pull failed", @"PBGitRepository - push error description");
-		NSString *reason = [NSString stringWithFormat:NSLocalizedString(@"An error occurred while pulling remote \"%@\" to \"%@\".", @"PBGitRepostory - push error reason"), remoteName, branchRef.shortName];
+		NSString *desc = NSLocalizedString(@"Pull failed", @"PBGitRepository - pull error description");
+		NSString *reason = [NSString stringWithFormat:NSLocalizedString(@"An error occurred while pulling remote \"%@\" to \"%@\".", @"PBGitRepostory - pull error reason"), remoteName, branchRef.shortName];
 		PBReturnError(error, desc, reason, taskError);
 	}
 
@@ -891,10 +891,46 @@
 	return YES;
 }
 
+- (BOOL) resetRefish:(GTRepositoryResetType)mode to:(id <PBGitRefish>)ref error:(NSError **)error
+{
+	if (!ref)
+		return NO;
+	
+	NSString *refName = [ref refishName];
+	
+	NSString *modeParam;
+	switch (mode) {
+		case GTRepositoryResetTypeSoft:
+			modeParam = @"--soft";
+			break;
+		case GTRepositoryResetTypeMixed:
+			modeParam = @"--mixed";
+			break;
+		case GTRepositoryResetTypeHard:
+			modeParam = @"--hard";
+			break;
+	}
+
+	NSError *gitError = nil;
+	NSArray *arguments = @[@"reset", modeParam, refName];
+	
+	NSString *output = [self outputOfTaskWithArguments:arguments error:&gitError];
+	if (!output) {
+		NSString *title = @"Reset failed!";
+		NSString *message = [NSString stringWithFormat:@"There was an error resetting to %@ '%@'.", [ref refishType], [ref shortName]];
+		
+		return PBReturnError(error, title, message, gitError);
+	}
+	
+	[self reloadRefs];
+	[self readCurrentBranch];
+	return YES;
+}
+
+
 - (BOOL) rebaseBranch:(id <PBGitRefish>)branch onRefish:(id <PBGitRefish>)upstream error:(NSError **)error
 {
-	if (!upstream)
-		return NO;
+	NSParameterAssert(upstream != nil);
 
 	NSArray *arguments = @[@"rebase", upstream.refishName];
 

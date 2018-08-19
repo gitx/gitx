@@ -132,6 +132,12 @@
 		[items addObject:[NSMenuItem pb_itemWithTitle:rebaseTitle action:@selector(rebaseHeadBranch:) enabled:!isOnHeadBranch]];
 
 		[items addObject:[NSMenuItem separatorItem]];
+		
+		// reset
+		NSString *resetTitle = [NSString stringWithFormat:NSLocalizedString(@"Reset to “%@”", @"Contextual Menu Item to reset to the selected ref"), refName];
+		[items addObject:[NSMenuItem pb_itemWithTitle:resetTitle action:@selector(resetSoft:) enabled:!isHead]];
+		
+		[items addObject:[NSMenuItem separatorItem]];
 	}
 
 	// fetch
@@ -250,6 +256,10 @@
 			? NSLocalizedString(@"Rebase Commit", @"Inactive Contextual Menu Item for rebasing onto commits")
 			: [NSString stringWithFormat:NSLocalizedString(@"Rebase “%@” onto Commit", @"Contextual Menu Item to rebase the HEAD branch onto the selected commit"), headBranchName];
 		[items addObject:[NSMenuItem pb_itemWithTitle:rebaseTitle action:@selector(rebaseHeadBranch:) enabled:!isOnHeadBranch]];
+		
+		// reset
+		NSString *resetTitle = NSLocalizedString(@"Reset to commit", @"Contextual Menu Item to reset to the selected ref");
+		[items addObject:[NSMenuItem pb_itemWithTitle:resetTitle action:@selector(resetSoft:) enabled:!isHead]];
 	}
 	
 	for (NSMenuItem *item in items) {
