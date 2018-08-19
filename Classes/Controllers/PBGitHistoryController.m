@@ -29,7 +29,32 @@
 #define kHistoryDetailViewIndex 0
 #define kHistoryTreeViewIndex 1
 
-@interface PBGitHistoryController ()
+@interface PBGitHistoryController () {
+	IBOutlet NSArrayController *commitController;
+	IBOutlet NSTreeController *treeController;
+	IBOutlet PBWebHistoryController *webHistoryController;
+	IBOutlet GLFileView *fileView;
+	IBOutlet PBRefController *refController;
+	IBOutlet PBHistorySearchController *searchController;
+
+	__weak IBOutlet NSSearchField *searchField;
+	__weak IBOutlet NSOutlineView *fileBrowser;
+	__weak IBOutlet PBCommitList *commitList;
+	__weak IBOutlet NSSplitView *historySplitView;
+	__weak IBOutlet PBGitGradientBarView *upperToolbarView;
+	__weak IBOutlet PBGitGradientBarView *scopeBarView;
+	__weak IBOutlet NSButton *allBranchesFilterItem;
+	__weak IBOutlet NSButton *localRemoteBranchesFilterItem;
+	__weak IBOutlet NSButton *selectedBranchFilterItem;
+	__weak IBOutlet id webView;
+
+	NSArray *currentFileBrowserSelectionPath;
+	NSInteger selectedCommitDetailsIndex;
+	BOOL forceSelectionUpdate;
+	PBGitTree *gitTree;
+	NSArray<PBGitCommit *> *webCommits;
+	NSArray<PBGitCommit *> *selectedCommits;
+}
 
 - (void) updateBranchFilterMatrix;
 - (void) restoreFileBrowserSelection;
@@ -106,7 +131,7 @@
     PBGitRepositoryWatcherEventType eventType = [(NSNumber *)[[notification userInfo] objectForKey:kPBGitRepositoryEventTypeUserInfoKey] unsignedIntValue];
     if(eventType & PBGitRepositoryWatcherEventTypeGitDirectory){
       // refresh if the .git repository is modified
-      [self refresh:NULL];
+      [self refresh:self];
     }
 }
 
