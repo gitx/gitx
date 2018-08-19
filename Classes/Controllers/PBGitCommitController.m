@@ -181,9 +181,7 @@
 
 - (void)discardChangesForFiles:(NSArray *)files force:(BOOL)force
 {
-	void (^performDiscard)(NSModalResponse) = ^(NSModalResponse returnCode) {
-		if (returnCode != NSAlertFirstButtonReturn) return;
-
+	void (^performDiscard)(void) = ^ {
 		[self.repository.index discardChangesForFiles:files];
 	};
 
@@ -196,9 +194,9 @@
 		[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel button in Discard Changes sheet")];
 
 
-		[alert beginSheetModalForWindow:self.windowController.window completionHandler:performDiscard];
+		[self.windowController confirmDialog:alert suppressionIdentifier:nil forAction:performDiscard];
 	} else {
-		performDiscard(NSAlertFirstButtonReturn);
+		performDiscard();
 	}
 }
 
@@ -302,9 +300,7 @@
 	[confirmTrash addButtonWithTitle:NSLocalizedString(@"OK", @"Move to trash alert - OK button")];
 	[confirmTrash addButtonWithTitle:NSLocalizedString(@"Cancel", @"Move to trash alert - Cancel button")];
 
-	[confirmTrash beginSheetModalForWindow:self.windowController.window completionHandler:^(NSModalResponse returnCode) {
-		if (returnCode != NSAlertFirstButtonReturn) return;
-
+	[self.windowController confirmDialog:confirmTrash suppressionIdentifier:nil forAction:^{
 		BOOL anyTrashed = NO;
 		for (PBChangedFile *file in selectedFiles)
 		{
