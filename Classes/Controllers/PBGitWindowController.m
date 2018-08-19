@@ -885,3 +885,34 @@
 }
 
 @end
+
+@implementation PBGitWindowController (PBDialog)
+
+- (BOOL)confirmDialog:(NSAlert *)alert suppressionIdentifier:(NSString *)identifier forAction:(void (^)(void))actionBlock
+{
+	NSParameterAssert(alert);
+
+	__block BOOL didAct = YES;
+	if (identifier && [PBGitDefaults isDialogWarningSuppressedForDialog:identifier]) {
+		actionBlock();
+		return didAct;
+	}
+
+	[alert setShowsSuppressionButton:YES];
+
+	[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+		if (returnCode != NSAlertFirstButtonReturn) {
+			didAct = NO;
+			return;
+		}
+
+		if (identifier && [alert.suppressionButton state] == NSOnState)
+			[PBGitDefaults suppressDialogWarningForDialog:identifier];
+
+		actionBlock();
+	}];
+
+	return didAct;
+}
+
+@end
