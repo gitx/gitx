@@ -716,12 +716,21 @@
 {
 	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXStashType]];
 	PBGitStash *stash = [self.repository stashForRef:refish];
-	NSError *error = nil;
-	BOOL success = [self.repository stashDrop:stash error:&error];
+	if (!stash) return;
 
-	if (!success) {
-		[self showErrorSheet:error];
-	}
+	NSAlert *alert = [NSAlert new];
+	alert.messageText = NSLocalizedString(@"Dropping stash", @"Stash drop alert - title");
+	alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"You're about to drop stash %@.", @"Stash drop alert - message"), [refish shortName]];
+	[alert addButtonWithTitle:NSLocalizedString(@"Drop", @"Stash drop alert - default button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Stash drop alert - cancel button")];
+
+	[self confirmDialog:alert suppressionIdentifier:@"Stash Drop" forAction:^{
+		NSError *error = nil;
+		BOOL success = [self.repository stashDrop:stash error:&error];
+		if (!success) {
+			[self showErrorSheet:error];
+		}
+	}];
 }
 
 - (IBAction) openFiles:(id)sender {
