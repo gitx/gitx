@@ -60,7 +60,7 @@ NSString * const kGitXCommitType = @"commit";
 	return self.tree.children;
 }
 
-- (id)initWithRepository:(PBGitRepository *)repo andCommit:(GTCommit *)gtCommit
+- (instancetype)initWithRepository:(PBGitRepository *)repo andCommit:(GTCommit *)gtCommit
 {
 	self = [super init];
 	if (!self) {
@@ -220,7 +220,7 @@ NSString * const kGitXCommitType = @"commit";
 		[self.refs addObject:ref];
 }
 
-- (void)removeRef:(id)ref
+- (void)removeRef:(PBGitRef *)ref
 {
 	if (!self.refs)
 		return;
