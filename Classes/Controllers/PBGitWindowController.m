@@ -682,6 +682,18 @@
 	}
 }
 
+- (IBAction)resetSoft:(id)sender
+{
+	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXBranchType, kGitXCommitType]];
+	if (!refish) return;
+	
+	NSError *error = nil;
+	BOOL success = [self.repository resetRefish:GTRepositoryResetTypeSoft to:refish error:&error];
+	if (!success) {
+		[self showErrorSheet:error];
+	}
+}
+
 - (IBAction)stashSave:(id)sender
 {
 	NSError *error = nil;
