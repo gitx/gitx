@@ -508,7 +508,6 @@
 	[panel setOpaque:NO];
 	[panel setBackgroundColor:[NSColor clearColor]];
 	[panel setHasShadow:NO];
-	[panel useOptimizedDrawing:YES];
 	[panel setAlphaValue:0.0f];
 
 	NSBox *box = [[NSBox alloc] initWithFrame:[[panel contentView] frame]];

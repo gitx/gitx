@@ -68,17 +68,19 @@ static NSString* gitPath = nil;
 	if (gitPath.length > 0) {
 		if ([self acceptBinary:gitPath])
 			return;
-		[[NSAlert alertWithMessageText:NSLocalizedString(@"Invalid git path", @"Error message for NSUserDefaults configured path to git binary that does not point to a git binary")
-					  	 defaultButton:NSLocalizedString(@"OK", @"OK")
-					   alternateButton:nil
-						   otherButton:nil
-			 informativeTextWithFormat:NSLocalizedString(
-										@"The path „%@“, which is configured as a custom git path in the "
-										"preferences window, is not a valid git v" MIN_GIT_VERSION " or higher binary. "
-										"Using the default search paths instead.",
-										"Informative text for NSUserDefaults configured path to git binary that does not point to a git binary"),
-										gitPath]
-		runModal];
+
+		NSAlert *alert = [[NSAlert alloc] init];
+
+		alert.messageText = NSLocalizedString(@"Invalid git path", @"Error message for NSUserDefaults configured path to git binary that does not point to a git binary");
+		alert.informativeText = [NSString stringWithFormat:NSLocalizedString(
+									 @"The path „%@“, which is configured as a custom git path in the "
+									 "preferences window, is not a valid git v" MIN_GIT_VERSION " or higher binary. "
+									 "Using the default search paths instead.",
+									 "Informative text for NSUserDefaults configured path to git binary that does not point to a git binary"),
+								 gitPath];
+		[alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];
+
+		[alert runModal];
 	}
 
 	// Try to find the path of the Git binary

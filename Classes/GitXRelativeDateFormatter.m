@@ -48,7 +48,7 @@
 	NSDate *midnightToday = [midnightFormmatter dateFromString:[midnightFormmatter stringFromDate:now]];
 
 	// use NSCalendar so it will handle things like leap years correctly
-	NSDateComponents *components = [[NSCalendar currentCalendar] components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit)
+	NSDateComponents *components = [[NSCalendar currentCalendar] components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay)
 																   fromDate:midnightOnTargetDate
 																	 toDate:midnightToday
 																	options:0];

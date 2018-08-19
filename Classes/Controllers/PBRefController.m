@@ -163,32 +163,26 @@
 	NSString *subject = [dropCommit subject];
 	if ([subject length] > 99)
 		subject = [[subject substringToIndex:99] stringByAppendingString:@"…"];
-	NSString *infoText = [NSString stringWithFormat:@"Move the %@ to point to the commit: %@", [ref refishType], subject];
 
-	NSAlert *alert = [NSAlert alertWithMessageText:[NSString stringWithFormat:@"Move %@: %@", [ref refishType], [ref shortName]]
-									 defaultButton:@"Move"
-								   alternateButton:@"Cancel"
-									   otherButton:nil
-						 informativeTextWithFormat:@"%@", infoText];
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = [NSString stringWithFormat:NSLocalizedString(@"Move %@: %@", @""), [ref refishType], [ref shortName]];
+	alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"Move the %@ to point to the commit: %@", @""), [ref refishType], subject];
+
+	[alert addButtonWithTitle:@"Move"];
+	[alert addButtonWithTitle:@"Cancel"];
     [alert setShowsSuppressionButton:YES];
 
-	[alert beginSheetModalForWindow:[historyController.windowController window]
-					  modalDelegate:self
-					 didEndSelector:@selector(acceptDropInfoAlertDidEnd:returnCode:contextInfo:)
-						contextInfo:(__bridge_retained void*)dropInfo];
+	[alert beginSheetModalForWindow:historyController.windowController.window
+				  completionHandler:^(NSModalResponse returnCode) {
+					  if (returnCode == NSAlertFirstButtonReturn) {
+						  [self dropRef:dropInfo];
+					  }
+
+					  if ([[alert suppressionButton] state] == NSOnState)
+						  [PBGitDefaults suppressDialogWarningForDialog:kDialogAcceptDroppedRef];
+				  }];
 
 	return YES;
-}
-
-- (void)acceptDropInfoAlertDidEnd:(NSAlert *)alert returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
-{
-    [[alert window] orderOut:nil];
-
-	if (returnCode == NSAlertDefaultReturn)
-		[self dropRef:(__bridge NSDictionary*)contextInfo];
-
-	if ([[alert suppressionButton] state] == NSOnState)
-        [PBGitDefaults suppressDialogWarningForDialog:kDialogAcceptDroppedRef];
 }
 
 - (void)dealloc {

@@ -80,3 +80,15 @@
 - (void)performPushForBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef;
 
 @end
+
+@interface PBGitWindowController (PBDialog)
+/**
+ * Ask the user to confirm an action.
+ *
+ * @param alert The alert to show.
+ * @param identifier The user default to check to suppress the alert completely.
+ * @param actionBlock The action to perform.
+ * @return YES if the action was performed, NO if the user cancelled.
+ */
+- (BOOL)confirmDialog:(NSAlert *)alert suppressionIdentifier:(NSString *)identifier forAction:(void (^)(void))actionBlock;
+@end

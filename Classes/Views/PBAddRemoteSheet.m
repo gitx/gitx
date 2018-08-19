@@ -48,8 +48,8 @@
 	[me hide];
     [browseSheet beginSheetModalForWindow:self.windowController.window
                         completionHandler:^(NSInteger result) {
-                            if (result == NSOKButton) {
-                                NSString* directory = browseSheet.directoryURL.path;
+                            if (result == NSModalResponseOK) {
+                                NSString *directory = browseSheet.directoryURL.path;
                                 [me.remoteURL setStringValue:directory];
                             }
                             [me show];

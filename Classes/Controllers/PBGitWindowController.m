@@ -191,10 +191,12 @@
 	}
 	else
 	{
-		[[NSAlert alertWithError:error] beginSheetModalForWindow:[self window]
-												   modalDelegate:self
-												  didEndSelector:nil
-													 contextInfo:nil];
+		NSAlert *alert = [NSAlert alertWithError:error];
+
+		[alert beginSheetModalForWindow:self.window
+					  completionHandler:^(NSModalResponse returnCode) {
+
+					  }];
 	}
 }
 
@@ -332,8 +334,23 @@
 		|| (remoteRef && !remoteRef.isRemote))
 		return;
 
-	// This block is actually responsible for performing the push operation
-	void (^pushBlock)(void) = ^{
+	NSString *description = nil;
+	if (branchRef && remoteRef)
+		description = [NSString stringWithFormat:@"Push %@ '%@' to remote %@", branchRef.refishType, branchRef.shortName, remoteRef.remoteName];
+	else if (branchRef)
+		description = [NSString stringWithFormat:@"Push %@ '%@' to default remote", branchRef.refishType, branchRef.shortName];
+	else
+		description = [NSString stringWithFormat:@"Push updates to remote %@", remoteRef.remoteName];
+
+	NSString *sdesc = [NSString stringWithFormat:@"p%@", [description substringFromIndex:1]];
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = description;
+	alert.informativeText = [NSString stringWithFormat:@"Are you sure you want to %@?", sdesc];
+	[alert addButtonWithTitle:@"Push"];
+	[alert addButtonWithTitle:@"Cancel"];
+	[alert setShowsSuppressionButton:YES];
+
+	[self confirmDialog:alert suppressionIdentifier:@"Confirm Push" forAction:^{
 		NSString *description = nil;
 		if (branchRef && remoteRef)
 			description = [NSString stringWithFormat:@"Pushing %@ '%@' to remote %@", branchRef.refishType, branchRef.shortName, remoteRef.remoteName];
@@ -355,36 +372,6 @@
 				[self showErrorSheet:error];
 			}
 		}];
-	};
-
-	if ([PBGitDefaults isDialogWarningSuppressedForDialog:kDialogConfirmPush]) {
-		pushBlock();
-		return;
-	}
-
-	NSString *description = nil;
-	if (branchRef && remoteRef)
-		description = [NSString stringWithFormat:@"Push %@ '%@' to remote %@", branchRef.refishType, branchRef.shortName, remoteRef.remoteName];
-	else if (branchRef)
-		description = [NSString stringWithFormat:@"Push %@ '%@' to default remote", branchRef.refishType, branchRef.shortName];
-	else
-		description = [NSString stringWithFormat:@"Push updates to remote %@", remoteRef.remoteName];
-
-	NSString *sdesc = [NSString stringWithFormat:@"p%@", [description substringFromIndex:1]];
-	NSAlert *alert = [[NSAlert alloc] init];
-	alert.messageText = description;
-	alert.informativeText = [NSString stringWithFormat:@"Are you sure you want to %@?", sdesc];
-	[alert addButtonWithTitle:@"Push"];
-	[alert addButtonWithTitle:@"Cancel"];
-	[alert setShowsSuppressionButton:YES];
-
-	[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
-		if ([alert.suppressionButton state] == NSOnState)
-			[PBGitDefaults suppressDialogWarningForDialog:kDialogConfirmPush];
-
-		if (returnCode != NSAlertFirstButtonReturn) return;
-
-		pushBlock();
 	}];
 }
 
@@ -500,38 +487,22 @@
 
 	PBGitRef *ref = (PBGitRef *)refish;
 
-	void (^performDelete)(void) = ^{
+	NSString *ref_desc = [NSString stringWithFormat:@"%@ '%@'", [ref refishType], [ref shortName]];
+
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = [NSString stringWithFormat:@"Delete %@?", ref_desc];
+	alert.informativeText = [NSString stringWithFormat:@"Are you sure you want to remove the %@?", ref_desc];
+	[alert addButtonWithTitle:@"Delete"];
+	[alert addButtonWithTitle:@"Cancel"];
+
+	[self confirmDialog:alert suppressionIdentifier:@"Delete Ref" forAction:^{
 		NSError *error = nil;
 		BOOL success = [self.repository deleteRef:ref error:&error];
 		if (!success) {
 			[self showErrorSheet:error];
 		}
 		return;
-	};
-
-	if ([PBGitDefaults isDialogWarningSuppressedForDialog:kDialogDeleteRef]) {
-		performDelete();
-		return;
-	}
-
-	NSString *ref_desc = [NSString stringWithFormat:@"%@ '%@'", [ref refishType], [ref shortName]];
-
-	NSAlert *alert = [NSAlert alertWithMessageText:[NSString stringWithFormat:@"Delete %@?", ref_desc]
-									 defaultButton:@"Delete"
-								   alternateButton:@"Cancel"
-									   otherButton:nil
-						 informativeTextWithFormat:@"Are you sure you want to remove the %@?", ref_desc];
-	[alert setShowsSuppressionButton:YES];
-
-	[alert beginSheetModalForWindow:self.window
-				  completionHandler:^(NSModalResponse returnCode) {
-					  if ([[alert suppressionButton] state] == NSOnState)
-						  [PBGitDefaults suppressDialogWarningForDialog:kDialogDeleteRef];
-
-					  if (returnCode == NSModalResponseOK) {
-						  performDelete();
-					  }
-				  }];
+	}];
 }
 
 - (IBAction)fetchRemote:(id)sender
@@ -745,12 +716,21 @@
 {
 	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXStashType]];
 	PBGitStash *stash = [self.repository stashForRef:refish];
-	NSError *error = nil;
-	BOOL success = [self.repository stashDrop:stash error:&error];
+	if (!stash) return;
 
-	if (!success) {
-		[self showErrorSheet:error];
-	}
+	NSAlert *alert = [NSAlert new];
+	alert.messageText = NSLocalizedString(@"Dropping stash", @"Stash drop alert - title");
+	alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"You're about to drop stash %@.", @"Stash drop alert - message"), [refish shortName]];
+	[alert addButtonWithTitle:NSLocalizedString(@"Drop", @"Stash drop alert - default button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Stash drop alert - cancel button")];
+
+	[self confirmDialog:alert suppressionIdentifier:@"Stash Drop" forAction:^{
+		NSError *error = nil;
+		BOOL success = [self.repository stashDrop:stash error:&error];
+		if (!success) {
+			[self showErrorSheet:error];
+		}
+	}];
 }
 
 - (IBAction) openFiles:(id)sender {
@@ -879,6 +859,37 @@
 	}
 
 	[self showMessageSheet:title infoText:info];
+}
+
+@end
+
+@implementation PBGitWindowController (PBDialog)
+
+- (BOOL)confirmDialog:(NSAlert *)alert suppressionIdentifier:(NSString *)identifier forAction:(void (^)(void))actionBlock
+{
+	NSParameterAssert(alert);
+
+	__block BOOL didAct = YES;
+	if (identifier && [PBGitDefaults isDialogWarningSuppressedForDialog:identifier]) {
+		actionBlock();
+		return didAct;
+	}
+
+	[alert setShowsSuppressionButton:YES];
+
+	[alert beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse returnCode) {
+		if (returnCode != NSAlertFirstButtonReturn) {
+			didAct = NO;
+			return;
+		}
+
+		if (identifier && [alert.suppressionButton state] == NSOnState)
+			[PBGitDefaults suppressDialogWarningForDialog:identifier];
+
+		actionBlock();
+	}];
+
+	return didAct;
 }
 
 @end

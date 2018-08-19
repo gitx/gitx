@@ -79,10 +79,11 @@
 
 - (void)showErrorSheet:(NSError *)error
 {
-	[[NSAlert alertWithError:error] beginSheetModalForWindow:[self window]
-											   modalDelegate:self
-											  didEndSelector:@selector(errorSheetDidEnd:returnCode:contextInfo:)
-												 contextInfo:NULL];
+	NSAlert *alert = [NSAlert alertWithError:error];
+	[alert beginSheetModalForWindow:[self window]
+				  completionHandler:^(NSModalResponse returnCode) {
+					  [self close];
+				  }];
 }
 
 
@@ -160,7 +161,7 @@
 {
     [browseRepositoryPanel beginSheetModalForWindow:[self window]
                                   completionHandler:^(NSInteger result) {
-                                      if (result == NSOKButton) {
+                                      if (result == NSModalResponseOK) {
                                           NSURL *url = [[browseRepositoryPanel URLs] lastObject];
                                           [self.repositoryURL setStringValue:[url path]];
                                       }
@@ -180,22 +181,13 @@
 {
     [browseDestinationPanel beginSheetModalForWindow:[self window]
                                    completionHandler:^(NSInteger result) {
-                                       if (result == NSOKButton) {
+                                       if (result == NSModalResponseOK) {
                                            NSURL *url = [[browseDestinationPanel URLs] lastObject];
                                            [self.destinationPath setStringValue:[url path]];
                                        }
                                    }];
 }
 
-
-
-#pragma mark Callbacks
-
-
-- (void) errorSheetDidEnd:(NSOpenPanel *)sheet returnCode:(NSInteger)code contextInfo:(void *)info
-{
-	[self close];
-}
 
 
 @end
