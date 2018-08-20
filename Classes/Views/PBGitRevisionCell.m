@@ -329,8 +329,12 @@ const BOOL SHUFFLE_COLORS = NO;
 	cellInfo = [self.objectValue lineInfo];
 
 	if (cellInfo) {
-		float pathWidth = 10 + COLUMN_WIDTH * cellInfo.numColumns;
-
+		float pathWidth = 0;
+		
+		if (!controller.hasNonlinearPath) {
+			pathWidth = 10 + COLUMN_WIDTH * cellInfo.numColumns;
+		}
+		
 		NSRect ownRect;
 		NSDivideRect(rect, &ownRect, &rect, pathWidth, NSMinXEdge);
 
