@@ -301,8 +301,11 @@
 
 	if([strContext isEqualToString:@"branchChange"]) {
 		// Reset the sorting
-		if ([[commitController sortDescriptors] count])
+		if ([[commitController sortDescriptors] count]) {
 			[commitController setSortDescriptors:[NSArray array]];
+			[commitController rearrangeObjects];
+		}
+		
 		[self updateBranchFilterMatrix];
 		return;
 	}
