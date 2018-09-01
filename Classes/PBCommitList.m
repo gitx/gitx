@@ -133,7 +133,7 @@
 
 	NSPoint point = [self.window.contentView convertPoint:[event locationInWindow] toView:cell];
 	int i = [cell indexAtX:point.x];
-	PBGitRef *clickedRef = (i >= 0 ? commit.refs[0] : nil);
+	PBGitRef *clickedRef = (i >= 0 && i < commit.refs.count ? commit.refs[i] : nil);
 	
 	NSArray <PBGitCommit*>* selectedCommits = controller.selectedCommits;
 	NSArray <NSMenuItem *>* items;
