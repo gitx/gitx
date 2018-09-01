@@ -51,7 +51,7 @@ def generate_release_notes(project):
     release_notes_text = Template(template_source).substitute(attrs)
 
     with open(project.release_notes_file(), 'w') as release_notes_file:
-        release_notes_file.write(release_notes_text)
+        release_notes_file.write(release_notes_text.encode('utf-8'))
 
 
 def commit_release(project):
