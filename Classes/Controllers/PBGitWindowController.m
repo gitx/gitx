@@ -28,6 +28,23 @@
 #import "PBGitStash.h"
 #import "PBGitCommit.h"
 
+@interface PBGitWindowController () {
+	__weak PBViewController *contentController;
+
+	PBGitSidebarController *sidebarController;
+	PBGitHistoryController *_historyViewController;
+	PBGitCommitController *_commitViewController;
+
+	__weak IBOutlet NSView *sourceListControlsView;
+	__weak IBOutlet NSSplitView *splitView;
+	__weak IBOutlet NSView *sourceSplitView;
+	__weak IBOutlet NSView *contentSplitView;
+
+	__weak IBOutlet NSTextField *statusField;
+	__weak IBOutlet NSProgressIndicator *progressIndicator;
+}
+@end
+
 @implementation PBGitWindowController
 
 @dynamic document;

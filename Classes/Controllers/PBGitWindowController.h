@@ -18,21 +18,9 @@
 @class PBGitRef;
 @class PBGitRepositoryDocument;
 
-@interface PBGitWindowController : NSWindowController<NSWindowDelegate> {
-	__weak PBViewController *contentController;
+NS_ASSUME_NONNULL_BEGIN
 
-	PBGitSidebarController *sidebarController;
-	PBGitHistoryController *_historyViewController;
-	PBGitCommitController *_commitViewController;
-
-	__weak IBOutlet NSView *sourceListControlsView;
-	__weak IBOutlet NSSplitView *splitView;
-	__weak IBOutlet NSView *sourceSplitView;
-	__weak IBOutlet NSView *contentSplitView;
-
-	__weak IBOutlet NSTextField *statusField;
-	__weak IBOutlet NSProgressIndicator *progressIndicator;
-}
+@interface PBGitWindowController : NSWindowController <NSWindowDelegate>
 
 @property (nonatomic, strong) PBGitRepository *repository;
 /* This is assign because that's what NSWindowController says :-S */
@@ -75,9 +63,9 @@
 
 - (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode;
 
-- (void)performFetchForRef:(PBGitRef *)ref;
-- (void)performPullForBranch:(PBGitRef *)branchRef remote:(PBGitRef *)remoteRef rebase:(BOOL)rebase;
-- (void)performPushForBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef;
+- (void)performFetchForRef:(nullable PBGitRef *)ref;
+- (void)performPullForBranch:(PBGitRef *)branchRef remote:(nullable PBGitRef *)remoteRef rebase:(BOOL)rebase;
+- (void)performPushForBranch:(nullable PBGitRef *)branchRef toRemote:(nullable PBGitRef *)remoteRef;
 
 @end
 
@@ -90,5 +78,7 @@
  * @param actionBlock The action to perform.
  * @return YES if the action was performed, NO if the user cancelled.
  */
-- (BOOL)confirmDialog:(NSAlert *)alert suppressionIdentifier:(NSString *)identifier forAction:(void (^)(void))actionBlock;
+- (BOOL)confirmDialog:(NSAlert *)alert suppressionIdentifier:(nullable NSString *)identifier forAction:(void (^)(void))actionBlock;
 @end
+
+NS_ASSUME_NONNULL_END

@@ -14,8 +14,9 @@
 @class PBGitRef;
 @class PBGraphCellInfo;
 
-extern NSString * const kGitXCommitType;
+NS_ASSUME_NONNULL_BEGIN
 
+extern NSString * const kGitXCommitType;
 
 @interface PBGitCommit : NSObject <PBGitRefish>
 
@@ -36,7 +37,7 @@ extern NSString * const kGitXCommitType;
 @property (nonatomic, strong, readonly) NSString *details;
 @property (nonatomic, strong, readonly) NSString *patch;
 @property (nonatomic, strong, readonly) NSString *SHA;
-@property (nonatomic, strong, readonly) NSString *SVNRevision;
+@property (nonatomic, strong, readonly, nullable) NSString *SVNRevision;
 
 @property (nonatomic, copy, readonly) NSArray <GTOID *> *parents;
 @property  NSMutableArray* refs;
@@ -46,11 +47,10 @@ extern NSString * const kGitXCommitType;
 @property (nonatomic, readonly) PBGitTree* tree;
 @property (readonly) NSArray* treeContents;
 
-
-- (id)initWithRepository:(PBGitRepository *)repo andCommit:(GTCommit *)gtCommit;
+- (instancetype)initWithRepository:(PBGitRepository *)repo andCommit:(GTCommit *)gtCommit;
 
 - (void) addRef:(PBGitRef *)ref;
-- (void) removeRef:(id)ref;
+- (void) removeRef:(PBGitRef *)ref;
 - (BOOL) hasRef:(PBGitRef *)ref;
 
 - (NSString *)SHA;
@@ -63,3 +63,5 @@ extern NSString * const kGitXCommitType;
 - (NSString *) refishType;
 
 @end
+
+NS_ASSUME_NONNULL_END

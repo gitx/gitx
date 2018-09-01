@@ -21,32 +21,9 @@
 @class GTOID;
 @class PBHistorySearchController;
 
-@interface PBGitHistoryController : PBViewController <NSTableViewDelegate> {
-	IBOutlet NSArrayController *commitController;
-	IBOutlet NSTreeController *treeController;
-	IBOutlet PBWebHistoryController *webHistoryController;
-	IBOutlet GLFileView *fileView;
-	IBOutlet PBRefController *refController;
-	IBOutlet PBHistorySearchController *searchController;
+NS_ASSUME_NONNULL_BEGIN
 
-	__weak IBOutlet NSSearchField *searchField;
-	__weak IBOutlet NSOutlineView *fileBrowser;
-	__weak IBOutlet PBCommitList *commitList;
-	__weak IBOutlet NSSplitView *historySplitView;
-	__weak IBOutlet PBGitGradientBarView *upperToolbarView;
-	__weak IBOutlet PBGitGradientBarView *scopeBarView;
-	__weak IBOutlet NSButton *allBranchesFilterItem;
-	__weak IBOutlet NSButton *localRemoteBranchesFilterItem;
-	__weak IBOutlet NSButton *selectedBranchFilterItem;
-	__weak IBOutlet id webView;
-
-	NSArray *currentFileBrowserSelectionPath;
-	NSInteger selectedCommitDetailsIndex;
-	BOOL forceSelectionUpdate;
-	PBGitTree *gitTree;
-	NSArray<PBGitCommit *> *webCommits;
-	NSArray<PBGitCommit *> *selectedCommits;
-}
+@interface PBGitHistoryController : PBViewController
 
 @property (readonly) NSArrayController *commitController;
 @property (readonly) NSTreeController *treeController;
@@ -88,3 +65,6 @@
 - (NSMenu *)tableColumnMenu;
 
 @end
+
+NS_ASSUME_NONNULL_END
+
