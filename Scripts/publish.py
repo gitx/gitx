@@ -84,7 +84,7 @@ def publish_release(project, as_prerelease, as_draft, dry_run):
     hub_release = ['hub', 'release',
         'create', project.release_tag_name(),
         '-a', project.image_path(),
-        '-f', project.release_notes_file()]
+        '-F', project.release_notes_file()]
     if as_prerelease:
         hub_release.append('-p')
     if as_draft:
