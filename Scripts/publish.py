@@ -119,7 +119,6 @@ def publish_cmd(args):
     print("Generating release notes...")
     generate_release_notes(project)
 
-
     print("Committing and tagging \"{}\"".format(project.release_tag_name()))
     commit_release(project)
     tag_release(project.release_tag_name(), args.force)
