@@ -120,7 +120,8 @@ def publish_cmd(args):
     generate_release_notes(project)
 
     print("Committing and tagging \"{}\"".format(project.release_tag_name()))
-    commit_release(project)
+    if not args.force: # We didn't set_version, so nothing should have changed
+        commit_release(project)
     tag_release(project.release_tag_name(), args.force)
 
     publish_release(project, args.prerelease, args.draft, args.dry_run)
