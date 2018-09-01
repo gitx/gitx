@@ -85,7 +85,7 @@ class Project:
 
 
     def current_build_config(self):
-        return self.release_config() if self.current_config == "release" else self.debug_config()
+        return self.release_config() if self.current_config() == "release" else self.debug_config()
 
 
     def build_dir(self):
