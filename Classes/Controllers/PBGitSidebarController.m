@@ -11,14 +11,16 @@
 #import "PBGitHistoryController.h"
 #import "PBGitCommitController.h"
 #import "PBRefController.h"
-#import "PBSourceViewCell.h"
 #import "NSOutlineViewExt.h"
 #import "PBAddRemoteSheet.h"
 #import "PBGitDefaults.h"
 #import "PBHistorySearchController.h"
 #import "PBGitStash.h"
 #import "PBGitSVStashItem.h"
+#import "PBSidebarTableViewCell.h"
 #import "PBGitRef.h"
+
+#define PBSidebarCellIdentifier @"PBSidebarCellIdentifier"
 
 @interface PBGitSidebarController ()
 
@@ -88,7 +90,9 @@
 - (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if ([@"currentBranchChange" isEqualToString:(__bridge NSString*)context]) {
+		NSInteger row = sourceView.selectedRow;
 		[sourceView reloadData];
+		[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 		[self selectCurrentBranch];
 		return;
 	}
@@ -151,15 +155,16 @@
 		return;
 	}
 
-	PBSourceViewItem *item = [self addRevSpec:rev];
-    if (item) {
-        [sourceView reloadData];
-	
-        [sourceView PBExpandItem:item expandParents:YES];
-        NSIndexSet *index = [NSIndexSet indexSetWithIndex:[sourceView rowForItem:item]];
-	
-        [sourceView selectRowIndexes:index byExtendingSelection:NO];
-    }
+	dispatch_async(dispatch_get_main_queue(), ^{
+		PBSourceViewItem *item = [self addRevSpec:rev];
+		if (item) {
+			[sourceView PBExpandItem:item expandParents:YES];
+			NSIndexSet *index = [NSIndexSet indexSetWithIndex:[sourceView rowForItem:item]];
+		
+			[sourceView deselectAll:nil];
+			[sourceView selectRowIndexes:index byExtendingSelection:NO];
+		}
+	});
 }
 
 - (PBSourceViewItem *) itemForRev:(PBGitRevSpecifier *)rev
@@ -229,8 +234,10 @@
 	PBSourceViewItem *item = [sourceView itemAtRow:index];
 
 	if ([item revSpecifier]) {
-		if (![repository.currentBranch isEqual:[item revSpecifier]])
+		if (![repository.currentBranch isEqual:[item revSpecifier]]) {
 			repository.currentBranch = [item revSpecifier];
+		}
+		
 		[superController changeContentController:superController.historyViewController];
 		[PBGitDefaults setShowStageView:NO];
 	}
@@ -276,10 +283,24 @@
 	return [item isGroupItem];
 }
 
-- (void)outlineView:(NSOutlineView *)outlineView willDisplayCell:(PBSourceViewCell *)cell forTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem *)item
-{
+- (NSView *)outlineView:(NSOutlineView *)outlineView viewForTableColumn:(NSTableColumn *)tableColumn item:(PBSourceViewItem*)item {
+	PBSidebarTableViewCell *cell = [outlineView makeViewWithIdentifier:PBSidebarCellIdentifier owner:outlineView];
+	
+	cell.textField.stringValue = [[item title] copy];
+	cell.imageView.image = item.icon;
 	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
-	[cell setImage:[item icon]];
+	
+	return cell;
+}
+
+- (NSTableRowView *)outlineView:(NSOutlineView *)outlineView rowViewForItem:(id)item {
+	NSTableRowView *view = [sourceView rowViewAtRow:[sourceView rowForItem:item] makeIfNecessary:NO];
+	
+	if (view) {
+		return view;
+	}
+	
+	return [NSTableRowView new];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
