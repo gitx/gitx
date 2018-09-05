@@ -231,7 +231,7 @@
 	}
 	
 	[items addObject:[NSMenuItem pb_itemWithTitle:NSLocalizedString(@"Copy SHA", @"Contextual Menu Item to copy the selected commits’ full SHA(s)") action:@selector(copySHA:) enabled:YES]];
-	[items addObject:[NSMenuItem pb_itemWithTitle:NSLocalizedString(@"Copy short SHA", @"Contextual Menu Item to copy the selected commits’ short SHA(s)") action:@selector(copyShortSHA:) enabled:YES]];
+	[items addObject:[NSMenuItem pb_itemWithTitle:NSLocalizedString(@"Copy short SHA", @"Contextual Menu Item to copy the selected commits’ short SHA(s)") action:@selector(copyShortName:) enabled:YES]];
 	[items addObject:[NSMenuItem pb_itemWithTitle:NSLocalizedString(@"Copy Patch", @"Contextual Menu Item to copy the selected commits as patch(es)") action:@selector(copyPatch:) enabled:YES]];
 
 	if (isSingleCommitSelection) {
