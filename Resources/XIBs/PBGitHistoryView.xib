@@ -537,7 +537,7 @@
                                                 <connections>
                                                     <outlet property="contextMenuDelegate" destination="231" id="DtG-Dl-ygU"/>
                                                     <outlet property="controller" destination="-2" id="111"/>
-                                                    <outlet property="dataSource" destination="231" id="445"/>
+                                                    <outlet property="dataSource" destination="-2" id="Gol-fU-kRr"/>
                                                     <outlet property="delegate" destination="-2" id="444"/>
                                                     <outlet property="menu" destination="eTP-cx-OCg" id="xzi-Ng-ecd"/>
                                                     <outlet property="searchController" destination="423" id="436"/>
