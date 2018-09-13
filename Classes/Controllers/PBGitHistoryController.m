@@ -168,12 +168,6 @@
 	// listen for updates
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:repository];
 
-	__weak typeof(self) weakSelf = self;
-	commitList.findPanelActionBlock = ^(id sender) {
-		__strong typeof(weakSelf) strongSelf = weakSelf;
-		[weakSelf.view.window makeFirstResponder:strongSelf->searchField];
-	};
-
 	[super awakeFromNib];
 }
 
@@ -425,6 +419,11 @@
 - (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode
 {
 	[searchController setHistorySearch:searchString mode:mode];
+}
+
+- (IBAction)performFindPanelAction:(id)sender
+{
+	[self.windowController.window makeFirstResponder:self->searchField];
 }
 
 // NSSearchField (actually textfields in general) prevent the normal Find operations from working. Setup custom actions for the

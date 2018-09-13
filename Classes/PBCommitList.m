@@ -154,15 +154,4 @@
 	return menu;
 }
 
-
-#pragma mark Row highlighting
-
-- (IBAction)performFindPanelAction:(id)sender
-{
-	PBFindPanelActionBlock block = self.findPanelActionBlock;
-	if (block) {
-		block(sender);
-	}
-}
-
 @end
