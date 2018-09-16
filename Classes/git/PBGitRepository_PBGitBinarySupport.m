@@ -24,17 +24,31 @@
 	return [PBTask taskWithLaunchPath:[PBGitBinary path] arguments:realArgs inDirectory:self.workingDirectory];
 }
 
-- (BOOL)launchTaskWithArguments:(nullable NSArray *)arguments error:(NSError **)error {
+- (BOOL)launchTaskWithArguments:(NSArray *)arguments input:(NSString *)inputString error:(NSError **)error
+{
 	PBTask *task = [self taskWithArguments:arguments];
+	task.standardInputData = [inputString dataUsingEncoding:NSUTF8StringEncoding];
 	return [task launchTask:error];
 }
 
-- (NSString *)outputOfTaskWithArguments:(NSArray *)arguments error:(NSError **)error {
+- (BOOL)launchTaskWithArguments:(NSArray *)arguments error:(NSError **)error
+{
+	return [self launchTaskWithArguments:arguments input:nil error:error];
+}
+
+- (NSString *)outputOfTaskWithArguments:(NSArray *)arguments input:(NSString *)inputString error:(NSError **)error
+{
 	PBTask *task = [self taskWithArguments:arguments];
+	task.standardInputData = [inputString dataUsingEncoding:NSUTF8StringEncoding];
 	BOOL success = [task launchTask:error];
 	if (!success) return nil;
 
 	return [task standardOutputString];
+}
+
+- (NSString *)outputOfTaskWithArguments:(NSArray *)arguments error:(NSError **)error
+{
+	return [self outputOfTaskWithArguments:arguments input:nil error:error];
 }
 
 @end
