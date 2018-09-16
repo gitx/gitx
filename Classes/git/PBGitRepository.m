@@ -30,6 +30,8 @@
 #import "PBGitStash.h"
 #import "PBError.h"
 
+NSString * const PBHookNameErrorKey = @"PBHookNameErrorKey";
+
 @interface PBGitRepository () {
 	__strong PBGitRepositoryWatcher *watcher;
 	__strong PBGitRevSpecifier *_headRef; // Caching
@@ -1130,22 +1132,22 @@
 
 	NSError *taskError = nil;
 	BOOL success = [task launchTask:&taskError];
-
-	NSString *output = task.standardOutputString;
 	if (!success) {
 		return PBReturnErrorWithBuilder(error, ^{
-			NSString *failureReason = [NSString localizedStringWithFormat:@"Hook %@ failed", name];
-			NSString *desc = nil;
+			NSString *output = taskError.userInfo[PBTaskTerminationOutputKey];
+
+			NSString *desc = [NSString stringWithFormat:NSLocalizedString(@"%@ hook failed", @"Hook execution error - description"), name];
+			NSString *failureReason = nil;
 			if (output.length == 0) {
-				desc = [NSString localizedStringWithFormat:@"The %@ hook failed to run.", name];
+				failureReason = [NSString stringWithFormat:NSLocalizedString(@"The %@ hook reported an error.", @"Hook execution error - failure reason (no output)"), name];
 			} else {
-				desc = [NSString localizedStringWithFormat:@"The %@ hook failed to run and returned the following:\n%@", name, output];
+				failureReason = [NSString localizedStringWithFormat:NSLocalizedString(@"The %@ hook reported an error and returned the following:\n%@", @"Hook execution error - failure reason (with output)"), name, output];
 			}
-			return [NSError pb_errorWithDescription:desc failureReason:failureReason underlyingError:taskError];
+			return [NSError pb_errorWithDescription:desc failureReason:failureReason underlyingError:taskError userInfo:@{PBHookNameErrorKey:name}];
 		});
 	}
 
-	if (outputPtr) *outputPtr = output;
+	if (outputPtr) *outputPtr = task.standardOutputString;
 
 	return YES;
 }

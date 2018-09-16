@@ -19,6 +19,9 @@
 
 extern NSString *PBGitRepositoryDocumentType;
 
+/** NSError user info key - hook name */
+extern NSString * const PBHookNameErrorKey;
+
 typedef enum branchFilterTypes {
 	kGitXAllBranchesFilter = 0,
 	kGitXLocalRemoteBranchesFilter,
