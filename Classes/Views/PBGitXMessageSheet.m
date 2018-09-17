@@ -80,6 +80,8 @@
 	NSError *taskError = error.userInfo[NSUnderlyingErrorKey];
 	if (taskError && taskError.domain == PBTaskErrorDomain) {
 		[messageParts addObject:NSLocalizedString(@"The underlying task failed:", @"PBGitXMessageSheet - task failed header")];
+		[messageParts addObject:taskError.localizedDescription];
+		[messageParts addObject:taskError.localizedFailureReason];
 		if (taskError.code == PBTaskNonZeroExitCodeError) {
 			NSString *message = NSLocalizedString(@"Return code: %@", @"PBGitXMessageSheet - task return code header");
 			message = [NSString stringWithFormat:message, taskError.userInfo[PBTaskTerminationStatusKey]];
