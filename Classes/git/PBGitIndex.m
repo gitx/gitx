@@ -559,9 +559,6 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 		NSString *contents = [NSString stringWithContentsOfURL:fileURL
                                                   usedEncoding:&encoding
                                                          error:&error];
-		if (error)
-			return nil;
-
 		return contents;
 	}
 
