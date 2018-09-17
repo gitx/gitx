@@ -216,7 +216,7 @@ do { \
 		if (error) {
 			NSString *desc = @"Timeout while running task";
 			NSArray *taskArguments = [@[self.task.launchPath] arrayByAddingObjectsFromArray:self.task.arguments];
-			NSString *failureReason = [NSString stringWithFormat:@"The task \"%@\" failed to complete before its timeout", taskArguments];
+			NSString *failureReason = [NSString stringWithFormat:@"The task \"%@\" failed to complete before its timeout", [taskArguments componentsJoinedByString:@" "]];
 			NSDictionary *userInfo = @{
 									   NSLocalizedDescriptionKey: desc,
 									   NSLocalizedFailureReasonErrorKey: failureReason,
