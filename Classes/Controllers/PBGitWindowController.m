@@ -647,8 +647,8 @@
 
 - (IBAction)rebaseHeadBranch:(id)sender
 {
-	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXCommitType]];
-	if (!refish || ![refish isKindOfClass:[PBGitCommit class]])
+	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXCommitType, kGitXBranchType, kGitXRemoteBranchType]];
+	if (!refish || ![refish isKindOfClass:[PBGitRef class]])
 		return;
 
 	NSError *error = nil;
