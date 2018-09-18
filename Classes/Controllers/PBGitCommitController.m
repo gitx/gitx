@@ -643,14 +643,14 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 
 - (void) didDoubleClickOnTable:(NSTableView *) tableView
 {
-	NSArrayController *controller = [tableView tag] == 0 ? unstagedFilesController : stagedFilesController;
+	NSArrayController *controller = (tableView == unstagedTable ? unstagedFilesController : stagedFilesController);
 
 	NSIndexSet *selectionIndexes = [tableView selectedRowIndexes];
 	NSArray *files = [[controller arrangedObjects] objectsAtIndexes:selectionIndexes];
-	if ([tableView tag] == 0) {
+
+	if (tableView == unstagedTable) {
 		[self.index stageFiles:files];
-	}
-	else {
+	} else {
 		[self.index unstageFiles:files];
 	}
 }
