@@ -43,7 +43,12 @@
 	BOOL success = [task launchTask:error];
 	if (!success) return nil;
 
-	return [task standardOutputString];
+	NSString *output = [task standardOutputString];
+	/* Strip extraneous \n from output */
+	if (output.length > 1 && [output characterAtIndex:output.length - 1] == '\n') {
+		output = [output stringByReplacingCharactersInRange:NSMakeRange(output.length - 1, 1) withString:@""];
+	}
+	return output;
 }
 
 - (NSString *)outputOfTaskWithArguments:(NSArray *)arguments error:(NSError **)error
