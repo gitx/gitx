@@ -22,7 +22,20 @@
 
 #define PBSidebarCellIdentifier @"PBSidebarCellIdentifier"
 
-@interface PBGitSidebarController ()
+@interface PBGitSidebarController () <NSOutlineViewDelegate> {
+	__weak IBOutlet NSWindow *window;
+	__weak IBOutlet NSOutlineView *sourceView;
+	__weak IBOutlet NSView *sourceListControlsView;
+	__weak IBOutlet NSPopUpButton *actionButton;
+	__weak IBOutlet NSSegmentedControl *remoteControls;
+
+	NSMutableArray *items;
+
+	/* Specific things */
+	PBSourceViewItem *stage;
+
+	PBSourceViewItem *branches, *remotes, *tags, *others, *submodules, *stashes;
+}
 
 - (void)populateList;
 - (PBSourceViewItem *)addRevSpec:(PBGitRevSpecifier *)revSpec;
@@ -38,9 +51,11 @@
 @synthesize sourceView;
 @synthesize sourceListControlsView;
 
-- (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
+- (instancetype)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
 {
 	self = [super initWithRepository:theRepository superController:controller];
+	if (!self) return nil;
+
 	[sourceView setDelegate:self];
 	items = [NSMutableArray array];
 

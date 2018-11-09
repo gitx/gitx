@@ -14,32 +14,23 @@
 @class PBGitHistoryController;
 @class PBGitCommitController;
 
-@interface PBGitSidebarController : PBViewController<NSOutlineViewDelegate> {
-	__weak IBOutlet NSWindow *window;
-	__weak IBOutlet NSOutlineView *sourceView;
-	__weak IBOutlet NSView *sourceListControlsView;
-	__weak IBOutlet NSPopUpButton *actionButton;
-	__weak IBOutlet NSSegmentedControl *remoteControls;
+NS_ASSUME_NONNULL_BEGIN
 
-	NSMutableArray *items;
+@interface PBGitSidebarController : PBViewController
 
-	/* Specific things */
-	PBSourceViewItem *stage;
+- (void)selectStage;
+- (void)selectCurrentBranch;
 
-	PBSourceViewItem *branches, *remotes, *tags, *others, *submodules, *stashes;
-}
+- (NSMenu *)menuForRow:(NSInteger)row;
+- (void)menuNeedsUpdate:(NSMenu *)menu;
 
-- (void) selectStage;
-- (void) selectCurrentBranch;
+- (IBAction)fetchPullPushAction:(id)sender;
 
-- (NSMenu *) menuForRow:(NSInteger)row;
-- (void) menuNeedsUpdate:(NSMenu *)menu;
-
-- (IBAction) fetchPullPushAction:(id)sender;
-
-@property(readonly) NSMutableArray *items;
-@property(readonly) PBSourceViewItem *remotes;
-@property(readonly) NSOutlineView *sourceView;
-@property(readonly) NSView *sourceListControlsView;
+@property (readonly) NSMutableArray *items;
+@property (readonly) PBSourceViewItem *remotes;
+@property (readonly) NSOutlineView *sourceView;
+@property (readonly) NSView *sourceListControlsView;
 
 @end
+
+NS_ASSUME_NONNULL_END
