@@ -16,7 +16,7 @@
 #import "PBGitDefaults.h"
 #import "PBHistorySearchController.h"
 #import "PBGitStash.h"
-#import "PBGitSVStashItem.h"
+#import "PBSourceViewGitStashItem.h"
 #import "PBSidebarTableViewCell.h"
 #import "PBGitRef.h"
 
@@ -117,11 +117,11 @@
     
 	if ([@"stashesModified" isEqualToString:(__bridge NSString*)context]) {
         
-        for (PBGitSVStashItem *stashItem in stashes.sortedChildren)
+        for (PBSourceViewGitStashItem *stashItem in stashes.sortedChildren)
             [stashes removeChild:stashItem];
         
         for (PBGitStash *stash in repository.stashes)
-            [stashes addChild: [PBGitSVStashItem itemWithStash:stash]];
+            [stashes addChild: [PBSourceViewGitStashItem itemWithStash:stash]];
 
         [sourceView expandItem:stashes];
         [sourceView reloadItem:stashes reloadChildren:YES];
@@ -255,12 +255,12 @@
 	NSInteger rowNumber = [sourceView selectedRow];
 	
 	id item = [sourceView itemAtRow:rowNumber];
-	if ([item isKindOfClass:[PBGitSVSubmoduleItem class]]) {
-		PBGitSVSubmoduleItem *subModule = item;
+	if ([item isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
+		PBSourceViewGitSubmoduleItem *subModule = item;
 
 		[self openSubmoduleAtURL:[subModule path]];
-	} else if ([item isKindOfClass:[PBGitSVBranchItem class]]) {
-		PBGitSVBranchItem *branch = item;
+	} else if ([item isKindOfClass:[PBSourceViewGitBranchItem class]]) {
+		PBSourceViewGitBranchItem *branch = item;
 		
 		NSError *error = nil;
 		BOOL success = [repository checkoutRefish:[branch ref] error:&error];
@@ -272,7 +272,7 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
-    if ([item isKindOfClass:[PBGitSVSubmoduleItem class]]) {
+    if ([item isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
         NSLog(@"hi");
     }
     return NO;
@@ -320,9 +320,9 @@
 - (void)populateList
 {
 	PBSourceViewItem *project = [PBSourceViewItem groupItemWithTitle:[repository projectName]];
-	project.isUncollapsible = YES;
+	project.uncollapsible = YES;
 
-	stage = [PBGitSVStageItem stageItem];
+	stage = [PBSourceViewStageItem stageItem];
 	[project addChild:stage];
 	
 	branches = [PBSourceViewItem groupItemWithTitle:@"Branches"];
@@ -333,14 +333,14 @@
 	others = [PBSourceViewItem groupItemWithTitle:@"Other"];
 
 	for (PBGitStash *stash in repository.stashes)
-		[stashes addChild: [PBGitSVStashItem itemWithStash:stash]];
+		[stashes addChild: [PBSourceViewGitStashItem itemWithStash:stash]];
 
 	for (PBGitRevSpecifier *rev in repository.branches) {
 		[self addRevSpec:rev];
 	}
     
     for (GTSubmodule *sub in repository.submodules) {
-        [submodules addChild: [PBGitSVSubmoduleItem itemWithSubmodule:sub]];
+        [submodules addChild: [PBSourceViewGitSubmoduleItem itemWithSubmodule:sub]];
 	}
     
 	[items addObject:project];
@@ -365,7 +365,7 @@
 {
     NSObject* child = [[aNotification userInfo] valueForKey:@"NSObject"];
     if ([child isKindOfClass:[PBSourceViewItem class]]) {
-        ((PBSourceViewItem*)child).isExpanded = [aNotification.name isEqualToString:NSOutlineViewItemWillExpandNotification];
+        ((PBSourceViewItem *)child).expanded = [aNotification.name isEqualToString:NSOutlineViewItemWillExpandNotification];
     }
 }
 
@@ -402,7 +402,7 @@
 
 - (void) updateActionMenu
 {
-	[actionButton setEnabled:([[self selectedItem] ref] != nil || [[self selectedItem] isKindOfClass:[PBGitSVSubmoduleItem class]])];
+	[actionButton setEnabled:([[self selectedItem] ref] != nil || [[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]])];
 }
 
 - (void) addMenuItemsForRef:(PBGitRef *)ref toMenu:(NSMenu *)menu
@@ -414,7 +414,7 @@
 		[menu addItem:menuItem];
 }
 
-- (void) addMenuItemsForSubmodule:(PBGitSVSubmoduleItem *)submodule toMenu:(NSMenu *)menu
+- (void) addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)submodule toMenu:(NSMenu *)menu
 {
     if (!submodule)
         return;
@@ -447,8 +447,8 @@
 		[self addMenuItemsForRef:ref toMenu:menu];
 	}
 
-	if ([viewItem isKindOfClass:[PBGitSVSubmoduleItem class]]) {
-		[self addMenuItemsForSubmodule:(PBGitSVSubmoduleItem *)viewItem toMenu:menu];
+	if ([viewItem isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
+		[self addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)viewItem toMenu:menu];
 	}
 
 	return menu;
@@ -463,8 +463,8 @@
 	PBGitRef *ref = [[self selectedItem] ref];
 	[self addMenuItemsForRef:ref toMenu:menu];
 
-    if ([[self selectedItem] isKindOfClass:[PBGitSVSubmoduleItem class]]) {
-        [self addMenuItemsForSubmodule:(PBGitSVSubmoduleItem *)[self selectedItem] toMenu:menu];
+    if ([[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
+        [self addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)[self selectedItem] toMenu:menu];
     }
 }
 

@@ -8,13 +8,13 @@
 
 #import "PBSourceViewItem.h"
 
-#import "PBGitSVStageItem.h"
+#import "PBSourceViewStageItem.h"
 
 #import "PBGitRevSpecifier.h"
-#import "PBGitSVBranchItem.h"
-#import "PBGitSVRemoteItem.h"
-#import "PBGitSVRemoteBranchItem.h"
-#import "PBGitSVTagItem.h"
-#import "PBGitSVOtherRevItem.h"
-#import "PBGitSVFolderItem.h"
-#import "PBGitSVSubmoduleItem.h"
+#import "PBSourceViewGitBranchItem.h"
+#import "PBSourceViewGitRemoteItem.h"
+#import "PBSourceViewGitRemoteBranchItem.h"
+#import "PBSourceViewGitTagItem.h"
+#import "PBSourceViewOtherRevItem.h"
+#import "PBSourceViewFolderItem.h"
+#import "PBSourceViewGitSubmoduleItem.h"

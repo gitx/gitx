@@ -1,5 +1,5 @@
 //
-//  PBGitSVSubmoduleItem.m
+//  PBSourceViewGitSubmoduleItem.m
 //  GitX
 //
 //  Created by Seth Raphael on 9/14/12.

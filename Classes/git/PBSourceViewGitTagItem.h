@@ -1,5 +1,5 @@
 //
-//  PBGitSVFolderItem.h
+//  PBSourceViewGitTagItem.h
 //  GitX
 //
 //  Created by Nathan Kinsinger on 3/2/10.
@@ -9,10 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "PBSourceViewItem.h"
 
-@interface PBGitSVFolderItem : PBSourceViewItem {
+@interface PBSourceViewGitTagItem : PBSourceViewItem
 
-}
-
-+ (id)folderItemWithTitle:(NSString *)title;
++ (instancetype)tagItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier;
 
 @end
