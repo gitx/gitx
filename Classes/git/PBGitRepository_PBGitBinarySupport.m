@@ -8,7 +8,6 @@
 
 #import "PBGitRepository_PBGitBinarySupport.h"
 
-#import "PBEasyPipe.h"
 #import "PBGitBinary.h"
 #import "PBTask.h"
 
@@ -59,14 +58,6 @@
 @end
 
 @implementation PBGitRepository (PBGitBinarySupportDeprecated)
-
-- (NSFileHandle*) handleForArguments:(NSArray *)args
-{
-	NSString* gitDirArg = [@"--git-dir=" stringByAppendingString:self.gitURL.path];
-	NSMutableArray* arguments =  [NSMutableArray arrayWithObject: gitDirArg];
-	[arguments addObjectsFromArray: args];
-	return [PBEasyPipe handleForCommand:[PBGitBinary path] withArgs:arguments];
-}
 
 - (NSString*) outputForCommand:(NSString *)cmd
 {
