@@ -121,8 +121,8 @@ void handleOpenRepository(NSURL *repositoryURL, NSArray *arguments)
 {
     GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
 	[gitXApp setSendMode:kAENoReply];
-	[gitXApp activate];
     [gitXApp open:repositoryURL withOptions:arguments];
+	[gitXApp activate];
     return;
 }
 
