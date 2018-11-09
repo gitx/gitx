@@ -289,7 +289,12 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 
 	
 	[self postCommitUpdate:@"Creating tree"];
-	NSString *tree = [self.repository outputForCommand:@"write-tree"];
+	NSError *error = nil;
+	NSString *tree = [self.repository outputOfTaskWithArguments:@[@"write-tree"] error:&error];
+	if (!tree) {
+		PBLogError(error);
+		return [self postCommitFailure:@"Failed to lookup tree"];
+	}
 	tree = [tree stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	if ([tree length] != 40)
 		return [self postCommitFailure:@"Creating tree failed"];
@@ -303,7 +308,6 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 	}
 
 	[self postCommitUpdate:@"Creating commit"];
-	int ret = 1;
 	
     if (doVerify) {
         [self postCommitUpdate:@"Running hooks"];
@@ -333,24 +337,28 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
     }
 	
 	commitMessage = [NSString stringWithContentsOfFile:commitMessageFile encoding:NSUTF8StringEncoding error:nil];
-	
-	NSString *commit = [self.repository outputForArguments:arguments
-										  inputString:commitMessage
-							   byExtendingEnvironment:self.amendEnvironment
-											 retValue: &ret];
-	commit = [commit stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-	if (ret || [commit length] != 40)
+
+	PBTask *task = [self.repository taskWithArguments:arguments];
+	task.additionalEnvironment = self.amendEnvironment;
+	task.standardInputData = [commitMessage dataUsingEncoding:NSUTF8StringEncoding];
+
+	BOOL success = [task launchTask:&error];
+	NSString *commit = [[task standardOutputString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	if (!success || commit.length != 40) {
+		PBLogError(error);
 		return [self postCommitFailure:@"Could not create a commit object"];
+	}
 	
 	[self postCommitUpdate:@"Updating HEAD"];
-	[self.repository outputForArguments:[NSArray arrayWithObjects:@"update-ref", @"-m", commitSubject, @"HEAD", commit, nil]
-                               retValue: &ret];
-	if (ret)
+	success = [self.repository launchTaskWithArguments:@[@"update-ref", @"-m", commitSubject, @"HEAD", commit] error:&error];
+	if (!success) {
+		PBLogError(error);
 		return [self postCommitFailure:@"Could not update HEAD"];
+	}
 	
 	[self postCommitUpdate:@"Running post-commit hook"];
 	
-	BOOL success = [self.repository executeHook:@"post-commit" error:NULL];
+	success = [self.repository executeHook:@"post-commit" error:NULL];
 	NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObject:[NSNumber numberWithBool:success] forKey:@"success"];
 	NSString *description;  
 	if (success)
@@ -446,19 +454,19 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 			}
 		}
 
-		int ret = 1;
+		NSArray *arguments = nil;
 		if (stage) {
-			[self.repository outputForArguments:[NSArray arrayWithObjects:@"update-index", @"--add", @"--remove", @"-z", @"--stdin", nil]
-									inputString:input
-									   retValue:&ret];
+			arguments = @[@"update-index", @"--add", @"--remove", @"-z", @"--stdin"];
 		} else {
-			[self.repository outputForArguments:[NSArray arrayWithObjects:@"update-index", @"-z", @"--index-info", nil]
-									inputString:input
-									   retValue:&ret];
+			arguments = @[@"update-index", @"-z", @"--index-info"];
 		}
 
-		if (ret) {
-			[self postOperationFailed:[NSString stringWithFormat:@"Error in %@ files. Return value: %i", (stage ? @"staging" : @"unstaging"), ret]];
+		NSError *error = nil;
+		BOOL success = [self.repository launchTaskWithArguments:arguments
+													 input:input
+													 error:&error];
+		if (!success) {
+			[self postOperationFailed:[NSString stringWithFormat:@"Error in %@ files. Return value: %@", (stage ? @"staging" : @"unstaging"), error.userInfo[PBTaskTerminationStatusKey]]];
 			return NO;
 		}
 
@@ -524,13 +532,14 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 	if (reverse)
 		[array addObject:@"--reverse"];
 
-	int ret = 1;
-	NSString *error = [self.repository outputForArguments:array
-                                              inputString:hunk
-                                                 retValue:&ret];
+	NSError *error = nil;
+	NSString *output = [self.repository outputOfTaskWithArguments:array
+															input:hunk
+															error:&error];
 
-	if (ret) {
-		[self postOperationFailed:[NSString stringWithFormat:@"Applying patch failed with return value %i. Error: %@", ret, error]];
+	if (!output) {
+		NSString *message = [NSString stringWithFormat:@"Applying patch failed with return value %@. Error: %@", error.userInfo[PBTaskTerminationStatusKey], error.userInfo[PBTaskTerminationOutputKey]];
+		[self postOperationFailed:message];
 		return NO;
 	}
 
@@ -544,12 +553,20 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 {
 	NSString *parameter = [NSString stringWithFormat:@"-U%lu", context];
 	if (staged) {
-		NSString *indexPath = [@":0:" stringByAppendingString:file.path];
+		NSArray *arguments = nil;
+		if (file.status == NEW) {
+			NSString *indexPath = [@":0:" stringByAppendingString:file.path];
+			arguments = @[@"show", indexPath];
+		} else {
+			arguments = @[@"diff-index", parameter, @"--cached", self.parentTree, @"--", file.path];
+		}
 
-		if (file.status == NEW)
-			return [self.repository outputForArguments:[NSArray arrayWithObjects:@"show", indexPath, nil]];
-
-		return [self.repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-index", parameter, @"--cached", [self parentTree], @"--", file.path, nil]];
+		NSError *error = nil;
+		NSString *output = [self.repository outputOfTaskWithArguments:arguments error:&error];
+		if (!output) {
+			PBLogError(error);
+		}
+		return output;
 	}
 
 	// unstaged
@@ -563,7 +580,13 @@ NS_ENUM(NSUInteger, PBGitIndexOperation) {
 		return contents;
 	}
 
-	return [self.repository outputInWorkdirForArguments:[NSArray arrayWithObjects:@"diff-files", parameter, @"--", file.path, nil]];
+	NSError *error = nil;
+	NSString *output = [self.repository outputOfTaskWithArguments:@[@"diff-files", parameter, @"--", file.path]
+															error:&error];
+	if (!output) {
+		PBLogError(error);
+	}
+	return output;
 }
 
 # pragma mark WebKit Accessibility
