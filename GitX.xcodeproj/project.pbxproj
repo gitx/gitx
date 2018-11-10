@@ -84,7 +84,7 @@
 		4A5D76FE14A9A9CC00DF6C68 /* PBGitRef.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766314A9A9CC00DF6C68 /* PBGitRef.m */; };
 		4A5D76FF14A9A9CC00DF6C68 /* PBGitRepository.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766614A9A9CC00DF6C68 /* PBGitRepository.m */; };
 		4A5D770014A9A9CC00DF6C68 /* PBGitRepositoryWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766814A9A9CC00DF6C68 /* PBGitRepositoryWatcher.m */; };
-		4A5D770214A9A9CC00DF6C68 /* PBGitRevList.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766C14A9A9CC00DF6C68 /* PBGitRevList.mm */; };
+		4A5D770214A9A9CC00DF6C68 /* PBGitRevList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766C14A9A9CC00DF6C68 /* PBGitRevList.m */; };
 		4A5D770314A9A9CC00DF6C68 /* PBGitRevSpecifier.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766E14A9A9CC00DF6C68 /* PBGitRevSpecifier.m */; };
 		4A5D770514A9A9CC00DF6C68 /* PBSourceViewGitBranchItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D767214A9A9CC00DF6C68 /* PBSourceViewGitBranchItem.m */; };
 		4A5D770614A9A9CC00DF6C68 /* PBSourceViewFolderItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D767414A9A9CC00DF6C68 /* PBSourceViewFolderItem.m */; };
@@ -462,7 +462,7 @@
 		4A5D766714A9A9CC00DF6C68 /* PBGitRepositoryWatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRepositoryWatcher.h; sourceTree = "<group>"; };
 		4A5D766814A9A9CC00DF6C68 /* PBGitRepositoryWatcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitRepositoryWatcher.m; sourceTree = "<group>"; };
 		4A5D766B14A9A9CC00DF6C68 /* PBGitRevList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRevList.h; sourceTree = "<group>"; };
-		4A5D766C14A9A9CC00DF6C68 /* PBGitRevList.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = PBGitRevList.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		4A5D766C14A9A9CC00DF6C68 /* PBGitRevList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PBGitRevList.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4A5D766D14A9A9CC00DF6C68 /* PBGitRevSpecifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRevSpecifier.h; sourceTree = "<group>"; };
 		4A5D766E14A9A9CC00DF6C68 /* PBGitRevSpecifier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitRevSpecifier.m; sourceTree = "<group>"; };
 		4A5D767114A9A9CC00DF6C68 /* PBSourceViewGitBranchItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewGitBranchItem.h; sourceTree = "<group>"; };
@@ -957,7 +957,7 @@
 				4A5D766714A9A9CC00DF6C68 /* PBGitRepositoryWatcher.h */,
 				4A5D766814A9A9CC00DF6C68 /* PBGitRepositoryWatcher.m */,
 				4A5D766B14A9A9CC00DF6C68 /* PBGitRevList.h */,
-				4A5D766C14A9A9CC00DF6C68 /* PBGitRevList.mm */,
+				4A5D766C14A9A9CC00DF6C68 /* PBGitRevList.m */,
 				4A5D766D14A9A9CC00DF6C68 /* PBGitRevSpecifier.h */,
 				4A5D766E14A9A9CC00DF6C68 /* PBGitRevSpecifier.m */,
 				4A5D767114A9A9CC00DF6C68 /* PBSourceViewGitBranchItem.h */,
@@ -1471,7 +1471,7 @@
 				4D843B1F1E5D27C3004C3A6F /* PBTask.m in Sources */,
 				4A5D76FF14A9A9CC00DF6C68 /* PBGitRepository.m in Sources */,
 				4A5D770014A9A9CC00DF6C68 /* PBGitRepositoryWatcher.m in Sources */,
-				4A5D770214A9A9CC00DF6C68 /* PBGitRevList.mm in Sources */,
+				4A5D770214A9A9CC00DF6C68 /* PBGitRevList.m in Sources */,
 				4A5D770314A9A9CC00DF6C68 /* PBGitRevSpecifier.m in Sources */,
 				4A5D770514A9A9CC00DF6C68 /* PBSourceViewGitBranchItem.m in Sources */,
 				4A5D770614A9A9CC00DF6C68 /* PBSourceViewFolderItem.m in Sources */,

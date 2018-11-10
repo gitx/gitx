@@ -318,7 +318,7 @@
 		lastRemoteRef = nil;
 		lastOID = nil;
 		self.commits = [NSMutableArray array];
-		[projectRevList loadRevisonsWithCompletionBlock:^{
+		[projectRevList loadRevisionsWithCompletionBlock:^{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self finishedGraphing];
 			});
@@ -340,7 +340,7 @@
 	lastOID = nil;
 	self.commits = [NSMutableArray array];
 
-	[otherRevListParser loadRevisonsWithCompletionBlock:^{
+	[otherRevListParser loadRevisionsWithCompletionBlock:^{
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[self finishedGraphing];
 		});
