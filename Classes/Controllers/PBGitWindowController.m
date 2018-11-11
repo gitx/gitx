@@ -363,8 +363,8 @@
 	NSAlert *alert = [[NSAlert alloc] init];
 	alert.messageText = description;
 	alert.informativeText = [NSString stringWithFormat:@"Are you sure you want to %@?", sdesc];
-	[alert addButtonWithTitle:@"Push"];
-	[alert addButtonWithTitle:@"Cancel"];
+	[alert addButtonWithTitle:NSLocalizedString(@"Push", @"Push alert - default button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Push alert - cancel button")];
 	[alert setShowsSuppressionButton:YES];
 
 	[self confirmDialog:alert suppressionIdentifier:@"Confirm Push" forAction:^{
@@ -509,8 +509,8 @@
 	NSAlert *alert = [[NSAlert alloc] init];
 	alert.messageText = [NSString stringWithFormat:@"Delete %@?", ref_desc];
 	alert.informativeText = [NSString stringWithFormat:@"Are you sure you want to remove the %@?", ref_desc];
-	[alert addButtonWithTitle:@"Delete"];
-	[alert addButtonWithTitle:@"Cancel"];
+	[alert addButtonWithTitle:NSLocalizedString(@"Delete", @"Delete ref alert - default button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Delete ref alert - cancel button")];
 
 	[self confirmDialog:alert suppressionIdentifier:@"Delete Ref" forAction:^{
 		NSError *error = nil;
