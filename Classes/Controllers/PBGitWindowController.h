@@ -41,25 +41,46 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)openURLs:(NSArray <NSURL *> *)fileURLs;
 - (void)revealURLsInFinder:(NSArray <NSURL *> *)fileURLs;
 
-- (IBAction) showCommitView:(id)sender;
-- (IBAction) showHistoryView:(id)sender;
-- (IBAction) revealInFinder:(id)sender;
-- (IBAction) openInTerminal:(id)sender;
-- (IBAction) refresh:(id)sender;
+- (IBAction)showCommitView:(id)sender;
+- (IBAction)showHistoryView:(id)sender;
+- (IBAction)openFiles:(id)sender;
+- (IBAction)revealInFinder:(id)sender;
+- (IBAction)openInTerminal:(id)sender;
+- (IBAction)refresh:(id)sender;
 
-- (IBAction) showAddRemoteSheet:(id)sender;
+- (IBAction)checkout:(id)sender;
+- (IBAction)createBranch:(id)sender;
+- (IBAction)createTag:(id)sender;
+- (IBAction)merge:(id)sender;
+- (IBAction)deleteRef:(id)sender;
+- (IBAction)rebase:(id)sender;
+- (IBAction)rebaseHeadBranch:(id)sender;
+- (IBAction)cherryPick:(id)sender;
+- (IBAction)resetSoft:(id)sender;
 
-- (IBAction) fetchRemote:(id)sender;
-- (IBAction) fetchAllRemotes:(id)sender;
+- (IBAction)showAddRemoteSheet:(id)sender GITX_DEPRECATED;
+- (IBAction)addRemote:(id)sender;
+- (IBAction)fetchRemote:(id)sender;
+- (IBAction)fetchAllRemotes:(id)sender;
 
-- (IBAction) pullRemote:(id)sender;
-- (IBAction) pullRebaseRemote:(id)sender;
-- (IBAction) pullDefaultRemote:(id)sender;
-- (IBAction) pullRebaseDefaultRemote:(id)sender;
+- (IBAction)pullRemote:(id)sender;
+- (IBAction)pullRebaseRemote:(id)sender;
+- (IBAction)pullDefaultRemote:(id)sender;
+- (IBAction)pullRebaseDefaultRemote:(id)sender;
 
-- (IBAction) stashSave:(id) sender;
-- (IBAction) stashSaveWithKeepIndex:(id) sender;
-- (IBAction) stashPop:(id) sender;
+- (IBAction)pushUpdatesToRemote:(id)sender;
+- (IBAction)pushDefaultRemoteForRef:(id)sender;
+- (IBAction)pushToRemote:(id)sender;
+
+- (IBAction)stashSave:(id) sender;
+- (IBAction)stashSaveWithKeepIndex:(id) sender;
+- (IBAction)stashPop:(id) sender;
+- (IBAction)stashApply:(id)sender;
+- (IBAction)stashDrop:(id)sender;
+
+- (IBAction)diffWithHEAD:(id)sender;
+- (IBAction)stashViewDiff:(id)sender;
+- (IBAction)showTagInfoSheet:(id)sender;
 
 - (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode;
 

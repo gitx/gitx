@@ -10,6 +10,9 @@
 #import "PBGitRepository.h"
 #import "PBGitRevSpecifier.h"
 
+#import "PBGitWindowController.h"
+#import "PBGitHistoryController.h"
+
 /*
  * TODO: This is kept for simplicity reasons. A "more correct" way of handling
  * menus would be to have them in NIBs, and handle them using NSMenuValidation.

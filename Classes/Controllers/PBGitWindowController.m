@@ -770,7 +770,7 @@
 	[contentController refresh:self];
 }
 
-- (void) createBranch:(id)sender
+- (IBAction) createBranch:(id)sender
 {
 	PBGitRef *currentRef = [self.repository.currentBranch ref];
 

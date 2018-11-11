@@ -39,30 +39,34 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) BOOL singleCommitSelected;
 @property (readonly) BOOL singleNonHeadCommitSelected;
 
-- (IBAction) setDetailedView:(id)sender;
-- (IBAction) setTreeView:(id)sender;
-- (IBAction) setBranchFilter:(id)sender;
-
+- (BOOL)hasNonlinearPath;
+- (NSMenu *)tableColumnMenu;
 - (void)selectCommit:(GTOID *)commit;
-- (IBAction) refresh:(id)sender;
-- (IBAction) toggleQLPreviewPanel:(id)sender;
-- (IBAction) openSelectedFile:(id)sender;
-- (void) updateQuicklookForce: (BOOL) force;
+- (void)updateQuicklookForce: (BOOL) force;
+
+- (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode;
 
 // Context menu methods
 - (NSMenu *)contextMenuForTreeView;
 - (NSArray *)menuItemsForPaths:(NSArray *)paths;
 - (void)showCommitsFromTree:(id)sender;
 
+- (IBAction)setDetailedView:(id)sender;
+- (IBAction)setTreeView:(id)sender;
+- (IBAction)setBranchFilter:(id)sender;
+
+- (IBAction)refresh:(id)sender;
+- (IBAction)toggleQLPreviewPanel:(id)sender;
+- (IBAction)openSelectedFile:(id)sender;
+
 // Find/Search methods
-- (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode;
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
 
-
-- (BOOL) hasNonlinearPath;
-
-- (NSMenu *)tableColumnMenu;
+- (IBAction)copy:(id)sender;
+- (IBAction)copySHA:(id)sender;
+- (IBAction)copyShortName:(id)sender;
+- (IBAction)copyPatch:(id)sender;
 
 @end
 
