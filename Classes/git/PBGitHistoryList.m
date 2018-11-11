@@ -14,7 +14,7 @@
 #import "PBGitRef.h"
 #import "PBGitRevSpecifier.h"
 
-@interface PBGitHistoryList ()
+@interface PBGitHistoryList () <PBGitHistoryGrapherDelegate>
 
 - (void) resetGraphing;
 

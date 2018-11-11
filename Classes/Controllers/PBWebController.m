@@ -68,6 +68,10 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)didLoad
+{
+}
+
 # pragma mark Delegate methods
 
 - (void)webView:(WebView *)sender didClearWindowObject:(WebScriptObject *)windowObject forFrame:(WebFrame *)frame
