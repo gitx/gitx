@@ -26,8 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) PBGitRepository *repository;
 /* This is assign because that's what NSWindowController says :-S */
 @property (assign) PBGitRepositoryDocument *document;
-@property (readonly) PBGitHistoryController *historyViewController;
-@property (readonly) PBGitCommitController *commitViewController;
+@property (readonly, nullable) PBGitHistoryController *historyViewController;
+@property (readonly, nullable) PBGitCommitController *commitViewController;
+@property (readonly, nullable) PBGitSidebarController *sidebarViewController;
 
 - (instancetype)init;
 

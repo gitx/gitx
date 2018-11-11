@@ -31,7 +31,7 @@
 @interface PBGitWindowController () {
 	__weak PBViewController *contentController;
 
-	PBGitSidebarController *sidebarController;
+	PBGitSidebarController *_sidebarController;
 	PBGitHistoryController *_historyViewController;
 	PBGitCommitController *_commitViewController;
 
@@ -77,11 +77,12 @@
 {
 //	NSLog(@"Window will close!");
 
-	if (sidebarController)
-		[sidebarController closeView];
-
+	[self.sidebarViewController closeView];
 	[self.historyViewController closeView];
 	[self.commitViewController closeView];
+	_sidebarViewController = nil;
+	_historyViewController = nil;
+	_commitViewController = nil;
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -130,13 +131,13 @@
 	[[self window] setFrameUsingName:@"GitX"];
 	[[self window] setRepresentedURL:self.repository.workingDirectoryURL];
 
-	sidebarController = [[PBGitSidebarController alloc] initWithRepository:self.repository superController:self];
+	_sidebarController = [[PBGitSidebarController alloc] initWithRepository:self.repository superController:self];
 	_historyViewController = [[PBGitHistoryController alloc] initWithRepository:self.repository superController:self];
 	_commitViewController = [[PBGitCommitController alloc] initWithRepository:self.repository superController:self];
 
-	[[sidebarController view] setFrame:[sourceSplitView bounds]];
-	[sourceSplitView addSubview:[sidebarController view]];
-	[sourceListControlsView addSubview:sidebarController.sourceListControlsView];
+	[[_sidebarController view] setFrame:[sourceSplitView bounds]];
+	[sourceSplitView addSubview:_sidebarController.view];
+	[sourceListControlsView addSubview:_sidebarController.sourceListControlsView];
 
 	[[statusField cell] setBackgroundStyle:NSBackgroundStyleRaised];
 	[progressIndicator setUsesThreadedAnimation:YES];
@@ -174,12 +175,12 @@
 
 - (void) showCommitView:(id)sender
 {
-	[sidebarController selectStage];
+	[_sidebarController selectStage];
 }
 
 - (void) showHistoryView:(id)sender
 {
-	[sidebarController selectCurrentBranch];
+	[_sidebarController selectCurrentBranch];
 }
 
 - (void)showCommitHookFailedSheet:(NSString *)messageText infoText:(NSString *)infoText commitController:(PBGitCommitController *)controller
@@ -431,11 +432,11 @@
 
 - (PBGitRef *)selectedRef {
 	id firstResponder = self.window.firstResponder;
-	if (firstResponder == sidebarController.sourceView) {
-		NSOutlineView *sourceView = sidebarController.sourceView;
+	if (firstResponder == self.sidebarViewController.sourceView) {
+		NSOutlineView *sourceView = self.sidebarViewController.sourceView;
 		PBSourceViewItem *item = [sourceView itemAtRow:sourceView.selectedRow];
 		PBGitRef *ref = item.ref;
-		if (ref && (item.parent == sidebarController.remotes)) {
+		if (ref && (item.parent == self.sidebarViewController.remotes)) {
 			ref = [PBGitRef refFromString:[kGitXRemoteRefPrefix stringByAppendingString:item.title]];
 		}
 		return ref;
