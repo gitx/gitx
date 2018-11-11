@@ -90,7 +90,7 @@ static NSString *deltaTypeName(GTDeltaType t) {
 	}
 }
 
-static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)());
+static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)(void));
 
 // A GTDiffDelta's GTDiffFile does not always set the file size. See `git_diff_get_delta`.
 static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
@@ -159,7 +159,7 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
 	});
 }
 
-static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)()) {
+static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)(void)) {
 	if (isCanceled()) return nil;
 	GTDiffFindOptionsFlags flags = GTDiffFindOptionsFlagsFindRenames;
 	if (![PBGitDefaults showWhitespaceDifferences]) {
