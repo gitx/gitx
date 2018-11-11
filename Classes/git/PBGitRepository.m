@@ -1081,12 +1081,17 @@ NSString * const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return YES;
 }
 
-- (BOOL)updateReference:(PBGitRef *)ref toPointAtCommit:(PBGitCommit *)newCommit {
-	NSError *error = nil;
-	BOOL success = [self launchTaskWithArguments:@[@"update-ref", @"-mUpdate from GitX", ref.ref, newCommit.SHA] error:&error];
+- (BOOL)updateReference:(PBGitRef *)ref toPointAtCommit:(PBGitCommit *)newCommit error:(NSError **)error {
+	NSError *gitError = nil;
+	BOOL success = [self launchTaskWithArguments:@[@"update-ref", @"-mUpdate from GitX", ref.ref, newCommit.SHA] error:&gitError];
 	if (!success) {
-		PBLogError(error);
+		NSString *title = NSLocalizedString(@"Reference update failed", @"Reference update failure - error title");
+		NSString *message = NSLocalizedString(@"The reference %@ couldn't be update", @"Reference update failure - error message");
+		message = [NSString stringWithFormat:message, ref.shortName];
+
+		return PBReturnError(error, title, message, gitError);
 	}
+	[self reloadRefs];
 	return success;
 }
 

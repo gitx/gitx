@@ -110,21 +110,6 @@
 	return NSDragOperationNone;
 }
 
-- (void) dropRef:(NSDictionary *)dropInfo
-{
-	PBGitRef *ref = [dropInfo objectForKey:@"dragRef"];
-	PBGitCommit *oldCommit = [dropInfo objectForKey:@"oldCommit"];
-	PBGitCommit *dropCommit = [dropInfo objectForKey:@"dropCommit"];
-	if (!ref || ! oldCommit || !dropCommit)
-		return;
-
-	if (![historyController.repository updateReference:ref toPointAtCommit:dropCommit])
-
-	[dropCommit addRef:ref];
-	[oldCommit removeRef:ref];
-	[historyController.commitList reloadData];
-}
-
 - (BOOL)tableView:(NSTableView *)aTableView
 	   acceptDrop:(id <NSDraggingInfo>)info
 			  row:(NSInteger)row
@@ -149,17 +134,6 @@
 
 	PBGitCommit *dropCommit = [[commitController arrangedObjects] objectAtIndex:row];
 
-	NSDictionary *dropInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-							  ref, @"dragRef",
-							  oldCommit, @"oldCommit",
-							  dropCommit, @"dropCommit",
-							  nil];
-
-	if ([PBGitDefaults isDialogWarningSuppressedForDialog:kDialogAcceptDroppedRef]) {
-		[self dropRef:dropInfo];
-		return YES;
-	}
-
 	NSString *subject = [dropCommit subject];
 	if ([subject length] > 99)
 		subject = [[subject substringToIndex:99] stringByAppendingString:@"…"];
@@ -168,19 +142,22 @@
 	alert.messageText = [NSString stringWithFormat:NSLocalizedString(@"Move %@: %@", @""), [ref refishType], [ref shortName]];
 	alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"Move the %@ to point to the commit: %@", @""), [ref refishType], subject];
 
-	[alert addButtonWithTitle:@"Move"];
-	[alert addButtonWithTitle:@"Cancel"];
-    [alert setShowsSuppressionButton:YES];
+	[alert addButtonWithTitle:NSLocalizedString(@"Move", @"Move branch label - default button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Move branch label - cancel button")];
 
-	[alert beginSheetModalForWindow:historyController.windowController.window
-				  completionHandler:^(NSModalResponse returnCode) {
-					  if (returnCode == NSAlertFirstButtonReturn) {
-						  [self dropRef:dropInfo];
-					  }
+	PBGitWindowController *wc = historyController.windowController;
+	[wc confirmDialog:alert
+suppressionIdentifier:kDialogAcceptDroppedRef
+			forAction:^{
+				NSError *error = nil;
+				if (![wc.repository updateReference:ref toPointAtCommit:dropCommit error:&error]) {
+					[wc showErrorSheet:error];
+					return;
+				}
 
-					  if ([[alert suppressionButton] state] == NSOnState)
-						  [PBGitDefaults suppressDialogWarningForDialog:kDialogAcceptDroppedRef];
-				  }];
+				[dropCommit addRef:ref];
+				[oldCommit removeRef:ref];
+			}];
 
 	return YES;
 }
