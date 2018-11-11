@@ -140,7 +140,7 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
 
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 		NSDictionary *summary = loadCommitSummary(repo, queueCommit, ^BOOL {
-			return gen != atomic_load(&_commitSummaryGeneration);
+			return gen != atomic_load(&self->_commitSummaryGeneration);
 		});
 		if (!summary) return;
 		NSError *err = nil;

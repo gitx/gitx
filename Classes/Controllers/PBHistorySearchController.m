@@ -439,7 +439,7 @@
 			NSError *error = [NSError pb_errorWithDescription:desc
 												failureReason:reason
 											  underlyingError:taskError];
-			[historyController.windowController showErrorSheet:error];
+			[self->historyController.windowController showErrorSheet:error];
 			return;
 		}
 		[self parseBackgroundSearchResults:readData];

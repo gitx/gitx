@@ -191,7 +191,7 @@
 	 completionHandler:^(id  _Nonnull sheet, NSModalResponse returnCode) {
 		 if (returnCode != NSModalResponseOK) return;
 
-		 [_commitViewController forceCommit:self];
+		 [self.commitViewController forceCommit:self];
 	 }];
 }
 
