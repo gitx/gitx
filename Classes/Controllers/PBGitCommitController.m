@@ -573,7 +573,7 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 		}
 		return filesForStaging.count > 0 && canDiscardAnyFileIn(filesForStaging);
 	}
-	else if (menuItem.action == @selector(trashFiles:)) {
+	else if (menuItem.action == @selector(moveToTrash:)) {
 		if (isInContextualMenu) {
 			menuItem.title = PBLocalizedStringForArray(filesForStaging,
 													   NSLocalizedString(@"Move “%@” to Trash", @"Move to Trash menu item (single file with name)"),
