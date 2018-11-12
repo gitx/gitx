@@ -17,12 +17,10 @@
 }
 
 + (NSString *) iTerm2Command:(NSString *)command inDirectory:(NSURL *)directory {
-	return [NSString stringWithFormat:@"/usr/bin/login -f %@ /bin/sh -c 'cd \"%@\"; clear; echo \"# Opened by GitX\"; %@; ${SHELL} -l",
+	return [NSString stringWithFormat:@"/usr/bin/login -f %@ /bin/sh -c 'cd \"%@\"; clear; echo \"# Opened by GitX\"; %@; ${SHELL} -l'",
 			NSUserName(), directory.path, command];
 }
 + (void) runCommand:(NSString *)command inDirectory:(NSURL *)directory {
-	NSLog(@"Running command: %@ in directory %@", command, directory.path);
-	
 	// Prefer iTerm2. If they have it installed they probably want to use that.
 	iTerm2Application *iTerm2 = [SBApplication applicationWithBundleIdentifier: @"com.googlecode.iterm2"];
 	if (iTerm2 != nil) {
