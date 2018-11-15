@@ -163,7 +163,11 @@ NSString * const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 - (NSString *)projectName
 {
-	NSString* result = [self.workingDirectory lastPathComponent];
+	NSString *result = [self.workingDirectory lastPathComponent];
+
+	if (!result)
+		result = self.gitURL.lastPathComponent;
+
 	return result;
 }
 
