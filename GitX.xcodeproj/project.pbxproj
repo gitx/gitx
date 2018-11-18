@@ -144,6 +144,7 @@
 		4D843B401E5E3939004C3A6F /* PBGitRepository_PBGitBinarySupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D843B3F1E5E3939004C3A6F /* PBGitRepository_PBGitBinarySupport.m */; };
 		4DECFBB21E662962004C3A6F /* ObjectiveGit+PBCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DECFBB11E662962004C3A6F /* ObjectiveGit+PBCategories.m */; };
 		4DF173E621A1A67C003CD3CE /* MAKVONotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF173E521A1A67A003CD3CE /* MAKVONotificationCenter.m */; };
+		4DF173E921A1D60A003CD3CE /* NSAppearance+PBDarkMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF173E821A1D60A003CD3CE /* NSAppearance+PBDarkMode.m */; };
 		50660A551FD6F48A004342B0 /* PBSidebarList.m in Sources */ = {isa = PBXBuildFile; fileRef = 50660A541FD6F48A004342B0 /* PBSidebarList.m */; };
 		507367411FD1F54E003F73E1 /* PBGitCommitTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 507367401FD1F54E003F73E1 /* PBGitCommitTableViewCell.m */; };
 		508E268D1FD317FC00CE9FE0 /* PBSidebarTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 508E268C1FD317FC00CE9FE0 /* PBSidebarTableViewCell.m */; };
@@ -575,6 +576,8 @@
 		4DECFBB11E662962004C3A6F /* ObjectiveGit+PBCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ObjectiveGit+PBCategories.m"; sourceTree = "<group>"; };
 		4DF173E421A1A679003CD3CE /* MAKVONotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAKVONotificationCenter.h; path = MAKVONotificationCenter/MAKVONotificationCenter.h; sourceTree = "<group>"; };
 		4DF173E521A1A67A003CD3CE /* MAKVONotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAKVONotificationCenter.m; path = MAKVONotificationCenter/MAKVONotificationCenter.m; sourceTree = "<group>"; };
+		4DF173E721A1D60A003CD3CE /* NSAppearance+PBDarkMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSAppearance+PBDarkMode.h"; sourceTree = "<group>"; };
+		4DF173E821A1D60A003CD3CE /* NSAppearance+PBDarkMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSAppearance+PBDarkMode.m"; sourceTree = "<group>"; };
 		50660A531FD6F48A004342B0 /* PBSidebarList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBSidebarList.h; sourceTree = "<group>"; };
 		50660A541FD6F48A004342B0 /* PBSidebarList.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PBSidebarList.m; sourceTree = "<group>"; };
 		5073673F1FD1F54E003F73E1 /* PBGitCommitTableViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBGitCommitTableViewCell.h; sourceTree = "<group>"; };
@@ -875,6 +878,8 @@
 				4A5D76B314A9A9CC00DF6C68 /* Views */,
 				4D6E4F781E56851A004C3A6F /* PBMacros.m */,
 				4D6E4F791E56851A004C3A6F /* PBMacros.h */,
+				4DF173E721A1D60A003CD3CE /* NSAppearance+PBDarkMode.h */,
+				4DF173E821A1D60A003CD3CE /* NSAppearance+PBDarkMode.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1507,6 +1512,7 @@
 				507367411FD1F54E003F73E1 /* PBGitCommitTableViewCell.m in Sources */,
 				4A5D772B14A9A9CC00DF6C68 /* PBCommitMessageView.m in Sources */,
 				4A5D772C14A9A9CC00DF6C68 /* PBCreateBranchSheet.m in Sources */,
+				4DF173E921A1D60A003CD3CE /* NSAppearance+PBDarkMode.m in Sources */,
 				4A5D772D14A9A9CC00DF6C68 /* PBCreateTagSheet.m in Sources */,
 				4A5D772E14A9A9CC00DF6C68 /* PBFileChangesTableView.m in Sources */,
 				6C5244131E00C66E0051DE20 /* PBHistorySearchMode.m in Sources */,
