@@ -68,9 +68,41 @@
 	window.contentView = self.view;
 	[self populateList];
 
-	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
-	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
-   	[repository addObserver:self forKeyPath:@"stashes" options:0 context:@"stashesModified"];
+	[repository addObserver:self keyPath:@"currentBranch" options:0 block:^(MAKVONotification *notification) {
+		PBGitSidebarController *observer = notification.observer;
+		NSInteger row = observer.sourceView.selectedRow;
+		[observer.sourceView reloadData];
+		[observer.sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+		[observer selectCurrentBranch];
+	}];
+
+	[repository addObserver:self keyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) block:^(MAKVONotification *notification) {
+		PBGitSidebarController *observer = notification.observer;
+		if (notification.kind == NSKeyValueChangeInsertion) {
+			NSArray *newRevSpecs = notification.newValue;
+			for (PBGitRevSpecifier *rev in newRevSpecs) {
+				PBSourceViewItem *item = [observer addRevSpec:rev];
+				[observer.sourceView PBExpandItem:item expandParents:YES];
+			}
+		}
+		else if (notification.kind == NSKeyValueChangeRemoval) {
+			NSArray *removedRevSpecs = notification.oldValue;
+			for (PBGitRevSpecifier *rev in removedRevSpecs)
+				[observer removeRevSpec:rev];
+		}
+	}];
+
+	[repository addObserver:self keyPath:@"stashes" options:0 block:^(MAKVONotification *notification) {
+		PBGitSidebarController *observer = notification.observer;
+		for (PBSourceViewGitStashItem *stashItem in observer->stashes.sortedChildren)
+			[observer->stashes removeChild:stashItem];
+
+		for (PBGitStash *stash in observer.repository.stashes)
+			[observer->stashes addChild: [PBSourceViewGitStashItem itemWithStash:stash]];
+
+		[observer.sourceView expandItem:observer->stashes];
+		[observer.sourceView reloadItem:observer->stashes reloadChildren:YES];
+	}];
 
     [sourceView setTarget:self];
     [sourceView setDoubleAction:@selector(doubleClicked:)];
@@ -91,60 +123,6 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSOutlineViewItemWillExpandNotification object:sourceView];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSOutlineViewItemWillCollapseNotification object:sourceView];
-}
-
-- (void)closeView
-{
-	[repository removeObserver:self forKeyPath:@"currentBranch"];
-	[repository removeObserver:self forKeyPath:@"branches"];
-	[repository removeObserver:self forKeyPath:@"stashes"];
-
-	[super closeView];
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if ([@"currentBranchChange" isEqualToString:(__bridge NSString*)context]) {
-		NSInteger row = sourceView.selectedRow;
-		[sourceView reloadData];
-		[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
-		[self selectCurrentBranch];
-		return;
-	}
-
-	if ([@"branchesModified" isEqualToString:(__bridge NSString*)context]) {
-		NSInteger changeKind = [(NSNumber *)[change objectForKey:NSKeyValueChangeKindKey] intValue];
-
-		if (changeKind == NSKeyValueChangeInsertion) {
-			NSArray *newRevSpecs = [change objectForKey:NSKeyValueChangeNewKey];
-			for (PBGitRevSpecifier *rev in newRevSpecs) {
-				PBSourceViewItem *item = [self addRevSpec:rev];
-				[sourceView PBExpandItem:item expandParents:YES];
-			}
-		}
-		else if (changeKind == NSKeyValueChangeRemoval) {
-			NSArray *removedRevSpecs = [change objectForKey:NSKeyValueChangeOldKey];
-			for (PBGitRevSpecifier *rev in removedRevSpecs)
-				[self removeRevSpec:rev];
-		}
-		return;
-	}
-    
-	if ([@"stashesModified" isEqualToString:(__bridge NSString*)context]) {
-        
-        for (PBSourceViewGitStashItem *stashItem in stashes.sortedChildren)
-            [stashes removeChild:stashItem];
-        
-        for (PBGitStash *stash in repository.stashes)
-            [stashes addChild: [PBSourceViewGitStashItem itemWithStash:stash]];
-
-        [sourceView expandItem:stashes];
-        [sourceView reloadItem:stashes reloadChildren:YES];
-        
-        return;
-    }
-
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (PBSourceViewItem *) selectedItem

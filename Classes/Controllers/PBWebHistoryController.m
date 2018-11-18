@@ -26,13 +26,14 @@
 	startFile = @"history";
 	repository = historyController.repository;
 	[super awakeFromNib];
-	[historyController addObserver:self forKeyPath:@"webCommits" options:0 context:@"ChangedCommit"];
+	[historyController addObserver:self keyPath:@"webCommits" options:0 block:^(MAKVONotification *notification) {
+		[self changeContentTo:self->historyController.webCommits];
+	}];
 }
 
 - (void)closeView
 {
 	[[self script] setValue:nil forKey:@"commit"];
-	[historyController removeObserver:self forKeyPath:@"webCommits"];
 
 	[super closeView];
 }
@@ -41,14 +42,6 @@
 {
 	currentOID = nil;
 	[self changeContentTo:historyController.webCommits];
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([(__bridge NSString *)context isEqualToString: @"ChangedCommit"])
-		[self changeContentTo:historyController.webCommits];
-	else
-		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (void) changeContentTo:(NSArray<PBGitCommit *> *)commits

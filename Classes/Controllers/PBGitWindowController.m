@@ -82,9 +82,6 @@
 
 	[self.historyViewController closeView];
 	[self.commitViewController closeView];
-
-	if (contentController)
-		[contentController removeObserver:self forKeyPath:@"status"];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -158,7 +155,7 @@
 		return;
 
 	if (contentController)
-		[contentController removeObserver:self forKeyPath:@"status"];
+		[contentController removeObserver:self keyPath:@"status"];
 
 	[self removeAllContentSubViews];
 
@@ -170,7 +167,9 @@
 //	[self setNextResponder: contentController];
 	[[self window] makeFirstResponder:[contentController firstResponder]];
 	[contentController updateView];
-	[contentController addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionInitial context:@"statusChange"];
+	[contentController addObserver:self keyPath:@"status" options:NSKeyValueObservingOptionInitial block:^(MAKVONotification *notification) {
+		[self updateStatus];
+	}];
 }
 
 - (void) showCommitView:(id)sender
@@ -237,16 +236,6 @@
 		[progressIndicator stopAnimation:self];
 		[progressIndicator setHidden:YES];
 	}
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([(__bridge NSString *)context isEqualToString:@"statusChange"]) {
-		[self updateStatus];
-		return;
-	}
-
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode

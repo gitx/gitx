@@ -88,14 +88,48 @@
 
 	self.selectedCommitDetailsIndex = [[NSUserDefaults standardUserDefaults] integerForKey:kHistorySelectedDetailIndexKey];
 
-	[commitController addObserver:self forKeyPath:@"selection" options:0 context:@"commitChange"];
-	[commitController addObserver:self forKeyPath:@"arrangedObjects.@count" options:NSKeyValueObservingOptionInitial context:@"updateCommitCount"];
-	[treeController addObserver:self forKeyPath:@"selection" options:0 context:@"treeChange"];
+	[commitController addObserver:self keyPath:@"selection" options:0 block:^(MAKVONotification *notification) {
+		PBGitHistoryController *observer = notification.observer;
+		[observer updateKeys];
+	}];
 
-	[repository.revisionList addObserver:self forKeyPath:@"isUpdating" options:0 context:@"revisionListUpdating"];
-	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"branchChange"];
-	[repository addObserver:self forKeyPath:@"refs" options:0 context:@"updateRefs"];
-	[repository addObserver:self forKeyPath:@"currentBranchFilter" options:0 context:@"branchFilterChange"];
+	[commitController addObserver:self keyPath:@"arrangedObjects.@count" options:NSKeyValueObservingOptionInitial block:^(MAKVONotification *notification) {
+		PBGitHistoryController *observer = notification.observer;
+		[observer reselectCommitAfterUpdate];
+	}];
+
+	[treeController addObserver:self keyPath:@"selection" options:0 block:^(MAKVONotification *notification) {
+		PBGitHistoryController *observer = notification.observer;
+		[observer updateQuicklookForce: NO];
+		[observer saveFileBrowserSelection];
+	}];
+
+	[repository.revisionList addObserver:self keyPath:@"isUpdating" options:0 block:^(MAKVONotification *notification) {
+		PBGitHistoryController *observer = notification.observer;
+		[observer reselectCommitAfterUpdate];
+	}];
+
+	[repository addObserver:self keyPath:@"currentBranch" options:0 block:^(MAKVONotification *notification) {
+		PBGitHistoryController *observer = notification.observer;
+		// Reset the sorting
+		if ([[observer.commitController sortDescriptors] count]) {
+			[observer.commitController setSortDescriptors:[NSArray array]];
+			[observer.commitController rearrangeObjects];
+		}
+
+		[observer updateBranchFilterMatrix];
+	}];
+
+	[repository addObserver:self keyPath:@"refs" options:0 block:^(MAKVONotification *notification) {
+		PBGitHistoryController *observer = notification.observer;
+		[observer.commitController rearrangeObjects];
+	}];
+
+	[repository addObserver:self keyPath:@"currentBranchFilter" options:0 block:^(MAKVONotification *notification) {
+		PBGitHistoryController *observer = notification.observer;
+		[PBGitDefaults setBranchFilter:observer.repository.currentBranchFilter];
+		[observer updateBranchFilterMatrix];
+	}];
 
 	forceSelectionUpdate = YES;
 	NSSize cellSpacing = [commitList intercellSpacing];
@@ -131,9 +165,10 @@
 	// listen for updates
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:repository];
 
-	__unsafe_unretained PBGitHistoryController *weakSelf = self;
+	__weak typeof(self) weakSelf = self;
 	commitList.findPanelActionBlock = ^(id sender) {
-		[weakSelf.view.window makeFirstResponder:weakSelf->searchField];
+		__strong typeof(weakSelf) strongSelf = weakSelf;
+		[weakSelf.view.window makeFirstResponder:strongSelf->searchField];
 	};
 
 	[super awakeFromNib];
@@ -145,6 +180,15 @@
       // refresh if the .git repository is modified
       [self refresh:self];
     }
+}
+
+- (void)reselectCommitAfterUpdate {
+	[self updateStatus];
+
+	if ([self.repository.currentBranch isSimpleRef])
+		[self selectCommit:[self.repository OIDForRef:self.repository.currentBranch.ref]];
+	else
+		[self selectCommit:self.firstCommit.OID];
 }
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
@@ -307,56 +351,6 @@
 		PBGitTree *treeItem = [objects objectAtIndex:0];
 		currentFileBrowserSelectionPath = [treeItem.fullPath componentsSeparatedByString:@"/"];
 	}
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	NSString* strContext = (__bridge NSString*)context;
-    if ([strContext isEqualToString: @"commitChange"]) {
-		[self updateKeys];
-		[self restoreFileBrowserSelection];
-		return;
-	}
-
-	if ([strContext isEqualToString: @"treeChange"]) {
-		[self updateQuicklookForce: NO];
-		[self saveFileBrowserSelection];
-		return;
-	}
-
-	if([strContext isEqualToString:@"branchChange"]) {
-		// Reset the sorting
-		if ([[commitController sortDescriptors] count]) {
-			[commitController setSortDescriptors:[NSArray array]];
-			[commitController rearrangeObjects];
-		}
-		
-		[self updateBranchFilterMatrix];
-		return;
-	}
-
-	if([strContext isEqualToString:@"updateRefs"]) {
-		[commitController rearrangeObjects];
-		return;
-	}
-
-	if ([strContext isEqualToString:@"branchFilterChange"]) {
-		[PBGitDefaults setBranchFilter:repository.currentBranchFilter];
-		[self updateBranchFilterMatrix];
-		return;
-	}
-
-	if([strContext isEqualToString:@"updateCommitCount"] || [(__bridge NSString *)context isEqualToString:@"revisionListUpdating"]) {
-		[self updateStatus];
-
-		if ([repository.currentBranch isSimpleRef])
-			[self selectCommit:[repository OIDForRef:repository.currentBranch.ref]];
-		else
-			[self selectCommit:self.firstCommit.OID];
-		return;
-	}
-
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (IBAction) openSelectedFile:(id)sender
@@ -563,17 +557,7 @@
 
 - (void)closeView
 {
-	if (commitController) {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-		[commitController removeObserver:self forKeyPath:@"selection"];
-		[commitController removeObserver:self forKeyPath:@"arrangedObjects.@count"];
-		[treeController removeObserver:self forKeyPath:@"selection"];
-
-		[repository.revisionList removeObserver:self forKeyPath:@"isUpdating"];
-		[repository removeObserver:self forKeyPath:@"currentBranch"];
-		[repository removeObserver:self forKeyPath:@"refs"];
-		[repository removeObserver:self forKeyPath:@"currentBranchFilter"];
-	}
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 
 	[webHistoryController closeView];
 	[fileView closeView];

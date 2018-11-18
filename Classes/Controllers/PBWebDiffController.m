@@ -15,26 +15,15 @@
 {
 	startFile = @"diff";
 	[super awakeFromNib];
-	[diffController addObserver:self forKeyPath:@"diff" options:0 context:@"ChangedDiff"];
+	[diffController addObserver:self keyPath:@"diff" options:0 block:^(MAKVONotification *notification) {
+		PBDiffWindowController *target = notification.target;
+		[notification.observer showDiff:target.diff];
+	}];
 }
-
-- (void)closeView
-{
-	[diffController removeObserver:self forKeyPath:@"diff"];
-
-	[super closeView];
-}
-
 
 - (void) didLoad
 {
 	[self showDiff:diffController.diff];
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([(__bridge NSString *)context isEqualToString: @"ChangedDiff"])
-		[self showDiff:diffController.diff];
 }
 
 - (void) showDiff: (NSString *) diff
