@@ -10,3 +10,6 @@
 [submodule "MGScopeBar"]
 	path = External/MGScopeBar
 	url = https://github.com/rowanj/MGScopeBar.git
+[submodule "External/MAKVONotificationCenter"]
+	path = External/MAKVONotificationCenter
+	url = https://github.com/mikeash/MAKVONotificationCenter
