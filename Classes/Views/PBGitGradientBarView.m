@@ -27,7 +27,8 @@
 
 - (void) drawRect:(NSRect)dirtyRect
 {
-	[gradient drawInRect:[self bounds] angle:90];
+	if (![NSApp isDarkMode])
+		[gradient drawInRect:[self bounds] angle:90];
 }
 
 
