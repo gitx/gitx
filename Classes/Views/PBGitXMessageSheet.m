@@ -128,8 +128,9 @@
 
 - (void)setInfoString:(NSString *)info
 {
-	NSDictionary *attributes = [NSDictionary dictionaryWithObject:[NSFont labelFontOfSize:[NSFont smallSystemFontSize]]
-														   forKey:NSFontAttributeName];
+	NSDictionary *attributes = @{NSFontAttributeName: [NSFont labelFontOfSize:[NSFont smallSystemFontSize]],
+								 NSForegroundColorAttributeName: [NSColor textColor],
+								 };
 	NSAttributedString *attributedInfoString = [[NSAttributedString alloc] initWithString:info attributes:attributes];
 	[[self.infoView textStorage] setAttributedString:attributedInfoString];
 }
