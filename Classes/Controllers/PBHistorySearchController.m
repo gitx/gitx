@@ -41,9 +41,6 @@
 #define kGitXRegexSearchLabel NSLocalizedString(@"Commit (pickaxe regex)", @"Option in Search menu to use the pickaxe search with regular expressions")
 #define kGitXPathSearchLabel NSLocalizedString(@"File path", @"Option in Search menu to search for file paths in the commit")
 
-#define kGitXSearchArrangedObjectsContext @"GitXSearchArrangedObjectsContext"
-
-
 @implementation PBHistorySearchController
 
 @synthesize historyController;
@@ -129,25 +126,11 @@
 
 	[self updateUI];
 
-	[commitController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:kGitXSearchArrangedObjectsContext];
-}
-
-- (void)dealloc {
-	[commitController removeObserver:self forKeyPath:@"arrangedObjects" context:kGitXSearchArrangedObjectsContext];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if ([(__bridge NSString *)context isEqualToString:kGitXSearchArrangedObjectsContext]) {
+	[commitController addObserver:self keyPath:@"arrangedObjects" options:0 block:^(MAKVONotification *notification) {
 		// the objects in the commitlist changed so the result indexes are no longer valid
 		[self clearSearch];
-		return;
-	}
-
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	}];
 }
-
-
 
 #pragma mark -
 #pragma mark Private methods
@@ -439,7 +422,7 @@
 			NSError *error = [NSError pb_errorWithDescription:desc
 												failureReason:reason
 											  underlyingError:taskError];
-			[historyController.windowController showErrorSheet:error];
+			[self->historyController.windowController showErrorSheet:error];
 			return;
 		}
 		[self parseBackgroundSearchResults:readData];

@@ -76,8 +76,10 @@
 	commitMessageView.repository = self.repository;
 	commitMessageView.delegate = self;
 
-	[commitMessageView setTypingAttributes:[NSDictionary dictionaryWithObject:[NSFont fontWithName:@"Menlo" size:12.0] forKey:NSFontAttributeName]];
-	
+	NSMutableDictionary *attrs = commitMessageView.typingAttributes.mutableCopy;
+	attrs[NSFontAttributeName] = [NSFont fontWithName:@"Menlo" size:12.0];
+	commitMessageView.typingAttributes = attrs;
+
 	[unstagedFilesController setFilterPredicate:[NSPredicate predicateWithFormat:@"hasUnstagedChanges == 1"]];
 	[stagedFilesController setFilterPredicate:[NSPredicate predicateWithFormat:@"hasStagedChanges == 1"]];
     [trackedFilesController setFilterPredicate:[NSPredicate predicateWithFormat:@"status > 0"]];
@@ -573,7 +575,7 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 		}
 		return filesForStaging.count > 0 && canDiscardAnyFileIn(filesForStaging);
 	}
-	else if (menuItem.action == @selector(trashFiles:)) {
+	else if (menuItem.action == @selector(moveToTrash:)) {
 		if (isInContextualMenu) {
 			menuItem.title = PBLocalizedStringForArray(filesForStaging,
 													   NSLocalizedString(@"Move “%@” to Trash", @"Move to Trash menu item (single file with name)"),
@@ -643,14 +645,14 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 
 - (void) didDoubleClickOnTable:(NSTableView *) tableView
 {
-	NSArrayController *controller = [tableView tag] == 0 ? unstagedFilesController : stagedFilesController;
+	NSArrayController *controller = (tableView == unstagedTable ? unstagedFilesController : stagedFilesController);
 
 	NSIndexSet *selectionIndexes = [tableView selectedRowIndexes];
 	NSArray *files = [[controller arrangedObjects] objectsAtIndexes:selectionIndexes];
-	if ([tableView tag] == 0) {
+
+	if (tableView == unstagedTable) {
 		[self.index stageFiles:files];
-	}
-	else {
+	} else {
 		[self.index unstageFiles:files];
 	}
 }

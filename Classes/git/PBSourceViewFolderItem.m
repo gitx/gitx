@@ -1,5 +1,5 @@
 //
-//  PBGitSVFolderItem.m
+//  PBSourceViewFolderItem.m
 //  GitX
 //
 //  Created by Nathan Kinsinger on 3/2/10.

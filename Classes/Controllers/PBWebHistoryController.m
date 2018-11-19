@@ -26,13 +26,14 @@
 	startFile = @"history";
 	repository = historyController.repository;
 	[super awakeFromNib];
-	[historyController addObserver:self forKeyPath:@"webCommits" options:0 context:@"ChangedCommit"];
+	[historyController addObserver:self keyPath:@"webCommits" options:0 block:^(MAKVONotification *notification) {
+		[self changeContentTo:self->historyController.webCommits];
+	}];
 }
 
 - (void)closeView
 {
 	[[self script] setValue:nil forKey:@"commit"];
-	[historyController removeObserver:self forKeyPath:@"webCommits"];
 
 	[super closeView];
 }
@@ -41,14 +42,6 @@
 {
 	currentOID = nil;
 	[self changeContentTo:historyController.webCommits];
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([(__bridge NSString *)context isEqualToString: @"ChangedCommit"])
-		[self changeContentTo:historyController.webCommits];
-	else
-		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (void) changeContentTo:(NSArray<PBGitCommit *> *)commits
@@ -90,7 +83,7 @@ static NSString *deltaTypeName(GTDeltaType t) {
 	}
 }
 
-static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)());
+static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)(void));
 
 // A GTDiffDelta's GTDiffFile does not always set the file size. See `git_diff_get_delta`.
 static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
@@ -140,7 +133,7 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
 
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 		NSDictionary *summary = loadCommitSummary(repo, queueCommit, ^BOOL {
-			return gen != atomic_load(&_commitSummaryGeneration);
+			return gen != atomic_load(&self->_commitSummaryGeneration);
 		});
 		if (!summary) return;
 		NSError *err = nil;
@@ -159,7 +152,7 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
 	});
 }
 
-static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)()) {
+static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)(void)) {
 	if (isCanceled()) return nil;
 	GTDiffFindOptionsFlags flags = GTDiffFindOptionsFlagsFindRenames;
 	if (![PBGitDefaults showWhitespaceDifferences]) {

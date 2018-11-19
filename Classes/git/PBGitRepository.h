@@ -19,6 +19,9 @@
 
 extern NSString *PBGitRepositoryDocumentType;
 
+/** NSError user info key - hook name */
+extern NSString * const PBHookNameErrorKey;
+
 typedef enum branchFilterTypes {
 	kGitXAllBranchesFilter = 0,
 	kGitXLocalRemoteBranchesFilter,
@@ -80,7 +83,7 @@ typedef enum branchFilterTypes {
 
 - (BOOL)ignoreFilePaths:(NSArray *)filePaths error:(NSError **)error;
 
-- (BOOL)updateReference:(PBGitRef *)ref toPointAtCommit:(PBGitCommit *)newCommit;
+- (BOOL)updateReference:(PBGitRef *)ref toPointAtCommit:(PBGitCommit *)newCommit error:(NSError **)error;
 - (NSString *)performDiff:(PBGitCommit *)startCommit against:(PBGitCommit *)diffCommit forFiles:(NSArray *)filePaths;
 
 - (NSURL *) gitURL ;

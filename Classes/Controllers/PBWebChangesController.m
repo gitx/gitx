@@ -112,8 +112,8 @@
 		alert.messageText = NSLocalizedString(@"Discard hunk", @"Title of dialogue asking whether the user really wanted to press the Discard button on a hunk in the changes view");
 		alert.informativeText = NSLocalizedString(@"Are you sure you wish to discard the changes in this hunk?\n\nYou cannot undo this operation.", @"Asks whether the user really wants to discard a hunk in changes view after pressing the Discard Hunk button");
 
-		[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel (discarding a hunk in the changes view)")];
 		[alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK (discarding a hunk in the changes view)")];
+		[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel (discarding a hunk in the changes view)")];
 
 		[controller.windowController confirmDialog:alert suppressionIdentifier:nil forAction:^{
 			[self discardHunk:hunk];

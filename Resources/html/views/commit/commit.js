@@ -9,8 +9,11 @@ var showNewFile = function(file)
 	diff.innerHTML = "";
 
 	var contents = Index.diffForFile_staged_contextLines_(file, false, contextLines);
-	if (!contents) {
+	if (contents === undefined) {
 		notify("Can not display changes (Binary file?)", -1);
+		return;
+	} else if (contents.length == 0) {
+		notify("Empty file", 1);
 		return;
 	}
 

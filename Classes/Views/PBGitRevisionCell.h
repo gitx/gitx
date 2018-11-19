@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSRect) rectAtIndex:(int)index;
 - (void) drawLabelAtIndex:(int)index inRect:(NSRect)rect;
 
-@property (copy) PBGitCommit* objectValue;
+@property (strong) PBGitCommit *objectValue;
 
 @end
 

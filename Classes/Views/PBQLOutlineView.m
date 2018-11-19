@@ -20,7 +20,7 @@
 }
 
 /* Needed to drag outside application */
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL) local
+- (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context
 {
 	return NSDragOperationCopy;
 }

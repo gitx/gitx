@@ -10,6 +10,9 @@
 #import "PBGitRepository.h"
 #import "PBGitRevSpecifier.h"
 
+#import "PBGitWindowController.h"
+#import "PBGitHistoryController.h"
+
 /*
  * TODO: This is kept for simplicity reasons. A "more correct" way of handling
  * menus would be to have them in NIBs, and handle them using NSMenuValidation.
@@ -231,7 +234,7 @@
 	}
 	
 	[items addObject:[NSMenuItem pb_itemWithTitle:NSLocalizedString(@"Copy SHA", @"Contextual Menu Item to copy the selected commits’ full SHA(s)") action:@selector(copySHA:) enabled:YES]];
-	[items addObject:[NSMenuItem pb_itemWithTitle:NSLocalizedString(@"Copy short SHA", @"Contextual Menu Item to copy the selected commits’ short SHA(s)") action:@selector(copyShortSHA:) enabled:YES]];
+	[items addObject:[NSMenuItem pb_itemWithTitle:NSLocalizedString(@"Copy short SHA", @"Contextual Menu Item to copy the selected commits’ short SHA(s)") action:@selector(copyShortName:) enabled:YES]];
 	[items addObject:[NSMenuItem pb_itemWithTitle:NSLocalizedString(@"Copy Patch", @"Contextual Menu Item to copy the selected commits as patch(es)") action:@selector(copyPatch:) enabled:YES]];
 
 	if (isSingleCommitSelection) {

@@ -1,5 +1,5 @@
 //
-//  PBGitSVStageItem.m
+//  PBSourceViewStageItem.m
 //  GitX
 //
 //  Created by Nathan Kinsinger on 3/2/10.
@@ -7,7 +7,6 @@
 //
 
 #import "PBSourceViewStageItem.h"
-
 
 @implementation PBSourceViewStageItem
 

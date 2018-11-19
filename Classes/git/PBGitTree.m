@@ -117,7 +117,13 @@
 		return string;
 	}
 
-	return [repository outputOfTaskWithArguments:@[@"show", self.refSpec] error:NULL];
+	NSError *error;
+	NSString *output = [repository outputOfTaskWithArguments:@[@"show", self.refSpec] error:&error];
+	if (!output) {
+		return error.userInfo[PBTaskTerminationOutputKey];
+	}
+
+	return output;
 }
 
 - (NSString *) blame
@@ -131,7 +137,11 @@
 	if ([self fileSize] > 52428800) // ~50MB
 		return [NSString stringWithFormat:@"%@ is too big to be displayed (%lld bytes)", [self fullPath], [self fileSize]];
 
-	NSString *contents = [repository outputOfTaskWithArguments:@[@"blame", @"-p", sha, @"--", self.fullPath] error:NULL];
+	NSError *error = nil;
+	NSString *contents = [repository outputOfTaskWithArguments:@[@"blame", @"-p", sha, @"--", self.fullPath] error:&error];
+	if (!contents) {
+		return error.userInfo[PBTaskTerminationOutputKey];
+	}
 	
 	if ([self hasBinaryHeader:contents])
 		return [NSString stringWithFormat:@"%@ appears to be a binary file of %lld bytes", [self fullPath], [self fileSize]];
@@ -263,31 +273,56 @@
 	return localFileName;
 }
 
-- (NSArray*) children
+- (NSArray *) children
 {
 	if (children != nil)
 		return children;
-	
-	NSString* ref = [self refSpec];
 
-	NSFileHandle* handle = [repository handleForArguments:[NSArray arrayWithObjects:@"show", ref, nil]];
-	[handle readLine];
-	[handle readLine];
-	
-	NSMutableArray* c = [NSMutableArray array];
-	
-	NSString* p = [handle readLine];
-	while (p.length > 0) {
-		BOOL isLeaf = ([p characterAtIndex:p.length - 1] != '/');
-		if (!isLeaf)
-			p = [p substringToIndex:p.length -1];
+	GTOID *oid = [GTOID oidWithSHA:[[self refSpec] substringToIndex:GIT_OID_HEXSZ]];
+	NSString *path = [[self refSpec] substringFromIndex:GIT_OID_HEXSZ + 1];
 
-		PBGitTree* child = [PBGitTree treeForTree:self andPath:p];
-		child.leaf = isLeaf;
-		[c addObject: child];
-		
-		p = [handle readLine];
+	NSError *error;
+	GTObject *object = [repository.gtRepo lookUpObjectByOID:oid error:&error];
+	if (!object) {
+		PBLogError(error);
+		return nil;
 	}
+
+	GTTree *tree = [object objectByPeelingToType:GTObjectTypeTree error:&error];
+	if (!tree) {
+		PBLogError(error);
+		return nil;
+	}
+
+	GTTree *actualTree = nil;
+	if ([path isEqualToString:@""]) {
+		actualTree = tree;
+	} else {
+		GTTreeEntry *entry = [tree entryWithPath:path error:&error];
+		if (!entry) {
+			PBLogError(error);
+			return nil;
+		}
+		actualTree = [[entry GTObject:&error] objectByPeelingToType:GTObjectTypeTree error:&error];
+		if (!actualTree) {
+			// Some types of paths can't be peeled, like submodules
+			return nil;
+		}
+	}
+
+	NSMutableArray *c = [NSMutableArray array];
+	BOOL success = [actualTree enumerateEntriesWithOptions:GTTreeEnumerationOptionPre error:&error block:^BOOL(GTTreeEntry * _Nonnull entry, NSString * _Nonnull root, BOOL * _Nonnull stop) {
+
+		PBGitTree *child = [PBGitTree treeForTree:self andPath:entry.name];
+		child.leaf = entry.type != GTObjectTypeTree;
+		[c addObject: child];
+		return NO;
+	}];
+	if (!success) {
+		PBLogError(error);
+		return nil;
+	}
+
 	[c sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
 		PBGitTree* tree1 = (PBGitTree*)obj1;
 		PBGitTree* tree2 = (PBGitTree*)obj2;

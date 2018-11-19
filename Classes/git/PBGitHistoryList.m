@@ -14,7 +14,7 @@
 #import "PBGitRef.h"
 #import "PBGitRevSpecifier.h"
 
-@interface PBGitHistoryList ()
+@interface PBGitHistoryList () <PBGitHistoryGrapherDelegate>
 
 - (void) resetGraphing;
 
@@ -87,7 +87,7 @@
 - (void)cleanup
 {
 	if (currentRevList) {
-		[currentRevList removeObserver:self forKeyPath:@"commits"];
+		[currentRevList removeObserver:self keyPath:@"commits"];
 		[currentRevList cancel];
 		currentRevList = nil;
 	}
@@ -234,11 +234,20 @@
 		return;
 
 	if (currentRevList)
-		[currentRevList removeObserver:self forKeyPath:@"commits"];
+		[currentRevList removeObserver:self keyPath:@"commits"];
 
 	currentRevList = parser;
 
-	[currentRevList addObserver:self forKeyPath:@"commits" options:NSKeyValueObservingOptionNew context:@"commitsUpdated"];
+	[currentRevList addObserver:self keyPath:@"commits" options:NSKeyValueObservingOptionNew block:^(MAKVONotification *notification) {
+		PBGitHistoryList *observer = notification.observer;
+		if (notification.kind == NSKeyValueChangeInsertion) {
+			NSArray *newCommits = notification.newValue;
+			if ([observer->repository.currentBranch isSimpleRef])
+				[observer->graphQueue addOperation:[observer operationForCommits:newCommits]];
+			else
+				[observer addCommitsFromArray:newCommits];
+		}
+	}];
 }
 
 
@@ -318,7 +327,7 @@
 		lastRemoteRef = nil;
 		lastOID = nil;
 		self.commits = [NSMutableArray array];
-		[projectRevList loadRevisonsWithCompletionBlock:^{
+		[projectRevList loadRevisionsWithCompletionBlock:^{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self finishedGraphing];
 			});
@@ -340,32 +349,11 @@
 	lastOID = nil;
 	self.commits = [NSMutableArray array];
 
-	[otherRevListParser loadRevisonsWithCompletionBlock:^{
+	[otherRevListParser loadRevisionsWithCompletionBlock:^{
 		dispatch_async(dispatch_get_main_queue(), ^{
 			[self finishedGraphing];
 		});
 	}];
-}
-
-
-
-#pragma mark -
-#pragma mark Key Value Observing
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if ([@"commitsUpdated" isEqualToString:(__bridge NSString*)context]) {
-		NSInteger changeKind = [(NSNumber *)[change objectForKey:NSKeyValueChangeKindKey] intValue];
-		if (changeKind == NSKeyValueChangeInsertion) {
-			NSArray *newCommits = [change objectForKey:NSKeyValueChangeNewKey];
-			if ([repository.currentBranch isSimpleRef])
-				[graphQueue addOperation:[self operationForCommits:newCommits]];
-			else
-				[self addCommitsFromArray:newCommits];
-		}
-		return;
-	}
-
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 @end

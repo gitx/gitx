@@ -1,5 +1,5 @@
 //
-//  PBGitSVStageItem.h
+//  PBSourceViewFolderItem.h
 //  GitX
 //
 //  Created by Nathan Kinsinger on 3/2/10.
@@ -9,10 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "PBSourceViewItem.h"
 
-@interface PBGitSVStageItem : PBSourceViewItem {
+@interface PBSourceViewFolderItem : PBSourceViewItem
 
-}
-
-+ (id) stageItem;
++ (instancetype)folderItemWithTitle:(NSString *)title;
 
 @end

@@ -18,7 +18,7 @@
 @property (nonatomic, strong) NSMutableArray<PBGitCommit *> *commits;
 
 - (id) initWithRepository:(PBGitRepository *)repo rev:(PBGitRevSpecifier *)rev shouldGraph:(BOOL)graph;
-- (void)loadRevisonsWithCompletionBlock:(void(^)(void))completionBlock;
+- (void)loadRevisionsWithCompletionBlock:(void(^)(void))completionBlock;
 - (void)cancel;
 
 @end

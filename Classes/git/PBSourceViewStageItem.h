@@ -1,5 +1,5 @@
 //
-//  PBGitSVOtherRevItem.h
+//  PBSourceViewStageItem.h
 //  GitX
 //
 //  Created by Nathan Kinsinger on 3/2/10.
@@ -9,10 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "PBSourceViewItem.h"
 
-@interface PBGitSVOtherRevItem : PBSourceViewItem {
+@interface PBSourceViewStageItem : PBSourceViewItem
 
-}
-
-+ (id)otherItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier;
++ (instancetype)stageItem;
 
 @end

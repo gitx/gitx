@@ -16,7 +16,7 @@
 @synthesize mouseDownPoint;
 @synthesize useAdjustScroll;
 
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL) local
+- (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context
 {
 	return NSDragOperationCopy;
 }

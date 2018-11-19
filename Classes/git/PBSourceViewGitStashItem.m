@@ -1,5 +1,5 @@
 //
-//  PBSourceViewStash.m
+//  PBSourceViewGitStashItem.m
 //  GitX
 //
 //  Created by Mathias Leppich on 8/1/13.
@@ -28,6 +28,7 @@
 	PBGitRevSpecifier *spec = [[PBGitRevSpecifier alloc] initWithRef:stash.ref];
 
 	self = [self initWithTitle:title revSpecifier:spec];
+	if (!self) return nil;
 	self.stash = stash;
 
 	return self;

@@ -9,10 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "PBSourceViewItem.h"
 
-@interface PBGitSVRemoteBranchItem : PBSourceViewItem {
+@interface PBSourceViewGitRemoteBranchItem : PBSourceViewItem
 
-}
-
-+ (id)remoteBranchItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier;
++ (instancetype)remoteBranchItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier;
 
 @end

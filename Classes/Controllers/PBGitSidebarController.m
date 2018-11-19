@@ -16,13 +16,26 @@
 #import "PBGitDefaults.h"
 #import "PBHistorySearchController.h"
 #import "PBGitStash.h"
-#import "PBGitSVStashItem.h"
+#import "PBSourceViewGitStashItem.h"
 #import "PBSidebarTableViewCell.h"
 #import "PBGitRef.h"
 
 #define PBSidebarCellIdentifier @"PBSidebarCellIdentifier"
 
-@interface PBGitSidebarController ()
+@interface PBGitSidebarController () <NSOutlineViewDelegate> {
+	__weak IBOutlet NSWindow *window;
+	__weak IBOutlet NSOutlineView *sourceView;
+	__weak IBOutlet NSView *sourceListControlsView;
+	__weak IBOutlet NSPopUpButton *actionButton;
+	__weak IBOutlet NSSegmentedControl *remoteControls;
+
+	NSMutableArray *items;
+
+	/* Specific things */
+	PBSourceViewItem *stage;
+
+	PBSourceViewItem *branches, *remotes, *tags, *others, *submodules, *stashes;
+}
 
 - (void)populateList;
 - (PBSourceViewItem *)addRevSpec:(PBGitRevSpecifier *)revSpec;
@@ -38,9 +51,11 @@
 @synthesize sourceView;
 @synthesize sourceListControlsView;
 
-- (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
+- (instancetype)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
 {
 	self = [super initWithRepository:theRepository superController:controller];
+	if (!self) return nil;
+
 	[sourceView setDelegate:self];
 	items = [NSMutableArray array];
 
@@ -53,9 +68,41 @@
 	window.contentView = self.view;
 	[self populateList];
 
-	[repository addObserver:self forKeyPath:@"currentBranch" options:0 context:@"currentBranchChange"];
-	[repository addObserver:self forKeyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) context:@"branchesModified"];
-   	[repository addObserver:self forKeyPath:@"stashes" options:0 context:@"stashesModified"];
+	[repository addObserver:self keyPath:@"currentBranch" options:0 block:^(MAKVONotification *notification) {
+		PBGitSidebarController *observer = notification.observer;
+		NSInteger row = observer.sourceView.selectedRow;
+		[observer.sourceView reloadData];
+		[observer.sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+		[observer selectCurrentBranch];
+	}];
+
+	[repository addObserver:self keyPath:@"branches" options:(NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew) block:^(MAKVONotification *notification) {
+		PBGitSidebarController *observer = notification.observer;
+		if (notification.kind == NSKeyValueChangeInsertion) {
+			NSArray *newRevSpecs = notification.newValue;
+			for (PBGitRevSpecifier *rev in newRevSpecs) {
+				PBSourceViewItem *item = [observer addRevSpec:rev];
+				[observer.sourceView PBExpandItem:item expandParents:YES];
+			}
+		}
+		else if (notification.kind == NSKeyValueChangeRemoval) {
+			NSArray *removedRevSpecs = notification.oldValue;
+			for (PBGitRevSpecifier *rev in removedRevSpecs)
+				[observer removeRevSpec:rev];
+		}
+	}];
+
+	[repository addObserver:self keyPath:@"stashes" options:0 block:^(MAKVONotification *notification) {
+		PBGitSidebarController *observer = notification.observer;
+		for (PBSourceViewGitStashItem *stashItem in observer->stashes.sortedChildren)
+			[observer->stashes removeChild:stashItem];
+
+		for (PBGitStash *stash in observer.repository.stashes)
+			[observer->stashes addChild: [PBSourceViewGitStashItem itemWithStash:stash]];
+
+		[observer.sourceView expandItem:observer->stashes];
+		[observer.sourceView reloadItem:observer->stashes reloadChildren:YES];
+	}];
 
     [sourceView setTarget:self];
     [sourceView setDoubleAction:@selector(doubleClicked:)];
@@ -76,60 +123,6 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSOutlineViewItemWillExpandNotification object:sourceView];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:NSOutlineViewItemWillCollapseNotification object:sourceView];
-}
-
-- (void)closeView
-{
-	[repository removeObserver:self forKeyPath:@"currentBranch"];
-	[repository removeObserver:self forKeyPath:@"branches"];
-	[repository removeObserver:self forKeyPath:@"stashes"];
-
-	[super closeView];
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if ([@"currentBranchChange" isEqualToString:(__bridge NSString*)context]) {
-		NSInteger row = sourceView.selectedRow;
-		[sourceView reloadData];
-		[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
-		[self selectCurrentBranch];
-		return;
-	}
-
-	if ([@"branchesModified" isEqualToString:(__bridge NSString*)context]) {
-		NSInteger changeKind = [(NSNumber *)[change objectForKey:NSKeyValueChangeKindKey] intValue];
-
-		if (changeKind == NSKeyValueChangeInsertion) {
-			NSArray *newRevSpecs = [change objectForKey:NSKeyValueChangeNewKey];
-			for (PBGitRevSpecifier *rev in newRevSpecs) {
-				PBSourceViewItem *item = [self addRevSpec:rev];
-				[sourceView PBExpandItem:item expandParents:YES];
-			}
-		}
-		else if (changeKind == NSKeyValueChangeRemoval) {
-			NSArray *removedRevSpecs = [change objectForKey:NSKeyValueChangeOldKey];
-			for (PBGitRevSpecifier *rev in removedRevSpecs)
-				[self removeRevSpec:rev];
-		}
-		return;
-	}
-    
-	if ([@"stashesModified" isEqualToString:(__bridge NSString*)context]) {
-        
-        for (PBGitSVStashItem *stashItem in stashes.sortedChildren)
-            [stashes removeChild:stashItem];
-        
-        for (PBGitStash *stash in repository.stashes)
-            [stashes addChild: [PBGitSVStashItem itemWithStash:stash]];
-
-        [sourceView expandItem:stashes];
-        [sourceView reloadItem:stashes reloadChildren:YES];
-        
-        return;
-    }
-
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (PBSourceViewItem *) selectedItem
@@ -155,16 +148,16 @@
 		return;
 	}
 
-	dispatch_async(dispatch_get_main_queue(), ^{
-		PBSourceViewItem *item = [self addRevSpec:rev];
-		if (item) {
-			[sourceView PBExpandItem:item expandParents:YES];
-			NSIndexSet *index = [NSIndexSet indexSetWithIndex:[sourceView rowForItem:item]];
-		
-			[sourceView deselectAll:nil];
-			[sourceView selectRowIndexes:index byExtendingSelection:NO];
-		}
-	});
+	dispatch_assert_queue(dispatch_get_main_queue());
+
+	PBSourceViewItem *item = [self addRevSpec:rev];
+	if (item) {
+		[sourceView PBExpandItem:item expandParents:YES];
+		NSIndexSet *index = [NSIndexSet indexSetWithIndex:[sourceView rowForItem:item]];
+
+		[sourceView deselectAll:nil];
+		[sourceView selectRowIndexes:index byExtendingSelection:NO];
+	}
 }
 
 - (PBSourceViewItem *) itemForRev:(PBGitRevSpecifier *)rev
@@ -255,12 +248,12 @@
 	NSInteger rowNumber = [sourceView selectedRow];
 	
 	id item = [sourceView itemAtRow:rowNumber];
-	if ([item isKindOfClass:[PBGitSVSubmoduleItem class]]) {
-		PBGitSVSubmoduleItem *subModule = item;
+	if ([item isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
+		PBSourceViewGitSubmoduleItem *subModule = item;
 
 		[self openSubmoduleAtURL:[subModule path]];
-	} else if ([item isKindOfClass:[PBGitSVBranchItem class]]) {
-		PBGitSVBranchItem *branch = item;
+	} else if ([item isKindOfClass:[PBSourceViewGitBranchItem class]]) {
+		PBSourceViewGitBranchItem *branch = item;
 		
 		NSError *error = nil;
 		BOOL success = [repository checkoutRefish:[branch ref] error:&error];
@@ -272,7 +265,7 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
-    if ([item isKindOfClass:[PBGitSVSubmoduleItem class]]) {
+    if ([item isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
         NSLog(@"hi");
     }
     return NO;
@@ -320,9 +313,9 @@
 - (void)populateList
 {
 	PBSourceViewItem *project = [PBSourceViewItem groupItemWithTitle:[repository projectName]];
-	project.isUncollapsible = YES;
+	project.uncollapsible = YES;
 
-	stage = [PBGitSVStageItem stageItem];
+	stage = [PBSourceViewStageItem stageItem];
 	[project addChild:stage];
 	
 	branches = [PBSourceViewItem groupItemWithTitle:@"Branches"];
@@ -333,14 +326,14 @@
 	others = [PBSourceViewItem groupItemWithTitle:@"Other"];
 
 	for (PBGitStash *stash in repository.stashes)
-		[stashes addChild: [PBGitSVStashItem itemWithStash:stash]];
+		[stashes addChild: [PBSourceViewGitStashItem itemWithStash:stash]];
 
 	for (PBGitRevSpecifier *rev in repository.branches) {
 		[self addRevSpec:rev];
 	}
     
     for (GTSubmodule *sub in repository.submodules) {
-        [submodules addChild: [PBGitSVSubmoduleItem itemWithSubmodule:sub]];
+        [submodules addChild: [PBSourceViewGitSubmoduleItem itemWithSubmodule:sub]];
 	}
     
 	[items addObject:project];
@@ -365,7 +358,7 @@
 {
     NSObject* child = [[aNotification userInfo] valueForKey:@"NSObject"];
     if ([child isKindOfClass:[PBSourceViewItem class]]) {
-        ((PBSourceViewItem*)child).isExpanded = [aNotification.name isEqualToString:NSOutlineViewItemWillExpandNotification];
+        ((PBSourceViewItem *)child).expanded = [aNotification.name isEqualToString:NSOutlineViewItemWillExpandNotification];
     }
 }
 
@@ -402,7 +395,7 @@
 
 - (void) updateActionMenu
 {
-	[actionButton setEnabled:([[self selectedItem] ref] != nil || [[self selectedItem] isKindOfClass:[PBGitSVSubmoduleItem class]])];
+	[actionButton setEnabled:([[self selectedItem] ref] != nil || [[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]])];
 }
 
 - (void) addMenuItemsForRef:(PBGitRef *)ref toMenu:(NSMenu *)menu
@@ -414,7 +407,7 @@
 		[menu addItem:menuItem];
 }
 
-- (void) addMenuItemsForSubmodule:(PBGitSVSubmoduleItem *)submodule toMenu:(NSMenu *)menu
+- (void) addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)submodule toMenu:(NSMenu *)menu
 {
     if (!submodule)
         return;
@@ -447,8 +440,8 @@
 		[self addMenuItemsForRef:ref toMenu:menu];
 	}
 
-	if ([viewItem isKindOfClass:[PBGitSVSubmoduleItem class]]) {
-		[self addMenuItemsForSubmodule:(PBGitSVSubmoduleItem *)viewItem toMenu:menu];
+	if ([viewItem isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
+		[self addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)viewItem toMenu:menu];
 	}
 
 	return menu;
@@ -463,8 +456,8 @@
 	PBGitRef *ref = [[self selectedItem] ref];
 	[self addMenuItemsForRef:ref toMenu:menu];
 
-    if ([[self selectedItem] isKindOfClass:[PBGitSVSubmoduleItem class]]) {
-        [self addMenuItemsForSubmodule:(PBGitSVSubmoduleItem *)[self selectedItem] toMenu:menu];
+    if ([[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
+        [self addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)[self selectedItem] toMenu:menu];
     }
 }
 

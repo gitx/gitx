@@ -1,5 +1,5 @@
 //
-//  PBGitSVRemoteItem.h
+//  PBSourceViewGitBranchItem.h
 //  GitX
 //
 //  Created by Nathan Kinsinger on 3/2/10.
@@ -9,10 +9,8 @@
 #import <Cocoa/Cocoa.h>
 #import "PBSourceViewItem.h"
 
-@interface PBGitSVRemoteItem : PBSourceViewItem {
+@interface PBSourceViewGitBranchItem : PBSourceViewItem
 
-}
-
-+ (id)remoteItemWithTitle:(NSString *)title;
++ (instancetype)branchItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier;
 
 @end

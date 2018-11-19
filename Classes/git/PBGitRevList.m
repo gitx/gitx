@@ -17,13 +17,7 @@
 #import <ObjectiveGit/ObjectiveGit.h>
 #import "ObjectiveGit+PBCategories.h"
 
-#import <iostream>
-#import <string>
-#import <map>
 #import <ObjectiveGit/GTOID.h>
-
-using namespace std;
-
 
 @interface PBGitRevList ()
 
@@ -62,7 +56,7 @@ using namespace std;
 	return self;
 }
 
-- (void)loadRevisonsWithCompletionBlock:(void(^)(void))completionBlock
+- (void)loadRevisionsWithCompletionBlock:(void(^)(void))completionBlock
 {
 	[self cancel];
 

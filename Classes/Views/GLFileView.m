@@ -39,7 +39,9 @@
 	startFile = GROUP_ID_FILEVIEW;
 	//repository = historyController.repository;
 	[super awakeFromNib];
-	[historyController.treeController addObserver:self forKeyPath:@"selection" options:0 context:@"treeController"];
+	[historyController.treeController addObserver:self keyPath:@"selection" options:0 block:^(MAKVONotification *notification) {
+		[self showFile];
+	}];
 	
 	self.groups = [NSMutableArray arrayWithCapacity:0];
 	
@@ -66,12 +68,6 @@
 
 	[fileListSplitView setHidden:YES];
 	[self performSelector:@selector(restoreSplitViewPositiion) withObject:nil afterDelay:0];
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	//NSLog(@"keyPath=%@ change=%@ context=%@ object=%@ \n %@",keyPath,change,context,object,[historyController.treeController selectedObjects]);
-	[self showFile];
 }
 
 - (void) showFile
@@ -168,7 +164,6 @@
 
 - (void)closeView
 {
-	[historyController.treeController removeObserver:self forKeyPath:@"selection"];
 	[self saveSplitViewPosition];
 
 	[super closeView];

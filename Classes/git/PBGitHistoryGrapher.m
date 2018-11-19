@@ -13,9 +13,10 @@
 @implementation PBGitHistoryGrapher
 
 
-- (id) initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id)theDelegate
+- (instancetype) initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id <PBGitHistoryGrapherDelegate>)theDelegate
 {
     self = [super init];
+	if (!self) return nil;
 
 	delegate = theDelegate;
 	currentQueue = queue;
@@ -29,9 +30,9 @@
 
 - (void)sendCommits:(NSArray *)commits
 {
-	NSDictionary *commitData = [NSDictionary dictionaryWithObjectsAndKeys:currentQueue, kCurrentQueueKey, commits, kNewCommitsKey, nil];
-	id strongDelegate = delegate;
-	[strongDelegate performSelectorOnMainThread:@selector(updateCommitsFromGrapher:) withObject:commitData waitUntilDone:NO];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self->delegate updateCommitsFromGrapher:@{ kCurrentQueueKey: self->currentQueue, kNewCommitsKey: commits }];
+	});
 }
 
 

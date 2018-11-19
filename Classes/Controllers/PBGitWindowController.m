@@ -82,9 +82,6 @@
 
 	[self.historyViewController closeView];
 	[self.commitViewController closeView];
-
-	if (contentController)
-		[contentController removeObserver:self forKeyPath:@"status"];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
@@ -158,7 +155,7 @@
 		return;
 
 	if (contentController)
-		[contentController removeObserver:self forKeyPath:@"status"];
+		[contentController removeObserver:self keyPath:@"status"];
 
 	[self removeAllContentSubViews];
 
@@ -170,7 +167,9 @@
 //	[self setNextResponder: contentController];
 	[[self window] makeFirstResponder:[contentController firstResponder]];
 	[contentController updateView];
-	[contentController addObserver:self forKeyPath:@"status" options:NSKeyValueObservingOptionInitial context:@"statusChange"];
+	[contentController addObserver:self keyPath:@"status" options:NSKeyValueObservingOptionInitial block:^(MAKVONotification *notification) {
+		[self updateStatus];
+	}];
 }
 
 - (void) showCommitView:(id)sender
@@ -191,7 +190,7 @@
 	 completionHandler:^(id  _Nonnull sheet, NSModalResponse returnCode) {
 		 if (returnCode != NSModalResponseOK) return;
 
-		 [_commitViewController forceCommit:self];
+		 [self.commitViewController forceCommit:self];
 	 }];
 }
 
@@ -237,16 +236,6 @@
 		[progressIndicator stopAnimation:self];
 		[progressIndicator setHidden:YES];
 	}
-}
-
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([(__bridge NSString *)context isEqualToString:@"statusChange"]) {
-		[self updateStatus];
-		return;
-	}
-
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 }
 
 - (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode
@@ -363,8 +352,8 @@
 	NSAlert *alert = [[NSAlert alloc] init];
 	alert.messageText = description;
 	alert.informativeText = [NSString stringWithFormat:@"Are you sure you want to %@?", sdesc];
-	[alert addButtonWithTitle:@"Push"];
-	[alert addButtonWithTitle:@"Cancel"];
+	[alert addButtonWithTitle:NSLocalizedString(@"Push", @"Push alert - default button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Push alert - cancel button")];
 	[alert setShowsSuppressionButton:YES];
 
 	[self confirmDialog:alert suppressionIdentifier:@"Confirm Push" forAction:^{
@@ -498,7 +487,7 @@
 
 - (IBAction)deleteRef:(id)sender
 {
-	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXBranchType, kGitXRemoteType]];
+	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXBranchType, kGitXRemoteType, kGitXTagType]];
 	if (!refish || ![refish isKindOfClass:[PBGitRef class]])
 		return;
 
@@ -509,8 +498,8 @@
 	NSAlert *alert = [[NSAlert alloc] init];
 	alert.messageText = [NSString stringWithFormat:@"Delete %@?", ref_desc];
 	alert.informativeText = [NSString stringWithFormat:@"Are you sure you want to remove the %@?", ref_desc];
-	[alert addButtonWithTitle:@"Delete"];
-	[alert addButtonWithTitle:@"Cancel"];
+	[alert addButtonWithTitle:NSLocalizedString(@"Delete", @"Delete ref alert - default button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Delete ref alert - cancel button")];
 
 	[self confirmDialog:alert suppressionIdentifier:@"Delete Ref" forAction:^{
 		NSError *error = nil;
@@ -647,8 +636,8 @@
 
 - (IBAction)rebaseHeadBranch:(id)sender
 {
-	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXCommitType]];
-	if (!refish || ![refish isKindOfClass:[PBGitCommit class]])
+	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXCommitType, kGitXBranchType, kGitXRemoteBranchType]];
+	if (!refish || ![refish conformsToProtocol:@protocol(PBGitRefish)])
 		return;
 
 	NSError *error = nil;
@@ -770,7 +759,7 @@
 	[contentController refresh:self];
 }
 
-- (void) createBranch:(id)sender
+- (IBAction) createBranch:(id)sender
 {
 	PBGitRef *currentRef = [self.repository.currentBranch ref];
 
