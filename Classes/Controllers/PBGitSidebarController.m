@@ -148,7 +148,8 @@
 		return;
 	}
 
-	dispatch_assert_queue(dispatch_get_main_queue());
+	if (@available(macOS 10.12, *))
+		dispatch_assert_queue(dispatch_get_main_queue());
 
 	PBSourceViewItem *item = [self addRevSpec:rev];
 	if (item) {
