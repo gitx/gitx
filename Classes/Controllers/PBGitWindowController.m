@@ -827,7 +827,11 @@
 	if (!refish)
 		return;
 
-	PBGitCommit *commit = [self.repository commitForRef:refish];
+	PBGitCommit *commit = nil;
+	if ([refish isKindOfClass:[PBGitCommit class]])
+		commit = refish;
+	else
+		commit = [self.repository commitForRef:refish];
 
 	NSString *diff = [self.repository performDiff:commit against:nil forFiles:nil];
 
