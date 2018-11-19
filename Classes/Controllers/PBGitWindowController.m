@@ -487,7 +487,7 @@
 
 - (IBAction)deleteRef:(id)sender
 {
-	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXBranchType, kGitXRemoteType]];
+	id <PBGitRefish> refish = [self refishForSender:sender refishTypes:@[kGitXBranchType, kGitXRemoteType, kGitXTagType]];
 	if (!refish || ![refish isKindOfClass:[PBGitRef class]])
 		return;
 
