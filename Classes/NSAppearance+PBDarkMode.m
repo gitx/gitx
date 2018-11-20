@@ -26,7 +26,11 @@
 
 - (BOOL)isDarkMode
 {
-	return self.effectiveAppearance.isDarkMode;
+	if (@available(macOS 10.14, *)) {
+		return self.effectiveAppearance.isDarkMode;
+	} else {
+		return NO;
+	}
 }
 
 @end
