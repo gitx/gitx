@@ -10,7 +10,6 @@
 #import "PBGitGrapher.h"
 #import "PBGraphCellInfo.h"
 #import "PBGitHistoryController.h"
-#import "PBRefContextDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

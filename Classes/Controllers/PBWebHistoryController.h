@@ -11,7 +11,6 @@
 
 #import "PBGitCommit.h"
 #import "PBGitHistoryController.h"
-#import "PBRefContextDelegate.h"
 
 
 @class GTOID;
@@ -19,7 +18,6 @@
 
 @interface PBWebHistoryController : PBWebController {
 	__weak IBOutlet PBGitHistoryController* historyController;
-	__weak IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
 
 	GTOID *currentOID;
 	NSString* diff;

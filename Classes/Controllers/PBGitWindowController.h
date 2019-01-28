@@ -16,6 +16,7 @@
 @class PBGitRepository;
 @class RJModalRepoSheet;
 @class PBGitRef;
+@class PBGitCommit;
 @class PBGitRepositoryDocument;
 
 NS_ASSUME_NONNULL_BEGIN

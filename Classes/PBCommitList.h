@@ -7,21 +7,17 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "PBRefContextDelegate.h"
 #import <WebKit/WebView.h>
 
 @class PBGitHistoryController;
 @class PBWebHistoryController;
 @class PBHistorySearchController;
 
-typedef void(^PBFindPanelActionBlock)(id sender);
-
 @interface PBCommitList : NSTableView {
 	__weak IBOutlet WebView* webView;
 	__weak IBOutlet PBWebHistoryController *webController;
 	__weak IBOutlet PBGitHistoryController *controller;
 	__weak IBOutlet PBHistorySearchController *searchController;
-	__weak IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
 
     BOOL useAdjustScroll;
 	NSPoint mouseDownPoint;
@@ -29,6 +25,5 @@ typedef void(^PBFindPanelActionBlock)(id sender);
 
 @property (readonly) NSPoint mouseDownPoint;
 @property (assign) BOOL useAdjustScroll;
-@property (copy) PBFindPanelActionBlock findPanelActionBlock;
 
 @end

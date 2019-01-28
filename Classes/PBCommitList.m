@@ -139,11 +139,11 @@
 	NSArray <NSMenuItem *>* items;
 
 	if (clickedRef) {
-		items = [contextMenuDelegate menuItemsForRef:clickedRef];
+		items = [controller menuItemsForRef:clickedRef];
 	} else if ([selectedCommits containsObject:commit]) {
-		items = [contextMenuDelegate menuItemsForCommits:controller.selectedCommits];
+		items = [controller menuItemsForCommits:controller.selectedCommits];
 	} else {
-		items = [contextMenuDelegate menuItemsForCommits:@[commit]];
+		items = [controller menuItemsForCommits:@[commit]];
 	}
 
 	NSMenu *menu = [[NSMenu alloc] init];
@@ -152,17 +152,6 @@
 		[menu addItem:item];
 
 	return menu;
-}
-
-
-#pragma mark Row highlighting
-
-- (IBAction)performFindPanelAction:(id)sender
-{
-	PBFindPanelActionBlock block = self.findPanelActionBlock;
-	if (block) {
-		block(sender);
-	}
 }
 
 @end
