@@ -323,7 +323,7 @@ NSString * const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	
 	for (GTOID *sha in refs)
 	{
-		NSMutableSet *refsForSha = [refs objectForKey:sha];
+		NSMutableArray *refsForSha = [refs objectForKey:sha];
 		for (PBGitRef *existingRef in refsForSha)
 		{
 			if ([existingRef isEqualToRef:ref])
