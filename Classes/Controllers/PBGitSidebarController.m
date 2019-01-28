@@ -10,7 +10,6 @@
 #import "PBSourceViewItems.h"
 #import "PBGitHistoryController.h"
 #import "PBGitCommitController.h"
-#import "PBRefController.h"
 #import "NSOutlineViewExt.h"
 #import "PBAddRemoteSheet.h"
 #import "PBGitDefaults.h"
@@ -404,7 +403,7 @@
 	if (!ref)
 		return;
 
-	for (NSMenuItem *menuItem in [superController.historyViewController.refController menuItemsForRef:ref])
+	for (NSMenuItem *menuItem in [superController.historyViewController menuItemsForRef:ref])
 		[menu addItem:menuItem];
 }
 

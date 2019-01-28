@@ -15,7 +15,6 @@
 @class PBGitSidebarController;
 @class PBWebHistoryController;
 @class PBGitGradientBarView;
-@class PBRefController;
 @class PBCommitList;
 @class GLFileView;
 @class GTOID;
@@ -27,7 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (readonly) NSArrayController *commitController;
 @property (readonly) NSTreeController *treeController;
-@property (readonly) PBRefController *refController;
 @property (readonly) PBHistorySearchController *searchController;
 
 @property (assign) NSInteger selectedCommitDetailsIndex;
@@ -67,6 +65,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)copySHA:(id)sender;
 - (IBAction)copyShortName:(id)sender;
 - (IBAction)copyPatch:(id)sender;
+
+@end
+
+@interface PBGitHistoryController (PBContextMenu)
+
+- (NSArray *)menuItemsForRef:(PBGitRef *)refs;
+- (NSArray *)menuItemsForCommits:(NSArray<PBGitCommit *> *)commits;
 
 @end
 
