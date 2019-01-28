@@ -77,6 +77,9 @@
 	commitMessageView.delegate = self;
 
 	NSMutableDictionary *attrs = commitMessageView.typingAttributes.mutableCopy;
+	if (!attrs) {
+		attrs = [NSMutableDictionary dictionary];
+	}
 	attrs[NSFontAttributeName] = [NSFont fontWithName:@"Menlo" size:12.0];
 	commitMessageView.typingAttributes = attrs;
 
