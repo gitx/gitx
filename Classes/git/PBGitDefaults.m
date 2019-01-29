@@ -30,6 +30,7 @@
 #define kHistorySearchMode @"PBHistorySearchMode"
 #define kSuppressedDialogWarnings @"Suppressed Dialog Warnings"
 #define kUseRepositoryWatcher @"PBUseRepositoryWatcher"
+#define kTerminalHandler @"PBTerminalHandler"
 
 @implementation PBGitDefaults
 
@@ -64,6 +65,8 @@
                       forKey:kHistorySearchMode];
 	[defaultValues setObject:[NSNumber numberWithBool:YES]
                       forKey:kUseRepositoryWatcher];
+	[defaultValues setObject:@"com.apple.Terminal"
+					  forKey:kTerminalHandler];
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
 }
 
@@ -224,6 +227,11 @@
 + (BOOL) useRepositoryWatcher
 {
 	return [[NSUserDefaults standardUserDefaults] boolForKey:kUseRepositoryWatcher];
+}
+
++ (NSString *)terminalHandler
+{
+	return [[NSUserDefaults standardUserDefaults] stringForKey:kTerminalHandler];
 }
 
 @end
