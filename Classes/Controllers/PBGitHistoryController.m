@@ -448,6 +448,21 @@
 	[searchController selectPreviousResult];
 }
 
+- (IBAction) selectParentCommit:(id)sender
+{
+	NSArray *selectedObjects = commitController.selectedObjects;
+	if (selectedObjects.count != 1) return;
+
+	PBGitCommit *selectedCommit = selectedObjects[0];
+
+	NSArray <GTOID *> *parents = selectedCommit.parents;
+	/* TODO: This is a merge commit. It would be nice to choose the parent with
+	 * the most commits, but for now we will use whatever commit is our first parent.
+	 */
+
+	[self selectCommit:parents[0]];
+}
+
 - (IBAction) copy:(id)sender
 {
 	[GitXCommitCopier putStringToPasteboard:[GitXCommitCopier toSHAAndHeadingString:commitController.selectedObjects]];
