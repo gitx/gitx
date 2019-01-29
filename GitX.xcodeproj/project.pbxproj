@@ -615,6 +615,7 @@
 		97CF01F618A6C5BB00E30F2B /* deleted_file.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = deleted_file.pdf; sourceTree = "<group>"; };
 		97CF01F718A6C5BB00E30F2B /* empty_file.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = empty_file.pdf; sourceTree = "<group>"; };
 		97CF01F818A6C5BB00E30F2B /* new_file.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = new_file.pdf; sourceTree = "<group>"; };
+		A1021294218C5A2000D97D11 /* iTerm2GeneratedScriptingBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = iTerm2GeneratedScriptingBridge.h; sourceTree = "<group>"; };
 		A2F8D0DD17AAB32500580B84 /* PBGitStash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitStash.h; sourceTree = "<group>"; };
 		A2F8D0DE17AAB32500580B84 /* PBGitStash.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitStash.m; sourceTree = "<group>"; };
 		A2F8D0E917AAB95E00580B84 /* PBSourceViewGitStashItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewGitStashItem.h; sourceTree = "<group>"; };
@@ -872,6 +873,7 @@
 				4D6E4F791E56851A004C3A6F /* PBMacros.h */,
 				4DF173E721A1D60A003CD3CE /* NSAppearance+PBDarkMode.h */,
 				4DF173E821A1D60A003CD3CE /* NSAppearance+PBDarkMode.m */,
+				A1021294218C5A2000D97D11 /* iTerm2GeneratedScriptingBridge.h */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
