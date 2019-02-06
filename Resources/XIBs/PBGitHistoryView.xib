@@ -600,7 +600,7 @@
                                                                 </webView>
                                                             </subviews>
                                                         </view>
-                                                        <color key="fillColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                        <color key="fillColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </box>
                                                 </subviews>
                                             </view>

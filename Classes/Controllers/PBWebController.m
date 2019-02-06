@@ -46,6 +46,9 @@
 			 object:self.view.window];
 	
 	finishedLoading = NO;
+
+	[self.view setDrawsBackground:NO];
+
 	[self.view setUIDelegate:self];
 	[self.view setFrameLoadDelegate:self];
 	[self.view setResourceLoadDelegate:self];

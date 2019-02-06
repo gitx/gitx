@@ -16,6 +16,12 @@
 @synthesize mouseDownPoint;
 @synthesize useAdjustScroll;
 
+- (void)awakeFromNib
+{
+	[super awakeFromNib];
+	[webView setDrawsBackground:NO];
+}
+
 - (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context
 {
 	return NSDragOperationCopy;
