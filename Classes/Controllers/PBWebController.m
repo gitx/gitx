@@ -38,12 +38,12 @@ static void * const PBEffectiveAppearanceContext = @"PBEffectiveAppearanceContex
 		 object:nil];
 
 	[nc addObserver:self
-		   selector:@selector(windowWillStartLiveResitzeWithNotification:)
+		   selector:@selector(windowWillStartLiveResizeWithNotification:)
 			   name:NSWindowWillStartLiveResizeNotification
 			 object:self.view.window];
 	
 	[nc addObserver:self
-		   selector:@selector(windowDidEndLiveResitzeWithNotification:)
+		   selector:@selector(windowDidEndLiveResizeWithNotification:)
 			   name:NSWindowDidEndLiveResizeNotification
 			 object:self.view.window];
 
@@ -263,12 +263,12 @@ dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
 	[self preferencesChanged];
 }
 
-- (void)windowWillStartLiveResitzeWithNotification:(NSNotification *)theNotification
+- (void)windowWillStartLiveResizeWithNotification:(NSNotification *)theNotification
 {
 	self.view.autoresizingMask = NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewHeightSizable;
 }
 
-- (void)windowDidEndLiveResitzeWithNotification:(NSNotification *)theNotification
+- (void)windowDidEndLiveResizeWithNotification:(NSNotification *)theNotification
 {
 	self.view.autoresizingMask = NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable | NSViewHeightSizable;
 	self.view.frame = self.view.superview.bounds;
