@@ -66,3 +66,13 @@ var bindCommitSelectionLinks = function(el) {
 		}, false);
 	}
 };
+
+var setAppearance = function (appearance) {
+    if (appearance === "DARK") {
+        document.body.classList.remove('body--light');
+        document.body.classList.add('body--dark');
+    } else {
+        document.body.classList.remove('body--dark');
+        document.body.classList.add('body--light');
+    }
+};

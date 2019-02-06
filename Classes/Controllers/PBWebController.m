@@ -14,6 +14,8 @@
 
 #include <SystemConfiguration/SCNetworkReachability.h>
 
+static void * const PBEffectiveAppearanceContext = @"PBEffectiveAppearanceContext";
+
 @interface PBWebController () <WebUIDelegate, WebFrameLoadDelegate, WebResourceLoadDelegate>
 - (void)preferencesChangedWithNotification:(NSNotification *)theNotification;
 @end
@@ -44,6 +46,10 @@
 		   selector:@selector(windowDidEndLiveResitzeWithNotification:)
 			   name:NSWindowDidEndLiveResizeNotification
 			 object:self.view.window];
+
+	if (@available(macOS 10.14, *)) {
+		[[NSApplication sharedApplication] addObserver:self forKeyPath:@"effectiveAppearance" options:(NSKeyValueObservingOptions)0 context:PBEffectiveAppearanceContext];
+	}
 	
 	finishedLoading = NO;
 
@@ -56,9 +62,37 @@
 	[self.view.mainFrame loadRequest:request];
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if (context != PBEffectiveAppearanceContext) {
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	}
+
+	if (@available(macOS 10.14, *)) {
+		[self setWebAppearance:((NSApplication *)object).effectiveAppearance];
+	}
+}
+
 - (WebScriptObject *) script
 {
 	return self.view.windowScriptObject;
+}
+
+- (void) setWebAppearance:(NSAppearance *)appearance
+{
+	if (@available(macOS 10.14, *)) {
+		if (appearance == nil) {
+			appearance = [NSApplication sharedApplication].effectiveAppearance;
+		}
+
+		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameDarkAqua, NSAppearanceNameAqua]];
+
+		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
+			[self.script callWebScriptMethod:@"setAppearance" withArguments:@[@"DARK"]];
+		} else {
+			[self.script callWebScriptMethod:@"setAppearance" withArguments:@[@"LIGHT"]];
+		}
+	}
 }
 
 - (void)closeView
@@ -67,6 +101,8 @@
 		[[self script] setValue:nil forKey:@"Controller"];
 		[self.view close];
 	}
+
+	[[NSApplication sharedApplication] removeObserver:self forKeyPath:@"effectiveAppearance" context:PBEffectiveAppearanceContext];
 
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -88,6 +124,7 @@
 	finishedLoading = YES;
 	if ([self respondsToSelector:@selector(didLoad)])
 		[self performSelector:@selector(didLoad)];
+	[self setWebAppearance:nil];
 }
 
 - (void)webView:(WebView *)webView addMessageToConsole:(NSDictionary *)dictionary
