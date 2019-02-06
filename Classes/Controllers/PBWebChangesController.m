@@ -9,6 +9,9 @@
 #import "PBWebChangesController.h"
 #import "PBGitIndex.h"
 
+static void * const UnstagedFileSelectedContext = @"UnstagedFileSelectedContext";
+static void * const CachedFileSelectedContext = @"CachedFileSelectedContext";
+
 @interface PBWebChangesController () <WebEditingDelegate, WebUIDelegate>
 @end
 
@@ -22,8 +25,8 @@
 	startFile = @"commit";
 	[super awakeFromNib];
 
-	[unstagedFilesController addObserver:self forKeyPath:@"selection" options:0 context:@"UnstagedFileSelected"];
-	[stagedFilesController addObserver:self forKeyPath:@"selection" options:0 context:@"cachedFileSelected"];
+	[unstagedFilesController addObserver:self forKeyPath:@"selection" options:0 context:UnstagedFileSelectedContext];
+	[stagedFilesController addObserver:self forKeyPath:@"selection" options:0 context:CachedFileSelectedContext];
 
 	self.view.editingDelegate = self;
 	self.view.UIDelegate = self;
@@ -49,6 +52,10 @@
 						change:(NSDictionary *)change
 					   context:(void *)context
 {
+	if (context != UnstagedFileSelectedContext && context != CachedFileSelectedContext) {
+		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	}
+
 	NSArrayController *otherController;
 	otherController = object == unstagedFilesController ? stagedFilesController : unstagedFilesController;
 	NSUInteger count = [object selectedObjects].count;
