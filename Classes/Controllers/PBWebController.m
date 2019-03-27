@@ -81,8 +81,6 @@ static void * const PBEffectiveAppearanceContext = @"PBEffectiveAppearanceContex
 		[self.view close];
 	}
 
-	[[NSApplication sharedApplication] removeObserver:self forKeyPath:@"effectiveAppearance" context:PBEffectiveAppearanceContext];
-
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
