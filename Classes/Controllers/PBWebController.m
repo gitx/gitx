@@ -63,17 +63,6 @@ static void * const PBEffectiveAppearanceContext = @"PBEffectiveAppearanceContex
 	[self.view.mainFrame loadRequest:request];
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if (context != PBEffectiveAppearanceContext) {
-		return [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-	}
-
-	if (@available(macOS 10.14, *)) {
-		[self setWebAppearance:((NSApplication *)object).effectiveAppearance];
-	}
-}
-
 - (WebScriptObject *) script
 {
 	return self.view.windowScriptObject;
