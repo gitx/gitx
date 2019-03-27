@@ -47,10 +47,11 @@ static void * const PBEffectiveAppearanceContext = @"PBEffectiveAppearanceContex
 			   name:NSWindowDidEndLiveResizeNotification
 			 object:self.view.window];
 
-	if (@available(macOS 10.14, *)) {
-		[[NSApplication sharedApplication] addObserver:self forKeyPath:@"effectiveAppearance" options:(NSKeyValueObservingOptions)0 context:PBEffectiveAppearanceContext];
-	}
-	
+	[nc addObserver:self
+		   selector:@selector(effectiveAppearanceDidChange:)
+			   name:PBEffectiveAppearanceChanged
+			 object:nil];
+
 	finishedLoading = NO;
 
 	[self.view setDrawsBackground:NO];
@@ -78,21 +79,10 @@ static void * const PBEffectiveAppearanceContext = @"PBEffectiveAppearanceContex
 	return self.view.windowScriptObject;
 }
 
-- (void) setWebAppearance:(NSAppearance *)appearance
+- (void)effectiveAppearanceDidChange:(NSNotification *)notif
 {
-	if (@available(macOS 10.14, *)) {
-		if (appearance == nil) {
-			appearance = [NSApplication sharedApplication].effectiveAppearance;
-		}
-
-		NSAppearanceName appearanceName = [appearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameDarkAqua, NSAppearanceNameAqua]];
-
-		if ([appearanceName isEqualToString:NSAppearanceNameDarkAqua]) {
-			[self.script callWebScriptMethod:@"setAppearance" withArguments:@[@"DARK"]];
-		} else {
-			[self.script callWebScriptMethod:@"setAppearance" withArguments:@[@"LIGHT"]];
-		}
-	}
+	NSString *mode = [NSApp isDarkMode] ? @"DARK" : @"LIGHT";
+	[self.script callWebScriptMethod:@"setAppearance" withArguments:@[mode]];
 }
 
 - (void)closeView
@@ -124,7 +114,7 @@ static void * const PBEffectiveAppearanceContext = @"PBEffectiveAppearanceContex
 	finishedLoading = YES;
 	if ([self respondsToSelector:@selector(didLoad)])
 		[self performSelector:@selector(didLoad)];
-	[self setWebAppearance:nil];
+	[self effectiveAppearanceDidChange:nil];
 }
 
 - (void)webView:(WebView *)webView addMessageToConsole:(NSDictionary *)dictionary

@@ -7,6 +7,8 @@
 
 #import "NSAppearance+PBDarkMode.h"
 
+NSString *const PBEffectiveAppearanceChanged = @"PBEffectiveAppearanceChanged";
+
 @implementation NSAppearance (PBDarkMode)
 
 - (BOOL)isDarkMode
@@ -30,6 +32,17 @@
 		return self.effectiveAppearance.isDarkMode;
 	} else {
 		return NO;
+	}
+}
+
+- (void)registerObserverForAppearanceChanges:(id)observer
+{
+	if (@available(macOS 10.14, *)) {
+		/* This leaks the observation, but since it's tied to the life of NSApp
+		 * it doesn't matter ;-) */
+		[[NSApplication sharedApplication] addObserver:observer keyPath:@"effectiveAppearance" options:0 block:^(MAKVONotification *notification) {
+			[[NSNotificationCenter defaultCenter] postNotificationName:PBEffectiveAppearanceChanged object:observer];
+		}];
 	}
 }
 

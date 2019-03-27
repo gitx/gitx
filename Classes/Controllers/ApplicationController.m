@@ -121,6 +121,7 @@ static OpenRecentController* recentsDialog = nil;
 	setenv( "SSH_ASKPASS", [[[NSBundle mainBundle] pathForResource: @"gitx_askpasswd" ofType: @""] UTF8String], 1 );
 	setenv( "DISPLAY", "localhost:0", 1 );
 
+	[NSApp registerObserverForAppearanceChanges:self];
 	[self registerServices];
 	started = YES;
 }
