@@ -315,8 +315,8 @@ const BOOL SHUFFLE_COLORS = NO;
 		[self drawRefsInRect:rect];
 }
 
-- (void) setObjectValue: (PBGitCommit*)object {
-	[super setObjectValue:[NSValue valueWithNonretainedObject:object]];
+- (void)setObjectValue:(PBGitCommit *)object {
+	[super setObjectValue:object];
 
 	[self setNeedsDisplay:YES];
 	[self setNeedsLayout:YES];
@@ -359,7 +359,7 @@ const BOOL SHUFFLE_COLORS = NO;
 }
 
 - (PBGitCommit*) objectValue {
-    return [[super objectValue] nonretainedObjectValue];
+    return [super objectValue];
 }
 
 - (int) indexAtX:(CGFloat)x
