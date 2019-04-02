@@ -19,3 +19,5 @@ for build instructions.
 ### Sreenshot
 
 ![screenshot of gitx with gitx repo opened](screenshot.png)
+
+![dark screenshot of gitx with gitx repo opened](screenshot-dark.png)
