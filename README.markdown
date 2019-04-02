@@ -16,7 +16,7 @@ GitX**](https://github.com/gitx/gitx.github.io/issues/1).
 See [the wiki page](https://github.com/gitx/gitx/wiki/Build-instructions)
 for build instructions.
 
-### Sreenshot
+### Sreenshots
 
 ![screenshot of gitx with gitx repo opened](screenshot.png)
 
