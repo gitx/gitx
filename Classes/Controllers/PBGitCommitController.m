@@ -135,6 +135,7 @@
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[webController closeView];
+	[super closeView];
 }
 
 - (NSResponder *)firstResponder;
