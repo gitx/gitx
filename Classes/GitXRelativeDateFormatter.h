@@ -9,8 +9,5 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface GitXRelativeDateFormatter : NSFormatter {
-
-}
-
+@interface GitXRelativeDateFormatter : NSFormatter
 @end
