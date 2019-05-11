@@ -14,8 +14,6 @@
 
 #include <SystemConfiguration/SCNetworkReachability.h>
 
-static void * const PBEffectiveAppearanceContext = @"PBEffectiveAppearanceContext";
-
 @interface PBWebController () <WebUIDelegate, WebFrameLoadDelegate, WebResourceLoadDelegate>
 - (void)preferencesChangedWithNotification:(NSNotification *)theNotification;
 @end
