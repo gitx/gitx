@@ -23,7 +23,7 @@ def generate_changelog(project):
     released_tags = list(filter(lambda tag: tag != project.release_tag_name(), released_tags))
 
     last_released_tag = released_tags[-1]
-    print "Using {} as the changelog baseline".format(last_released_tag)
+    print("Using {} as the changelog baseline".format(last_released_tag))
 
     revspec = "%s..%s" % (last_released_tag, project.release_branch())
     git_log = helpers.check_string_output(['git', 'log', revspec,
