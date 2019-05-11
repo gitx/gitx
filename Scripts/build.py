@@ -10,13 +10,13 @@ from project import Project
 
 
 def build(project):
-    print "Building scheme {} ({}), please wait…".format(project.scheme(), project.current_config())
+    print("Building scheme {} ({}), please wait…".format(project.scheme(), project.current_config()))
     helpers.xcodebuild(project.scheme(), project.workspace(), project.current_build_config(), ["build"], project.build_base_dir())
-    print "Successfully built to {}".format(project.build_product())
+    print("Successfully built to {}".format(project.build_product()))
 
 
 def clean(project):
-    print "Cleaning scheme {} ({})".format(project.scheme(), project.current_config())
+    print("Cleaning scheme {} ({})".format(project.scheme(), project.current_config()))
     helpers.xcodebuild(project.scheme(), project.workspace(), project.current_build_config(), ["clean"], project.build_base_dir())
 
 
