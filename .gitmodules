@@ -9,7 +9,7 @@
 	url = https://github.com/alexgorbatchev/SyntaxHighlighter.git
 [submodule "MGScopeBar"]
 	path = External/MGScopeBar
-	url = https://github.com/rowanj/MGScopeBar.git
+	url = https://github.com/gitx/MGScopeBar.git
 [submodule "External/MAKVONotificationCenter"]
 	path = External/MAKVONotificationCenter
 	url = https://github.com/mikeash/MAKVONotificationCenter
