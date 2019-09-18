@@ -180,10 +180,11 @@
 - (void)reselectCommitAfterUpdate {
 	[self updateStatus];
 
-	if ([self.repository.currentBranch isSimpleRef])
-		[self selectCommit:[self.repository OIDForRef:self.repository.currentBranch.ref]];
-	else
-		[self selectCommit:self.firstCommit.OID];
+	if ([self.repository.currentBranch isSimpleRef]) {
+		[self selectCommit:[self.repository OIDForRef:self.repository.currentBranch.ref] withRescroll:NO];
+	} else {
+		[self selectCommit:self.firstCommit.OID withRescroll:NO];
+	}
 }
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row {
@@ -552,6 +553,11 @@
 
 - (void)selectCommit:(GTOID *)commitOID
 {
+	[self selectCommit:commitOID withRescroll:YES];
+}
+
+- (void)selectCommit:(GTOID *)commitOID withRescroll:(BOOL)doRescroll
+{
 	if (!forceSelectionUpdate && [[[commitController.selectedObjects lastObject] OID] isEqual:commitOID]) {
 		return;
 	}
@@ -559,8 +565,10 @@
 	NSArray *selectedObjects = [self selectedObjectsForOID:commitOID];
 	[commitController setSelectedObjects:selectedObjects];
 
-	NSInteger oldIndex = [[commitController selectionIndexes] firstIndex];
-	[self scrollSelectionToTopOfViewFrom:oldIndex];
+	if (doRescroll) {
+		NSInteger oldIndex = [[commitController selectionIndexes] firstIndex];
+		[self scrollSelectionToTopOfViewFrom:oldIndex];
+	}
 
 	forceSelectionUpdate = NO;
 }
