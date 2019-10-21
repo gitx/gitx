@@ -534,8 +534,6 @@
 		C4850693235E1FD200B137AF /* ObjectiveGit.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = ObjectiveGit.framework.dSYM; path = Carthage/Build/Mac/ObjectiveGit.framework.dSYM; sourceTree = "<group>"; };
 		C4850695235E201D00B137AF /* MAKVONotificationCenter */ = {isa = PBXFileReference; lastKnownFileType = folder; path = MAKVONotificationCenter; sourceTree = "<group>"; };
 		C4850698235E26CF00B137AF /* inc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = inc; sourceTree = "<group>"; };
-		C485069B235E26DE00B137AF /* MAKVONotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MAKVONotificationCenter.h; sourceTree = "<group>"; };
-		C485069C235E26DE00B137AF /* MAKVONotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MAKVONotificationCenter.m; sourceTree = "<group>"; };
 		C485069D235E285600B137AF /* GitX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GitX.entitlements; sourceTree = "<group>"; };
 		C485069E235E285C00B137AF /* gitx_askpasswd.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = gitx_askpasswd.entitlements; sourceTree = SOURCE_ROOT; };
 		C48506A3235E2CDD00B137AF /* Sparkle.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Sparkle.framework.dSYM; path = Carthage/Build/Mac/Sparkle.framework.dSYM; sourceTree = "<group>"; };
@@ -604,7 +602,6 @@
 			children = (
 				C48506A3235E2CDD00B137AF /* Sparkle.framework.dSYM */,
 				C485069D235E285600B137AF /* GitX.entitlements */,
-				C485069A235E26DE00B137AF /* MAKVONotificationCenter */,
 				C4850693235E1FD200B137AF /* ObjectiveGit.framework.dSYM */,
 				C485068B235E1F9900B137AF /* MGScopeBar.framework.dSYM */,
 				C485068A235E1F9900B137AF /* ObjectiveGit.framework.dSYM */,
@@ -992,15 +989,6 @@
 			);
 			name = "External Sources";
 			path = External;
-			sourceTree = "<group>";
-		};
-		C485069A235E26DE00B137AF /* MAKVONotificationCenter */ = {
-			isa = PBXGroup;
-			children = (
-				C485069B235E26DE00B137AF /* MAKVONotificationCenter.h */,
-				C485069C235E26DE00B137AF /* MAKVONotificationCenter.m */,
-			);
-			path = MAKVONotificationCenter;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
