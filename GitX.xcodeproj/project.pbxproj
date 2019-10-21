@@ -29,8 +29,6 @@
 		4A2125A417C0C78A00B5B582 /* NSColor+RGB.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A2125A317C0C78A00B5B582 /* NSColor+RGB.m */; };
 		4A40159714067B6300DB9C07 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A40159614067B6300DB9C07 /* CoreFoundation.framework */; };
 		4A40159914067B7A00DB9C07 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A40159814067B7A00DB9C07 /* AppKit.framework */; };
-		4A467EEE1546D1CD00F8902B /* ObjectiveGit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A4EF0AF142CBAD5001B8CDF /* ObjectiveGit.framework */; };
-		4A4EF0BB142CBBC2001B8CDF /* ObjectiveGit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A4EF0AF142CBAD5001B8CDF /* ObjectiveGit.framework */; };
 		4A5D75C114A9A90500DF6C68 /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 4A5D757D14A9A90500DF6C68 /* Credits.html */; };
 		4A5D75DE14A9A90500DF6C68 /* mainSplitterBar.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4A5D759B14A9A90500DF6C68 /* mainSplitterBar.tiff */; };
 		4A5D75DF14A9A90500DF6C68 /* mainSplitterDimple.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4A5D759C14A9A90500DF6C68 /* mainSplitterDimple.tiff */; };
@@ -126,12 +124,7 @@
 		4A5D773A14A9A9F600DF6C68 /* gitx.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D768614A9A9CC00DF6C68 /* gitx.m */; };
 		4A5D773B14A9A9F900DF6C68 /* gitx_askpasswd_main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D768714A9A9CC00DF6C68 /* gitx_askpasswd_main.m */; };
 		4A5D777414A9AEB000DF6C68 /* PBSourceViewBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D776F14A9AEB000DF6C68 /* PBSourceViewBadge.m */; };
-		4A68AD7414A00541006DE321 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A68AD6714A0050F006DE321 /* Sparkle.framework */; };
-		4A774CC9142F482900E158CC /* ObjectiveGit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A4EF0AF142CBAD5001B8CDF /* ObjectiveGit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		4A8F6B4B14A9B6C20002F4D7 /* MGScopeBar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A8F6B4714A9B6110002F4D7 /* MGScopeBar.framework */; };
-		4A8F6B4C14A9B6C90002F4D7 /* MGScopeBar.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A8F6B4714A9B6110002F4D7 /* MGScopeBar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4A90A73514A9D24300D0DA02 /* GitX.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 4A90A73414A9D24300D0DA02 /* GitX.sdef */; };
-		4AAAFDDA14A010DD008FC9B5 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A68AD6714A0050F006DE321 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4AB057E31652652000DE751D /* PBRepositoryFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AB057E21652652000DE751D /* PBRepositoryFinder.m */; };
 		4AB057E41652652000DE751D /* PBRepositoryFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AB057E21652652000DE751D /* PBRepositoryFinder.m */; };
 		4AB71FF814B7EDD400F1DFFC /* RJModalRepoSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = 4AB71FF714B7EDD400F1DFFC /* RJModalRepoSheet.m */; };
@@ -141,7 +134,6 @@
 		4D843B1F1E5D27C3004C3A6F /* PBTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D843B1E1E5D27C3004C3A6F /* PBTask.m */; };
 		4D843B401E5E3939004C3A6F /* PBGitRepository_PBGitBinarySupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D843B3F1E5E3939004C3A6F /* PBGitRepository_PBGitBinarySupport.m */; };
 		4DECFBB21E662962004C3A6F /* ObjectiveGit+PBCategories.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DECFBB11E662962004C3A6F /* ObjectiveGit+PBCategories.m */; };
-		4DF173E621A1A67C003CD3CE /* MAKVONotificationCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF173E521A1A67A003CD3CE /* MAKVONotificationCenter.m */; };
 		4DF173E921A1D60A003CD3CE /* NSAppearance+PBDarkMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 4DF173E821A1D60A003CD3CE /* NSAppearance+PBDarkMode.m */; };
 		50660A551FD6F48A004342B0 /* PBSidebarList.m in Sources */ = {isa = PBXBuildFile; fileRef = 50660A541FD6F48A004342B0 /* PBSidebarList.m */; };
 		507367411FD1F54E003F73E1 /* PBGitCommitTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 507367401FD1F54E003F73E1 /* PBGitCommitTableViewCell.m */; };
@@ -181,6 +173,17 @@
 		A2F8D0EB17AAB95E00580B84 /* PBSourceViewGitStashItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A2F8D0EA17AAB95E00580B84 /* PBSourceViewGitStashItem.m */; };
 		BF42F1331E025403004769FF /* GitXTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = BF42F1321E025403004769FF /* GitXTextView.m */; };
 		BFFCB5471E3EFA9F00E0B254 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFCB5461E3EFA9F00E0B254 /* Images.xcassets */; };
+		C4850682235E1F5E00B137AF /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C485067F235E1F5E00B137AF /* Sparkle.framework */; };
+		C4850683235E1F5E00B137AF /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C485067F235E1F5E00B137AF /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C4850684235E1F5E00B137AF /* MGScopeBar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4850680235E1F5E00B137AF /* MGScopeBar.framework */; };
+		C4850685235E1F5E00B137AF /* MGScopeBar.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C4850680235E1F5E00B137AF /* MGScopeBar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C4850686235E1F5E00B137AF /* ObjectiveGit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4850681235E1F5E00B137AF /* ObjectiveGit.framework */; };
+		C4850687235E1F5E00B137AF /* ObjectiveGit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C4850681235E1F5E00B137AF /* ObjectiveGit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		C485068C235E1F9900B137AF /* Sparkle.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = C4850689235E1F9900B137AF /* Sparkle.framework.dSYM */; };
+		C485068D235E1F9900B137AF /* ObjectiveGit.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = C485068A235E1F9900B137AF /* ObjectiveGit.framework.dSYM */; };
+		C485068E235E1F9900B137AF /* MGScopeBar.framework.dSYM in CopyFiles */ = {isa = PBXBuildFile; fileRef = C485068B235E1F9900B137AF /* MGScopeBar.framework.dSYM */; };
+		C485068F235E1FC300B137AF /* ObjectiveGit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4850681235E1F5E00B137AF /* ObjectiveGit.framework */; };
+		C4850690235E1FC300B137AF /* ObjectiveGit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = C4850681235E1F5E00B137AF /* ObjectiveGit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D87127011229A21C00012334 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D87127001229A21C00012334 /* QuartzCore.framework */; };
 		D89E9B141218BA260097A90B /* ScriptingBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D89E9AB21218A9DA0097A90B /* ScriptingBridge.framework */; };
 		D8E3B2B810DC9FB2001096A3 /* ScriptingBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8E3B2B710DC9FB2001096A3 /* ScriptingBridge.framework */; };
@@ -189,110 +192,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		4A467EEF1546D1F300F8902B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A4EF09F142CBAD5001B8CDF /* ObjectiveGitFramework.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
-			remoteInfo = ObjectiveGit;
-		};
-		4A4EF0AE142CBAD5001B8CDF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A4EF09F142CBAD5001B8CDF /* ObjectiveGitFramework.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = ObjectiveGit;
-		};
-		4A4EF0B2142CBAD5001B8CDF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A4EF09F142CBAD5001B8CDF /* ObjectiveGitFramework.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 04DB4645133AB57600D9C624;
-			remoteInfo = "ObjectiveGit-iOS";
-		};
-		4A68AD6614A0050F006DE321 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = Sparkle;
-		};
-		4A68AD6814A0050F006DE321 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 61B5F90209C4CEE200B25A18;
-			remoteInfo = "Sparkle Test App";
-		};
-		4A68AD6A14A0050F006DE321 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 612279D90DB5470200AB99EA;
-			remoteInfo = "Sparkle Unit Tests";
-		};
-		4A68AD6C14A0050F006DE321 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 5D06E8D00FD68C7C005AE3F6;
-			remoteInfo = BinaryDelta;
-		};
-		4A68AD6E14A0050F006DE321 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 55C14BB7136EEF1500649790;
-			remoteInfo = finish_installation;
-		};
-		4A68AD7014A00534006DE321 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
-			remoteInfo = Sparkle;
-		};
-		4A68AD7214A00534006DE321 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A4EF09F142CBAD5001B8CDF /* ObjectiveGitFramework.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
-			remoteInfo = ObjectiveGit;
-		};
 		4A774CBC142F464D00E158CC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 913D5E480E55644600CECEA2;
 			remoteInfo = "cli tool";
-		};
-		4A8F6B4414A9B6110002F4D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A8F6B3B14A9B6100002F4D7 /* MGScopeBar.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = MGScopeBar;
-		};
-		4A8F6B4614A9B6110002F4D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A8F6B3B14A9B6100002F4D7 /* MGScopeBar.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = AAE785781419184700A6955E;
-			remoteInfo = MGScopeBar.framework;
-		};
-		4A8F6B4914A9B6B80002F4D7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A8F6B3B14A9B6100002F4D7 /* MGScopeBar.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = AAE785771419184700A6955E;
-			remoteInfo = MGScopeBar.framework;
-		};
-		4ADAA9C11602ADB8007A0E6F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A4EF09F142CBAD5001B8CDF /* ObjectiveGitFramework.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 88F05A6B16011E5400B7AD1D;
-			remoteInfo = ObjectiveGitTests;
 		};
 		4D3F253018C37D9A000922D9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -308,34 +213,6 @@
 			remoteGlobalIDString = 4D3F252B18C37D2E000922D9;
 			remoteInfo = "Generate Scripting Header";
 		};
-		4D761CE51E552B1F004C3A6F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 726B2B5D1C645FC900388755;
-			remoteInfo = "UI Tests";
-		};
-		4D761CE71E552B1F004C3A6F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 722954B41D04ADAF00ECF9CA;
-			remoteInfo = fileop;
-		};
-		4D761CE91E552B1F004C3A6F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 5AE13FB31E0D9E07000D2C2C;
-			remoteInfo = generate_appcast;
-		};
-		4D901E031C237186004C3A6F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A4EF09F142CBAD5001B8CDF /* ObjectiveGitFramework.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = F879D8361B4B7F7C002D5C07;
-			remoteInfo = "ObjectiveGit-iOSTests";
-		};
 		551BF174112F3F3500265053 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -343,46 +220,50 @@
 			remoteGlobalIDString = 551BF110112F371800265053;
 			remoteInfo = gitx_askpasswd;
 		};
-		6F9CFC2823327F1E0061EBAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 5AB8F19F214DA72000A1187F;
-			remoteInfo = generate_keys;
-		};
-		6F9CFC2A23327F1E0061EBAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 5A5ADED7214EDE4900DF0099;
-			remoteInfo = sign_update;
-		};
-		6F9CFC2C23327F1E0061EBAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EA4311EA229D651300A5503D;
-			remoteInfo = bsdiff;
-		};
-		6F9CFC2E23327F1E0061EBAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = EA4311A0229D5FBC00A5503D;
-			remoteInfo = ed25519;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		C4850688235E1F7D00B137AF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				C485068C235E1F9900B137AF /* Sparkle.framework.dSYM in CopyFiles */,
+				C485068D235E1F9900B137AF /* ObjectiveGit.framework.dSYM in CopyFiles */,
+				C485068E235E1F9900B137AF /* MGScopeBar.framework.dSYM in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4850691235E1FC300B137AF /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C4850690235E1FC300B137AF /* ObjectiveGit.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C4850692235E1FC900B137AF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F580E6BD0E73329C009E2D3F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				4A8F6B4C14A9B6C90002F4D7 /* MGScopeBar.framework in CopyFiles */,
-				4AAAFDDA14A010DD008FC9B5 /* Sparkle.framework in CopyFiles */,
-				4A774CC9142F482900E158CC /* ObjectiveGit.framework in CopyFiles */,
+				C4850683235E1F5E00B137AF /* Sparkle.framework in CopyFiles */,
+				C4850687235E1F5E00B137AF /* ObjectiveGit.framework in CopyFiles */,
+				C4850685235E1F5E00B137AF /* MGScopeBar.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -402,7 +283,6 @@
 		4A2125A317C0C78A00B5B582 /* NSColor+RGB.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSColor+RGB.m"; sourceTree = "<group>"; };
 		4A40159614067B6300DB9C07 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		4A40159814067B7A00DB9C07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		4A4EF09F142CBAD5001B8CDF /* ObjectiveGitFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ObjectiveGitFramework.xcodeproj; path = "objective-git/ObjectiveGitFramework.xcodeproj"; sourceTree = "<group>"; };
 		4A5D757D14A9A90500DF6C68 /* Credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Credits.html; sourceTree = "<group>"; };
 		4A5D759B14A9A90500DF6C68 /* mainSplitterBar.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = mainSplitterBar.tiff; sourceTree = "<group>"; };
 		4A5D759C14A9A90500DF6C68 /* mainSplitterDimple.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = mainSplitterDimple.tiff; sourceTree = "<group>"; };
@@ -563,8 +443,6 @@
 		4A5D776E14A9AEB000DF6C68 /* PBSourceViewBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewBadge.h; sourceTree = "<group>"; };
 		4A5D776F14A9AEB000DF6C68 /* PBSourceViewBadge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBSourceViewBadge.m; sourceTree = "<group>"; };
 		4A5D777014A9AEB000DF6C68 /* PBSourceViewItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewItems.h; sourceTree = "<group>"; };
-		4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sparkle.xcodeproj; path = Sparkle/Sparkle.xcodeproj; sourceTree = "<group>"; };
-		4A8F6B3B14A9B6100002F4D7 /* MGScopeBar.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MGScopeBar.xcodeproj; path = MGScopeBar/MGScopeBar.xcodeproj; sourceTree = "<group>"; };
 		4A90A72914A9C12F00D0DA02 /* GitX_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GitX_Prefix.pch; sourceTree = "<group>"; };
 		4A90A72B14A9C12F00D0DA02 /* README.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.markdown; sourceTree = SOURCE_ROOT; };
 		4A90A73314A9D1E800D0DA02 /* GitX.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GitX.h; path = ../Resources/GitX.h; sourceTree = "<group>"; };
@@ -591,12 +469,8 @@
 		4D843B3E1E5E3939004C3A6F /* PBGitRepository_PBGitBinarySupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRepository_PBGitBinarySupport.h; sourceTree = "<group>"; };
 		4D843B3F1E5E3939004C3A6F /* PBGitRepository_PBGitBinarySupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitRepository_PBGitBinarySupport.m; sourceTree = "<group>"; };
 		4DC1853818E6F93200E8DB8F /* Info-gitx.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-gitx.plist"; path = "../Resources/Info-gitx.plist"; sourceTree = "<group>"; };
-		4DE23D041CF31237004C3A6F /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = "objective-git/External/libgit2/src"; sourceTree = "<group>"; };
-		4DE23D051CF31252004C3A6F /* include */ = {isa = PBXFileReference; lastKnownFileType = folder; name = include; path = "objective-git/External/libgit2/include"; sourceTree = "<group>"; };
 		4DECFBB01E662962004C3A6F /* ObjectiveGit+PBCategories.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ObjectiveGit+PBCategories.h"; sourceTree = "<group>"; };
 		4DECFBB11E662962004C3A6F /* ObjectiveGit+PBCategories.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ObjectiveGit+PBCategories.m"; sourceTree = "<group>"; };
-		4DF173E421A1A679003CD3CE /* MAKVONotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAKVONotificationCenter.h; path = MAKVONotificationCenter/MAKVONotificationCenter.h; sourceTree = "<group>"; };
-		4DF173E521A1A67A003CD3CE /* MAKVONotificationCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAKVONotificationCenter.m; path = MAKVONotificationCenter/MAKVONotificationCenter.m; sourceTree = "<group>"; };
 		4DF173E721A1D60A003CD3CE /* NSAppearance+PBDarkMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSAppearance+PBDarkMode.h"; sourceTree = "<group>"; };
 		4DF173E821A1D60A003CD3CE /* NSAppearance+PBDarkMode.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSAppearance+PBDarkMode.m"; sourceTree = "<group>"; };
 		50660A531FD6F48A004342B0 /* PBSidebarList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBSidebarList.h; sourceTree = "<group>"; };
@@ -651,6 +525,17 @@
 		BF42F1321E025403004769FF /* GitXTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitXTextView.m; sourceTree = "<group>"; };
 		BF42F1431E025411004769FF /* GitXTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GitXTextView.h; sourceTree = "<group>"; };
 		BFFCB5461E3EFA9F00E0B254 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		C485067F235E1F5E00B137AF /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Carthage/Build/Mac/Sparkle.framework; sourceTree = "<group>"; };
+		C4850680235E1F5E00B137AF /* MGScopeBar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MGScopeBar.framework; path = Carthage/Build/Mac/MGScopeBar.framework; sourceTree = "<group>"; };
+		C4850681235E1F5E00B137AF /* ObjectiveGit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjectiveGit.framework; path = Carthage/Build/Mac/ObjectiveGit.framework; sourceTree = "<group>"; };
+		C4850689235E1F9900B137AF /* Sparkle.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = Sparkle.framework.dSYM; path = Carthage/Build/Mac/Sparkle.framework.dSYM; sourceTree = "<group>"; };
+		C485068A235E1F9900B137AF /* ObjectiveGit.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = ObjectiveGit.framework.dSYM; path = Carthage/Build/Mac/ObjectiveGit.framework.dSYM; sourceTree = "<group>"; };
+		C485068B235E1F9900B137AF /* MGScopeBar.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = MGScopeBar.framework.dSYM; path = Carthage/Build/Mac/MGScopeBar.framework.dSYM; sourceTree = "<group>"; };
+		C4850693235E1FD200B137AF /* ObjectiveGit.framework.dSYM */ = {isa = PBXFileReference; lastKnownFileType = wrapper.dsym; name = ObjectiveGit.framework.dSYM; path = Carthage/Build/Mac/ObjectiveGit.framework.dSYM; sourceTree = "<group>"; };
+		C4850695235E201D00B137AF /* MAKVONotificationCenter */ = {isa = PBXFileReference; lastKnownFileType = folder; path = MAKVONotificationCenter; sourceTree = "<group>"; };
+		C4850698235E26CF00B137AF /* inc */ = {isa = PBXFileReference; lastKnownFileType = folder; path = inc; sourceTree = "<group>"; };
+		C485069B235E26DE00B137AF /* MAKVONotificationCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MAKVONotificationCenter.h; sourceTree = "<group>"; };
+		C485069C235E26DE00B137AF /* MAKVONotificationCenter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MAKVONotificationCenter.m; sourceTree = "<group>"; };
 		D87127001229A21C00012334 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		D89E9AB21218A9DA0097A90B /* ScriptingBridge.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScriptingBridge.framework; path = System/Library/Frameworks/ScriptingBridge.framework; sourceTree = SDKROOT; };
 		D8E3B2B710DC9FB2001096A3 /* ScriptingBridge.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScriptingBridge.framework; path = /System/Library/Frameworks/ScriptingBridge.framework; sourceTree = "<absolute>"; };
@@ -673,13 +558,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A8F6B4B14A9B6C20002F4D7 /* MGScopeBar.framework in Frameworks */,
-				4A68AD7414A00541006DE321 /* Sparkle.framework in Frameworks */,
-				4A4EF0BB142CBBC2001B8CDF /* ObjectiveGit.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				F56526240E03D85900F03B52 /* WebKit.framework in Frameworks */,
 				911112370E5A097800BF76B4 /* Security.framework in Frameworks */,
+				C4850686235E1F5E00B137AF /* ObjectiveGit.framework in Frameworks */,
+				C4850684235E1F5E00B137AF /* MGScopeBar.framework in Frameworks */,
 				F5E4DBFB0EAB58D90013FAFC /* SystemConfiguration.framework in Frameworks */,
+				C4850682235E1F5E00B137AF /* Sparkle.framework in Frameworks */,
 				D8E3B2B810DC9FB2001096A3 /* ScriptingBridge.framework in Frameworks */,
 				D87127011229A21C00012334 /* QuartzCore.framework in Frameworks */,
 				37A5657D1EAD096300CA0332 /* Quartz.framework in Frameworks */,
@@ -691,8 +576,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4A467EEE1546D1CD00F8902B /* ObjectiveGit.framework in Frameworks */,
 				4A40159914067B7A00DB9C07 /* AppKit.framework in Frameworks */,
+				C485068F235E1FC300B137AF /* ObjectiveGit.framework in Frameworks */,
 				4A40159714067B6300DB9C07 /* CoreFoundation.framework in Frameworks */,
 				D89E9B141218BA260097A90B /* ScriptingBridge.framework in Frameworks */,
 			);
@@ -714,7 +599,13 @@
 		29B97314FDCFA39411CA2CEA /* GitTest */ = {
 			isa = PBXGroup;
 			children = (
+				C485069A235E26DE00B137AF /* MAKVONotificationCenter */,
+				C4850693235E1FD200B137AF /* ObjectiveGit.framework.dSYM */,
+				C485068B235E1F9900B137AF /* MGScopeBar.framework.dSYM */,
+				C485068A235E1F9900B137AF /* ObjectiveGit.framework.dSYM */,
+				C4850689235E1F9900B137AF /* Sparkle.framework.dSYM */,
 				4A90A72B14A9C12F00D0DA02 /* README.markdown */,
+				C4850698235E26CF00B137AF /* inc */,
 				4A5D762114A9A9CC00DF6C68 /* Classes */,
 				4A5D773E14A9AB3A00DF6C68 /* External Sources */,
 				4A5D757C14A9A90500DF6C68 /* Resources */,
@@ -730,6 +621,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C4850680235E1F5E00B137AF /* MGScopeBar.framework */,
+				C4850681235E1F5E00B137AF /* ObjectiveGit.framework */,
+				C485067F235E1F5E00B137AF /* Sparkle.framework */,
 				37A5657C1EAD096300CA0332 /* Quartz.framework */,
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
 				4A40159814067B7A00DB9C07 /* AppKit.framework */,
@@ -766,17 +660,6 @@
 			);
 			name = gitx_askpasswd;
 			path = Classes;
-			sourceTree = "<group>";
-		};
-		4A4EF0A0142CBAD5001B8CDF /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4A4EF0AF142CBAD5001B8CDF /* ObjectiveGit.framework */,
-				4ADAA9C21602ADB8007A0E6F /* ObjectiveGit-MacTests.xctest */,
-				4A4EF0B3142CBAD5001B8CDF /* ObjectiveGit.framework */,
-				4D901E041C237186004C3A6F /* ObjectiveGit-iOSTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		4A5D757C14A9A90500DF6C68 /* Resources */ = {
@@ -1099,52 +982,19 @@
 		4A5D773E14A9AB3A00DF6C68 /* External Sources */ = {
 			isa = PBXGroup;
 			children = (
-				4DF173E421A1A679003CD3CE /* MAKVONotificationCenter.h */,
-				4DF173E521A1A67A003CD3CE /* MAKVONotificationCenter.m */,
-				4DE23D061CF31258004C3A6F /* libgit2 */,
-				4A8F6B3B14A9B6100002F4D7 /* MGScopeBar.xcodeproj */,
-				4A4EF09F142CBAD5001B8CDF /* ObjectiveGitFramework.xcodeproj */,
-				4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */,
+				C4850695235E201D00B137AF /* MAKVONotificationCenter */,
 			);
 			name = "External Sources";
 			path = External;
 			sourceTree = "<group>";
 		};
-		4A68AD5914A0050E006DE321 /* Products */ = {
+		C485069A235E26DE00B137AF /* MAKVONotificationCenter */ = {
 			isa = PBXGroup;
 			children = (
-				4A68AD6714A0050F006DE321 /* Sparkle.framework */,
-				4A68AD6914A0050F006DE321 /* Sparkle Test App.app */,
-				4A68AD6B14A0050F006DE321 /* Sparkle Unit Tests.xctest */,
-				4A68AD6D14A0050F006DE321 /* BinaryDelta */,
-				4A68AD6F14A0050F006DE321 /* Autoupdate.app */,
-				4D761CE61E552B1F004C3A6F /* UI Tests.xctest */,
-				4D761CE81E552B1F004C3A6F /* fileop */,
-				4D761CEA1E552B1F004C3A6F /* generate_appcast */,
-				6F9CFC2923327F1E0061EBAD /* generate_keys */,
-				6F9CFC2B23327F1E0061EBAD /* sign_update */,
-				6F9CFC2D23327F1E0061EBAD /* libbsdiff.a */,
-				6F9CFC2F23327F1E0061EBAD /* libed25519.a */,
+				C485069B235E26DE00B137AF /* MAKVONotificationCenter.h */,
+				C485069C235E26DE00B137AF /* MAKVONotificationCenter.m */,
 			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		4A8F6B3C14A9B6100002F4D7 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				4A8F6B4514A9B6110002F4D7 /* MGScopeBar.app */,
-				4A8F6B4714A9B6110002F4D7 /* MGScopeBar.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		4DE23D061CF31258004C3A6F /* libgit2 */ = {
-			isa = PBXGroup;
-			children = (
-				4DE23D051CF31252004C3A6F /* include */,
-				4DE23D041CF31237004C3A6F /* src */,
-			);
-			name = libgit2;
+			path = MAKVONotificationCenter;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1175,14 +1025,12 @@
 				8D11072E0486CEB800E47090 /* Frameworks */,
 				F580E6BD0E73329C009E2D3F /* CopyFiles */,
 				F5CF04A20EAE696C00D75C81 /* Copy HTML files */,
+				C4850688235E1F7D00B137AF /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				4D3F253118C37D9A000922D9 /* PBXTargetDependency */,
-				4A8F6B4A14A9B6B80002F4D7 /* PBXTargetDependency */,
-				4A68AD7114A00534006DE321 /* PBXTargetDependency */,
-				4A68AD7314A00534006DE321 /* PBXTargetDependency */,
 				4A774CBD142F464D00E158CC /* PBXTargetDependency */,
 				551BF175112F3F3500265053 /* PBXTargetDependency */,
 			);
@@ -1198,12 +1046,13 @@
 			buildPhases = (
 				913D5E460E55644600CECEA2 /* Sources */,
 				913D5E470E55644600CECEA2 /* Frameworks */,
+				C4850691235E1FC300B137AF /* Embed Frameworks */,
+				C4850692235E1FC900B137AF /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				4D3F253318C37D9F000922D9 /* PBXTargetDependency */,
-				4A467EF01546D1F300F8902B /* PBXTargetDependency */,
 			);
 			name = "cli tool";
 			productName = "cli tool";
@@ -1230,20 +1079,6 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* GitTest */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 4A8F6B3C14A9B6100002F4D7 /* Products */;
-					ProjectRef = 4A8F6B3B14A9B6100002F4D7 /* MGScopeBar.xcodeproj */;
-				},
-				{
-					ProductGroup = 4A4EF0A0142CBAD5001B8CDF /* Products */;
-					ProjectRef = 4A4EF09F142CBAD5001B8CDF /* ObjectiveGitFramework.xcodeproj */;
-				},
-				{
-					ProductGroup = 4A68AD5914A0050E006DE321 /* Products */;
-					ProjectRef = 4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* GitX */,
@@ -1253,135 +1088,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		4A4EF0AF142CBAD5001B8CDF /* ObjectiveGit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = ObjectiveGit.framework;
-			remoteRef = 4A4EF0AE142CBAD5001B8CDF /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4A4EF0B3142CBAD5001B8CDF /* ObjectiveGit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = ObjectiveGit.framework;
-			remoteRef = 4A4EF0B2142CBAD5001B8CDF /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4A68AD6714A0050F006DE321 /* Sparkle.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Sparkle.framework;
-			remoteRef = 4A68AD6614A0050F006DE321 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4A68AD6914A0050F006DE321 /* Sparkle Test App.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = "Sparkle Test App.app";
-			remoteRef = 4A68AD6814A0050F006DE321 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4A68AD6B14A0050F006DE321 /* Sparkle Unit Tests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "Sparkle Unit Tests.xctest";
-			remoteRef = 4A68AD6A14A0050F006DE321 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4A68AD6D14A0050F006DE321 /* BinaryDelta */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = BinaryDelta;
-			remoteRef = 4A68AD6C14A0050F006DE321 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4A68AD6F14A0050F006DE321 /* Autoupdate.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = Autoupdate.app;
-			remoteRef = 4A68AD6E14A0050F006DE321 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4A8F6B4514A9B6110002F4D7 /* MGScopeBar.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = MGScopeBar.app;
-			remoteRef = 4A8F6B4414A9B6110002F4D7 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4A8F6B4714A9B6110002F4D7 /* MGScopeBar.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MGScopeBar.framework;
-			remoteRef = 4A8F6B4614A9B6110002F4D7 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4ADAA9C21602ADB8007A0E6F /* ObjectiveGit-MacTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "ObjectiveGit-MacTests.xctest";
-			remoteRef = 4ADAA9C11602ADB8007A0E6F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4D761CE61E552B1F004C3A6F /* UI Tests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "UI Tests.xctest";
-			remoteRef = 4D761CE51E552B1F004C3A6F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4D761CE81E552B1F004C3A6F /* fileop */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = fileop;
-			remoteRef = 4D761CE71E552B1F004C3A6F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4D761CEA1E552B1F004C3A6F /* generate_appcast */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = generate_appcast;
-			remoteRef = 4D761CE91E552B1F004C3A6F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		4D901E041C237186004C3A6F /* ObjectiveGit-iOSTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "ObjectiveGit-iOSTests.xctest";
-			remoteRef = 4D901E031C237186004C3A6F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6F9CFC2923327F1E0061EBAD /* generate_keys */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = generate_keys;
-			remoteRef = 6F9CFC2823327F1E0061EBAD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6F9CFC2B23327F1E0061EBAD /* sign_update */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = sign_update;
-			remoteRef = 6F9CFC2A23327F1E0061EBAD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6F9CFC2D23327F1E0061EBAD /* libbsdiff.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libbsdiff.a;
-			remoteRef = 6F9CFC2C23327F1E0061EBAD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		6F9CFC2F23327F1E0061EBAD /* libed25519.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libed25519.a;
-			remoteRef = 6F9CFC2E23327F1E0061EBAD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8D1107290486CEB800E47090 /* Resources */ = {
@@ -1471,7 +1177,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "resource_path=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nrm -rf \"$resource_path/html\"\ncp -r Resources/html \"$resource_path\"";
+			shellScript = "resource_path=\"$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH\"\nrm -rf \"$resource_path/html\"\ncp -r Resources/html \"$resource_path\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1490,7 +1196,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4A5D76E114A9A9CC00DF6C68 /* ApplicationController.m in Sources */,
-				4DF173E621A1A67C003CD3CE /* MAKVONotificationCenter.m in Sources */,
 				4A5D76E214A9A9CC00DF6C68 /* DBPrefsWindowController.m in Sources */,
 				4A5D76E314A9A9CC00DF6C68 /* OpenRecentController.m in Sources */,
 				4A5D76E414A9A9CC00DF6C68 /* PBDiffWindowController.m in Sources */,
@@ -1598,30 +1303,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		4A467EF01546D1F300F8902B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ObjectiveGit;
-			targetProxy = 4A467EEF1546D1F300F8902B /* PBXContainerItemProxy */;
-		};
-		4A68AD7114A00534006DE321 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Sparkle;
-			targetProxy = 4A68AD7014A00534006DE321 /* PBXContainerItemProxy */;
-		};
-		4A68AD7314A00534006DE321 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ObjectiveGit;
-			targetProxy = 4A68AD7214A00534006DE321 /* PBXContainerItemProxy */;
-		};
 		4A774CBD142F464D00E158CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 913D5E480E55644600CECEA2 /* cli tool */;
 			targetProxy = 4A774CBC142F464D00E158CC /* PBXContainerItemProxy */;
-		};
-		4A8F6B4A14A9B6B80002F4D7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MGScopeBar.framework;
-			targetProxy = 4A8F6B4914A9B6B80002F4D7 /* PBXContainerItemProxy */;
 		};
 		4D3F253118C37D9A000922D9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1721,16 +1406,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-gitx";
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = "\"$(PROJECT_DIR)\"";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
 				PRODUCT_NAME = GitX;
+				USE_HEADERMAP = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1741,17 +1429,20 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-gitx";
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = "\"$(PROJECT_DIR)\"";
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
 				PRODUCT_NAME = GitX;
 				STRIP_INSTALLED_PRODUCT = YES;
+				USE_HEADERMAP = YES;
 				VERSIONING_SYSTEM = "apple-generic";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1784,6 +1475,10 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/",
+				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
@@ -1795,7 +1490,12 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(PROJECT_DIR)/External/objective-git/External/libgit2/include\"",
+					"$(PROJECT_DIR)/inc",
+					"$(PROJECT_DIR)/Classes",
+					"$(PROJECT_DIR)/Classes/git",
+					"$(PROJECT_DIR)/Resources",
+					"$(PROJECT_DIR)/Classes/Controllers",
+					"$(PROJECT_DIR)/Classes/Util",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
@@ -1833,6 +1533,10 @@
 				CURRENT_PROJECT_VERSION = 0.12;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/Carthage/Build/Mac",
+					"$(PROJECT_DIR)/",
+				);
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = GITX_NO_DEPRECATE;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1843,7 +1547,12 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(PROJECT_DIR)/External/objective-git/External/libgit2/include\"",
+					"$(PROJECT_DIR)/inc",
+					"$(PROJECT_DIR)/Classes",
+					"$(PROJECT_DIR)/Classes/git",
+					"$(PROJECT_DIR)/Resources",
+					"$(PROJECT_DIR)/Classes/Controllers",
+					"$(PROJECT_DIR)/Classes/Util",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
@@ -1901,13 +1610,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "Resources/Info-gitx.plist";
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.phere.gitx-cli";
 				PRODUCT_NAME = gitx;
 				SKIP_INSTALL = YES;
+				USE_HEADERMAP = YES;
 			};
 			name = Debug;
 		};
@@ -1915,14 +1627,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
+				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = "Resources/Info-gitx.plist";
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.phere.gitx-cli";
 				PRODUCT_NAME = gitx;
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;
+				USE_HEADERMAP = YES;
 			};
 			name = Release;
 		};
