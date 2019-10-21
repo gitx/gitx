@@ -1,4 +1,4 @@
-github "libgit2/objective-git" == 0.14.2
-github "sparkle-project/Sparkle" == 1.22.0
-github "chbeer/MGScopeBar" == 1.0.3
+github "libgit2/objective-git"
+github "sparkle-project/Sparkle"
+github "chbeer/MGScopeBar"
 github "mikeash/MAKVONotificationCenter" "1f414de5dd2fd54fad6928a09794431ffa13f30f"
