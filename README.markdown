@@ -1,3 +1,11 @@
+# Easier build flow
+
+1. `brew install carthage`
+2. `carthage update`
+3. I didn't manage how to sign spark crap, so: `rm -rf Carthage/Build/Mac/Sparkle.framework/Versions/A/Resources/*.app`
+4. `GitX.xcworkspace`, build&archive
+
+
 # What is GitX?
 
 [![Build Status](https://travis-ci.org/gitx/gitx.svg?branch=master)](https://travis-ci.org/gitx/gitx)
