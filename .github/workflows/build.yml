@@ -4,6 +4,9 @@ on: push
 jobs:
   build:
     runs-on: macos-latest
+    env:
+      LDFLAGS:  -L/usr/local/opt/openssl/lib
+      CPPFLAGS: -I/usr/local/opt/openssl/include
     steps:
       - uses: actions/checkout@v2
         with:
