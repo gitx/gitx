@@ -1,0 +1,20 @@
+name: Build
+on: push
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: versions
+        run: |
+          xcodebuild -version
+          python3 --version
+      - name: build objective-git
+        run: |
+          cd External/objective-git
+          script/bootstrap
+          script/update_libgit2
+      - run: python3 Scripts/build.py release
