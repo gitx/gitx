@@ -228,20 +228,19 @@ var loadCommit = function(commitObject, currentRef) {
 	while (filelist.hasChildNodes())
 		filelist.removeChild(filelist.lastChild);
 	showRefs();
-	removeParentsFromCommitHeader();
 
 	// Scroll to top
 	scroll(0, 0);
 
-	if (!commit.parents)
-		return;
-
-	for (var i = 0; i < commit.parents.length; i++) {
-		var newRow = $("commit_header").insertRow(-1);
-		newRow.innerHTML = "<td class='property_name'>Parent:</td><td>" +
-			"<a class='SHA commit-link' href=''>" +
-			commit.parents[i].SHA() + "</a></td>";
-		bindCommitSelectionLinks(newRow);
+	var parentsNode = $("parents");
+	parentsNode.innerHTML = '';
+	if (commit.parents) {
+		for (var i = 0; i < commit.parents.length; i++) {
+			var container = document.createElement("span");
+			container.innerHTML = '<a class="SHA commit-link" href="">' + commit.parents[i].SHA() + "</a>";
+			parentsNode.appendChild(container);
+		}
+		bindCommitSelectionLinks(parentsNode);
 	}
 
 	commit.notificationID = setTimeout(function() { 
@@ -251,16 +250,6 @@ var loadCommit = function(commitObject, currentRef) {
 	}, 500);
 
 }
-
-var removeParentsFromCommitHeader = function() {
-	for (var i = 0; i < $("commit_header").rows.length; ++i) {
-		var row = $("commit_header").rows[i];
-		if (row.innerHTML.match(/Parent:/)) {
-			row.parentNode.removeChild(row);
-			--i;
-		}
-	}
-};
 
 var showMultipleSelectionMessage = function(messageParts) {
 	jQuery("#commit").hide();

@@ -62,6 +62,10 @@ a.servicebutton:hover {
 	font-family: Menlo, Monaco, monospace;
 }
 
+#parents span:not(:first-child)::before {
+	content: ', ';
+}
+
 .gravatar {
   float: left;
   margin-right: 5px;
