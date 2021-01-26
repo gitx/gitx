@@ -18,6 +18,6 @@ for build instructions.
 
 ### Screenshots
 
-![screenshot of gitx with gitx repo opened](screenshot.png)
+![Staging View](screenshot-stage.png)
 
-![dark screenshot of gitx with gitx repo opened](screenshot-dark.png)
+![History View](screenshot-history.png)
