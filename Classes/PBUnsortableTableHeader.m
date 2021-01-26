@@ -17,8 +17,7 @@
 	NSInteger aColumnIndex = [self columnAtPoint:location];
 
 	// If the user pressed on another column, reset
-	if (aColumnIndex != columnIndex)
-	{
+	if (aColumnIndex != columnIndex) {
 		clickCount = 1;
 		columnIndex = aColumnIndex;
 		[super mouseDown:theEvent];
@@ -27,8 +26,7 @@
 
 	// On the third click, reset the sorting and
 	// Don't pass on the click
-	if (++clickCount == 3)
-	{
+	if (++clickCount == 3) {
 		clickCount = 0;
 		controller.sortDescriptors = [NSArray array];
 		[controller rearrangeObjects];

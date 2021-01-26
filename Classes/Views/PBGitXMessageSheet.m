@@ -109,7 +109,6 @@
 }
 
 
-
 #pragma mark Private
 
 - (void)beginMessageSheetWithMessageText:(NSString *)message
@@ -117,20 +116,21 @@
 					   completionHandler:(RJSheetCompletionHandler)handler;
 {
 	[self window];
-	
+
 	[self.messageField setStringValue:message];
 	[self setInfoString:info];
 	[self resizeWindow];
-		
+
 	[self beginSheetWithCompletionHandler:handler];
 }
 
 
 - (void)setInfoString:(NSString *)info
 {
-	NSDictionary *attributes = @{NSFontAttributeName: [NSFont labelFontOfSize:[NSFont smallSystemFontSize]],
-								 NSForegroundColorAttributeName: [NSColor textColor],
-								 };
+	NSDictionary *attributes = @{
+		NSFontAttributeName : [NSFont labelFontOfSize:[NSFont smallSystemFontSize]],
+		NSForegroundColorAttributeName : [NSColor textColor],
+	};
 	NSAttributedString *attributedInfoString = [[NSAttributedString alloc] initWithString:info attributes:attributes];
 	[[self.infoView textStorage] setAttributedString:attributedInfoString];
 }
@@ -149,16 +149,16 @@
 		messageFrame.size.height += heightDelta;
 		messageFrame.origin.y -= heightDelta;
 		[self.messageField setFrame:messageFrame];
-		
+
 		NSRect scrollFrame = [self.scrollView frame];
 		scrollFrame.size.height -= heightDelta;
 		[self.scrollView setFrame:scrollFrame];
-		
+
 		NSRect windowFrame = [[self window] frame];
 		windowFrame.size.height += heightDelta;
 		[[self window] setFrame:windowFrame display:NO];
 	}
-	
+
 	// resize for info text
 	NSRect scrollFrame = [self.scrollView frame];
 	boundingSize = [self.scrollView bounds].size;

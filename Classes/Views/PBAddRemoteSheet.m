@@ -31,33 +31,33 @@
 
 #pragma mark IBActions
 
-- (IBAction) browseFolders:(id)sender
+- (IBAction)browseFolders:(id)sender
 {
 	PBAddRemoteSheet *me = self;
 	NSOpenPanel *browseSheet = [NSOpenPanel openPanel];
 
 	[browseSheet setTitle:NSLocalizedString(@"Add remote", @"Title of sheet to enter data for a new remote")];
-    [browseSheet setMessage:NSLocalizedString(@"Select a folder with a git repository", @"Title of sheet to enter data for a new remote")];
-    [browseSheet setCanChooseFiles:NO];
-    [browseSheet setCanChooseDirectories:YES];
-    [browseSheet setAllowsMultipleSelection:NO];
-    [browseSheet setCanCreateDirectories:NO];
+	[browseSheet setMessage:NSLocalizedString(@"Select a folder with a git repository", @"Title of sheet to enter data for a new remote")];
+	[browseSheet setCanChooseFiles:NO];
+	[browseSheet setCanChooseDirectories:YES];
+	[browseSheet setAllowsMultipleSelection:NO];
+	[browseSheet setCanCreateDirectories:NO];
 	[browseSheet setAccessoryView:me.browseAccessoryView];
 
 	self.browseSheet = browseSheet;
 	[me hide];
-    [browseSheet beginSheetModalForWindow:self.windowController.window
-                        completionHandler:^(NSInteger result) {
-                            if (result == NSModalResponseOK) {
-                                NSString *directory = browseSheet.directoryURL.path;
-                                [me.remoteURL setStringValue:directory];
-                            }
-                            [me show];
-                        }];
+	[browseSheet beginSheetModalForWindow:self.windowController.window
+						completionHandler:^(NSInteger result) {
+							if (result == NSModalResponseOK) {
+								NSString *directory = browseSheet.directoryURL.path;
+								[me.remoteURL setStringValue:directory];
+							}
+							[me show];
+						}];
 }
 
 
-- (IBAction) addRemote:(id)sender
+- (IBAction)addRemote:(id)sender
 {
 	[self.errorMessage setStringValue:@""];
 
@@ -82,12 +82,12 @@
 	[self acceptSheet:sender];
 }
 
-- (IBAction) showHideHiddenFiles:(id)sender
+- (IBAction)showHideHiddenFiles:(id)sender
 {
-    [self.browseSheet setShowsHiddenFiles:[sender state] == NSOnState];
+	[self.browseSheet setShowsHiddenFiles:[sender state] == NSOnState];
 }
 
-- (IBAction) cancelOperation:(id)sender
+- (IBAction)cancelOperation:(id)sender
 {
 	[self cancelSheet:sender];
 }

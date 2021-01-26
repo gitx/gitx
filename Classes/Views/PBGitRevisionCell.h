@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 	__weak IBOutlet PBGitHistoryController *controller;
 }
 
-- (int) indexAtX:(CGFloat)x;
-- (NSRect) rectAtIndex:(int)index;
-- (void) drawLabelAtIndex:(int)index inRect:(NSRect)rect;
+- (int)indexAtX:(CGFloat)x;
+- (NSRect)rectAtIndex:(int)index;
+- (void)drawLabelAtIndex:(int)index inRect:(NSRect)rect;
 
 @property (strong) PBGitCommit *objectValue;
 

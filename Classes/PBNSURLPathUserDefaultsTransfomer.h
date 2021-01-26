@@ -10,7 +10,6 @@
 
 
 @interface PBNSURLPathUserDefaultsTransfomer : NSValueTransformer {
-
 }
 
 @end

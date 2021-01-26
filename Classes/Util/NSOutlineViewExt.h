@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface NSOutlineView (PBExpandParents) 
+@interface NSOutlineView (PBExpandParents)
 
 - (void)PBExpandItem:(id)item expandParents:(BOOL)expand;
 @end

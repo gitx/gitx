@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface PBSidebarTableViewCell : NSTableCellView {	
+@interface PBSidebarTableViewCell : NSTableCellView {
 	__weak IBOutlet NSImageView *checkedOutImageView;
 }
 

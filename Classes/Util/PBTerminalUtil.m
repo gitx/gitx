@@ -15,11 +15,13 @@
 
 @implementation PBTerminalUtil
 
-+ (void)runCommand:(NSString *)command inDirectory:(NSURL *)directory {
++ (void)runCommand:(NSString *)command inDirectory:(NSURL *)directory
+{
 	[[self terminalHandler] runCommand:command inDirectory:directory];
 }
 
-+ (instancetype)terminalHandler {
++ (instancetype)terminalHandler
+{
 	static dispatch_once_t onceToken;
 	static PBTerminalUtil *term = nil;
 	dispatch_once(&onceToken, ^{
@@ -28,7 +30,8 @@
 	return term;
 }
 
-- (void)runCommand:(NSString *)command inDirectory:(NSURL *)directory {
+- (void)runCommand:(NSString *)command inDirectory:(NSURL *)directory
+{
 	NSString *terminalHandler = [PBGitDefaults terminalHandler];
 	BOOL ran = NO;
 
@@ -48,20 +51,22 @@
 	}
 }
 
-- (nullable id)eventDidFail:(const AppleEvent *)event withError:(NSError *)error {
+- (nullable id)eventDidFail:(const AppleEvent *)event withError:(NSError *)error
+{
 	NSLog(@"terminal handler error: %@", error);
 	return nil;
 }
 
-- (BOOL)runTerminalCommand:(NSString *)command inDirectory:(NSURL *)directory {
+- (BOOL)runTerminalCommand:(NSString *)command inDirectory:(NSURL *)directory
+{
 	NSString *fullCommand = [NSString stringWithFormat:@"cd \"%@\"; clear; echo '# Opened by GitX'; %@", directory.path, command];
 
-	TerminalApplication *term = [SBApplication applicationWithBundleIdentifier: @"com.apple.Terminal"];
+	TerminalApplication *term = [SBApplication applicationWithBundleIdentifier:@"com.apple.Terminal"];
 	if (!term)
 		return NO;
 	term.delegate = self;
 
-	[term doScript:fullCommand in: nil];
+	[term doScript:fullCommand in:nil];
 
 	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 		[term activate];
@@ -70,10 +75,11 @@
 	return YES;
 }
 
-- (BOOL)runiTerm2Command:(NSString *)command inDirectory:(NSURL *)directory {
+- (BOOL)runiTerm2Command:(NSString *)command inDirectory:(NSURL *)directory
+{
 	NSString *fullCommand = [NSString stringWithFormat:@"cd \"%@\"; clear; echo '# Opened by GitX'; %@", directory.path, command];
 
-	iTerm2Application *term = [SBApplication applicationWithBundleIdentifier: @"com.googlecode.iterm2"];
+	iTerm2Application *term = [SBApplication applicationWithBundleIdentifier:@"com.googlecode.iterm2"];
 	if (!term)
 		return NO;
 	term.delegate = self;

@@ -11,9 +11,10 @@
 
 @implementation PBOpenShallowRepositoryErrorRecoveryAttempter
 
-NSURL * workingDirectory;
+NSURL *workingDirectory;
 
-- (instancetype) initWithURL:(NSURL *)url {
+- (instancetype)initWithURL:(NSURL *)url
+{
 	if (self != nil) {
 		workingDirectory = url;
 	}
@@ -21,20 +22,22 @@ NSURL * workingDirectory;
 }
 
 - (BOOL)attemptRecoveryFromError:(NSError *)error
-					 optionIndex:(NSUInteger)recoveryOptionIndex {
-
+					 optionIndex:(NSUInteger)recoveryOptionIndex
+{
 	if (recoveryOptionIndex == 1) {
-		NSString * unshallowCommand = @"echo 'Please re-open the repository in GitX once unshallowing has finished.'; git fetch --unshallow";
+		NSString *unshallowCommand = @"echo 'Please re-open the repository in GitX once unshallowing has finished.'; git fetch --unshallow";
 		[PBTerminalUtil runCommand:unshallowCommand inDirectory:workingDirectory];
 		return NO;
 	}
 	return NO;
 }
 
-+ (NSArray<NSString*>*) errorDialogButtonNames {
++ (NSArray<NSString *> *)errorDialogButtonNames
+{
 	return @[
-	  NSLocalizedString(@"OK", @"OK"),
-	  NSLocalizedString(@"Run command in Terminal", @"Button to run unshallow command in Terminal")];
+		NSLocalizedString(@"OK", @"OK"),
+		NSLocalizedString(@"Run command in Terminal", @"Button to run unshallow command in Terminal")
+	];
 }
 
 @end

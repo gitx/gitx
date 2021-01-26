@@ -9,5 +9,5 @@
 #import <ObjectiveGit/ObjectiveGit.h>
 
 @interface GTCommit (PBCategories)
-- (NSArray <GTOID *> *)parentOIDs;
+- (NSArray<GTOID *> *)parentOIDs;
 @end

@@ -26,8 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) PBGitRepository *repository;
 /* This is assign because that's what NSWindowController says :-S */
 @property (assign) PBGitRepositoryDocument *document;
-@property (readonly) PBGitHistoryController *historyViewController;
-@property (readonly) PBGitCommitController *commitViewController;
+@property (readonly, nullable) PBGitHistoryController *historyViewController;
+@property (readonly, nullable) PBGitCommitController *commitViewController;
+@property (readonly, nullable) PBGitSidebarController *sidebarViewController;
 
 - (instancetype)init;
 
@@ -39,8 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showErrorSheet:(NSError *)error;
 
 
-- (void)openURLs:(NSArray <NSURL *> *)fileURLs;
-- (void)revealURLsInFinder:(NSArray <NSURL *> *)fileURLs;
+- (void)openURLs:(NSArray<NSURL *> *)fileURLs;
+- (void)revealURLsInFinder:(NSArray<NSURL *> *)fileURLs;
 
 - (IBAction)showCommitView:(id)sender;
 - (IBAction)showHistoryView:(id)sender;
@@ -73,9 +74,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)pushDefaultRemoteForRef:(id)sender;
 - (IBAction)pushToRemote:(id)sender;
 
-- (IBAction)stashSave:(id) sender;
-- (IBAction)stashSaveWithKeepIndex:(id) sender;
-- (IBAction)stashPop:(id) sender;
+- (IBAction)stashSave:(id)sender;
+- (IBAction)stashSaveWithKeepIndex:(id)sender;
+- (IBAction)stashPop:(id)sender;
 - (IBAction)stashApply:(id)sender;
 - (IBAction)stashDrop:(id)sender;
 

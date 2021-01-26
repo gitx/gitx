@@ -10,7 +10,8 @@
 
 #include <stdarg.h>
 
-void PBLogFunctionImpl(const char *function, NSString *format, ...) {
+void PBLogFunctionImpl(const char *function, NSString *format, ...)
+{
 	va_list arg;
 
 	if (!format) {
@@ -27,7 +28,8 @@ void PBLogFunctionImpl(const char *function, NSString *format, ...) {
 	NSLog(@"%s: %@", function, log);
 }
 
-void PBLogErrorImpl(const char *function, NSError *error) {
+void PBLogErrorImpl(const char *function, NSError *error)
+{
 	if (!error) return;
 	NSLog(@"%s: %@", function, error);
 }

@@ -18,7 +18,7 @@
 
 - (NSString *)iconName
 {
-    return self.isExpanded ? @"FolderTemplate" : @"FolderClosedTemplate";
+	return self.isExpanded ? @"FolderTemplate" : @"FolderClosedTemplate";
 }
 
 @end

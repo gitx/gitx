@@ -23,8 +23,7 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 
 - (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 {
-	if (![PBGitBinary path])
-	{
+	if (![PBGitBinary path]) {
 		return PBReturnError(outError, @"Unable to find git", [PBGitBinary notFoundError], nil);
 	}
 
@@ -40,12 +39,12 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 	}
 	if (_repository.isShallowRepository) {
 		if (outError) {
-			NSDictionary* userInfo = @{
-				NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(
+			NSDictionary *userInfo = @{
+				NSLocalizedRecoverySuggestionErrorKey : NSLocalizedString(
 					@"The repository is shallowly cloned, which is not supported by GitX. Please run “git fetch --unshallow” on the repository before opening it with GitX.",
 					@"Recovery suggestion when opening a shallow repository"),
-				NSLocalizedRecoveryOptionsErrorKey: [PBOpenShallowRepositoryErrorRecoveryAttempter errorDialogButtonNames],
-				NSRecoveryAttempterErrorKey: [[PBOpenShallowRepositoryErrorRecoveryAttempter alloc] initWithURL:_repository.workingDirectoryURL]
+				NSLocalizedRecoveryOptionsErrorKey : [PBOpenShallowRepositoryErrorRecoveryAttempter errorDialogButtonNames],
+				NSRecoveryAttempterErrorKey : [[PBOpenShallowRepositoryErrorRecoveryAttempter alloc] initWithURL:_repository.workingDirectoryURL]
 			};
 			*outError = [NSError errorWithDomain:PBGitXErrorDomain code:0 userInfo:userInfo];
 		}
@@ -59,7 +58,7 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 - (void)close
 {
 	/* FIXME: Check that this deallocs the repo */
-//	[revisionList cleanup];
+	//	[revisionList cleanup];
 
 	[super close];
 }
@@ -71,8 +70,8 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 
 - (NSString *)displayName
 {
-    // Build our display name depending on the current HEAD and whether it's detached or not
-    if (self.repository.gtRepo.isHEADDetached)
+	// Build our display name depending on the current HEAD and whether it's detached or not
+	if (self.repository.gtRepo.isHEADDetached)
 		return [NSString stringWithFormat:NSLocalizedString(@"%@ (detached HEAD)", @""), self.repository.projectName];
 
 	if (self.repository.gtRepo.isHEADUnborn)
@@ -83,7 +82,7 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 
 - (void)makeWindowControllers
 {
-    // Create our custom window controller
+	// Create our custom window controller
 #ifndef CLI
 	[self addWindowController:[[PBGitWindowController alloc] init]];
 #endif
@@ -97,15 +96,18 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 	return [[self windowControllers] objectAtIndex:0];
 }
 
-- (IBAction)showCommitView:(id)sender {
+- (IBAction)showCommitView:(id)sender
+{
 	[[self windowController] showCommitView:sender];
 }
 
-- (IBAction)showHistoryView:(id)sender {
+- (IBAction)showHistoryView:(id)sender
+{
 	[[self windowController] showHistoryView:sender];
 }
 
-- (void)selectRevisionSpecifier:(PBGitRevSpecifier *)specifier {
+- (void)selectRevisionSpecifier:(PBGitRevSpecifier *)specifier
+{
 	PBGitRevSpecifier *spec = [self.repository addBranch:specifier];
 	self.repository.currentBranch = spec;
 	[self showHistoryView:self];

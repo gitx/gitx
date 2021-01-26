@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class PBGitWindowController;
 
-typedef NSError * _Nullable (^PBProgressSheetExecutionHandler)(void);
+typedef NSError *_Nullable (^PBProgressSheetExecutionHandler)(void);
 
 @interface PBRemoteProgressSheet : RJModalRepoSheet
 

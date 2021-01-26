@@ -18,7 +18,7 @@
 
 - (NSString *)iconName
 {
-    return @"StageTemplate";
+	return @"StageTemplate";
 }
 
 @end

@@ -8,34 +8,34 @@
 
 #import <Cocoa/Cocoa.h>
 
-class PBGitLane {
+class PBGitLane
+{
 	git_oid d_sha;
 	int d_index;
 
-public:
-
+   public:
 	PBGitLane(const git_oid *sha)
 	{
 		d_sha = *sha;
 	}
 
 	PBGitLane(int index, const git_oid *sha)
-	: d_index(index)
+		: d_index(index)
 	{
 		git_oid_cpy(&d_sha, sha);
 	}
-	
+
 	bool isCommit(const git_oid *sha) const
 	{
 		return !git_oid_cmp(&d_sha, sha);
 	}
-	
+
 	void setSha(const git_oid *sha);
-	
+
 	git_oid const *sha() const
 	{
 		return &d_sha;
 	}
-	
+
 	int index() const;
 };

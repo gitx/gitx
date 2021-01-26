@@ -19,4 +19,3 @@
 @interface NSMutableURLRequest (PBGitXProtocol)
 @property (nonatomic, strong) PBGitRepository *repository;
 @end
-

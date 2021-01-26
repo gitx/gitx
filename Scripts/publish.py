@@ -23,7 +23,7 @@ def generate_changelog(project):
     released_tags = list(filter(lambda tag: tag != project.release_tag_name(), released_tags))
 
     last_released_tag = released_tags[-1]
-    print "Using {} as the changelog baseline".format(last_released_tag)
+    print("Using {} as the changelog baseline".format(last_released_tag))
 
     revspec = "%s..%s" % (last_released_tag, project.release_branch())
     git_log = helpers.check_string_output(['git', 'log', revspec,
@@ -91,17 +91,17 @@ def publish_release(project, as_prerelease, as_draft, dry_run):
         hub_release.append('-d')
 
     if dry_run:
-        print "dry-run: {}".format(hub_release)
+        print("dry-run: {}".format(hub_release))
     else:
         subprocess.check_call(hub_release)
- 
+
 
 def publish_cmd(args):
     label = None if args.prerelease == False else "pre"
-    
+
     project = Project(os.getcwd(), "release", label)
 
-    print "Preparing release {}".format(project.release_tag_name())
+    print("Preparing release {}".format(project.release_tag_name()))
     if not args.force:
         helpers.assert_clean()
         helpers.assert_branch(project.release_branch())

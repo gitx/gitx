@@ -20,11 +20,13 @@
 
 @implementation PBRemoteProgressSheet
 
-+ (instancetype)progressSheetWithTitle:(NSString *)title description:(NSString *)description windowController:(PBGitWindowController *)windowController {
++ (instancetype)progressSheetWithTitle:(NSString *)title description:(NSString *)description windowController:(PBGitWindowController *)windowController
+{
 	return [[self alloc] initWithTitle:title description:description windowController:windowController];
 }
 
-+ (instancetype)progressSheetWithTitle:(NSString *)title description:(NSString *)description {
++ (instancetype)progressSheetWithTitle:(NSString *)title description:(NSString *)description
+{
 	return [[self alloc] initWithTitle:title description:description windowController:nil];
 }
 
@@ -61,7 +63,8 @@
 	}];
 }
 
-- (void)awakeFromNib {
+- (void)awakeFromNib
+{
 	[self window]; // loads the window (if it wasn't already)
 
 	// resize window if the description is larger than the default text field

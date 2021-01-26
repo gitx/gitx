@@ -30,11 +30,11 @@
 
 - (id)initWithDiff:(NSString *)aDiff
 {
-    self = [super initWithWindowNibName:@"PBDiffWindow"];
-    if (!self) return nil;
+	self = [super initWithWindowNibName:@"PBDiffWindow"];
+	if (!self) return nil;
 
 	_diff = aDiff;
-    
+
 	return self;
 }
 

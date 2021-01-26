@@ -14,16 +14,16 @@
 #import "PBGitHistoryController.h"
 
 
-#define GROUP_LABEL				@"Label"			// string
-#define GROUP_SEPARATOR			@"HasSeparator"		// BOOL as NSNumber
-#define GROUP_SELECTION_MODE	@"SelectionMode"	// MGScopeBarGroupSelectionMode (int) as NSNumber
-#define GROUP_ITEMS				@"Items"			// array of dictionaries, each containing the following keys:
-#define ITEM_IDENTIFIER			@"Identifier"		// string
-#define ITEM_NAME				@"Name"				// string
+#define GROUP_LABEL @"Label"				  // string
+#define GROUP_SEPARATOR @"HasSeparator"		  // BOOL as NSNumber
+#define GROUP_SELECTION_MODE @"SelectionMode" // MGScopeBarGroupSelectionMode (int) as NSNumber
+#define GROUP_ITEMS @"Items"				  // array of dictionaries, each containing the following keys:
+#define ITEM_IDENTIFIER @"Identifier"		  // string
+#define ITEM_NAME @"Name"					  // string
 
-#define GROUP_ID_FILEVIEW       @"fileview"
-#define GROUP_ID_BLAME          @"blame"
-#define GROUP_ID_LOG            @"log"
+#define GROUP_ID_FILEVIEW @"fileview"
+#define GROUP_ID_BLAME @"blame"
+#define GROUP_ID_LOG @"log"
 
 @interface GLFileView ()
 
@@ -34,73 +34,76 @@
 
 @implementation GLFileView
 
-- (void) awakeFromNib
+- (void)awakeFromNib
 {
 	startFile = GROUP_ID_FILEVIEW;
 	//repository = historyController.repository;
 	[super awakeFromNib];
-	[historyController.treeController addObserver:self keyPath:@"selection" options:0 block:^(MAKVONotification *notification) {
-		[self showFile];
-	}];
-	
+	[historyController.treeController addObserver:self
+										  keyPath:@"selection"
+										  options:0
+											block:^(MAKVONotification *notification) {
+												[self showFile];
+											}];
+
 	self.groups = [NSMutableArray arrayWithCapacity:0];
-	
+
 	NSArray *items = [NSArray arrayWithObjects:
-					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   startFile, ITEM_IDENTIFIER,
-					   @"Source", ITEM_NAME,
-					   nil], 
-					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   GROUP_ID_BLAME, ITEM_IDENTIFIER,
-					   @"Blame", ITEM_NAME,
-					   nil], 
-					  [NSDictionary dictionaryWithObjectsAndKeys:
-					   GROUP_ID_LOG, ITEM_IDENTIFIER,
-					   @"History", ITEM_NAME,
-					   nil], 
-					  nil];
+								  [NSDictionary dictionaryWithObjectsAndKeys:
+													startFile, ITEM_IDENTIFIER,
+													@"Source", ITEM_NAME,
+													nil],
+								  [NSDictionary dictionaryWithObjectsAndKeys:
+													GROUP_ID_BLAME, ITEM_IDENTIFIER,
+													@"Blame", ITEM_NAME,
+													nil],
+								  [NSDictionary dictionaryWithObjectsAndKeys:
+													GROUP_ID_LOG, ITEM_IDENTIFIER,
+													@"History", ITEM_NAME,
+													nil],
+								  nil];
 	[self.groups addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-							[NSNumber numberWithBool:NO], GROUP_SEPARATOR, 
-							[NSNumber numberWithInt:MGScopeBarGroupSelectionModeRadio], GROUP_SELECTION_MODE, // single selection group.
-							items, GROUP_ITEMS, 
-							nil]];
+											 [NSNumber numberWithBool:NO], GROUP_SEPARATOR,
+											 [NSNumber numberWithInt:MGScopeBarGroupSelectionModeRadio], GROUP_SELECTION_MODE, // single selection group.
+											 items, GROUP_ITEMS,
+											 nil]];
 	[typeBar reloadData];
 
 	[fileListSplitView setHidden:YES];
 	[self performSelector:@selector(restoreSplitViewPositiion) withObject:nil afterDelay:0];
 }
 
-- (void) showFile
+- (void)showFile
 {
-	NSArray *files=[historyController.treeController selectedObjects];
+	NSArray *files = [historyController.treeController selectedObjects];
 	if ([files count] > 0) {
 		PBGitTree *file = [files objectAtIndex:0];
 
 		NSString *fileTxt = @"";
-		if([startFile isEqualToString:GROUP_ID_FILEVIEW])
+		if ([startFile isEqualToString:GROUP_ID_FILEVIEW])
 			fileTxt = [self escapeHTML:[file textContents]];
-		else if([startFile isEqualToString:GROUP_ID_BLAME])
+		else if ([startFile isEqualToString:GROUP_ID_BLAME])
 			fileTxt = [self parseBlame:[file blame]];
-		else if([startFile isEqualToString:GROUP_ID_LOG])
+		else if ([startFile isEqualToString:GROUP_ID_LOG])
 			fileTxt = [self htmlHistory:file];
 
 		id script = self.view.windowScriptObject;
 		NSString *filePath = [file fullPath];
-        [script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
+		[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
 	}
-	
+
 #if 0
 	NSString *dom=[[[[view mainFrame] DOMDocument] documentElement] outerHTML];
 	NSString *tmpFile=@"~/tmp/test.html";
 	[dom writeToFile:[tmpFile stringByExpandingTildeInPath] atomically:true encoding:NSUTF8StringEncoding error:nil];
-#endif 
+#endif
 }
 
 #pragma mark JavaScript log.js methods
 
-- (void) selectCommit:(NSString*)c
+- (void)selectCommit:(NSString *)c
 {
-	[historyController selectCommit: [GTOID oidWithSHA: c]];
+	[historyController selectCommit:[GTOID oidWithSHA:c]];
 }
 
 #pragma mark MGScopeBarDelegate methods
@@ -145,10 +148,10 @@
 
 - (void)scopeBar:(MGScopeBar *)theScopeBar selectedStateChanged:(BOOL)selected forItem:(NSString *)identifier inGroup:(NSInteger)groupNumber
 {
-	startFile=identifier;
+	startFile = identifier;
 	NSString *path = [NSString stringWithFormat:@"html/views/%@", identifier];
 	NSString *html = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
-	NSURLRequest * request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:html]];
+	NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:html]];
 	[self.view.mainFrame loadRequest:request];
 }
 
@@ -157,7 +160,7 @@
 	return accessoryView;
 }
 
-- (void) didLoad
+- (void)didLoad
 {
 	[self showFile];
 }
@@ -169,93 +172,93 @@
 	[super closeView];
 }
 
-- (NSString *) escapeHTML:(NSString *)txt
+- (NSString *)escapeHTML:(NSString *)txt
 {
 	CFStringRef escaped = CFXMLCreateStringByEscapingEntities(NULL, (__bridge CFStringRef)txt, NULL);
 	return (__bridge_transfer NSString *)escaped;
 }
 
-- (NSString *) parseBlame:(NSString *)txt
+- (NSString *)parseBlame:(NSString *)txt
 {
-	txt=[self escapeHTML:txt];
-	
+	txt = [self escapeHTML:txt];
+
 	NSArray *lines = [txt componentsSeparatedByString:@"\n"];
 	NSString *line;
-	NSMutableDictionary *headers=[NSMutableDictionary dictionary];
-	NSMutableString *res=[NSMutableString string];
-	
+	NSMutableDictionary *headers = [NSMutableDictionary dictionary];
+	NSMutableString *res = [NSMutableString string];
+
 	[res appendString:@"<table class='blocks'>\n"];
-	int i=0;
-	while(i<[lines count]){
-		line=[lines objectAtIndex:i];
-		NSArray *header=[line componentsSeparatedByString:@" "];
-		if([header count]==4){
+	int i = 0;
+	while (i < [lines count]) {
+		line = [lines objectAtIndex:i];
+		NSArray *header = [line componentsSeparatedByString:@" "];
+		if ([header count] == 4) {
 			NSString *commitID = (NSString *)[header objectAtIndex:0];
-			int nLines=[(NSString *)[header objectAtIndex:3] intValue];
-			[res appendFormat:@"<tr class='block l%d'>\n",nLines];
-			line=[lines objectAtIndex:++i];
-			if([[[line componentsSeparatedByString:@" "] objectAtIndex:0] isEqual:@"author"]){
-				NSString *author=[line stringByReplacingOccurrencesOfString:@"author" withString:@""];
-				NSString *summary=nil;
-				while(summary==nil){
-					line=[lines objectAtIndex:i++];
-					if([[[line componentsSeparatedByString:@" "] objectAtIndex:0] isEqual:@"summary"]){
-						summary=[line stringByReplacingOccurrencesOfString:@"summary" withString:@""];
+			int nLines = [(NSString *)[header objectAtIndex:3] intValue];
+			[res appendFormat:@"<tr class='block l%d'>\n", nLines];
+			line = [lines objectAtIndex:++i];
+			if ([[[line componentsSeparatedByString:@" "] objectAtIndex:0] isEqual:@"author"]) {
+				NSString *author = [line stringByReplacingOccurrencesOfString:@"author" withString:@""];
+				NSString *summary = nil;
+				while (summary == nil) {
+					line = [lines objectAtIndex:i++];
+					if ([[[line componentsSeparatedByString:@" "] objectAtIndex:0] isEqual:@"summary"]) {
+						summary = [line stringByReplacingOccurrencesOfString:@"summary" withString:@""];
 					}
 				}
-				NSRange trunc_c={0,7};
-				NSString *truncate_c=commitID;
-				if([commitID length]>8){
-					truncate_c=[commitID substringWithRange:trunc_c];
+				NSRange trunc_c = {0, 7};
+				NSString *truncate_c = commitID;
+				if ([commitID length] > 8) {
+					truncate_c = [commitID substringWithRange:trunc_c];
 				}
-				NSRange trunc={0,22};
-				NSString *truncate_a=author;
-				if([author length]>22){
-					truncate_a=[author substringWithRange:trunc];
+				NSRange trunc = {0, 22};
+				NSString *truncate_a = author;
+				if ([author length] > 22) {
+					truncate_a = [author substringWithRange:trunc];
 				}
-				NSString *truncate_s=summary;
-				if([summary length]>30){
-					truncate_s=[summary substringWithRange:trunc];
+				NSString *truncate_s = summary;
+				if ([summary length] > 30) {
+					truncate_s = [summary substringWithRange:trunc];
 				}
-				NSString *block=[NSString stringWithFormat:@"<td><p class='author'><a class='commit-link' href='#' data-commit-id='%@'>%@</a> %@</p><p class='summary'>%@</p></td>\n<td>\n",commitID,truncate_c,truncate_a,truncate_s];
+				NSString *block = [NSString stringWithFormat:@"<td><p class='author'><a class='commit-link' href='#' data-commit-id='%@'>%@</a> %@</p><p class='summary'>%@</p></td>\n<td>\n", commitID, truncate_c, truncate_a, truncate_s];
 				[headers setObject:block forKey:[header objectAtIndex:0]];
 			}
 			[res appendString:[headers objectForKey:[header objectAtIndex:0]]];
-			
-			NSMutableString *code=[NSMutableString string];
-			do{
-				line=[lines objectAtIndex:i++];
-			}while([line characterAtIndex:0]!='\t');
-			line=[line substringFromIndex:1];
-			line=[line stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
+
+			NSMutableString *code = [NSMutableString string];
+			do {
+				line = [lines objectAtIndex:i++];
+			} while ([line characterAtIndex:0] != '\t');
+			line = [line substringFromIndex:1];
+			line = [line stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
 			[code appendString:line];
 			[code appendString:@"\n"];
-			
+
 			int n;
-			for(n=1;n<nLines;n++){
+			for (n = 1; n < nLines; n++) {
 				i++;
-				do{
-					line=[lines objectAtIndex:i++];
-				}while([line characterAtIndex:0]!='\t');
-				line=[line substringFromIndex:1];
-				line=[line stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
+				do {
+					line = [lines objectAtIndex:i++];
+				} while ([line characterAtIndex:0] != '\t');
+				line = [line substringFromIndex:1];
+				line = [line stringByReplacingOccurrencesOfString:@"\t" withString:@"&nbsp;&nbsp;&nbsp;&nbsp;"];
 				[code appendString:line];
 				[code appendString:@"\n"];
 			}
-			[res appendFormat:@"<pre class='first-line: %@;brush: objc'>%@</pre>",[header objectAtIndex:2],code];
+			[res appendFormat:@"<pre class='first-line: %@;brush: objc'>%@</pre>", [header objectAtIndex:2], code];
 			[res appendString:@"</td>\n"];
-		}else{
+		} else {
 			break;
 		}
 		[res appendString:@"</tr>\n"];
-	}  
+	}
 	[res appendString:@"</table>\n"];
 	//NSLog(@"%@",res);
-	
+
 	return (NSString *)res;
 }
 
-- (NSString *) htmlHistory:(PBGitTree *)file
+- (NSString *)htmlHistory:(PBGitTree *)file
 {
 	// \0 can't be passed as a shell argument, so use a sufficiently long random seperator instead
 	NSString *seperator = [[NSUUID UUID] UUIDString];
@@ -271,19 +274,19 @@
 	for (NSString *rawCommit in rawCommits) {
 		NSArray<NSString *> *parts = [rawCommit componentsSeparatedByString:seperator];
 		[html appendFormat:
-		 @"<div id='%@' class='commit'>"
-			 "<p class='title'>%@</p>"
-			 "<table>"
-				 "<tr><td>Author:</td><td>%@</td></tr>"
-				 "<tr><td>Date:</td><td>%@</td></tr>"
-		 		 "<tr><td>Commit:</td><td><a class='commit-link' href='#'>%@</a></td></tr>"
-			 "</table>"
-		 "</div>",
-		 [self escapeHTML:[parts[0] stringByTrimmingCharactersInSet:whitespaceSet]], // trim leading newline from split
-		 [self escapeHTML:parts[1]],
-		 [self escapeHTML:parts[2]],
-		 [self escapeHTML:parts[3]],
-		 [self escapeHTML:parts[4]]];
+				  @"<div id='%@' class='commit'>"
+				   "<p class='title'>%@</p>"
+				   "<table>"
+				   "<tr><td>Author:</td><td>%@</td></tr>"
+				   "<tr><td>Date:</td><td>%@</td></tr>"
+				   "<tr><td>Commit:</td><td><a class='commit-link' href='#'>%@</a></td></tr>"
+				   "</table>"
+				   "</div>",
+				  [self escapeHTML:[parts[0] stringByTrimmingCharactersInSet:whitespaceSet]], // trim leading newline from split
+				  [self escapeHTML:parts[1]],
+				  [self escapeHTML:parts[2]],
+				  [self escapeHTML:parts[3]],
+				  [self escapeHTML:parts[4]]];
 	}
 	return html;
 }
@@ -349,7 +352,6 @@
 	[fileListSplitView setPosition:position ofDividerAtIndex:0];
 	[fileListSplitView setHidden:NO];
 }
-
 
 
 @synthesize groups;

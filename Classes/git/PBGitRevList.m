@@ -39,7 +39,7 @@
 
 @implementation PBGitRevList
 
-- (id) initWithRepository:(PBGitRepository *)repo rev:(PBGitRevSpecifier *)rev shouldGraph:(BOOL)graph
+- (id)initWithRepository:(PBGitRepository *)repo rev:(PBGitRevSpecifier *)rev shouldGraph:(BOOL)graph
 {
 	self = [super init];
 	if (!self) {
@@ -52,11 +52,11 @@
 	self.operationQueue = [[NSOperationQueue alloc] init];
 	self.operationQueue.maxConcurrentOperationCount = 1;
 	self.operationQueue.qualityOfService = NSQualityOfServiceUtility;
-	
+
 	return self;
 }
 
-- (void)loadRevisionsWithCompletionBlock:(void(^)(void))completionBlock
+- (void)loadRevisionsWithCompletionBlock:(void (^)(void))completionBlock
 {
 	[self cancel];
 
@@ -94,25 +94,26 @@
 }
 
 
-- (void) updateCommits:(NSArray<PBGitCommit *> *)revisions operation:(NSOperation *)operation
+- (void)updateCommits:(NSArray<PBGitCommit *> *)revisions operation:(NSOperation *)operation
 {
 	if (!revisions || [revisions count] == 0 || operation.cancelled)
 		return;
-	
+
 	if (self.resetCommits) {
 		self.commits = [NSMutableArray array];
 		self.resetCommits = NO;
 	}
-	
+
 	NSRange range = NSMakeRange([self.commits count], [revisions count]);
 	NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:range];
-	
+
 	[self willChange:NSKeyValueChangeInsertion valuesAtIndexes:indexes forKey:@"commits"];
 	[self.commits addObjectsFromArray:revisions];
 	[self didChange:NSKeyValueChangeInsertion valuesAtIndexes:indexes forKey:@"commits"];
 }
 
-static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName) {
+static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName)
+{
 	NSUInteger index = NSNotFound;
 
 	index = [parameters indexOfObject:paramName];
@@ -122,13 +123,13 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName) {
 	return YES;
 }
 
-- (void) setupEnumerator:(GTEnumerator*)enumerator
-			  forRevspec:(PBGitRevSpecifier *)rev
+- (void)setupEnumerator:(GTEnumerator *)enumerator
+			 forRevspec:(PBGitRevSpecifier *)rev
 {
 	NSError *error = nil;
 	BOOL success = NO;
 	GTRepository *repo = enumerator.repository;
-	[enumerator resetWithOptions:GTEnumeratorOptionsTopologicalSort|GTEnumeratorOptionsTimeSort];
+	[enumerator resetWithOptions:GTEnumeratorOptionsTopologicalSort | GTEnumeratorOptionsTimeSort];
 
 	if (rev.isSimpleRef) {
 		GTObject *object = [repo lookUpObjectByRevParse:rev.simpleRef error:&error];
@@ -151,9 +152,7 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName) {
 	// First, loop over all the known references, and add the ones we want
 	if (addBranches || addRemotes || addTags) {
 		for (NSString *referenceName in allRefs) {
-			if ((addBranches && [referenceName hasPrefix:[GTBranch localNamePrefix]])
-				|| (addRemotes && [referenceName hasPrefix:[GTBranch remoteNamePrefix]])
-				|| (addTags && [referenceName hasPrefix:@"refs/tags/"])) {
+			if ((addBranches && [referenceName hasPrefix:[GTBranch localNamePrefix]]) || (addRemotes && [referenceName hasPrefix:[GTBranch remoteNamePrefix]]) || (addTags && [referenceName hasPrefix:@"refs/tags/"])) {
 				success = [enumerator pushReferenceName:referenceName error:&error];
 				if (!success) {
 					NSLog(@"Failed to push reference %@: %@", referenceName, error);
@@ -179,9 +178,9 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName) {
 				error = [NSError errorWithDomain:GTGitErrorDomain
 											code:gitError
 										userInfo:@{
-												   NSLocalizedDescriptionKey: desc,
-												   NSLocalizedFailureReasonErrorKey: fail,
-												   }];
+											NSLocalizedDescriptionKey : desc,
+											NSLocalizedFailureReasonErrorKey : fail,
+										}];
 				success = NO;
 			} else {
 				success = YES;
@@ -192,10 +191,9 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName) {
 			NSLog(@"Failed to push remaining parameter %@: %@", param, error);
 		}
 	}
-
 }
 
-- (void) addCommitsFromEnumerator:(GTEnumerator *)enumerator inPBRepo:(PBGitRepository*)pbRepo operation:(NSOperation *)operation
+- (void)addCommitsFromEnumerator:(GTEnumerator *)enumerator inPBRepo:(PBGitRepository *)pbRepo operation:(NSOperation *)operation
 {
 	PBGitGrapher *g = [[PBGitGrapher alloc] initWithRepository:pbRepo];
 	__block NSDate *lastUpdate = [NSDate date];
@@ -204,7 +202,7 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName) {
 	dispatch_queue_t decorateQueue = dispatch_queue_create("net.phere.gitx.decorateQueue", 0);
 	dispatch_group_t loadGroup = dispatch_group_create();
 	dispatch_group_t decorateGroup = dispatch_group_create();
-	
+
 	BOOL enumSuccess = FALSE;
 	__block int num = 0;
 	__block NSMutableArray<PBGitCommit *> *revisions = [NSMutableArray array];
@@ -229,15 +227,15 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName) {
 				newCommit = [[PBGitCommit alloc] initWithRepository:pbRepo andCommit:commit];
 				[self.commitCache setObject:newCommit forKey:oid];
 			}
-			
+
 			[revisions addObject:newCommit];
-			
+
 			if (self.isGraphing) {
 				dispatch_group_async(decorateGroup, decorateQueue, ^{
 					[g decorateCommit:newCommit];
 				});
 			}
-			
+
 			if (++num % 100 == 0 && [[NSDate date] timeIntervalSinceDate:lastUpdate] > 0.2) {
 				dispatch_group_wait(decorateGroup, DISPATCH_TIME_FOREVER);
 
@@ -254,10 +252,10 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName) {
 	}
 
 	NSAssert(!enumError, @"Error enumerating commits");
-	
+
 	dispatch_group_wait(loadGroup, DISPATCH_TIME_FOREVER);
 	dispatch_group_wait(decorateGroup, DISPATCH_TIME_FOREVER);
-	
+
 	// Make sure the commits are stored before exiting.
 	NSArray<PBGitCommit *> *updatedRevisions = [revisions copy];
 

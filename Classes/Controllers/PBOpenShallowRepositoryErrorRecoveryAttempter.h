@@ -10,8 +10,8 @@
 
 @interface PBOpenShallowRepositoryErrorRecoveryAttempter : NSObject
 
-- (instancetype) initWithURL:(NSURL *)url;
+- (instancetype)initWithURL:(NSURL *)url;
 
-+ (NSArray<NSString*>*) errorDialogButtonNames;
++ (NSArray<NSString *> *)errorDialogButtonNames;
 
 @end

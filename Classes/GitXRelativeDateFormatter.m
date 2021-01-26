@@ -10,10 +10,9 @@
 
 
 #define MINUTE 60
-#define HOUR   (60 * MINUTE)
+#define HOUR (60 * MINUTE)
 
 #define WEEK 7
-
 
 @implementation GitXRelativeDateFormatter
 
@@ -22,15 +21,15 @@
 	if (![date isKindOfClass:[NSDate class]])
 		return nil;
 
-    NSDate *now = [NSDate date];
+	NSDate *now = [NSDate date];
 
-    NSInteger secondsAgo = lround([now timeIntervalSinceDate:date]);
+	NSInteger secondsAgo = lround([now timeIntervalSinceDate:date]);
 
-    if (secondsAgo < 0)
-        return @"In the future!";
+	if (secondsAgo < 0)
+		return @"In the future!";
 
 	if (secondsAgo < MINUTE)
-        return @"seconds ago";
+		return @"seconds ago";
 
 	if (secondsAgo < (2 * MINUTE))
 		return @"1 minute ago";
@@ -41,11 +40,16 @@
 	if (secondsAgo < (2 * HOUR))
 		return @"1 hour ago";
 
+	static NSDateFormatter *midnightFormatter = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		midnightFormatter = [[NSDateFormatter alloc] init];
+		midnightFormatter.dateFormat = @"yyyy-MM-dd";
+	});
+
 	// figure out # of days ago based on calender days (so yesterday is the day before today not 24 hours ago)
-	NSDateFormatter *midnightFormmatter = [[NSDateFormatter alloc] init];
-	[midnightFormmatter setDateFormat:@"yyyy-MM-dd"];
-	NSDate *midnightOnTargetDate = [midnightFormmatter dateFromString:[midnightFormmatter stringFromDate:date]];
-	NSDate *midnightToday = [midnightFormmatter dateFromString:[midnightFormmatter stringFromDate:now]];
+	NSDate *midnightOnTargetDate = [midnightFormatter dateFromString:[midnightFormatter stringFromDate:date]];
+	NSDate *midnightToday = [midnightFormatter dateFromString:[midnightFormatter stringFromDate:now]];
 
 	// use NSCalendar so it will handle things like leap years correctly
 	NSDateComponents *components = [[NSCalendar currentCalendar] components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay)

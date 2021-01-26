@@ -16,7 +16,8 @@
 @implementation PBRepositoryDocumentController
 // This method is overridden to configure the open panel to only allow
 // selection of directories
-- (void)beginOpenPanel:(NSOpenPanel *)openPanel forTypes:(NSArray<NSString *> *)inTypes completionHandler:(void (^)(NSInteger))completionHandler {
+- (void)beginOpenPanel:(NSOpenPanel *)openPanel forTypes:(NSArray<NSString *> *)inTypes completionHandler:(void (^)(NSInteger))completionHandler
+{
 	[openPanel setCanChooseFiles:YES];
 	[openPanel setCanChooseDirectories:YES];
 	[openPanel setAllowedFileTypes:[NSArray arrayWithObject:@"git"]];
@@ -26,7 +27,8 @@
 	completionHandler(response);
 }
 
-- (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError *__autoreleasing *)outError {
+- (id)makeUntitledDocumentOfType:(NSString *)typeName error:(NSError *__autoreleasing *)outError
+{
 	NSOpenPanel *op = [NSOpenPanel openPanel];
 
 	[op setCanChooseFiles:NO];
@@ -38,14 +40,14 @@
 		if (outError) {
 			*outError = [NSError errorWithDomain:NSCocoaErrorDomain code:NSUserCancelledError userInfo:nil];
 		}
-        return nil;
-    }
+		return nil;
+	}
 
 	GTRepository *repo = [GTRepository initializeEmptyRepositoryAtFileURL:[op URL] options:nil error:outError];
-    if (!repo)
-        return nil; // Repo creation failed
+	if (!repo)
+		return nil; // Repo creation failed
 
-    return [[PBGitRepositoryDocument alloc] initWithContentsOfURL:[op URL] ofType:PBGitRepositoryDocumentType error:outError];
+	return [[PBGitRepositoryDocument alloc] initWithContentsOfURL:[op URL] ofType:PBGitRepositoryDocumentType error:outError];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item

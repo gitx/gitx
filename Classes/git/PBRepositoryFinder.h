@@ -11,7 +11,7 @@
 @interface PBRepositoryFinder : NSObject
 
 + (NSURL *)fileURLForURL:(NSURL *)inputURL;
-+ (NSURL*)workDirForURL:(NSURL*)fileURL;
-+ (NSURL*)gitDirForURL:(NSURL*)fileURL;
++ (NSURL *)workDirForURL:(NSURL *)fileURL;
++ (NSURL *)gitDirForURL:(NSURL *)fileURL;
 
 @end

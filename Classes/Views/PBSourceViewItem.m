@@ -71,22 +71,22 @@
 
 - (NSArray *)sortedChildren
 {
-    if (!_sortedChildren) {
-        NSArray *newArray = [_childrenSet sortedArrayUsingComparator:^NSComparisonResult(PBSourceViewItem *obj1, PBSourceViewItem *obj2) {
-            return [obj1.title localizedStandardCompare:obj2.title];
-        }];
+	if (!_sortedChildren) {
+		NSArray *newArray = [_childrenSet sortedArrayUsingComparator:^NSComparisonResult(PBSourceViewItem *obj1, PBSourceViewItem *obj2) {
+			return [obj1.title localizedStandardCompare:obj2.title];
+		}];
 		self.sortedChildren = newArray;
-    }
-    return [_sortedChildren copy];
+	}
+	return [_sortedChildren copy];
 }
 
 - (void)addChild:(PBSourceViewItem *)child
 {
 	if (!child)
 		return;
-    
+
 	[self.childrenSet addObject:child];
-    self.sortedChildren = nil;
+	self.sortedChildren = nil;
 	child.parent = self;
 }
 
@@ -96,7 +96,7 @@
 		return;
 
 	[self.childrenSet removeObject:child];
-    self.sortedChildren = nil;
+	self.sortedChildren = nil;
 	if (!self.isGroupItem && ([self.childrenSet count] == 0))
 		[self.parent removeChild:self];
 }
@@ -120,8 +120,8 @@
 			node = [PBSourceViewGitRemoteItem remoteItemWithTitle:firstTitle];
 		else {
 			node = [PBSourceViewFolderItem folderItemWithTitle:firstTitle];
-            node.expanded = [[self title] isEqualToString:@"BRANCHES"];
-        }
+			node.expanded = [[self title] isEqualToString:@"BRANCHES"];
+		}
 		[self addChild:node];
 	}
 
@@ -135,7 +135,7 @@
 
 	PBSourceViewItem *item = nil;
 	for (PBSourceViewItem *child in self.childrenSet)
-		if ( (item = [child findRev:rev]) != nil )
+		if ((item = [child findRev:rev]) != nil)
 			return item;
 
 	return nil;
@@ -144,7 +144,7 @@
 - (NSImage *)icon
 {
 	NSImage *iconImage = [NSImage imageNamed:self.iconName];
-	[iconImage setSize:NSMakeSize(16,16)];
+	[iconImage setSize:NSMakeSize(16, 16)];
 	[iconImage setCacheMode:NSImageCacheAlways];
 	return iconImage;
 }
@@ -153,7 +153,7 @@
 {
 	if (_title)
 		return _title;
-	
+
 	return [[self.revSpecifier description] lastPathComponent];
 }
 

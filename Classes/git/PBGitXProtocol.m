@@ -17,7 +17,7 @@
 
 @implementation PBGitXProtocol
 
-+ (BOOL) canInitWithRequest:(NSURLRequest *)request
++ (BOOL)canInitWithRequest:(NSURLRequest *)request
 {
 	NSString *URLScheme = request.URL.scheme;
 	if ([[URLScheme lowercaseString] isEqualToString:@"gitx"])
@@ -28,21 +28,21 @@
 
 + (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request
 {
-    return request;
+	return request;
 }
 
--(void)startLoading
+- (void)startLoading
 {
-    NSURL *url = [[self request] URL];
+	NSURL *url = [[self request] URL];
 	PBGitRepository *repo = [[self request] repository];
 
 	if (!repo) {
 		[[self client] URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:0 userInfo:nil]];
 		return;
-    }
+	}
 
 	NSString *specifier = [NSString stringWithFormat:@"%@:%@", [url host], [[url path] substringFromIndex:1]];
-	_task = [repo taskWithArguments:@[@"cat-file", @"blob", specifier]];
+	_task = [repo taskWithArguments:@[ @"cat-file", @"blob", specifier ]];
 	[_task performTaskWithCompletionHandler:^(NSData *readData, NSError *error) {
 		if (error) {
 			[[self client] URLProtocol:self didFailWithError:error];
@@ -53,17 +53,17 @@
 		[[self client] URLProtocolDidFinishLoading:self];
 	}];
 
-    NSURLResponse *response = [[NSURLResponse alloc] initWithURL:[[self request] URL]
+	NSURLResponse *response = [[NSURLResponse alloc] initWithURL:[[self request] URL]
 														MIMEType:nil
 										   expectedContentLength:-1
 												textEncodingName:nil];
 
-    [[self client] URLProtocol:self
+	[[self client] URLProtocol:self
 			didReceiveResponse:response
 			cacheStoragePolicy:NSURLCacheStorageNotAllowed];
 }
 
-- (void) stopLoading
+- (void)stopLoading
 {
 	[_task terminate];
 }
@@ -73,7 +73,7 @@
 @implementation NSURLRequest (PBGitXProtocol)
 @dynamic repository;
 
-- (PBGitRepository *) repository
+- (PBGitRepository *)repository
 {
 	return [NSURLProtocol propertyForKey:@"PBGitRepository" inRequest:self];
 }
@@ -82,7 +82,7 @@
 @implementation NSMutableURLRequest (PBGitXProtocol)
 @dynamic repository;
 
-- (void) setRepository:(PBGitRepository *)repository
+- (void)setRepository:(PBGitRepository *)repository
 {
 	[NSURLProtocol setProperty:repository forKey:@"PBGitRepository" inRequest:self];
 }

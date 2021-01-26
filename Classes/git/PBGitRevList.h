@@ -17,8 +17,8 @@
 @property (nonatomic, assign, getter=isParsing, readonly) BOOL parsing;
 @property (nonatomic, strong) NSMutableArray<PBGitCommit *> *commits;
 
-- (id) initWithRepository:(PBGitRepository *)repo rev:(PBGitRevSpecifier *)rev shouldGraph:(BOOL)graph;
-- (void)loadRevisionsWithCompletionBlock:(void(^)(void))completionBlock;
+- (id)initWithRepository:(PBGitRepository *)repo rev:(PBGitRevSpecifier *)rev shouldGraph:(BOOL)graph;
+- (void)loadRevisionsWithCompletionBlock:(void (^)(void))completionBlock;
 - (void)cancel;
 
 @end

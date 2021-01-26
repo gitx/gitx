@@ -31,7 +31,7 @@
 			[subview setHidden:hidden];
 
 			// Set height (horizontal) or width (vertical)
-			if(![self isVertical]) {
+			if (![self isVertical]) {
 				CGFloat height = [components[3] floatValue];
 
 				[subview setFrameSize:NSMakeSize(subview.frame.size.width, height)];

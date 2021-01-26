@@ -16,11 +16,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString * const kGitXCommitType;
+extern NSString *const kGitXCommitType;
 
 @interface PBGitCommit : NSObject <PBGitRefish>
 
-@property (nonatomic, weak, readonly) PBGitRepository* repository;
+@property (nonatomic, weak, readonly) PBGitRepository *repository;
 
 @property (nonatomic, strong, readonly) GTCommit *gtCommit;
 @property (nonatomic, strong, readonly) GTOID *OID;
@@ -39,28 +39,28 @@ extern NSString * const kGitXCommitType;
 @property (nonatomic, strong, readonly) NSString *SHA;
 @property (nonatomic, strong, readonly, nullable) NSString *SVNRevision;
 
-@property (nonatomic, copy, readonly) NSArray <GTOID *> *parents;
-@property  NSMutableArray* refs;
+@property (nonatomic, copy, readonly) NSArray<GTOID *> *parents;
+@property NSMutableArray *refs;
 
 @property (nonatomic, strong) PBGraphCellInfo *lineInfo;
 
-@property (nonatomic, readonly) PBGitTree* tree;
-@property (readonly) NSArray* treeContents;
+@property (nonatomic, readonly) PBGitTree *tree;
+@property (readonly) NSArray *treeContents;
 
 - (instancetype)initWithRepository:(PBGitRepository *)repo andCommit:(GTCommit *)gtCommit;
 
-- (void) addRef:(PBGitRef *)ref;
-- (void) removeRef:(PBGitRef *)ref;
-- (BOOL) hasRef:(PBGitRef *)ref;
+- (void)addRef:(PBGitRef *)ref;
+- (void)removeRef:(PBGitRef *)ref;
+- (BOOL)hasRef:(PBGitRef *)ref;
 
 - (NSString *)SHA;
-- (BOOL) isOnSameBranchAs:(PBGitCommit *)other;
-- (BOOL) isOnHeadBranch;
+- (BOOL)isOnSameBranchAs:(PBGitCommit *)other;
+- (BOOL)isOnHeadBranch;
 
 // <PBGitRefish>
-- (NSString *) refishName;
-- (NSString *) shortName;
-- (NSString *) refishType;
+- (NSString *)refishName;
+- (NSString *)shortName;
+- (NSString *)refishType;
 
 @end
 

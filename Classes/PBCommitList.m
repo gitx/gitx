@@ -29,7 +29,7 @@
 
 - (void)keyDown:(NSEvent *)event
 {
-	NSString* character = [event charactersIgnoringModifiers];
+	NSString *character = [event charactersIgnoringModifiers];
 
 	// Pass on command-shift up/down to the responder. We want the splitview to capture this.
 	if ([event modifierFlags] & NSShiftKeyMask && [event modifierFlags] & NSCommandKeyMask && ([event keyCode] == 0x7E || [event keyCode] == 0x7D)) {
@@ -43,54 +43,51 @@
 				[webView scrollPageUp:self];
 			else
 				[webView scrollPageDown:self];
-		}
-		else
+		} else
 			[controller toggleQLPreviewPanel:self];
-	}
-	else if ([character rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"jkcv"]].location == 0)
-		[webController sendKey: character];
-	else if (([character characterAtIndex:0] == NSDownArrowFunctionKey)
-			 && [event modifierFlags] & NSControlKeyMask) {
+	} else if ([character rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"jkcv"]].location == 0)
+		[webController sendKey:character];
+	else if (([character characterAtIndex:0] == NSDownArrowFunctionKey) && [event modifierFlags] & NSControlKeyMask) {
 		[controller selectParentCommit:self];
 	} else
-		[super keyDown: event];
+		[super keyDown:event];
 }
 
 // !!! Andre Berg 20100330: Used from -scrollSelectionToTopOfViewFrom: of PBGitHistoryController
 // so that when the history controller udpates the branch filter the origin of the superview gets
 // shifted into multiples of the row height. Otherwise the top selected row will always be off by
 // a little bit depending on how much the bottom half of the split view is dragged down.
-- (NSRect)adjustScroll:(NSRect)proposedVisibleRect {
+- (NSRect)adjustScroll:(NSRect)proposedVisibleRect
+{
+	//NSLog(@"[%@ %s]: proposedVisibleRect: %@", [self class], _cmd, NSStringFromRect(proposedVisibleRect));
+	NSRect newRect = proposedVisibleRect;
 
-    //NSLog(@"[%@ %s]: proposedVisibleRect: %@", [self class], _cmd, NSStringFromRect(proposedVisibleRect));
-    NSRect newRect = proposedVisibleRect;
-
-    // !!! Andre Berg 20100330: only modify if -scrollSelectionToTopOfViewFrom: has set useAdjustScroll to YES
-    // Otherwise we'd also constrain things like middle mouse scrolling.
-    if (useAdjustScroll) {
-        NSInteger rh = (NSInteger)self.rowHeight;
-        NSInteger ny = (NSInteger)proposedVisibleRect.origin.y % (NSInteger)rh;
-        NSInteger adj = rh - ny;
-        // check the targeted row and see if we need to add or subtract the difference (if there is one)...
-        NSRect sr = [self rectOfRow:[self selectedRow]];
-        // NSLog(@"[%@ %s]: selectedRow %d, rect: %@", [self class], _cmd, [self selectedRow], NSStringFromRect(sr));
-        if (sr.origin.y > proposedVisibleRect.origin.y) {
-            // NSLog(@"[%@ %s] selectedRow.origin.y > proposedVisibleRect.origin.y. adding adj (%d)", [self class], _cmd, adj);
-            newRect = NSMakeRect(newRect.origin.x, newRect.origin.y + adj, newRect.size.width, newRect.size.height);
-        } else if (sr.origin.y < proposedVisibleRect.origin.y) {
-            // NSLog(@"[%@ %s] selectedRow.origin.y < proposedVisibleRect.origin.y. subtracting ny (%d)", [self class], _cmd, ny);
-            newRect = NSMakeRect(newRect.origin.x, newRect.origin.y - ny , newRect.size.width, newRect.size.height);
-        } else {
-            // NSLog(@"[%@ %s] selectedRow.origin.y == proposedVisibleRect.origin.y. leaving as is", [self class], _cmd);
-        }
-    }
-    //NSLog(@"[%@ %s]: newRect: %@", [self class], _cmd, NSStringFromRect(newRect));
-    return newRect;
+	// !!! Andre Berg 20100330: only modify if -scrollSelectionToTopOfViewFrom: has set useAdjustScroll to YES
+	// Otherwise we'd also constrain things like middle mouse scrolling.
+	if (useAdjustScroll) {
+		NSInteger rh = (NSInteger)self.rowHeight;
+		NSInteger ny = (NSInteger)proposedVisibleRect.origin.y % (NSInteger)rh;
+		NSInteger adj = rh - ny;
+		// check the targeted row and see if we need to add or subtract the difference (if there is one)...
+		NSRect sr = [self rectOfRow:[self selectedRow]];
+		// NSLog(@"[%@ %s]: selectedRow %d, rect: %@", [self class], _cmd, [self selectedRow], NSStringFromRect(sr));
+		if (sr.origin.y > proposedVisibleRect.origin.y) {
+			// NSLog(@"[%@ %s] selectedRow.origin.y > proposedVisibleRect.origin.y. adding adj (%d)", [self class], _cmd, adj);
+			newRect = NSMakeRect(newRect.origin.x, newRect.origin.y + adj, newRect.size.width, newRect.size.height);
+		} else if (sr.origin.y < proposedVisibleRect.origin.y) {
+			// NSLog(@"[%@ %s] selectedRow.origin.y < proposedVisibleRect.origin.y. subtracting ny (%d)", [self class], _cmd, ny);
+			newRect = NSMakeRect(newRect.origin.x, newRect.origin.y - ny, newRect.size.width, newRect.size.height);
+		} else {
+			// NSLog(@"[%@ %s] selectedRow.origin.y == proposedVisibleRect.origin.y. leaving as is", [self class], _cmd);
+		}
+	}
+	//NSLog(@"[%@ %s]: newRect: %@", [self class], _cmd, NSStringFromRect(newRect));
+	return newRect;
 }
 
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    mouseDownPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+	mouseDownPoint = [self convertPoint:[theEvent locationInWindow] fromView:nil];
 	[super mouseDown:theEvent];
 }
 
@@ -125,7 +122,6 @@
 
 	*dragImageOffset = NSMakePoint(rect.size.width / 2 + 10, 0);
 	return newImage;
-
 }
 
 
@@ -143,16 +139,16 @@
 	NSPoint point = [self.window.contentView convertPoint:[event locationInWindow] toView:cell];
 	int i = [cell indexAtX:point.x];
 	PBGitRef *clickedRef = (i >= 0 && i < commit.refs.count ? commit.refs[i] : nil);
-	
-	NSArray <PBGitCommit*>* selectedCommits = controller.selectedCommits;
-	NSArray <NSMenuItem *>* items;
+
+	NSArray<PBGitCommit *> *selectedCommits = controller.selectedCommits;
+	NSArray<NSMenuItem *> *items;
 
 	if (clickedRef) {
 		items = [controller menuItemsForRef:clickedRef];
 	} else if ([selectedCommits containsObject:commit]) {
 		items = [controller menuItemsForCommits:controller.selectedCommits];
 	} else {
-		items = [controller menuItemsForCommits:@[commit]];
+		items = [controller menuItemsForCommits:@[ commit ]];
 	}
 
 	NSMenu *menu = [[NSMenu alloc] init];

@@ -42,14 +42,14 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface DBPrefsWindowController : NSWindowController<NSAnimationDelegate, NSToolbarDelegate> {
+@interface DBPrefsWindowController : NSWindowController <NSAnimationDelegate, NSToolbarDelegate> {
 	NSMutableArray *toolbarIdentifiers;
 	NSMutableDictionary *toolbarViews;
 	NSMutableDictionary *toolbarItems;
-	
+
 	BOOL _crossFade;
 	BOOL _shiftSlowsAnimation;
-	
+
 	NSView *contentSubview;
 	NSViewAnimation *viewAnimation;
 }

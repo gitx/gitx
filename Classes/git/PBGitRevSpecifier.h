@@ -9,32 +9,32 @@
 #import <Cocoa/Cocoa.h>
 @class PBGitRef;
 
-@interface PBGitRevSpecifier : NSObject  <NSCopying> {
+@interface PBGitRevSpecifier : NSObject <NSCopying> {
 	NSString *description;
 	NSArray *parameters;
 	NSURL *workingDirectory;
 	BOOL isSimpleRef;
 }
 
-- (id) initWithParameters:(NSArray *)params description:(NSString *)descrip;
-- (id) initWithParameters:(NSArray*) params;
-- (id) initWithRef: (PBGitRef*) ref;
+- (id)initWithParameters:(NSArray *)params description:(NSString *)descrip;
+- (id)initWithParameters:(NSArray *)params;
+- (id)initWithRef:(PBGitRef *)ref;
 
-- (NSString*) simpleRef;
-- (PBGitRef *) ref;
-- (BOOL) hasPathLimiter;
-- (NSString *) title;
+- (NSString *)simpleRef;
+- (PBGitRef *)ref;
+- (BOOL)hasPathLimiter;
+- (NSString *)title;
 
-- (BOOL) isEqual: (PBGitRevSpecifier*) other;
-- (BOOL) isAllBranchesRev;
-- (BOOL) isLocalBranchesRev;
+- (BOOL)isEqual:(PBGitRevSpecifier *)other;
+- (BOOL)isAllBranchesRev;
+- (BOOL)isLocalBranchesRev;
 
 + (PBGitRevSpecifier *)allBranchesRevSpec;
 + (PBGitRevSpecifier *)localBranchesRevSpec;
 
-@property(retain)   NSString *description;
-@property(readonly) NSArray *parameters;
-@property(retain)   NSURL *workingDirectory;
-@property(readonly) BOOL isSimpleRef;
+@property (retain) NSString *description;
+@property (readonly) NSArray *parameters;
+@property (retain) NSURL *workingDirectory;
+@property (readonly) BOOL isSimpleRef;
 
 @end

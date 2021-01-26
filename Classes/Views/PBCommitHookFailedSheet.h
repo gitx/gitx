@@ -21,6 +21,6 @@
 
 - (IBAction)forceCommit:(id)sender;
 
-@property (nonatomic, strong) PBGitCommitController* commitController;
+@property (nonatomic, strong) PBGitCommitController *commitController;
 
 @end

@@ -7,27 +7,25 @@
 //
 
 #define kDialogAcceptDroppedRef @"Accept Dropped Ref"
-@interface PBGitDefaults : NSObject
-{
-
+@interface PBGitDefaults : NSObject {
 }
 
-+ (NSInteger) commitMessageViewVerticalLineLength;
-+ (NSInteger) commitMessageViewVerticalBodyLineLength;
-+ (BOOL) commitMessageViewHasVerticalLine;
-+ (BOOL) isGistEnabled;
-+ (BOOL) isGravatarEnabled;
-+ (BOOL) confirmPublicGists;
-+ (BOOL) isGistPublic;
++ (NSInteger)commitMessageViewVerticalLineLength;
++ (NSInteger)commitMessageViewVerticalBodyLineLength;
++ (BOOL)commitMessageViewHasVerticalLine;
++ (BOOL)isGistEnabled;
++ (BOOL)isGravatarEnabled;
++ (BOOL)confirmPublicGists;
++ (BOOL)isGistPublic;
 + (BOOL)showWhitespaceDifferences;
-+ (BOOL) shouldCheckoutBranch;
-+ (void) setShouldCheckoutBranch:(BOOL)shouldCheckout;
-+ (NSString *) recentCloneDestination;
-+ (void) setRecentCloneDestination:(NSString *)path;
-+ (BOOL) showStageView;
-+ (void) setShowStageView:(BOOL)suppress;
-+ (NSInteger) branchFilter;
-+ (void) setBranchFilter:(NSInteger)state;
++ (BOOL)shouldCheckoutBranch;
++ (void)setShouldCheckoutBranch:(BOOL)shouldCheckout;
++ (NSString *)recentCloneDestination;
++ (void)setRecentCloneDestination:(NSString *)path;
++ (BOOL)showStageView;
++ (void)setShowStageView:(BOOL)suppress;
++ (NSInteger)branchFilter;
++ (void)setBranchFilter:(NSInteger)state;
 + (NSInteger)historySearchMode;
 + (void)setHistorySearchMode:(NSInteger)mode;
 + (BOOL)useRepositoryWatcher;

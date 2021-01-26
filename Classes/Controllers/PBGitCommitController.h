@@ -13,11 +13,11 @@
 
 @interface PBGitCommitController : PBViewController
 
-- (IBAction) refresh:(id) sender;
-- (IBAction) commit:(id) sender;
-- (IBAction) forceCommit:(id) sender;
-- (IBAction) signOff:(id)sender;
+- (IBAction)refresh:(id)sender;
+- (IBAction)commit:(id)sender;
+- (IBAction)forceCommit:(id)sender;
+- (IBAction)signOff:(id)sender;
 
-- (PBGitIndex *) index;
+- (PBGitIndex *)index;
 
 @end

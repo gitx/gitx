@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation PBSidebarTableViewCell
 
-# pragma mark context menu delegate methods
+#pragma mark context menu delegate methods
 
 - (void)setIsCheckedOut:(BOOL)isCheckedOut
 {
@@ -32,12 +32,12 @@ NS_ASSUME_NONNULL_BEGIN
 	if (_isCheckedOut) {
 		// We hand over the textField cell because the badge derives its drawing style from that.
 		// Maybe we should replace this custom drawing with an static template image ..
-		[checkedOutImageView setImage: [PBSourceViewBadge checkedOutBadgeForCell: self]];
+		[checkedOutImageView setImage:[PBSourceViewBadge checkedOutBadgeForCell:self]];
 	} else {
-		[checkedOutImageView setImage: nil];
+		[checkedOutImageView setImage:nil];
 	}
 
-	[checkedOutImageView setHidden: !_isCheckedOut];
+	[checkedOutImageView setHidden:!_isCheckedOut];
 }
 
 @end

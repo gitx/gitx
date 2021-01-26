@@ -28,9 +28,9 @@
 - (void)closeView;
 
 /* Updateview is called every time it is loaded into the main view */
-- (void) updateView;
+- (void)updateView;
 
 - (NSResponder *)firstResponder;
-- (IBAction) refresh:(id)sender;
+- (IBAction)refresh:(id)sender;
 
 @end

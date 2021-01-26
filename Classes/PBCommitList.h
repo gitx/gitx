@@ -14,12 +14,12 @@
 @class PBHistorySearchController;
 
 @interface PBCommitList : NSTableView {
-	__weak IBOutlet WebView* webView;
+	__weak IBOutlet WebView *webView;
 	__weak IBOutlet PBWebHistoryController *webController;
 	__weak IBOutlet PBGitHistoryController *controller;
 	__weak IBOutlet PBHistorySearchController *searchController;
 
-    BOOL useAdjustScroll;
+	BOOL useAdjustScroll;
 	NSPoint mouseDownPoint;
 }
 

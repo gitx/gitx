@@ -12,19 +12,19 @@
 @implementation PBSourceViewBadge
 
 
-+ (NSColor *) badgeHighlightColor
++ (NSColor *)badgeHighlightColor
 {
 	return [NSColor colorWithCalibratedHue:0.612 saturation:0.275 brightness:0.735 alpha:1.000];
 }
 
 
-+ (NSColor *) badgeBackgroundColor
++ (NSColor *)badgeBackgroundColor
 {
 	return [NSColor colorWithCalibratedWhite:0.6 alpha:1.00];
 }
 
 
-+ (NSColor *) badgeColorForCell:(NSTableCellView *)cell
++ (NSColor *)badgeColorForCell:(NSTableCellView *)cell
 {
 	if ([cell backgroundStyle] == NSBackgroundStyleDark)
 		return [NSColor whiteColor];
@@ -36,7 +36,7 @@
 }
 
 
-+ (NSColor *) badgeTextColorForCell:(NSTableCellView *)cell
++ (NSColor *)badgeTextColorForCell:(NSTableCellView *)cell
 {
 	if ([cell backgroundStyle] != NSBackgroundStyleDark)
 		return [NSColor whiteColor];
@@ -46,21 +46,21 @@
 			return [self badgeHighlightColor];
 		} else {
 			return [self badgeBackgroundColor];
-        }
-    }
+		}
+	}
 
 	return [self badgeBackgroundColor];
 }
 
 
-+ (NSMutableDictionary *) badgeTextAttributes
++ (NSMutableDictionary *)badgeTextAttributes
 {
 	NSMutableDictionary *badgeTextAttributes = nil;
 	if (!badgeTextAttributes) {
 		NSMutableParagraphStyle *centerStyle = [[NSMutableParagraphStyle alloc] init];
 		[centerStyle setAlignment:NSCenterTextAlignment];
 
-		badgeTextAttributes =  [NSMutableDictionary dictionary];
+		badgeTextAttributes = [NSMutableDictionary dictionary];
 		[badgeTextAttributes setObject:[NSFont boldSystemFontOfSize:[NSFont systemFontSize] - 2] forKey:NSFontAttributeName];
 		[badgeTextAttributes setObject:centerStyle forKey:NSParagraphStyleAttributeName];
 	}
@@ -69,11 +69,10 @@
 }
 
 
-
 #pragma mark -
 #pragma mark badges
 
-+ (NSImage *) badge:(NSString *)badge forCell:(NSTableCellView *)cell
++ (NSImage *)badge:(NSString *)badge forCell:(NSTableCellView *)cell
 {
 	NSColor *badgeColor = [self badgeColorForCell:cell];
 
@@ -106,12 +105,12 @@
 	return badgeImage;
 }
 
-+ (NSImage *) checkedOutBadgeForCell:(NSTableCellView *)cell
++ (NSImage *)checkedOutBadgeForCell:(NSTableCellView *)cell
 {
 	return [self badge:@"✔" forCell:cell];
 }
 
-+ (NSImage *) numericBadge:(NSInteger)number forCell:(NSTableCellView *)cell
++ (NSImage *)numericBadge:(NSInteger)number forCell:(NSTableCellView *)cell
 {
 	return [self badge:[NSString stringWithFormat:@"%ld", number] forCell:cell];
 }

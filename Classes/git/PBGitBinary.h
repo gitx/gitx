@@ -12,8 +12,8 @@
 
 @interface PBGitBinary : NSObject
 
-+ (NSString *) path;
-+ (NSString *) version;
-+ (NSArray *) searchLocations;
-+ (NSString *) notFoundError;
++ (NSString *)path;
++ (NSString *)version;
++ (NSArray *)searchLocations;
++ (NSString *)notFoundError;
 @end

@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (getter=isUncollapsible) BOOL uncollapsible;
 @property (getter=isExpanded) BOOL expanded;
 @property PBGitRevSpecifier *revSpecifier;
-@property PBSourceViewItem *parent;
+@property (weak) PBSourceViewItem *parent;
 @property (readonly) NSString *iconName;
 @property (nullable, readonly) NSImage *icon;
 

@@ -18,7 +18,7 @@
 
 - (NSString *)iconName
 {
-    return @"BranchTemplate";
+	return @"BranchTemplate";
 }
 
 @end

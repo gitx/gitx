@@ -11,7 +11,7 @@
 
 @interface PBGitGrapher : NSObject
 
-- (id) initWithRepository:(PBGitRepository *)repo;
-- (void) decorateCommit:(PBGitCommit *)commit;
+- (id)initWithRepository:(PBGitRepository *)repo;
+- (void)decorateCommit:(PBGitCommit *)commit;
 
 @end
