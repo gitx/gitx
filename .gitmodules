@@ -6,7 +6,7 @@
 	url = https://github.com/sparkle-project/Sparkle.git
 [submodule "SyntaxHighlighter"]
 	path = External/SyntaxHighlighter
-	url = https://github.com/alexgorbatchev/SyntaxHighlighter.git
+	url = https://github.com/syntaxhighlighter/syntaxhighlighter.git
 [submodule "MGScopeBar"]
 	path = External/MGScopeBar
 	url = https://github.com/gitx/MGScopeBar.git
