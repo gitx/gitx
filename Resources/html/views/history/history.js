@@ -139,7 +139,7 @@ var reload = function() {
 var showRefs = function() {
 	var refs = $("refs");
 	if (commit.refs) {
-		refs.parentNode.classList.remove("hidden");
+		refs.classList.remove("hidden");
 		refs.textContent = "";
 		for (var i = 0; i < commit.refs.length; i++) {
 			var ref = commit.refs[i];
@@ -152,7 +152,7 @@ var showRefs = function() {
 			refs.appendChild(span);
 		}
 	} else
-		refs.parentNode.classList.add("hidden");
+		refs.classList.add("hidden");
 }
 
 var loadCommit = function(commitObject, currentRef) {
@@ -190,16 +190,22 @@ var loadCommit = function(commitObject, currentRef) {
 	$("date").textContent = commit.author_date;
 	setGravatar(commit.author_email, $("author_gravatar"));
 
-	if (commit.committer_name != commit.author_name) {
-		$("committerID").parentNode.classList.remove("hidden");
+	if (commit.committer_name != commit.author_name || commit.committer_email != commit.author_email) {
+		$("committerID").parentNode.parentNode.classList.remove("hidden");
 		setFormattedEmailContent($("committerID"), commit.committer_name, commit.committer_email);
-
-		$("committerDate").parentNode.classList.remove("hidden");
 		$("committerDate").textContent = commit.committer_date;
 		setGravatar(commit.committer_email, $("committer_gravatar"));
+
+		$("commitDate").parentNode.classList.add("hidden");
+	} else if (commit.committer_date != commit.author_date) {
+		$("commitDate").parentNode.classList.remove("hidden");
+
+		$("commitDate").textContent = commit.committer_date;
+
+		$("committerID").parentNode.parentNode.classList.add("hidden");
 	} else {
-		$("committerID").parentNode.classList.add("hidden");
-		$("committerDate").parentNode.classList.add("hidden");
+		$("committerID").parentNode.parentNode.classList.add("hidden");
+		$("commitDate").parentNode.classList.add("hidden");
 	}
 
 	var textToHTML = function (txt) {
@@ -222,20 +228,19 @@ var loadCommit = function(commitObject, currentRef) {
 	while (filelist.hasChildNodes())
 		filelist.removeChild(filelist.lastChild);
 	showRefs();
-	removeParentsFromCommitHeader();
 
 	// Scroll to top
 	scroll(0, 0);
 
-	if (!commit.parents)
-		return;
-
-	for (var i = 0; i < commit.parents.length; i++) {
-		var newRow = $("commit_header").insertRow(-1);
-		newRow.innerHTML = "<td class='property_name'>Parent:</td><td>" +
-			"<a class='SHA commit-link' href=''>" +
-			commit.parents[i].SHA() + "</a></td>";
-		bindCommitSelectionLinks(newRow);
+	var parentsNode = $("parents");
+	parentsNode.innerHTML = '';
+	if (commit.parents) {
+		for (var i = 0; i < commit.parents.length; i++) {
+			var container = document.createElement("span");
+			container.innerHTML = '<a class="SHA commit-link" href="">' + commit.parents[i].SHA() + "</a>";
+			parentsNode.appendChild(container);
+		}
+		bindCommitSelectionLinks(parentsNode);
 	}
 
 	commit.notificationID = setTimeout(function() { 
@@ -245,16 +250,6 @@ var loadCommit = function(commitObject, currentRef) {
 	}, 500);
 
 }
-
-var removeParentsFromCommitHeader = function() {
-	for (var i = 0; i < $("commit_header").rows.length; ++i) {
-		var row = $("commit_header").rows[i];
-		if (row.innerHTML.match(/Parent:/)) {
-			row.parentNode.removeChild(row);
-			--i;
-		}
-	}
-};
 
 var showMultipleSelectionMessage = function(messageParts) {
 	jQuery("#commit").hide();

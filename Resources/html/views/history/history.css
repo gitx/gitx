@@ -49,21 +49,31 @@ a.servicebutton:hover {
 	border: 2px solid #3465a4;
 }
 
-#gravatar {
-	margin-left: 5px;
-	padding: 2px;
-	width: 60px;
-	height: 60px;
+.commit_info {
+  table-layout: fixed;
+  width: 100%;
+}
 
-	border: solid gray 1px;
-	-webkit-border-radius: 2px;
+.commit_info th {
+  vertical-align: top;
+}
+
+.commit_info .date {
+	font-family: Menlo, Monaco, monospace;
+}
+
+#parents span:not(:first-child)::before {
+	content: ', ';
+}
+
+.gravatar {
+  float: left;
+  margin-right: 5px;
 }
 
 .gravatar img {
-	width: 2.9em;
-	height: 2.9em;
-	max-height: 60px;
-	max-width: 60px;
+	height: 30px;
+	width: 30px;
 }
 
 .property_name {
@@ -265,51 +275,6 @@ a {
 	display: inline-block;
 	right: 30px;
 }
-
-/*
-div.button
-{
-	color: #666666;
-
-	font-size: 60%;
-	text-align: center;
-
-	width: 70px;
-
-	margin-right: 10px;
-
-	padding: 2px;
-
-	float: left;
-	clear: both;
-
-	border: 1px solid;
-	-webkit-border-radius: 3px;
-}
-
-div.created
-{
-	background-color: #ccffcc;
-	border-color: #66ff66;
-}
-
-div.changed
-{
-	background-color: #ffcc99;
-	border-color: #ff9933;
-}
-
-div.deleted
-{
-	background-color: #ffcccc;
-	border-color: #ff6666;
-}
-
-div.renamed
-{
-	// No colour needed right now.
-}
-*/
 
 #notification_message .cancel {
 	color: red;
