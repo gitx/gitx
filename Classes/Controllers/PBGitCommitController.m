@@ -252,51 +252,16 @@
 
 - (IBAction)prepareCommitMessage:(id)sender
 {
-	NSError *error;
-	NSString *messagePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[@"commit-" stringByAppendingString:[[NSUUID UUID] UUIDString]]];
-	NSMutableArray<NSString *> *arguments = [NSMutableArray arrayWithObject:messagePath];
-
-	if ([[[self repository] index] isAmend]) {
-		// git itself seems to pass HEAD when doing a plain 'git commit --amend', but git's documentation says the third argument can be a commit hash
-		[arguments addObject:@"commit"];
-		[arguments addObject:self.repository.headOID.SHA];
-
-		// Write the message of the commit we're amending to a file so we can run the prepare-commit-msg hook on it
-		GTReference *headRef = [self.repository.gtRepo headReferenceWithError:NULL];
-		GTCommit *commit = [headRef resolvedTarget];
-
-		[commit.message writeToFile:messagePath atomically:YES encoding:NSUTF8StringEncoding error:NULL];
-	}
-
 	self.isBusy = YES;
 
-	if ([repository executeHook:@"prepare-commit-msg" arguments:arguments error:&error]) {
-		NSString *string = [NSString stringWithContentsOfFile:messagePath usedEncoding:NULL error:&error];
+	NSString *prepareCommitMessage = [[[self repository] index] createPrepareCommitMessage];
 
-		// Trim the last newline from the string (to make this match how git presents the results)
-		if ([string length] > 0 && [string characterAtIndex:[string length] - 1] == '\n') {
-			string = [string substringToIndex:[string length] - 1];
+	if (prepareCommitMessage != nil) {
+		NSRange replacementRange = NSMakeRange(0, [[commitMessageView string] length]);
+
+		if ([commitMessageView shouldChangeTextInRange:replacementRange replacementString:prepareCommitMessage]) {
+			[commitMessageView replaceCharactersInRange:replacementRange withString:prepareCommitMessage];
 		}
-
-		if (string) {
-			NSRange replacementRange = NSMakeRange(0, [[commitMessageView string] length]);
-
-			if ([commitMessageView shouldChangeTextInRange:replacementRange replacementString:string]) {
-				[commitMessageView replaceCharactersInRange:replacementRange withString:string];
-			}
-		}
-
-		[[NSFileManager defaultManager] removeItemAtPath:messagePath error:NULL];
-	} else {
-		NSError *taskError = error.userInfo[NSUnderlyingErrorKey];
-		NSString *hookOutput = taskError.userInfo[PBTaskTerminationOutputKey];
-		NSString *hookFailureMessage = [NSString stringWithFormat:@"prepare-commit-msg hook failed%@%@",
-										hookOutput && [hookOutput length] > 0 ? @":\n" : @"",
-										hookOutput];
-
-		[[NSNotificationCenter defaultCenter] postNotificationName:PBGitIndexCommitHookFailed
-															object:self
-														  userInfo:[NSDictionary dictionaryWithObject:hookFailureMessage forKey:@"description"]];
 	}
 
 	self.isBusy = NO;
