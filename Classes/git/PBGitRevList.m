@@ -195,7 +195,7 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName)
 
 - (void)addCommitsFromEnumerator:(GTEnumerator *)enumerator inPBRepo:(PBGitRepository *)pbRepo operation:(NSOperation *)operation
 {
-	PBGitGrapher *g = [[PBGitGrapher alloc] initWithRepository:pbRepo];
+	PBGitGrapher *g = [[PBGitGrapher alloc] init];
 	__block NSDate *lastUpdate = [NSDate date];
 
 	dispatch_queue_t loadQueue = dispatch_queue_create("net.phere.gitx.loadQueue", 0);

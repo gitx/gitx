@@ -6,12 +6,10 @@
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-@class PBGitRepository;
 @class PBGitCommit;
 
 @interface PBGitGrapher : NSObject
 
-- (id)initWithRepository:(PBGitRepository *)repo;
 - (void)decorateCommit:(PBGitCommit *)commit;
 
 @end

@@ -21,7 +21,7 @@
 	delegate = theDelegate;
 	currentQueue = queue;
 	searchOIDs = [NSMutableSet setWithSet:commits];
-	grapher = [[PBGitGrapher alloc] initWithRepository:nil];
+	grapher = [[PBGitGrapher alloc] init];
 	viewAllBranches = viewAll;
 
 	return self;
