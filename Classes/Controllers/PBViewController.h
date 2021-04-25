@@ -13,11 +13,11 @@
 
 @interface PBViewController : NSViewController {
 	// FIXME: these ivars must go, but most controller out there access it directly, so, not today
-	PBGitRepository *repository;
+	__weak PBGitRepository *repository;
 	__weak PBGitWindowController *superController;
 }
 
-@property (nonatomic, strong, readonly) PBGitRepository *repository;
+@property (nonatomic, weak, readonly) PBGitRepository *repository;
 @property (weak, readonly) PBGitWindowController *windowController;
 @property (copy) NSString *status;
 @property (assign) BOOL isBusy;
