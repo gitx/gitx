@@ -75,7 +75,7 @@
 		GTEnumerator *enu = [[GTEnumerator alloc] initWithRepository:repo error:&error];
 
 		[weakSelf setupEnumerator:enu forRevspec:weakSelf.currentRev];
-		[weakSelf addCommitsFromEnumerator:enu inPBRepo:pbRepo operation:weakParseOperation];
+		[weakSelf addCommitsFromEnumerator:enu operation:weakParseOperation];
 	}];
 	[parseOperation setCompletionBlock:completionBlock];
 
@@ -193,7 +193,7 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName)
 	}
 }
 
-- (void)addCommitsFromEnumerator:(GTEnumerator *)enumerator inPBRepo:(PBGitRepository *)pbRepo operation:(NSOperation *)operation
+- (void)addCommitsFromEnumerator:(GTEnumerator *)enumerator operation:(NSOperation *)operation
 {
 	PBGitGrapher *g = [[PBGitGrapher alloc] init];
 	__block NSDate *lastUpdate = [NSDate date];
@@ -211,6 +211,12 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName)
 	while ((oid = [enumerator nextOIDWithSuccess:&enumSuccess error:&enumError]) && enumSuccess && !operation.cancelled) {
 		dispatch_group_async(loadGroup, loadQueue, ^{
 			if (operation.cancelled) {
+				return;
+			}
+
+			PBGitRepository *pbRepo = self.repository;
+
+			if (pbRepo == nil) {
 				return;
 			}
 
