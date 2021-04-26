@@ -27,9 +27,9 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 		return PBReturnError(outError, @"Unable to find git", [PBGitBinary notFoundError], nil);
 	}
 
-	BOOL isDirectory = FALSE;
-	[[NSFileManager defaultManager] fileExistsAtPath:[absoluteURL path] isDirectory:&isDirectory];
-	if (!isDirectory) {
+	NSNumber *isDirectory;
+
+	if (![absoluteURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:outError] || ![isDirectory boolValue]) {
 		return PBReturnError(outError, @"Unable to read files", @"Reading files is not supported", nil);
 	}
 
@@ -52,6 +52,8 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 	}
 
 
+	[NSFileCoordinator addFilePresenter:self];
+
 	return YES;
 }
 
@@ -59,6 +61,8 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 {
 	/* FIXME: Check that this deallocs the repo */
 	//	[revisionList cleanup];
+
+	[NSFileCoordinator removeFilePresenter:self];
 
 	[super close];
 }
@@ -221,6 +225,30 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 		PBHistorySearchMode mode = PBSearchModeForInteger([[arguments objectForKey:kGitXFindInModeKey] integerValue]);
 		[self.windowController setHistorySearch:searchString mode:mode];
 	}
+}
+
+#pragma mark - NSFilePresenter
+
+- (void)accommodatePresentedItemDeletionWithCompletionHandler:(void (^)(NSError *errorOrNil))completionHandler
+{
+	// The repository was deleted, close the document
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self close];
+
+		if (completionHandler) {
+			completionHandler(nil);
+		}
+	});
+}
+
+- (void)presentedItemDidMoveToURL:(NSURL *)newURL
+{
+	// Close the document if the repository gets moved
+	// It would be better to automatically update the document, but that's a bit tricky with the current architecture
+	// If PBGitRepositoryDocument and PBGitRepository get unified then it would make this much easier
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self close];
+	});
 }
 
 @end
