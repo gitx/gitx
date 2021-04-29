@@ -67,6 +67,8 @@
 	window.contentView = self.view;
 	[self populateList];
 
+	PBGitRepository *repository = self.repository;
+
 	[repository addObserver:self
 					keyPath:@"currentBranch"
 					options:0
@@ -125,11 +127,6 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(expandCollapseItem:) name:NSOutlineViewItemWillCollapseNotification object:sourceView];
 }
 
-- (void)closeView
-{
-	[super closeView];
-}
-
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSOutlineViewItemWillExpandNotification object:sourceView];
@@ -152,6 +149,7 @@
 
 - (void)selectCurrentBranch
 {
+	PBGitRepository *repository = self.repository;
 	PBGitRevSpecifier *rev = repository.currentBranch;
 	if (!rev) {
 		[repository reloadRefs];
@@ -239,18 +237,19 @@
 {
 	NSInteger index = [sourceView selectedRow];
 	PBSourceViewItem *item = [sourceView itemAtRow:index];
+	PBGitWindowController *windowController = self.windowController;
 
 	if ([item revSpecifier]) {
-		if (![repository.currentBranch isEqual:[item revSpecifier]]) {
-			repository.currentBranch = [item revSpecifier];
+		if (![self.repository.currentBranch isEqual:[item revSpecifier]]) {
+			self.repository.currentBranch = [item revSpecifier];
 		}
 
-		[superController changeContentController:superController.historyViewController];
+		[windowController changeContentController:windowController.historyViewController];
 		[PBGitDefaults setShowStageView:NO];
 	}
 
 	if (item == stage) {
-		[superController changeContentController:superController.commitViewController];
+		[windowController changeContentController:windowController.commitViewController];
 		[PBGitDefaults setShowStageView:YES];
 	}
 
@@ -271,7 +270,7 @@
 		PBSourceViewGitBranchItem *branch = item;
 
 		NSError *error = nil;
-		BOOL success = [repository checkoutRefish:[branch ref] error:&error];
+		BOOL success = [self.repository checkoutRefish:[branch ref] error:&error];
 		if (!success) {
 			[self.windowController showErrorSheet:error];
 		}
@@ -297,7 +296,7 @@
 
 	cell.textField.stringValue = [[item title] copy];
 	cell.imageView.image = item.icon;
-	cell.isCheckedOut = [item.revSpecifier isEqual:[repository headRef]];
+	cell.isCheckedOut = [item.revSpecifier isEqual:[self.repository headRef]];
 
 	return cell;
 }
@@ -329,6 +328,7 @@
 
 - (void)populateList
 {
+	PBGitRepository *repository = self.repository;
 	PBSourceViewItem *project = [PBSourceViewItem groupItemWithTitle:[repository projectName]];
 	project.uncollapsible = YES;
 
@@ -420,7 +420,7 @@
 	if (!ref)
 		return;
 
-	for (NSMenuItem *menuItem in [superController.historyViewController menuItemsForRef:ref])
+	for (NSMenuItem *menuItem in [self.windowController.historyViewController menuItemsForRef:ref])
 		[menu addItem:menuItem];
 }
 
@@ -493,7 +493,7 @@ enum {
 	BOOL hasRemote = NO;
 
 	PBGitRef *ref = [[self selectedItem] ref];
-	if ([ref isRemote] || ([ref isBranch] && [[repository remoteRefForBranch:ref error:NULL] remoteName]))
+	if ([ref isRemote] || ([ref isBranch] && [[self.repository remoteRefForBranch:ref error:NULL] remoteName]))
 		hasRemote = YES;
 
 	[remoteControls setEnabled:hasRemote forSegment:kFetchSegment];
@@ -520,7 +520,7 @@ enum {
 	if (![ref isRemote] && ![ref isBranch])
 		return;
 
-	PBGitRef *remoteRef = [repository remoteRefForBranch:ref error:NULL];
+	PBGitRef *remoteRef = [self.repository remoteRefForBranch:ref error:NULL];
 	if (!remoteRef)
 		return;
 

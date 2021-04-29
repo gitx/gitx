@@ -88,6 +88,8 @@
 
 	self.selectedCommitDetailsIndex = [[NSUserDefaults standardUserDefaults] integerForKey:kHistorySelectedDetailIndexKey];
 
+	PBGitRepository *repository = self.repository;
+
 	[commitController addObserver:self
 						  keyPath:@"selection"
 						  options:0
@@ -265,6 +267,8 @@
 
 - (void)updateBranchFilterMatrix
 {
+	PBGitRepository *repository = self.repository;
+
 	if ([repository.currentBranch isSimpleRef]) {
 		[allBranchesFilterItem setEnabled:YES];
 		[localRemoteBranchesFilterItem setEnabled:YES];
@@ -321,7 +325,7 @@
 
 - (void)updateStatus
 {
-	self.isBusy = repository.revisionList.isUpdating;
+	self.isBusy = self.repository.revisionList.isUpdating;
 	self.status = [NSString stringWithFormat:@"%lu commits loaded", [[commitController arrangedObjects] count]];
 }
 
@@ -417,6 +421,8 @@
 
 - (IBAction)setBranchFilter:(id)sender
 {
+	PBGitRepository *repository = self.repository;
+
 	repository.currentBranchFilter = [(NSView *)sender tag];
 	[PBGitDefaults setBranchFilter:repository.currentBranchFilter];
 	[self updateBranchFilterMatrix];
@@ -426,7 +432,7 @@
 - (void)keyDown:(NSEvent *)event
 {
 	if ([[event charactersIgnoringModifiers] isEqualToString:@"f"] && [event modifierFlags] & NSAlternateKeyMask && [event modifierFlags] & NSCommandKeyMask)
-		[superController.window makeFirstResponder:searchField];
+		[self.windowController.window makeFirstResponder:searchField];
 	else
 		[super keyDown:event];
 }
@@ -518,7 +524,7 @@
 
 - (IBAction)refresh:(id)sender
 {
-	[repository forceUpdateRevisions];
+	[self.repository forceUpdateRevisions];
 }
 
 - (void)updateView
@@ -628,7 +634,7 @@
 		[files addObject:[filePath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 
 	NSError *error = nil;
-	BOOL success = [repository checkoutFiles:files fromRefish:self.selectedCommits.firstObject error:&error];
+	BOOL success = [self.repository checkoutFiles:files fromRefish:self.selectedCommits.firstObject error:&error];
 	if (!success) {
 		[self.windowController showErrorSheet:error];
 	}
@@ -664,7 +670,7 @@
 		if ([ref isTag] || [ref isRemoteBranch])
 			return NO;
 
-		if ([[[repository headRef] ref] isEqualToRef:ref])
+		if ([[[self.repository headRef] ref] isEqualToRef:ref])
 			return NO;
 
 		NSData *data = [NSKeyedArchiver archivedDataWithRootObject:[NSArray arrayWithObjects:[NSNumber numberWithInteger:row], [NSNumber numberWithInt:index], NULL]];
@@ -779,6 +785,7 @@
 														 action:@selector(showCommitsFromTree:)
 												  keyEquivalent:@""];
 
+	PBGitRepository *repository = self.repository;
 	PBGitRef *headRef = [[repository headRef] ref];
 	NSString *headRefName = [headRef shortName];
 	NSString *diffTitleFormat = multiple ? NSLocalizedString(@"Diff files with %@", @"Diff with ref menu item for multiple files") : NSLocalizedString(@"Diff file with %@", @"Diff with ref menu item for single file");

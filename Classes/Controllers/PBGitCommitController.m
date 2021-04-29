@@ -98,7 +98,7 @@
 																					   ascending:true]]];
 
 	// listen for updates
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:repository];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:self.repository];
 
 	[stagedFilesController setAutomaticallyRearrangesObjects:NO];
 	[unstagedFilesController setAutomaticallyRearrangesObjects:NO];
@@ -145,12 +145,12 @@
 
 - (PBGitIndex *)index
 {
-	return repository.index;
+	return self.repository.index;
 }
 
 - (void)commitWithVerification:(BOOL)doVerify
 {
-	if ([[NSFileManager defaultManager] fileExistsAtPath:[repository.gitURL.path stringByAppendingPathComponent:@"MERGE_HEAD"]]) {
+	if ([[NSFileManager defaultManager] fileExistsAtPath:[self.repository.gitURL.path stringByAppendingPathComponent:@"MERGE_HEAD"]]) {
 		NSString *message = NSLocalizedString(@"Cannot commit merges",
 											  @"Title for sheet that GitX cannot create merge commits");
 		NSString *info = NSLocalizedString(@"GitX cannot commit merges yet. Please commit your changes from the command line.",
@@ -188,7 +188,7 @@
 	self.isBusy = YES;
 	commitMessageView.editable = NO;
 
-	[repository.index commitWithMessage:commitMessage andVerify:doVerify];
+	[self.repository.index commitWithMessage:commitMessage andVerify:doVerify];
 }
 
 - (void)discardChangesForFiles:(NSArray *)files force:(BOOL)force
@@ -217,7 +217,7 @@
 - (IBAction)signOff:(id)sender
 {
 	NSError *error = nil;
-	GTConfiguration *config = [repository.gtRepo configurationWithError:&error];
+	GTConfiguration *config = [self.repository.gtRepo configurationWithError:&error];
 	NSString *userName = [config stringForKey:@"user.name"];
 	NSString *userEmail = [config stringForKey:@"user.email"];
 	if (!(userName && userEmail)) {
@@ -243,10 +243,10 @@
 {
 	self.isBusy = YES;
 	self.status = NSLocalizedString(@"Refreshing index…", @"Message in status bar while the index is refreshing");
-	[repository.index refresh];
+	[self.repository.index refresh];
 
 	// Reload refs (in case HEAD changed)
-	[repository reloadRefs];
+	[self.repository reloadRefs];
 }
 
 - (IBAction)commit:(id)sender

@@ -36,8 +36,6 @@
 	[self unbind:@"repository"];
 	if (_hasViewLoaded)
 		[[self view] removeFromSuperview];	// remove the current view
-	repository = nil;
-	superController = nil;
 }
 
 - (void)awakeFromNib

@@ -21,7 +21,7 @@
 	delegate = theDelegate;
 	currentQueue = queue;
 	searchOIDs = [NSMutableSet setWithSet:commits];
-	grapher = [[PBGitGrapher alloc] initWithRepository:nil];
+	grapher = [[PBGitGrapher alloc] init];
 	viewAllBranches = viewAll;
 
 	return self;
@@ -41,7 +41,6 @@
 	if (!revList || [revList count] == 0)
 		return;
 
-	id strongDelegate = delegate;
 	//NSDate *start = [NSDate date];
 	NSThread *currentThread = [NSThread currentThread];
 	NSDate *lastUpdate = [NSDate date];
@@ -72,7 +71,10 @@
 	//NSLog(@"Graphed %i commits in %f seconds (%f/sec)", counter, duration, counter/duration);
 
 	[self sendCommits:commits];
-	[strongDelegate performSelectorOnMainThread:@selector(finishedGraphing) withObject:nil waitUntilDone:NO];
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self->delegate finishedGraphing];
+	});
 }
 
 
