@@ -670,11 +670,11 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 	NSArray *files = [controller.arrangedObjects objectsAtIndexes:rowIndexes];
 	NSURL *workingDirectoryURL = self.repository.workingDirectoryURL;
 
-	NSMutableArray<NSURL *> *URLs = [NSMutableArray arrayWithCapacity:rowIndexes.count];
+	NSMutableArray<NSString *> *paths = [NSMutableArray arrayWithCapacity:rowIndexes.count];
 	for (PBChangedFile *file in files) {
-		[URLs addObject:[workingDirectoryURL URLByAppendingPathComponent:file.path]];
+		[paths addObject:[[workingDirectoryURL URLByAppendingPathComponent:file.path] path]];
 	}
-	[pboard writeObjects:URLs];
+	[pboard setPropertyList:paths forType:NSFilenamesPboardType];
 
 	return YES;
 }
