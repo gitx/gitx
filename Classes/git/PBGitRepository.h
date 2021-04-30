@@ -91,6 +91,7 @@ typedef enum branchFilterTypes {
 - (BOOL)executeHook:(NSString *)name error:(NSError **)error;
 - (BOOL)executeHook:(NSString *)name arguments:(NSArray *)arguments error:(NSError **)error;
 - (BOOL)executeHook:(NSString *)name arguments:(NSArray *)arguments output:(NSString **)outputPtr error:(NSError **)error;
+- (BOOL)hookExists:(NSString *)name;
 
 - (NSString *)workingDirectory;
 - (NSURL *)workingDirectoryURL;

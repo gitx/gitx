@@ -1131,12 +1131,12 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 {
 	NSParameterAssert(name != nil);
 
-	NSString *hookPath = [[[[self gitURL] path] stringByAppendingPathComponent:@"hooks"] stringByAppendingPathComponent:name];
-	if (![[NSFileManager defaultManager] isExecutableFileAtPath:hookPath]) {
+	if (![self hookExists:name]) {
 		// XXX: Maybe return error ?
 		return YES;
 	}
 
+	NSString *hookPath = [[[[self gitURL] path] stringByAppendingPathComponent:@"hooks"] stringByAppendingPathComponent:name];
 	PBTask *task = [PBTask taskWithLaunchPath:hookPath arguments:arguments inDirectory:self.workingDirectory];
 	task.additionalEnvironment = @{
 		@"GIT_DIR" : self.gitURL.path,
@@ -1163,6 +1163,14 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	if (outputPtr) *outputPtr = task.standardOutputString;
 
 	return YES;
+}
+
+- (BOOL)hookExists:(NSString *)name
+{
+	NSURL *hookURL = [[[self gitURL] URLByAppendingPathComponent:@"hooks"] URLByAppendingPathComponent:name];
+	NSNumber *executable;
+
+	return [hookURL getResourceValue:&executable forKey:NSURLIsExecutableKey error:NULL] && [executable boolValue];
 }
 
 - (BOOL)revisionExists:(NSString *)spec

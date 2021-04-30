@@ -59,6 +59,9 @@ extern NSString *PBGitIndexOperationFailed;
 // Refresh the index
 - (void)refresh;
 
+// Run the prepare-git-msg hook and return the result
+- (nullable NSString *)createPrepareCommitMessage;
+
 - (void)commitWithMessage:(NSString *)commitMessage andVerify:(BOOL)doVerify;
 
 // Inter-file changes:

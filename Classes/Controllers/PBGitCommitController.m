@@ -13,6 +13,7 @@
 #import "PBGitIndex.h"
 #import "PBGitRepositoryWatcher.h"
 #import "PBCommitMessageView.h"
+#import "PBTask.h"
 #import "NSSplitView+GitX.h"
 
 #import <ObjectiveGit/GTRepository.h>
@@ -247,6 +248,23 @@
 
 	// Reload refs (in case HEAD changed)
 	[self.repository reloadRefs];
+}
+
+- (IBAction)prepareCommitMessage:(id)sender
+{
+	self.isBusy = YES;
+
+	NSString *prepareCommitMessage = [[[self repository] index] createPrepareCommitMessage];
+
+	if (prepareCommitMessage != nil) {
+		NSRange replacementRange = NSMakeRange(0, [[commitMessageView string] length]);
+
+		if ([commitMessageView shouldChangeTextInRange:replacementRange replacementString:prepareCommitMessage]) {
+			[commitMessageView replaceCharactersInRange:replacementRange withString:prepareCommitMessage];
+		}
+	}
+
+	self.isBusy = NO;
 }
 
 - (IBAction)commit:(id)sender
@@ -629,6 +647,9 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 	} else if (menuItem.action == @selector(toggleAmendCommit:)) {
 		menuItem.state = [[[self repository] index] isAmend] ? NSOnState : NSOffState;
 		return YES;
+	}
+	else if (menuItem.action == @selector(prepareCommitMessage:)) {
+		return [self.repository hookExists:@"prepare-commit-msg"];
 	}
 
 	return menuItem.enabled;

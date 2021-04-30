@@ -273,6 +273,49 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	return parent;
 }
 
+- (NSString *)createPrepareCommitMessage
+{
+	NSError *error;
+	NSString *messagePath = [NSTemporaryDirectory() stringByAppendingPathComponent:[@"commit-" stringByAppendingString:[[NSUUID UUID] UUIDString]]];
+	NSMutableArray<NSString *> *arguments = [NSMutableArray arrayWithObject:messagePath];
+	PBGitRepository *repository = [self repository];
+
+	if ([[repository index] isAmend]) {
+		// git itself seems to pass HEAD when doing a plain 'git commit --amend', but git's documentation says the third argument can be a commit hash
+		[arguments addObject:@"commit"];
+		[arguments addObject:self.repository.headOID.SHA];
+
+		// Write the message of the commit we're amending to a file so we can run the prepare-commit-msg hook on it
+		GTReference *headRef = [self.repository.gtRepo headReferenceWithError:NULL];
+		GTCommit *commit = [headRef resolvedTarget];
+
+		[commit.message writeToFile:messagePath atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+	}
+
+	NSString *prepareCommitMessage;
+
+	if ([repository executeHook:@"prepare-commit-msg" arguments:arguments error:&error]) {
+		prepareCommitMessage = [NSString stringWithContentsOfFile:messagePath usedEncoding:NULL error:&error];
+
+		// Trim the last newline from the string (to make this match how git presents the results)
+		if ([prepareCommitMessage length] > 0 && [prepareCommitMessage characterAtIndex:[prepareCommitMessage length] - 1] == '\n') {
+			prepareCommitMessage = [prepareCommitMessage substringToIndex:[prepareCommitMessage length] - 1];
+		}
+
+		[[NSFileManager defaultManager] removeItemAtPath:messagePath error:NULL];
+	} else {
+		NSError *taskError = error.userInfo[NSUnderlyingErrorKey];
+		NSString *hookOutput = taskError.userInfo[PBTaskTerminationOutputKey];
+		NSString *hookFailureMessage = [NSString stringWithFormat:@"prepare-commit-msg hook failed%@%@",
+										hookOutput && [hookOutput length] > 0 ? @":\n" : @"",
+										hookOutput];
+
+		[self postCommitHookFailure:hookFailureMessage];
+	}
+
+	return prepareCommitMessage;
+}
+
 // TODO: make Asynchronous
 - (void)commitWithMessage:(NSString *)commitMessage andVerify:(BOOL)doVerify
 {
