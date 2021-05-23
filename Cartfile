@@ -1,0 +1,6 @@
+github "chbeer/MGScopeBar" == 1.0.3
+#github "libgit2/objective-git" == 0.14.2
+#try using https://github.com/tiennou/objective-git/tree/update-dependencies for the time being to make it compile
+github "tiennou/objective-git" "f21e086947771e8fcb12080b8c8cd46d01565d87"
+github "mikeash/MAKVONotificationCenter" "1f414de5dd2fd54fad6928a09794431ffa13f30f"
+github "sparkle-project/Sparkle" == 1.26.0
