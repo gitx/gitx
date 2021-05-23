@@ -17,7 +17,9 @@ jobs:
           submodules: recursive
       - name: Set XCode Version
         run: sudo xcode-select -s /Applications/${{ matrix.xcode }}.app
-      - name: pre build
-        run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
+      - name: Get submodules
+        run: git submodule update --init --recursive
+      - name: Build dependencies
+        run: carthage build
       - name: Build project
         run: set -o pipefail && xcodebuild -workspace GitX.xcworkspace -scheme GitX archive | xcpretty
