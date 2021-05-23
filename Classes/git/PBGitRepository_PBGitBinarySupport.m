@@ -10,6 +10,7 @@
 
 #import "PBGitBinary.h"
 #import "PBTask.h"
+#import "PBMacros.h"
 
 @implementation PBGitRepository (PBGitBinarySupport)
 

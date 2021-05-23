@@ -6,6 +6,8 @@
 //  Copyright 2008 Jeff Mesnil (http://jmesnil.net/). All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 #define kDialogAcceptDroppedRef @"Accept Dropped Ref"
 @interface PBGitDefaults : NSObject {
 }

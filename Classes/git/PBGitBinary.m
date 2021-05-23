@@ -50,7 +50,7 @@ static NSString *gitPath = nil;
 	if (!version)
 		return NO;
 
-	int c = [version compare:@"" MIN_GIT_VERSION options:NSNumericSearch];
+	NSComparisonResult c = [version compare:@"" MIN_GIT_VERSION options:NSNumericSearch];
 	if (c == NSOrderedSame || c == NSOrderedDescending) {
 		gitPath = path;
 		return YES;
@@ -141,7 +141,7 @@ static NSMutableArray *locations = nil;
 						 NSLocalizedString(
 							 @"Could not find a git binary version " MIN_GIT_VERSION " or higher.\n"
 							 @"Please make sure there is a git binary in one of the following locations:"
-							 @"\n\n\t%s",
+							 @"\n\n\t$@",
 							 @"Error message when no git client can be found."),
 						 searchPathsString];
 }

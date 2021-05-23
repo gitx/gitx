@@ -12,6 +12,7 @@
 #import "PBGitTree.h"
 #import "PBGitRef.h"
 #import "PBGitDefaults.h"
+#import "PBMacros.h"
 #import "ObjectiveGit+PBCategories.h"
 
 NSString *const kGitXCommitType = @"commit";
@@ -189,7 +190,7 @@ NSString *const kGitXCommitType = @"commit";
 	return self.OID.hash;
 }
 
-- (NSString *)patch
+- (nullable NSString *)patch
 {
 	if (self->_patch != nil)
 		return _patch;

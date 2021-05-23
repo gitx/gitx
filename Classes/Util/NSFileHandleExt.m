@@ -9,6 +9,7 @@
  *
  */
 
+#import <Foundation/Foundation.h>
 
 #define CONN_TIMEOUT 5
 #define BUFFER_SIZE 256

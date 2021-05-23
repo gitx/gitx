@@ -7,6 +7,7 @@
 //
 
 #import "PBSourceViewGitSubmoduleItem.h"
+#import <ObjectiveGit/ObjectiveGit.h>
 
 @interface PBSourceViewGitSubmoduleItem ()
 

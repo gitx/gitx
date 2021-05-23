@@ -11,6 +11,7 @@
 #import "PBGitRepository_PBGitBinarySupport.h"
 #import "PBGitXProtocol.h"
 #import "PBGitDefaults.h"
+#import "NSAppearance+PBDarkMode.h"
 
 #include <SystemConfiguration/SCNetworkReachability.h>
 

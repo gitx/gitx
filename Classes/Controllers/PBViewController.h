@@ -10,6 +10,7 @@
 
 #import "PBGitRepository.h"
 #import "PBGitWindowController.h"
+#import "MAKVONotificationCenter.h"
 
 @interface PBViewController : NSViewController
 

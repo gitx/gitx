@@ -6,7 +6,7 @@
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-#import <Cocoa/Cocoa.h>
+#import <ObjectiveGit/git2/oid.h>
 
 class PBGitLane
 {

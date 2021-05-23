@@ -6,10 +6,10 @@
 //  Copyright 2008 __MyCompanyName__. All rights reserved.
 //
 
-#import "PBRepositoryFinder.h"
-#import "GitXScriptingConstants.h"
 #import "GitX.h"
-#import "PBHistorySearchController.h"
+#import "GitXScriptingConstants.h"
+#import "PBHistorySearchMode.h"
+#import "PBRepositoryFinder.h"
 
 
 #pragma mark Commands handled locally
@@ -82,7 +82,7 @@ void usage(char const *programName)
 	exit(1);
 }
 
-void version_info()
+void version_info(void)
 {
 	NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
 	printf("GitX version %s\n", [version UTF8String]);
@@ -92,7 +92,7 @@ void version_info()
 #pragma mark -
 #pragma mark Commands sent to GitX
 
-void handleSTDINDiff()
+void handleSTDINDiff(void)
 {
 	NSFileHandle *handle = [NSFileHandle fileHandleWithStandardInput];
 	NSData *data = [handle readDataToEndOfFile];
@@ -164,7 +164,7 @@ void handleClone(NSURL *repositoryURL, NSMutableArray *arguments)
 #define kShortPathSearch @"-p"
 #define kPathSearch @"--path="
 
-NSArray *commandLineSearchPrefixes()
+NSArray *commandLineSearchPrefixes(void)
 {
 	return [NSArray arrayWithObjects:kShortBasicSearch, kBasicSearch, kShortPickaxeSearch, kPickaxeSearch, kShortRegexSearch, kRegexSearch, kShortPathSearch, kPathSearch, nil];
 }

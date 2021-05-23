@@ -43,7 +43,7 @@ static const NSInteger kReturnCodeCancel = 1;
 	if (!mPasswordPanel) {
 		NSRect box = NSMakeRect(100, 100, 400, 134);
 		mPasswordPanel = [[NSPanel alloc] initWithContentRect:box
-													styleMask:NSTitledWindowMask
+													styleMask:NSWindowStyleMaskTitled
 													  backing:NSBackingStoreBuffered
 														defer:NO];
 		[mPasswordPanel setHidesOnDeactivate:NO];
@@ -68,7 +68,7 @@ static const NSInteger kReturnCodeCancel = 1;
 		[okButton setTitle:NSLocalizedString(@"OK", @"OK button for password panel in command line tool")];
 		[okButton setKeyEquivalent:@"\r"];
 		[okButton setBordered:YES];
-		[okButton setBezelStyle:NSRoundedBezelStyle];
+		[okButton setBezelStyle:NSBezelStyleRounded];
 		[[mPasswordPanel contentView] addSubview:okButton];
 
 		// Cancel:
@@ -82,7 +82,7 @@ static const NSInteger kReturnCodeCancel = 1;
 		[cancleButton setAction:@selector(doCancelButton:)];
 		[cancleButton setTitle:NSLocalizedString(@"Cancel", @"Cancel button for password panel in command line tool")];
 		[cancleButton setBordered:YES];
-		[cancleButton setBezelStyle:NSRoundedBezelStyle];
+		[cancleButton setBezelStyle:NSBezelStyleRounded];
 		[[mPasswordPanel contentView] addSubview:cancleButton];
 
 		// Password field:

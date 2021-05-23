@@ -297,6 +297,10 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		branchRef = headRef;
 	}
 
+	NSString * name = branchRef.name;
+	if (name == nil) {
+		PBLogFunction(@"branchRef.name should not be nil");
+	}
 	_headRef = [[PBGitRevSpecifier alloc] initWithRef:[PBGitRef refFromString:branchRef.name]];
 	_headOID = branchRef.OID;
 

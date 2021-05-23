@@ -10,6 +10,7 @@
 
 #import "PBGitDefaults.h"
 #import "PBGitRepository.h"
+#import "MAKVONotificationCenter.h"
 
 @implementation PBCommitMessageView
 

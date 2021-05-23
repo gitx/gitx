@@ -18,7 +18,8 @@
 #import "PBCloneRepositoryPanel.h"
 #import "OpenRecentController.h"
 #import "PBGitBinary.h"
-
+#import "NSAppearance+PBDarkMode.h"
+#import <ObjectiveGit/ObjectiveGit.h>
 #import <Sparkle/SUUpdater.h>
 #import <Sparkle/SUUpdaterDelegate.h>
 

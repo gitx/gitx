@@ -12,6 +12,7 @@
 #import "PBGitBinary.h"
 #import "PBTask.h"
 #import "PBChangedFile.h"
+#import "PBMacros.h"
 
 NSString *PBGitIndexIndexRefreshStatus = @"PBGitIndexIndexRefreshStatus";
 NSString *PBGitIndexIndexRefreshFailed = @"PBGitIndexIndexRefreshFailed";

@@ -6,6 +6,7 @@
 //
 
 #import "NSAppearance+PBDarkMode.h"
+#import "MAKVONotificationCenter.h"
 
 NSString *const PBEffectiveAppearanceChanged = @"PBEffectiveAppearanceChanged";
 

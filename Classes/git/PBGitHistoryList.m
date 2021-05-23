@@ -13,6 +13,7 @@
 #import "PBGitHistoryGrapher.h"
 #import "PBGitRef.h"
 #import "PBGitRevSpecifier.h"
+#import "MAKVONotificationCenter.h"
 
 @interface PBGitHistoryList () <PBGitHistoryGrapherDelegate>
 

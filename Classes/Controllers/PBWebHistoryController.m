@@ -12,6 +12,7 @@
 #import "PBGitRef.h"
 #import "PBGitRevSpecifier.h"
 #import <stdatomic.h>
+#import "MAKVONotificationCenter.h"
 
 @interface PBWebHistoryController ()
 @property (nonatomic) atomic_ulong commitSummaryGeneration;

@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "PBHistorySearchMode.h"
+#import "PBMacros.h"
 
 @class PBViewController;
 @class PBGitSidebarController;

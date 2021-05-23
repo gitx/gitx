@@ -7,7 +7,7 @@
 //
 
 #import "PBGitGradientBarView.h"
-
+#import "NSAppearance+PBDarkMode.h"
 
 @implementation PBGitGradientBarView
 

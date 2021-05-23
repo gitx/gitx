@@ -537,17 +537,17 @@
 	return commitList;
 }
 
-- (void)scrollSelectionToTopOfViewFrom:(NSInteger)oldIndex
+- (void)scrollSelectionToTopOfViewFrom:(NSUInteger)oldIndex
 {
 	if (oldIndex == NSNotFound)
 		oldIndex = 0;
 
-	NSInteger newIndex = commitController.selectionIndexes.firstIndex;
+	NSUInteger newIndex = commitController.selectionIndexes.firstIndex;
 
 	if (newIndex > oldIndex) {
 		CGFloat sviewHeight = commitList.superview.bounds.size.height;
 		CGFloat rowHeight = commitList.rowHeight;
-		NSInteger visibleRows = lround(sviewHeight / rowHeight);
+		NSUInteger visibleRows = lround(sviewHeight / rowHeight);
 		newIndex += (visibleRows - 1);
 		if (newIndex >= [commitController.content count])
 			newIndex = [commitController.content count] - 1;
@@ -582,7 +582,7 @@
 	NSArray *selectedObjects = [self selectedObjectsForOID:commitOID];
 	[commitController setSelectedObjects:selectedObjects];
 
-	NSInteger oldIndex = [[commitController selectionIndexes] firstIndex];
+	NSUInteger oldIndex = [[commitController selectionIndexes] firstIndex];
 	[self scrollSelectionToTopOfViewFrom:oldIndex];
 
 	forceSelectionUpdate = NO;

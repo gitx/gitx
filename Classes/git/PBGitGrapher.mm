@@ -16,9 +16,8 @@
 #import "PBGitGraphLine.h"
 
 #import <vector>
-#import <git2/oid.h>
 #include <algorithm>
-#import <ObjectiveGit/GTOID.h>
+#import <ObjectiveGit/ObjectiveGit.h>
 
 using namespace std;
 typedef std::vector<PBGitLane *> LaneCollection;

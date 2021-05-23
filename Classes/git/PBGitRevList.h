@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "MAKVONotificationCenter.h"
 
 @class PBGitRepository;
 @class PBGitRevSpecifier;

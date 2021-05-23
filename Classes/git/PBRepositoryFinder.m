@@ -7,6 +7,8 @@
 //
 
 #import "PBRepositoryFinder.h"
+#import <ObjectiveGit/git2/repository.h>
+#import <ObjectiveGit/git2/errors.h>
 
 @implementation PBRepositoryFinder
 
@@ -47,7 +49,7 @@
 	NSData *repoPathBuffer = nil;
 	if (path_buffer.ptr) {
 		repoPathBuffer = [NSData dataWithBytes:path_buffer.ptr length:path_buffer.asize];
-		git_buf_free(&path_buffer);
+        git_buf_dispose(&path_buffer);
 	}
 
 	if (gitResult == GIT_OK && repoPathBuffer.length) {

@@ -9,7 +9,7 @@
 #import "PBCloneRepositoryPanel.h"
 #import "PBRemoteProgressSheet.h"
 #import "PBGitDefaults.h"
-
+#import <ObjectiveGit/ObjectiveGit.h>
 
 @implementation PBCloneRepositoryPanel
 
