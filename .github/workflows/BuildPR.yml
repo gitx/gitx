@@ -16,6 +16,8 @@ jobs:
       matrix:
         xcode: [Xcode_12.5, Xcode_13.1, Xcode_13.2, Xcode_13.0, Xcode_12.4]
     steps:
+      - name: ls Xcode
+        run: ls -la /Applications/Xcode*
       - name: Checkout
         uses: actions/checkout@v2.4.0
         with:
