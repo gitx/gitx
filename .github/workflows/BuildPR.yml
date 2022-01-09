@@ -10,7 +10,7 @@ on:
 jobs:
   build-gitx:
     name: build-gitx
-    runs-on: macOS-latest
+    runs-on: macos-11
     strategy:
       fail-fast: false
       matrix:
