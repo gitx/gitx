@@ -12,6 +12,7 @@ jobs:
     name: build-gitx
     runs-on: macOS-latest
     strategy:
+      fail-fast: false
       matrix:
         xcode: [Xcode_12.2, Xcode_12.3, Xcode_12.4]
     steps:
