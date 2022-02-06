@@ -1,6 +1,5 @@
 name: build-gitx
 
-
 on:
   push:
     branches:
@@ -28,4 +27,11 @@ jobs:
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
-        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX archive
+        run: |
+          xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive
+          tar -acf GitX.xcarchive.zip GitX.xcarchive
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: GitX-${{ matrix.xcode }}.xcarchive
+          path: GitX.xcarchive.zip
