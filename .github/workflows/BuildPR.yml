@@ -28,4 +28,4 @@ jobs:
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
-        run: set -o pipefail && xcodebuild -workspace GitX.xcworkspace -scheme GitX archive | xcpretty
+        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX archive
