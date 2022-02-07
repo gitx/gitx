@@ -32,6 +32,7 @@ jobs:
           tar -acf GitX.xcarchive.zip GitX.xcarchive
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
+        if: ${{ success() }}
         with:
           name: GitX-${{ matrix.xcode }}.xcarchive
           path: GitX.xcarchive.zip
