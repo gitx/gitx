@@ -27,7 +27,7 @@ jobs:
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
-        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive
+        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="x86_64 arm64"
       - name: Prepare artifact
         run: |
           mv GitX.xcarchive/Products/Applications/GitX.app .
