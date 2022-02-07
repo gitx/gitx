@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode: [ Xcode_12.5, Xcode_13.1, Xcode_13.2.1, Xcode_13.0, Xcode_12.4 ]
+        xcode: [ Xcode_12.4, Xcode_12.5, Xcode_13.0, Xcode_13.1, Xcode_13.2.1 ]
     steps:
       - name: ls Xcode
         run: ls -la /Applications/Xcode*
@@ -27,12 +27,14 @@ jobs:
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
+        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive
+      - name: Prepare artifact
         run: |
-          xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive
-          tar -acf GitX.xcarchive.zip GitX.xcarchive
-      - name: Upload artifacts
+          mv GitX.xcarchive/Products/Applications/GitX.app .
+          hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX.dmg
+      - name: Upload artifact
         uses: actions/upload-artifact@v2
         if: ${{ success() }}
         with:
-          name: GitX-${{ matrix.xcode }}.xcarchive
-          path: GitX.xcarchive.zip
+          name: GitX built by ${{ matrix.xcode }}
+          path: GitX.dmg
