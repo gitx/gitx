@@ -6,24 +6,20 @@
 //  Copyright 2010 Nathan Kinsinger. All rights reserved.
 //
 
-#import "PBGitSVOtherRevItem.h"
+#import "PBSourceViewOtherRevItem.h"
 #import "PBGitRevSpecifier.h"
 
 
-@implementation PBGitSVOtherRevItem
+@implementation PBSourceViewOtherRevItem
 
-
-+ (id)otherItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier
++ (instancetype)otherItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier
 {
-	PBGitSVOtherRevItem *item = [self itemWithTitle:[revSpecifier title]];
-	item.revSpecifier = revSpecifier;
-	
-	return item;
+	return [[self alloc] initWithTitle:[revSpecifier title] revSpecifier:revSpecifier];
 }
 
-- (NSString*) iconName
+- (NSString *)iconName
 {
-    return @"BranchTemplate";
+	return @"BranchTemplate";
 }
 
 @end

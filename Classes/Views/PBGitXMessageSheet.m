@@ -7,6 +7,7 @@
 //
 
 #import "PBGitXMessageSheet.h"
+#import "PBTask.h"
 
 
 #define MaxScrollViewHeight 125.0f
@@ -35,57 +36,101 @@
 						 info:(NSString *)info
 			 windowController:(PBGitWindowController *)windowController
 {
-	PBGitXMessageSheet *sheet = [[self alloc] initWithWindowNibName:@"PBGitXMessageSheet" windowController:windowController];
-	[sheet beginMessageSheetWithMessageText:message
-								   infoText:info];
+	[self beginSheetWithMessage:message
+						   info:info
+			   windowController:windowController
+			  completionHandler:nil];
 }
-
 
 + (void)beginSheetWithError:(NSError *)error
 		   windowController:(PBGitWindowController *)windowController
 {
+	[self beginSheetWithError:error windowController:windowController completionHandler:nil];
+}
+
++ (void)beginSheetWithMessage:(NSString *)message
+						 info:(NSString *)info
+			 windowController:(PBGitWindowController *)windowController
+			completionHandler:(RJSheetCompletionHandler)handler
+{
+	PBGitXMessageSheet *sheet = [[self alloc] initWithWindowNibName:@"PBGitXMessageSheet" windowController:windowController];
+	[sheet beginMessageSheetWithMessageText:message
+								   infoText:info
+						  completionHandler:handler];
+}
+
++ (void)beginSheetWithError:(NSError *)error
+		   windowController:(PBGitWindowController *)windowController
+		  completionHandler:(RJSheetCompletionHandler)handler
+{
 	PBGitXMessageSheet *sheet = [[self alloc] initWithWindowNibName:@"PBGitXMessageSheet" windowController:windowController];
 
-	NSString *infoText = nil;
-	NSString *desc = error.localizedDescription;
-	NSString *recovery = error.localizedRecoverySuggestion;
-	if (desc && recovery) {
-		infoText = [NSString stringWithFormat:@"%@\n\n%@", desc, recovery];
-	} else if (desc) {
-		infoText = desc;
-	} else if (recovery) {
-		infoText = recovery;
+	NSMutableArray *messageParts = [NSMutableArray array];
+
+	if (error.localizedFailureReason)
+		[messageParts addObject:error.localizedFailureReason];
+
+	if (error.localizedRecoverySuggestion) {
+		NSString *message = NSLocalizedString(@"Maybe you could try the following:", @"PBGitXMessageSheet - localized recovery suggestion header");
+		[message stringByAppendingString:@"\n"];
+		[message stringByAppendingString:error.localizedRecoverySuggestion];
+		[messageParts addObject:message];
 	}
 
+	NSError *taskError = error.userInfo[NSUnderlyingErrorKey];
+	if (taskError && taskError.domain == PBTaskErrorDomain) {
+		[messageParts addObject:NSLocalizedString(@"The underlying task failed:", @"PBGitXMessageSheet - task failed header")];
+		[messageParts addObject:taskError.localizedDescription];
+		[messageParts addObject:taskError.localizedFailureReason];
+		if (taskError.code == PBTaskNonZeroExitCodeError) {
+			NSString *message = NSLocalizedString(@"Return code: %@", @"PBGitXMessageSheet - task return code header");
+			message = [NSString stringWithFormat:message, taskError.userInfo[PBTaskTerminationStatusKey]];
+			[messageParts addObject:message];
+			message = NSLocalizedString(@"Output:", @"PBGitXMessageSheet - task output header");
+			message = [message stringByAppendingString:@"\n"];
+			message = [message stringByAppendingString:taskError.userInfo[PBTaskTerminationOutputKey]];
+			[messageParts addObject:message];
+		} else {
+			[messageParts addObject:taskError.localizedDescription];
+			[messageParts addObject:taskError.localizedFailureReason];
+		}
+	}
+
+	NSString *infoText = [messageParts componentsJoinedByString:@"\n\n"];
+
 	[sheet beginMessageSheetWithMessageText:[error localizedDescription]
-								   infoText:infoText];
+								   infoText:infoText
+						  completionHandler:handler];
 }
 
 - (IBAction)closeMessageSheet:(id)sender
 {
-	[self hide];
+	[self acceptSheet:sender];
 }
-
 
 
 #pragma mark Private
 
-- (void)beginMessageSheetWithMessageText:(NSString *)message infoText:(NSString *)info;
+- (void)beginMessageSheetWithMessageText:(NSString *)message
+								infoText:(NSString *)info
+					   completionHandler:(RJSheetCompletionHandler)handler;
 {
 	[self window];
-	
+
 	[self.messageField setStringValue:message];
 	[self setInfoString:info];
 	[self resizeWindow];
-		
-	[self show];
+
+	[self beginSheetWithCompletionHandler:handler];
 }
 
 
 - (void)setInfoString:(NSString *)info
 {
-	NSDictionary *attributes = [NSDictionary dictionaryWithObject:[NSFont labelFontOfSize:[NSFont smallSystemFontSize]]
-														   forKey:NSFontAttributeName];
+	NSDictionary *attributes = @{
+		NSFontAttributeName : [NSFont labelFontOfSize:[NSFont smallSystemFontSize]],
+		NSForegroundColorAttributeName : [NSColor textColor],
+	};
 	NSAttributedString *attributedInfoString = [[NSAttributedString alloc] initWithString:info attributes:attributes];
 	[[self.infoView textStorage] setAttributedString:attributedInfoString];
 }
@@ -104,16 +149,16 @@
 		messageFrame.size.height += heightDelta;
 		messageFrame.origin.y -= heightDelta;
 		[self.messageField setFrame:messageFrame];
-		
+
 		NSRect scrollFrame = [self.scrollView frame];
 		scrollFrame.size.height -= heightDelta;
 		[self.scrollView setFrame:scrollFrame];
-		
+
 		NSRect windowFrame = [[self window] frame];
 		windowFrame.size.height += heightDelta;
 		[[self window] setFrame:windowFrame display:NO];
 	}
-	
+
 	// resize for info text
 	NSRect scrollFrame = [self.scrollView frame];
 	boundingSize = [self.scrollView bounds].size;

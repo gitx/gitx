@@ -7,19 +7,18 @@
 //
 
 #import "PBChangedFile.h"
-#import "PBEasyPipe.h"
 
 @implementation PBChangedFile
 
 @synthesize path, status, hasStagedChanges, hasUnstagedChanges, commitBlobSHA, commitBlobMode;
 
-- (id) initWithPath:(NSString *)p
+- (id)initWithPath:(NSString *)p
 {
-    self = [super init];
-    
-    if (self) {
-        path = p;
-    }
+	self = [super init];
+
+	if (self) {
+		path = p;
+	}
 	return self;
 }
 
@@ -32,7 +31,7 @@
 		return [NSString stringWithFormat:@"%@ %@\t%@\0", self.commitBlobMode, self.commitBlobSHA, self.path];
 }
 
-- (NSImage *) icon
+- (NSImage *)icon
 {
 	NSString *filename;
 	switch (status) {
@@ -54,7 +53,8 @@
 	return NO;
 }
 
-+ (BOOL)isKeyExcludedFromWebScript:(const char *)name {
++ (BOOL)isKeyExcludedFromWebScript:(const char *)name
+{
 	return NO;
 }
 

@@ -23,14 +23,13 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 
 - (BOOL)readFromURL:(NSURL *)absoluteURL ofType:(NSString *)typeName error:(NSError **)outError
 {
-	if (![PBGitBinary path])
-	{
+	if (![PBGitBinary path]) {
 		return PBReturnError(outError, @"Unable to find git", [PBGitBinary notFoundError], nil);
 	}
 
-	BOOL isDirectory = FALSE;
-	[[NSFileManager defaultManager] fileExistsAtPath:[absoluteURL path] isDirectory:&isDirectory];
-	if (!isDirectory) {
+	NSNumber *isDirectory;
+
+	if (![absoluteURL getResourceValue:&isDirectory forKey:NSURLIsDirectoryKey error:outError] || ![isDirectory boolValue]) {
 		return PBReturnError(outError, @"Unable to read files", @"Reading files is not supported", nil);
 	}
 
@@ -40,19 +39,20 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 	}
 	if (_repository.isShallowRepository) {
 		if (outError) {
-			NSDictionary* userInfo = @{
-				NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(
+			NSDictionary *userInfo = @{
+				NSLocalizedRecoverySuggestionErrorKey : NSLocalizedString(
 					@"The repository is shallowly cloned, which is not supported by GitX. Please run “git fetch --unshallow” on the repository before opening it with GitX.",
 					@"Recovery suggestion when opening a shallow repository"),
-				NSLocalizedRecoveryOptionsErrorKey: [PBOpenShallowRepositoryErrorRecoveryAttempter errorDialogButtonNames],
-				NSRecoveryAttempterErrorKey: [[PBOpenShallowRepositoryErrorRecoveryAttempter alloc] initWithURL:_repository.workingDirectoryURL]
+				NSLocalizedRecoveryOptionsErrorKey : [PBOpenShallowRepositoryErrorRecoveryAttempter errorDialogButtonNames],
+				NSRecoveryAttempterErrorKey : [[PBOpenShallowRepositoryErrorRecoveryAttempter alloc] initWithURL:_repository.workingDirectoryURL]
 			};
 			*outError = [NSError errorWithDomain:PBGitXErrorDomain code:0 userInfo:userInfo];
 		}
 		return NO;
 	}
 
-	[_repository setDocument:self];
+
+	[NSFileCoordinator addFilePresenter:self];
 
 	return YES;
 }
@@ -60,7 +60,9 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 - (void)close
 {
 	/* FIXME: Check that this deallocs the repo */
-//	[revisionList cleanup];
+	//	[revisionList cleanup];
+
+	[NSFileCoordinator removeFilePresenter:self];
 
 	[super close];
 }
@@ -72,18 +74,21 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 
 - (NSString *)displayName
 {
-    // Build our display name depending on the current HEAD and whether it's detached or not
-    if (self.repository.gtRepo.isHEADDetached)
-		return [NSString localizedStringWithFormat:@"%@ (detached HEAD)", self.repository.projectName];
+	// Build our display name depending on the current HEAD and whether it's detached or not
+	if (self.repository.gtRepo.isHEADDetached)
+		return [NSString stringWithFormat:NSLocalizedString(@"%@ (detached HEAD)", @""), self.repository.projectName];
 
-	return [NSString localizedStringWithFormat:@"%@ (branch: %@)", self.repository.projectName, [self.repository.headRef description]];
+	if (self.repository.gtRepo.isHEADUnborn)
+		return [NSString stringWithFormat:NSLocalizedString(@"%@ (unborn HEAD)", @""), self.repository.projectName];
+
+	return [NSString stringWithFormat:NSLocalizedString(@"%@ (branch: %@)", @""), self.repository.projectName, self.repository.headRef.description];
 }
 
 - (void)makeWindowControllers
 {
-    // Create our custom window controller
+	// Create our custom window controller
 #ifndef CLI
-	[self addWindowController: [[PBGitWindowController alloc] initWithRepository:self.repository displayDefault:YES]];
+	[self addWindowController:[[PBGitWindowController alloc] init]];
 #endif
 }
 
@@ -95,15 +100,18 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 	return [[self windowControllers] objectAtIndex:0];
 }
 
-- (IBAction)showCommitView:(id)sender {
+- (IBAction)showCommitView:(id)sender
+{
 	[[self windowController] showCommitView:sender];
 }
 
-- (IBAction)showHistoryView:(id)sender {
+- (IBAction)showHistoryView:(id)sender
+{
 	[[self windowController] showHistoryView:sender];
 }
 
-- (void)selectRevisionSpecifier:(PBGitRevSpecifier *)specifier {
+- (void)selectRevisionSpecifier:(PBGitRevSpecifier *)specifier
+{
 	PBGitRevSpecifier *spec = [self.repository addBranch:specifier];
 	self.repository.currentBranch = spec;
 	[self showHistoryView:self];
@@ -114,12 +122,13 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 	NSScriptCommand *command = [NSScriptCommand currentCommand];
 
 	if (command) {
+		// Check if `gitx` has provided some arguments
 		NSURL *repoURL = [command directParameter];
 
 		// on app launch there may be many repositories opening, so double check that this is the right repo
-		if (repoURL) {
+		if (repoURL && [repoURL isKindOfClass:[NSURL class]]) {
 			repoURL = [PBRepositoryFinder gitDirForURL:repoURL];
-			if ([repoURL isEqual:self.fileURL]) {
+			if ([repoURL isEqual:_repository.gitURL]) {
 				NSArray *arguments = command.arguments[@"openOptions"];
 				[self handleGitXScriptingArguments:arguments];
 			}
@@ -216,6 +225,30 @@ NSString *PBGitRepositoryDocumentType = @"Git Repository";
 		PBHistorySearchMode mode = PBSearchModeForInteger([[arguments objectForKey:kGitXFindInModeKey] integerValue]);
 		[self.windowController setHistorySearch:searchString mode:mode];
 	}
+}
+
+#pragma mark - NSFilePresenter
+
+- (void)accommodatePresentedItemDeletionWithCompletionHandler:(void (^)(NSError *errorOrNil))completionHandler
+{
+	// The repository was deleted, close the document
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self close];
+
+		if (completionHandler) {
+			completionHandler(nil);
+		}
+	});
+}
+
+- (void)presentedItemDidMoveToURL:(NSURL *)newURL
+{
+	// Close the document if the repository gets moved
+	// It would be better to automatically update the document, but that's a bit tricky with the current architecture
+	// If PBGitRepositoryDocument and PBGitRepository get unified then it would make this much easier
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self close];
+	});
 }
 
 @end

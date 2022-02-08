@@ -1,0 +1,40 @@
+name: build-gitx
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build-gitx:
+    name: build-gitx
+    runs-on: macos-11
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: [ Xcode_12.5, Xcode_13.0, Xcode_13.1, Xcode_13.2.1 ]
+    steps:
+      - name: ls Xcode
+        run: ls -la /Applications/Xcode*
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Set XCode Version
+        run: sudo xcode-select -s /Applications/${{ matrix.xcode }}.app
+      - name: pre build
+        run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
+      - name: Build project
+        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="x86_64 arm64"
+      - name: Prepare artifact
+        run: |
+          mv GitX.xcarchive/Products/Applications/GitX.app .
+          hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX.dmg
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        if: ${{ success() }}
+        with:
+          name: GitX built by ${{ matrix.xcode }}
+          path: GitX.dmg

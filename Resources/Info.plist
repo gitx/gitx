@@ -47,11 +47,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.12</string>
+	<string>0.13</string>
 	<key>CFBundleVersion</key>
-	<string>0.12</string>
+	<string>0.13</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.developer-tools</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>GitX needs authorization in order to open your Terminal application.</string>
 	<key>NSAppleScriptEnabled</key>
 	<true/>
 	<key>NSMainNibFile</key>
@@ -88,11 +90,11 @@
 	<key>OSAScriptingDefinition</key>
 	<string>GitX.sdef</string>
 	<key>SUAllowsAutomaticUpdates</key>
-	<true/>
+	<false/>
 	<key>SUEnableAutomaticChecks</key>
-	<true/>
+	<false/>
 	<key>SUFeedURL</key>
-	<string>https://s3.amazonaws.com/builds.phere.net/GitX/development/GitX-dev.xml</string>
+	<string>https://gitx.github.io/gitx/appcast.xml</string>
 	<key>SUPublicDSAKeyFile</key>
 	<string>UpdateKey.pem</string>
 </dict>

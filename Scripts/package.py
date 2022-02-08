@@ -10,6 +10,9 @@ import tempfile
 import shutil
 import os
 
+class PackageError(RuntimeError):
+    pass
+
 def package(app, bundle, name, verbose=False):
     appBase = os.path.dirname(app)
     appName = os.path.basename(app)
@@ -26,8 +29,10 @@ def package(app, bundle, name, verbose=False):
                'create', bundle,
                '-srcfolder', tmp_dir,
                '-volname', name]
-    
-    subprocess.call(hdiutil)
+
+    ret = subprocess.call(hdiutil)
+    # if ret != 0:
+        # raise PackageError("Failed to package error: ")
     shutil.move(movedApp, app)
     shutil.rmtree(tmp_dir)
 

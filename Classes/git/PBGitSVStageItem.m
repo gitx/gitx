@@ -6,23 +6,19 @@
 //  Copyright 2010 Nathan Kinsinger. All rights reserved.
 //
 
-#import "PBGitSVStageItem.h"
+#import "PBSourceViewStageItem.h"
 
 
-@implementation PBGitSVStageItem
+@implementation PBSourceViewStageItem
 
-
-+ (id) stageItem
++ (instancetype)stageItem
 {
-	PBGitSVStageItem *item = [self itemWithTitle:@"Stage"];
-	
-	return item;
+	return [[self alloc] initWithTitle:@"Stage" revSpecifier:nil];
 }
 
-
-- (NSString*) iconName
+- (NSString *)iconName
 {
-    return @"StageTemplate";
+	return @"StageTemplate";
 }
 
 @end

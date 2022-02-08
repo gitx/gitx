@@ -23,8 +23,8 @@
 	BOOL selectedFileIsCached;
 }
 
-- (void) refresh;
-- (void) setStateMessage:(NSString *)state;
+- (void)refresh;
+- (void)setStateMessage:(NSString *)state;
 
-- (void) showMultiple:(NSArray *)files;
+- (void)showMultiple:(NSArray *)files;
 @end

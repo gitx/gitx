@@ -6,23 +6,36 @@
 //
 //
 
-#import "PBGitSVStashItem.h"
+#import "PBSourceViewGitStashItem.h"
 #import "PBGitRevSpecifier.h"
 
+@interface PBSourceViewGitStashItem ()
 
-@implementation PBGitSVStashItem
+@property (retain) PBGitStash *stash;
 
-+ (id)itemWithStash:(PBGitStash *)stash
+@end
+
+@implementation PBSourceViewGitStashItem
+
++ (instancetype)itemWithStash:(PBGitStash *)stash
 {
-    NSString * title = [NSString stringWithFormat:@"@{%zd}: %@", stash.index, stash.message];
-    PBGitSVStashItem * item = [self itemWithTitle:title];
-    item.stash = stash;
-    item.revSpecifier = [[PBGitRevSpecifier alloc] initWithRef:stash.ref];
-    return item;
+	return [[self alloc] initWithStash:stash];
 }
 
--(PBGitRef *)ref {
-    return self.stash.ref;
+- (instancetype)initWithStash:(PBGitStash *)stash
+{
+	NSString *title = [NSString stringWithFormat:@"@{%zd}: %@", stash.index, stash.message];
+	PBGitRevSpecifier *spec = [[PBGitRevSpecifier alloc] initWithRef:stash.ref];
+
+	self = [self initWithTitle:title revSpecifier:spec];
+	self.stash = stash;
+
+	return self;
+}
+
+- (PBGitRef *)ref
+{
+	return self.stash.ref;
 }
 
 @end

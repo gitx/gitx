@@ -15,46 +15,21 @@
 @class PBGitSidebarController;
 @class PBWebHistoryController;
 @class PBGitGradientBarView;
-@class PBRefController;
 @class PBCommitList;
 @class GLFileView;
 @class GTOID;
 @class PBHistorySearchController;
 
-@interface PBGitHistoryController : PBViewController {
-	IBOutlet NSArrayController *commitController;
-	IBOutlet NSTreeController *treeController;
-	IBOutlet PBWebHistoryController *webHistoryController;
-	IBOutlet GLFileView *fileView;
-	IBOutlet PBRefController *refController;
-	IBOutlet PBHistorySearchController *searchController;
+NS_ASSUME_NONNULL_BEGIN
 
-	__weak IBOutlet NSSearchField *searchField;
-	__weak IBOutlet NSOutlineView *fileBrowser;
-	__weak IBOutlet PBCommitList *commitList;
-	__weak IBOutlet NSSplitView *historySplitView;
-	__weak IBOutlet PBGitGradientBarView *upperToolbarView;
-	__weak IBOutlet PBGitGradientBarView *scopeBarView;
-	__weak IBOutlet NSButton *allBranchesFilterItem;
-	__weak IBOutlet NSButton *localRemoteBranchesFilterItem;
-	__weak IBOutlet NSButton *selectedBranchFilterItem;
-	__weak IBOutlet id webView;
-
-	NSArray *currentFileBrowserSelectionPath;
-	NSInteger selectedCommitDetailsIndex;
-	BOOL forceSelectionUpdate;
-	PBGitTree *gitTree;
-	NSArray<PBGitCommit *> *webCommits;
-	NSArray<PBGitCommit *> *selectedCommits;
-}
+@interface PBGitHistoryController : PBViewController
 
 @property (readonly) NSArrayController *commitController;
 @property (readonly) NSTreeController *treeController;
-@property (readonly) PBRefController *refController;
 @property (readonly) PBHistorySearchController *searchController;
 
 @property (assign) NSInteger selectedCommitDetailsIndex;
-@property PBGitTree* gitTree;
+@property PBGitTree *gitTree;
 @property NSArray<PBGitCommit *> *webCommits;
 @property NSArray<PBGitCommit *> *selectedCommits;
 
@@ -62,35 +37,43 @@
 @property (readonly) BOOL singleCommitSelected;
 @property (readonly) BOOL singleNonHeadCommitSelected;
 
-- (IBAction) setDetailedView:(id)sender;
-- (IBAction) setTreeView:(id)sender;
-- (IBAction) setBranchFilter:(id)sender;
-
+- (BOOL)hasNonlinearPath;
+- (NSMenu *)tableColumnMenu;
 - (void)selectCommit:(GTOID *)commit;
-- (IBAction) refresh:(id)sender;
-- (IBAction) toggleQLPreviewPanel:(id)sender;
-- (IBAction) openSelectedFile:(id)sender;
-- (void) updateQuicklookForce: (BOOL) force;
+- (void)updateQuicklookForce:(BOOL)force;
+
+- (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode;
 
 // Context menu methods
 - (NSMenu *)contextMenuForTreeView;
 - (NSArray *)menuItemsForPaths:(NSArray *)paths;
 - (void)showCommitsFromTree:(id)sender;
 
-// Repository Methods
-- (IBAction) createBranch:(id)sender;
-- (IBAction) createTag:(id)sender;
-- (IBAction) merge:(id)sender;
-- (IBAction) cherryPick:(id)sender;
-- (IBAction) rebase:(id)sender;
+- (IBAction)setDetailedView:(id)sender;
+- (IBAction)setTreeView:(id)sender;
+- (IBAction)setBranchFilter:(id)sender;
+
+- (IBAction)refresh:(id)sender;
+- (IBAction)toggleQLPreviewPanel:(id)sender;
+- (IBAction)openSelectedFile:(id)sender;
 
 // Find/Search methods
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
+- (IBAction)selectParentCommit:(id)sender;
 
-
-- (BOOL) hasNonlinearPath;
-
-- (NSMenu *)tableColumnMenu;
+- (IBAction)copy:(id)sender;
+- (IBAction)copySHA:(id)sender;
+- (IBAction)copyShortName:(id)sender;
+- (IBAction)copyPatch:(id)sender;
 
 @end
+
+@interface PBGitHistoryController (PBContextMenu)
+
+- (NSArray *)menuItemsForRef:(PBGitRef *)refs;
+- (NSArray *)menuItemsForCommits:(NSArray<PBGitCommit *> *)commits;
+
+@end
+
+NS_ASSUME_NONNULL_END

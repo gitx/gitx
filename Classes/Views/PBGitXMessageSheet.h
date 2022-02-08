@@ -10,8 +10,7 @@
 
 #import "RJModalRepoSheet.h"
 
-@interface PBGitXMessageSheet : RJModalRepoSheet
-{
+@interface PBGitXMessageSheet : RJModalRepoSheet {
 	NSImageView *iconView;
 	NSTextField *messageField;
 	NSTextView *infoView;
@@ -25,14 +24,25 @@
 + (void)beginSheetWithError:(NSError *)error
 		   windowController:(PBGitWindowController *)windowController;
 
++ (void)beginSheetWithMessage:(NSString *)message
+						 info:(NSString *)info
+			 windowController:(PBGitWindowController *)windowController
+			completionHandler:(RJSheetCompletionHandler)handler;
+
++ (void)beginSheetWithError:(NSError *)error
+		   windowController:(PBGitWindowController *)windowController
+		  completionHandler:(RJSheetCompletionHandler)handler;
+
 - (void)beginMessageSheetWithMessageText:(NSString *)message
-								infoText:(NSString *)info;
+								infoText:(NSString *)info
+					   completionHandler:(RJSheetCompletionHandler)handler;
+
 - (IBAction)closeMessageSheet:(id)sender;
 
 
-@property  IBOutlet NSImageView *iconView;
-@property  IBOutlet NSTextField *messageField;
-@property  IBOutlet NSTextView *infoView;
-@property  IBOutlet NSScrollView *scrollView;
+@property IBOutlet NSImageView *iconView;
+@property IBOutlet NSTextField *messageField;
+@property IBOutlet NSTextView *infoView;
+@property IBOutlet NSScrollView *scrollView;
 
 @end

@@ -15,9 +15,14 @@
 
 @class PBGitGrapher;
 
+@protocol PBGitHistoryGrapherDelegate <NSObject>
+- (void)updateCommitsFromGrapher:(NSDictionary *)commitData;
+- (void)finishedGraphing;
+@end
+
 
 @interface PBGitHistoryGrapher : NSObject {
-	__weak id delegate;
+	__weak id<PBGitHistoryGrapherDelegate> delegate;
 	NSOperationQueue *currentQueue;
 
 	NSMutableSet *searchOIDs;
@@ -25,7 +30,7 @@
 	BOOL viewAllBranches;
 }
 
-- (id) initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id)theDelegate;
-- (void) graphCommits:(NSArray *)revList;
+- (instancetype)initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id<PBGitHistoryGrapherDelegate>)theDelegate;
+- (void)graphCommits:(NSArray *)revList;
 
 @end

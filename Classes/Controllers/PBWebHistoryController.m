@@ -21,79 +21,88 @@
 
 @synthesize diff;
 
-- (void) awakeFromNib
+- (void)awakeFromNib
 {
 	startFile = @"history";
 	repository = historyController.repository;
 	[super awakeFromNib];
-	[historyController addObserver:self forKeyPath:@"webCommits" options:0 context:@"ChangedCommit"];
+	[historyController addObserver:self
+						   keyPath:@"webCommits"
+						   options:0
+							 block:^(MAKVONotification *notification) {
+								 [self changeContentTo:self->historyController.webCommits];
+							 }];
 }
 
 - (void)closeView
 {
 	[[self script] setValue:nil forKey:@"commit"];
-	[historyController removeObserver:self forKeyPath:@"webCommits"];
 
 	[super closeView];
 }
 
-- (void) didLoad
+- (void)didLoad
 {
 	currentOID = nil;
 	[self changeContentTo:historyController.webCommits];
 }
 
-- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if ([(__bridge NSString *)context isEqualToString: @"ChangedCommit"])
-		[self changeContentTo:historyController.webCommits];
-	else
-		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-}
-
-- (void) changeContentTo:(NSArray<PBGitCommit *> *)commits
+- (void)changeContentTo:(NSArray<PBGitCommit *> *)commits
 {
 	if (commits == nil || commits.count == 0 || !finishedLoading) {
 		return;
 	}
-	
+
 	if (commits.count == 1) {
 		[self changeContentToCommit:commits.firstObject];
-	}
-	else {
+	} else {
 		[self changeContentToMultipleSelectionMessage];
 	}
 }
 
-- (void) changeContentToMultipleSelectionMessage {
+- (void)changeContentToMultipleSelectionMessage
+{
 	NSArray *arguments = @[
-			@[NSLocalizedString(@"Multiple commits are selected.", @"Multiple selection Message: Title"),
-			  NSLocalizedString(@"Use the Copy command to copy their information.", @"Multiple selection Message: Copy Command"),
-			  NSLocalizedString(@"Or select a single commit to see its diff.", @"Multiple selection Message: Diff Hint")
-			  ]];
+		@[ NSLocalizedString(@"Multiple commits are selected.", @"Multiple selection Message: Title"),
+		   NSLocalizedString(@"Use the Copy command to copy their information.", @"Multiple selection Message: Copy Command"),
+		   NSLocalizedString(@"Or select a single commit to see its diff.", @"Multiple selection Message: Diff Hint") ]
+	];
 	[[self script] callWebScriptMethod:@"showMultipleSelectionMessage" withArguments:arguments];
 }
 
-static NSString *deltaTypeName(GTDeltaType t) {
+static NSString *deltaTypeName(GTDeltaType t)
+{
 	switch (t) {
-		case GTDeltaTypeUnmodified: return @"unmodified";
-		case GTDeltaTypeAdded: return @"added";
-		case GTDeltaTypeDeleted: return @"removed";
-		case GTDeltaTypeModified: return @"modified";
-		case GTDeltaTypeRenamed: return @"renamed";
-		case GTDeltaTypeCopied: return @"copied";
-		case GTDeltaTypeIgnored: return @"ignored";
-		case GTDeltaTypeUntracked: return @"untracked";
-		case GTDeltaTypeTypeChange: return @"type changed";
-		case GTDeltaTypeUnreadable: return @"unreadable";
-		case GTDeltaTypeConflicted: return @"conflicted";
+		case GTDeltaTypeUnmodified:
+			return @"unmodified";
+		case GTDeltaTypeAdded:
+			return @"added";
+		case GTDeltaTypeDeleted:
+			return @"removed";
+		case GTDeltaTypeModified:
+			return @"modified";
+		case GTDeltaTypeRenamed:
+			return @"renamed";
+		case GTDeltaTypeCopied:
+			return @"copied";
+		case GTDeltaTypeIgnored:
+			return @"ignored";
+		case GTDeltaTypeUntracked:
+			return @"untracked";
+		case GTDeltaTypeTypeChange:
+			return @"type changed";
+		case GTDeltaTypeUnreadable:
+			return @"unreadable";
+		case GTDeltaTypeConflicted:
+			return @"conflicted";
 	}
 }
 
-static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)());
+static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)(void));
 
 // A GTDiffDelta's GTDiffFile does not always set the file size. See `git_diff_get_delta`.
-static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
+static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file)
+{
 	GTObjectDatabase *odb = [repo objectDatabaseWithError:nil];
 	if (!odb) return 0;
 	size_t size = 0;
@@ -104,17 +113,16 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
 	return size;
 }
 
-- (void) changeContentToCommit:(PBGitCommit *)commit
+- (void)changeContentToCommit:(PBGitCommit *)commit
 {
 	// The sha is the same, but refs may have changed. reload it lazy
-	if ([currentOID isEqual:commit.OID])
-	{
-		[[self script] callWebScriptMethod:@"reload" withArguments: nil];
+	if ([currentOID isEqual:commit.OID]) {
+		[[self script] callWebScriptMethod:@"reload" withArguments:nil];
 		return;
 	}
 
-	NSArray *arguments = @[commit, [[[historyController repository] headRef] simpleRef]];
-	id scriptResult = [[self script] callWebScriptMethod:@"loadCommit" withArguments: arguments];
+	NSArray *arguments = @[ commit, [[[historyController repository] headRef] simpleRef] ];
+	id scriptResult = [[self script] callWebScriptMethod:@"loadCommit" withArguments:arguments];
 	if (!scriptResult) {
 		// the web view is not really ready for scripting???
 		[self performSelector:_cmd withObject:commit afterDelay:0.05];
@@ -127,7 +135,8 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
 	// Open a new repo instance for the background queue
 	NSError *err = nil;
 	GTRepository *repo =
-	    [GTRepository repositoryWithURL:[repository gtRepo].gitDirectoryURL error:&err];
+		[GTRepository repositoryWithURL:[repository gtRepo].gitDirectoryURL
+								  error:&err];
 	if (!repo) {
 		NSLog(@"Failed to open repository: %@", err);
 		return;
@@ -140,15 +149,15 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
 
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 		NSDictionary *summary = loadCommitSummary(repo, queueCommit, ^BOOL {
-			return gen != atomic_load(&_commitSummaryGeneration);
+			return gen != atomic_load(&self->_commitSummaryGeneration);
 		});
 		if (!summary) return;
 		NSError *err = nil;
 		NSString *summaryJSON =
-		    [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:summary
-		                                                                   options:0
-		                                                                     error:&err]
-		                          encoding:NSUTF8StringEncoding];
+			[[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:summary
+																		   options:0
+																			 error:&err]
+								  encoding:NSUTF8StringEncoding];
 		if (!summaryJSON) {
 			NSLog(@"Commit summary JSON error: %@", err);
 			return;
@@ -159,7 +168,8 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file) {
 	});
 }
 
-static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)()) {
+static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)(void))
+{
 	if (isCanceled()) return nil;
 	GTDiffFindOptionsFlags flags = GTDiffFindOptionsFlagsFindRenames;
 	if (![PBGitDefaults showWhitespaceDifferences]) {
@@ -167,10 +177,10 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 	}
 	NSError *err = nil;
 	GTDiff *d = [GTDiff diffOldTree:commit.parents.firstObject.tree
-	                    withNewTree:commit.tree
-	                   inRepository:repo
+						withNewTree:commit.tree
+					   inRepository:repo
 							options:@{}
-	                          error:&err];
+							  error:&err];
 
 	if (!d) {
 		NSLog(@"Commit summary diff error: %@", err);
@@ -178,7 +188,7 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 	}
 
 	// Rewrite the diff to display moved files.
-	[d findSimilarWithOptions:@{GTDiffFindOptionsFlagsKey:@(flags)}];
+	[d findSimilarWithOptions:@{GTDiffFindOptionsFlagsKey : @(flags)}];
 
 	if (isCanceled()) return nil;
 	NSMutableArray<NSDictionary<NSString *, NSObject *> *> *fileDeltas = [NSMutableArray array];
@@ -202,12 +212,12 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 			NSData *patchData = patch.patchData;
 			if (patchData) {
 				NSString *patchString =
-				    [[NSString alloc] initWithData:patchData
-				                          encoding:NSUTF8StringEncoding];
+					[[NSString alloc] initWithData:patchData
+										  encoding:NSUTF8StringEncoding];
 				if (!patchString) {
 					patchString =
-					    [[NSString alloc] initWithData:patchData
-					                          encoding:NSISOLatin1StringEncoding];
+						[[NSString alloc] initWithData:patchData
+											  encoding:NSISOLatin1StringEncoding];
 				}
 				if (patchString) {
 					[fullDiff appendString:patchString];
@@ -254,31 +264,31 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 		return;
 	}
 
-	[self.view.windowScriptObject callWebScriptMethod:@"loadCommitDiff" withArguments:@[summaryJSON]];
+	[self.view.windowScriptObject callWebScriptMethod:@"loadCommitDiff" withArguments:@[ summaryJSON ]];
 }
 
 - (void)selectCommit:(NSString *)sha
 {
-	[historyController selectCommit: [GTOID oidWithSHA: sha]];
+	[historyController selectCommit:[GTOID oidWithSHA:sha]];
 }
 
-- (void) sendKey: (NSString*) key
+- (void)sendKey:(NSString *)key
 {
 	id script = self.view.windowScriptObject;
-	[script callWebScriptMethod:@"handleKeyFromCocoa" withArguments: [NSArray arrayWithObject:key]];
+	[script callWebScriptMethod:@"handleKeyFromCocoa" withArguments:[NSArray arrayWithObject:key]];
 }
 
-- (void) copySource
+- (void)copySource
 {
 	NSString *source = [(DOMHTMLElement *)self.view.mainFrame.DOMDocument.documentElement outerHTML];
-	NSPasteboard *a =[NSPasteboard generalPasteboard];
+	NSPasteboard *a = [NSPasteboard generalPasteboard];
 	[a declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:self];
-	[a setString:source forType: NSStringPboardType];
+	[a setString:source forType:NSStringPboardType];
 }
 
-- (NSArray *)	   webView:(WebView *)sender
-contextMenuItemsForElement:(NSDictionary *)element
-		  defaultMenuItems:(NSArray *)defaultMenuItems
+- (NSArray *)webView:(WebView *)sender
+	contextMenuItemsForElement:(NSDictionary *)element
+			  defaultMenuItems:(NSArray *)defaultMenuItems
 {
 	DOMNode *node = [element valueForKey:@"WebElementDOMNode"];
 
@@ -288,22 +298,22 @@ contextMenuItemsForElement:(NSDictionary *)element
 			NSString *selectedRefString = [[[node childNodes] item:0] textContent];
 			for (PBGitRef *ref in historyController.webCommits.firstObject.refs) {
 				if ([[ref shortName] isEqualToString:selectedRefString])
-					return [contextMenuDelegate menuItemsForRef:ref];
+					return [historyController menuItemsForRef:ref];
 			}
 			NSLog(@"Could not find selected ref!");
 			return defaultMenuItems;
 		}
 		if ([node hasAttributes] && [[node attributes] getNamedItem:@"representedFile"])
 			return [historyController menuItemsForPaths:[NSArray arrayWithObject:[[[node attributes] getNamedItem:@"representedFile"] nodeValue]]];
-        else if ([[node class] isEqual:[DOMHTMLImageElement class]]) {
-            // Copy Image is the only menu item that makes sense here since we don't need
+		else if ([[node class] isEqual:[DOMHTMLImageElement class]]) {
+			// Copy Image is the only menu item that makes sense here since we don't need
 			// to download the image or open it in a new window (besides with the
 			// current implementation these two entries can crash GitX anyway)
 			for (NSMenuItem *item in defaultMenuItems)
 				if ([item tag] == WebMenuItemTagCopyImageToClipboard)
 					return [NSArray arrayWithObject:item];
 			return nil;
-        }
+		}
 
 		node = [node parentNode];
 	}
@@ -313,10 +323,10 @@ contextMenuItemsForElement:(NSDictionary *)element
 
 
 // Open external links in the default browser
--   (void)webView:(WebView *)sender decidePolicyForNewWindowAction:(NSDictionary *)actionInformation
-   		  request:(NSURLRequest *)request
-     newFrameName:(NSString *)frameName
- decisionListener:(id < WebPolicyDecisionListener >)listener
+- (void)webView:(WebView *)sender decidePolicyForNewWindowAction:(NSDictionary *)actionInformation
+						   request:(NSURLRequest *)request
+					  newFrameName:(NSString *)frameName
+				  decisionListener:(id<WebPolicyDecisionListener>)listener
 {
 	[[NSWorkspace sharedWorkspace] openURL:[request URL]];
 }
@@ -324,12 +334,12 @@ contextMenuItemsForElement:(NSDictionary *)element
 - getConfig:(NSString *)key
 {
 	NSError *error = nil;
-    GTConfiguration* config = [historyController.repository.gtRepo configurationWithError:&error];
+	GTConfiguration *config = [historyController.repository.gtRepo configurationWithError:&error];
 	return [config stringForKey:key];
 }
 
 
-- (void) preferencesChanged
+- (void)preferencesChanged
 {
 	[[self script] callWebScriptMethod:@"enableFeatures" withArguments:nil];
 }

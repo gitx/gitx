@@ -10,19 +10,21 @@
 #import "PBGitGrapher.h"
 #import "PBGraphCellInfo.h"
 #import "PBGitHistoryController.h"
-#import "PBRefContextDelegate.h"
 
-@interface PBGitRevisionCell : NSActionCell {
+NS_ASSUME_NONNULL_BEGIN
+
+@interface PBGitRevisionCell : NSTableCellView {
 	PBGitCommit *objectValue;
 	PBGraphCellInfo *cellInfo;
-	NSTextFieldCell *textCell;
 	__weak IBOutlet PBGitHistoryController *controller;
-	__weak IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
 }
 
-- (int) indexAtX:(CGFloat)x;
-- (NSRect) rectAtIndex:(int)index;
-- (void) drawLabelAtIndex:(int)index inRect:(NSRect)rect;
+- (int)indexAtX:(CGFloat)x;
+- (NSRect)rectAtIndex:(int)index;
+- (void)drawLabelAtIndex:(int)index inRect:(NSRect)rect;
 
-@property (copy) PBGitCommit* objectValue;
+@property (strong) PBGitCommit *objectValue;
+
 @end
+
+NS_ASSUME_NONNULL_END

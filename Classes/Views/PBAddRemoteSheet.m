@@ -17,50 +17,47 @@
 #pragma mark -
 #pragma mark PBAddRemoteSheet
 
-- (id)initWithWindowController:(PBGitWindowController *)windowController
++ (void)beginSheetWithWindowController:(PBGitWindowController *)windowController completionHandler:(RJSheetCompletionHandler)handler
 {
-	self = [super initWithWindowNibName:@"PBAddRemoteSheet" windowController:windowController];
-	if (!self)
-		return nil;
-
-	return self;
+	PBAddRemoteSheet *sheet = [[super alloc] initWithWindowNibName:@"PBAddRemoteSheet" windowController:windowController];
+	[sheet beginSheetWithCompletionHandler:handler];
 }
 
-- (void) show
+- (void)beginSheetWithCompletionHandler:(RJSheetCompletionHandler)handler
 {
 	[self.errorMessage setStringValue:@""];
-	[super show];
+	[super beginSheetWithCompletionHandler:handler];
 }
 
 #pragma mark IBActions
 
-- (IBAction) browseFolders:(id)sender
+- (IBAction)browseFolders:(id)sender
 {
 	PBAddRemoteSheet *me = self;
 	NSOpenPanel *browseSheet = [NSOpenPanel openPanel];
 
 	[browseSheet setTitle:NSLocalizedString(@"Add remote", @"Title of sheet to enter data for a new remote")];
-    [browseSheet setMessage:NSLocalizedString(@"Select a folder with a git repository", @"Title of sheet to enter data for a new remote")];
-    [browseSheet setCanChooseFiles:NO];
-    [browseSheet setCanChooseDirectories:YES];
-    [browseSheet setAllowsMultipleSelection:NO];
-    [browseSheet setCanCreateDirectories:NO];
+	[browseSheet setMessage:NSLocalizedString(@"Select a folder with a git repository", @"Title of sheet to enter data for a new remote")];
+	[browseSheet setCanChooseFiles:NO];
+	[browseSheet setCanChooseDirectories:YES];
+	[browseSheet setAllowsMultipleSelection:NO];
+	[browseSheet setCanCreateDirectories:NO];
 	[browseSheet setAccessoryView:me.browseAccessoryView];
 
 	self.browseSheet = browseSheet;
 	[me hide];
-    [browseSheet beginSheetModalForWindow:self.windowController.window
-                        completionHandler:^(NSInteger result) {
-                            if (result == NSOKButton) {
-                                NSString* directory = browseSheet.directoryURL.path;
-                                [me.remoteURL setStringValue:directory];
-                            }
-                            [me show];
-                        }];
+	[browseSheet beginSheetModalForWindow:self.windowController.window
+						completionHandler:^(NSInteger result) {
+							if (result == NSModalResponseOK) {
+								NSString *directory = browseSheet.directoryURL.path;
+								[me.remoteURL setStringValue:directory];
+							}
+							[me show];
+						}];
 }
 
 
-- (IBAction) addRemote:(id)sender
+- (IBAction)addRemote:(id)sender
 {
 	[self.errorMessage setStringValue:@""];
 
@@ -82,21 +79,17 @@
 		return;
 	}
 
-	PBGitRepository* repo = self.repository;
-	[self hide]; // may deallocate self
-
-	[repo beginAddRemote:name forURL:url];
+	[self acceptSheet:sender];
 }
 
-- (IBAction) showHideHiddenFiles:(id)sender
+- (IBAction)showHideHiddenFiles:(id)sender
 {
-    [self.browseSheet setShowsHiddenFiles:[sender state] == NSOnState];
+	[self.browseSheet setShowsHiddenFiles:[sender state] == NSOnState];
 }
 
-- (IBAction) cancelOperation:(id)sender
+- (IBAction)cancelOperation:(id)sender
 {
-//	[super cancelOperation:sender];
-	[self hide];
+	[self cancelSheet:sender];
 }
 
 @end

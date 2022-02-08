@@ -11,22 +11,20 @@
 
 #import "PBGitCommit.h"
 #import "PBGitHistoryController.h"
-#import "PBRefContextDelegate.h"
 
 
 @class GTOID;
 
 
 @interface PBWebHistoryController : PBWebController {
-	__weak IBOutlet PBGitHistoryController* historyController;
-	__weak IBOutlet id<PBRefContextDelegate> contextMenuDelegate;
+	__weak IBOutlet PBGitHistoryController *historyController;
 
 	GTOID *currentOID;
-	NSString* diff;
+	NSString *diff;
 }
 
-- (void) sendKey: (NSString*) key;
+- (void)sendKey:(NSString *)key;
 
-@property (readonly) NSString* diff;
+@property (readonly) NSString *diff;
 
 @end

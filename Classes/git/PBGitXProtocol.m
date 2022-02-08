@@ -8,10 +8,16 @@
 
 #import "PBGitXProtocol.h"
 #import "PBGitRepository.h"
+#import "PBGitRepository_PBGitBinarySupport.h"
+
+@interface PBGitXProtocol () {
+	PBTask *_task;
+}
+@end
 
 @implementation PBGitXProtocol
 
-+ (BOOL) canInitWithRequest:(NSURLRequest *)request
++ (BOOL)canInitWithRequest:(NSURLRequest *)request
 {
 	NSString *URLScheme = request.URL.scheme;
 	if ([[URLScheme lowercaseString] isEqualToString:@"gitx"])
@@ -22,44 +28,44 @@
 
 + (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request
 {
-    return request;
+	return request;
 }
 
--(void)startLoading
+- (void)startLoading
 {
-    NSURL *url = [[self request] URL];
+	NSURL *url = [[self request] URL];
 	PBGitRepository *repo = [[self request] repository];
 
-	if(!repo) {
+	if (!repo) {
 		[[self client] URLProtocol:self didFailWithError:[NSError errorWithDomain:NSURLErrorDomain code:0 userInfo:nil]];
 		return;
-    }
+	}
 
 	NSString *specifier = [NSString stringWithFormat:@"%@:%@", [url host], [[url path] substringFromIndex:1]];
-	handle = [repo handleInWorkDirForArguments:[NSArray arrayWithObjects:@"cat-file", @"blob", specifier, nil]];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFinishFileLoad:) name:NSFileHandleReadToEndOfFileCompletionNotification object:handle];
-	[handle readToEndOfFileInBackgroundAndNotify];
+	_task = [repo taskWithArguments:@[ @"cat-file", @"blob", specifier ]];
+	[_task performTaskWithCompletionHandler:^(NSData *readData, NSError *error) {
+		if (error) {
+			[[self client] URLProtocol:self didFailWithError:error];
+			return;
+		}
 
-    NSURLResponse *response = [[NSURLResponse alloc] initWithURL:[[self request] URL]
+		[[self client] URLProtocol:self didLoadData:readData];
+		[[self client] URLProtocolDidFinishLoading:self];
+	}];
+
+	NSURLResponse *response = [[NSURLResponse alloc] initWithURL:[[self request] URL]
 														MIMEType:nil
 										   expectedContentLength:-1
 												textEncodingName:nil];
 
-    [[self client] URLProtocol:self
+	[[self client] URLProtocol:self
 			didReceiveResponse:response
 			cacheStoragePolicy:NSURLCacheStorageNotAllowed];
 }
 
-- (void) didFinishFileLoad:(NSNotification *)notification
+- (void)stopLoading
 {
-	NSData *data = [[notification userInfo] valueForKey:NSFileHandleNotificationDataItem];
-    [[self client] URLProtocol:self didLoadData:data];
-    [[self client] URLProtocolDidFinishLoading:self];
-}
-
-- (void) stopLoading
-{
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[_task terminate];
 }
 
 @end
@@ -67,7 +73,7 @@
 @implementation NSURLRequest (PBGitXProtocol)
 @dynamic repository;
 
-- (PBGitRepository *) repository
+- (PBGitRepository *)repository
 {
 	return [NSURLProtocol propertyForKey:@"PBGitRepository" inRequest:self];
 }
@@ -76,7 +82,7 @@
 @implementation NSMutableURLRequest (PBGitXProtocol)
 @dynamic repository;
 
-- (void) setRepository:(PBGitRepository *)repository
+- (void)setRepository:(PBGitRepository *)repository
 {
 	[NSURLProtocol setProperty:repository forKey:@"PBGitRepository" inRequest:self];
 }

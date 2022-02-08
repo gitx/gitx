@@ -11,6 +11,8 @@
 @class PBGitRepository;
 @class PBChangedFile;
 
+NS_ASSUME_NONNULL_BEGIN
+
 /*
  * Notifications this class will send
  */
@@ -36,7 +38,6 @@ extern NSString *PBGitIndexAmendMessageAvailable;
 extern NSString *PBGitIndexOperationFailed;
 
 
-
 // Represents a git index for a given work tree.
 // As a single git repository can have multiple trees,
 // the tree has to be given explicitly, even though
@@ -48,17 +49,20 @@ extern NSString *PBGitIndexOperationFailed;
 @property (assign, getter=isAmend) BOOL amend;
 @property (weak, readonly) PBGitRepository *repository;
 
-- (id)initWithRepository:(PBGitRepository *)repository;
-
 // A list of PBChangedFile's with differences between the work tree and the index
 // This method is KVO-aware, so changes when any of the index-modifying methods are called
 // (including -refresh)
-- (NSArray *)indexChanges;
+@property (readonly, retain) NSArray<PBChangedFile *> *indexChanges;
+
+- (instancetype)initWithRepository:(PBGitRepository *)repository;
 
 // Refresh the index
 - (void)refresh;
 
-- (void)commitWithMessage:(NSString *)commitMessage andVerify:(BOOL) doVerify;
+// Run the prepare-git-msg hook and return the result
+- (nullable NSString *)createPrepareCommitMessage;
+
+- (void)commitWithMessage:(NSString *)commitMessage andVerify:(BOOL)doVerify;
 
 // Inter-file changes:
 - (BOOL)stageFiles:(NSArray<PBChangedFile *> *)stageFiles;
@@ -70,3 +74,5 @@ extern NSString *PBGitIndexOperationFailed;
 - (NSString *)diffForFile:(PBChangedFile *)file staged:(BOOL)staged contextLines:(NSUInteger)context;
 
 @end
+
+NS_ASSUME_NONNULL_END

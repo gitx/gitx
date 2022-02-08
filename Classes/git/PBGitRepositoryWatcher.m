@@ -9,7 +9,6 @@
 
 #import "PBGitRepositoryWatcher.h"
 #import "PBGitRepository.h"
-#import "PBEasyPipe.h"
 #import "PBGitDefaults.h"
 
 NSString *PBGitRepositoryEventNotification = @"PBGitRepositoryModifiedNotification";
@@ -40,8 +39,8 @@ typedef void (^PBGitRepositoryWatcherCallbackBlock)(NSArray *changedFiles);
 
 @property (nonatomic, strong) NSMutableDictionary *statusCache;
 
-- (void) handleGitDirEventCallback:(NSArray *)eventPaths;
-- (void) handleWorkDirEventCallback:(NSArray *)eventPaths;
+- (void)handleGitDirEventCallback:(NSArray *)eventPaths;
+- (void)handleWorkDirEventCallback:(NSArray *)eventPaths;
 
 @end
 
@@ -50,12 +49,13 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 									size_t numEvents,
 									void *_eventPaths,
 									const FSEventStreamEventFlags eventFlags[],
-									const FSEventStreamEventId eventIds[]){
+									const FSEventStreamEventId eventIds[])
+{
 	PBGitRepositoryWatcher *watcher = (__bridge PBGitRepositoryWatcher *)clientCallBackInfo;
 
 	NSMutableArray *gitDirEvents = [NSMutableArray array];
 	NSMutableArray *workDirEvents = [NSMutableArray array];
-	NSArray *eventPaths = (__bridge NSArray*)_eventPaths;
+	NSArray *eventPaths = (__bridge NSArray *)_eventPaths;
 	for (int i = 0; i < numEvents; ++i) {
 		NSString *path = [eventPaths objectAtIndex:i];
 		PBGitRepositoryWatcherEventPath *ep = [[PBGitRepositoryWatcherEventPath alloc] init];
@@ -84,23 +84,25 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 @implementation PBGitRepositoryWatcher
 
-- (instancetype) initWithRepository:(PBGitRepository *)theRepository {
+- (instancetype)initWithRepository:(PBGitRepository *)theRepository
+{
 	NSParameterAssert(theRepository != nil);
 
-    self = [super init];
-    if (!self) {
-        return nil;
+	self = [super init];
+	if (!self) {
+		return nil;
 	}
 
 	_repository = theRepository;
 	_statusCache = [NSMutableDictionary new];
-	
+
 	if ([PBGitDefaults useRepositoryWatcher])
 		[self start];
 	return self;
 }
 
-- (void)dealloc {
+- (void)dealloc
+{
 	if (eventStream) {
 		FSEventStreamStop(eventStream);
 		FSEventStreamInvalidate(eventStream);
@@ -108,24 +110,25 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 	}
 }
 
-- (NSDate *) fileModificationDateAtPath:(NSString *)path {
-	NSError* error;
-    NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:path
+- (NSDate *)fileModificationDateAtPath:(NSString *)path
+{
+	NSError *error;
+	NSDictionary *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:path
 																		   error:&error];
-	if (error)
-	{
+	if (error) {
 		NSLog(@"Unable to get attributes of \"%@\"", path);
 		return nil;
 	}
 	return [attrs objectForKey:NSFileModificationDate];
 }
 
-- (BOOL) indexChanged {
+- (BOOL)indexChanged
+{
 	if (self.repository.isBareRepository) {
 		return NO;
 	}
-	
-    NSDate *newTouchDate = [self fileModificationDateAtPath:[self.gitDir stringByAppendingPathComponent:@"index"]];
+
+	NSDate *newTouchDate = [self fileModificationDateAtPath:[self.gitDir stringByAppendingPathComponent:@"index"]];
 	if (![newTouchDate isEqual:indexTouchDate]) {
 		indexTouchDate = newTouchDate;
 		return YES;
@@ -134,15 +137,14 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 	return NO;
 }
 
-- (BOOL) gitDirectoryChanged {
-
-	NSArray *properties = @[NSURLIsDirectoryKey, NSURLContentModificationDateKey];
-	NSArray <NSURL *> *urls = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.repository.gitURL
-															 includingPropertiesForKeys:properties
-																				options:0
-																				  error:nil];
-	for (NSURL *fileURL in urls)
-	{
+- (BOOL)gitDirectoryChanged
+{
+	NSArray *properties = @[ NSURLIsDirectoryKey, NSURLContentModificationDateKey ];
+	NSArray<NSURL *> *urls = [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.repository.gitURL
+														   includingPropertiesForKeys:properties
+																			  options:0
+																				error:nil];
+	for (NSURL *fileURL in urls) {
 		NSNumber *number = nil;
 		if (![fileURL getResourceValue:&number forKey:NSURLIsDirectoryKey error:nil] || [number boolValue]) {
 			continue;
@@ -151,34 +153,33 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 		NSDate *modTime = nil;
 		if (![fileURL getResourceValue:&modTime forKey:NSURLContentModificationDateKey error:nil])
 			continue;
-		
-		if (gitDirTouchDate == nil || [modTime compare:gitDirTouchDate] == NSOrderedDescending)
-		{
-			NSDate* newModTime = [modTime laterDate:gitDirTouchDate];
-			
+
+		if (gitDirTouchDate == nil || [modTime compare:gitDirTouchDate] == NSOrderedDescending) {
+			NSDate *newModTime = [modTime laterDate:gitDirTouchDate];
+
 			gitDirTouchDate = newModTime;
 			return YES;
 		}
 	}
-    return NO;
+	return NO;
 }
 
-- (void) handleGitDirEventCallback:(NSArray *)eventPaths
+- (void)handleGitDirEventCallback:(NSArray *)eventPaths
 {
 	PBGitRepositoryWatcherEventType event = 0x0;
-	
+
 	if ([self indexChanged]) {
 		event |= PBGitRepositoryWatcherEventTypeIndex;
 	}
 
 
-    NSMutableArray *paths = [NSMutableArray array];
+	NSMutableArray *paths = [NSMutableArray array];
 	for (PBGitRepositoryWatcherEventPath *eventPath in eventPaths) {
 		// .git dir
 		if ([eventPath.path isEqualToString:self.gitDir]) {
 			if ([self gitDirectoryChanged] || eventPath.flag != kFSEventStreamEventFlagNone) {
 				event |= PBGitRepositoryWatcherEventTypeGitDirectory;
-                [paths addObject:eventPath.path];
+				[paths addObject:eventPath.path];
 			}
 		}
 		// ignore objects dir  ... ?
@@ -192,13 +193,13 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 		// subdirs of .git dir
 		else if ([eventPath.path rangeOfString:self.gitDir].location != NSNotFound) {
 			event |= PBGitRepositoryWatcherEventTypeGitDirectory;
-            [paths addObject:eventPath.path];
+			[paths addObject:eventPath.path];
 		}
 	}
-	
-	if(event != 0x0){
-		NSDictionary *eventInfo = @{kPBGitRepositoryEventTypeUserInfoKey:@(event),
-							  kPBGitRepositoryEventPathsUserInfoKey:paths};
+
+	if (event != 0x0) {
+		NSDictionary *eventInfo = @{kPBGitRepositoryEventTypeUserInfoKey : @(event),
+									kPBGitRepositoryEventPathsUserInfoKey : paths};
 
 		[[NSNotificationCenter defaultCenter] postNotificationName:PBGitRepositoryEventNotification object:self.repository userInfo:eventInfo];
 	}
@@ -208,7 +209,7 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 {
 	PBGitRepositoryWatcherEventType event = 0x0;
 
-    NSMutableArray *paths = [NSMutableArray array];
+	NSMutableArray *paths = [NSMutableArray array];
 	for (PBGitRepositoryWatcherEventPath *eventPath in eventPaths) {
 		unsigned int fileStatus = 0;
 		if (![eventPath.path hasPrefix:self.workDir]) {
@@ -240,23 +241,26 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 		}
 	}
 
-	if(event != 0x0){
-		NSDictionary *eventInfo = @{kPBGitRepositoryEventTypeUserInfoKey:@(event),
-							  kPBGitRepositoryEventPathsUserInfoKey:paths};
+	if (event != 0x0) {
+		NSDictionary *eventInfo = @{kPBGitRepositoryEventTypeUserInfoKey : @(event),
+									kPBGitRepositoryEventPathsUserInfoKey : paths};
 
 		[[NSNotificationCenter defaultCenter] postNotificationName:PBGitRepositoryEventNotification object:self.repository userInfo:eventInfo];
 	}
 }
 
-- (NSString *)gitDir {
+- (NSString *)gitDir
+{
 	return [self.repository.gtRepo.gitDirectoryURL.path stringByStandardizingPath];
 }
 
-- (NSString *)workDir {
+- (NSString *)workDir
+{
 	return !self.repository.gtRepo.isBare ? [self.repository.gtRepo.fileURL.path stringByStandardizingPath] : nil;
 }
 
-- (void) _initializeStream {
+- (void)_initializeStream
+{
 	if (eventStream) return;
 
 	NSMutableArray *array = [NSMutableArray array];
@@ -267,15 +271,16 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 	FSEventStreamContext gitDirWatcherContext = {0, (__bridge void *)(self), NULL, NULL, NULL};
 	eventStream = FSEventStreamCreate(kCFAllocatorDefault, PBGitRepositoryWatcherCallback, &gitDirWatcherContext,
-											(__bridge CFArrayRef)array,
-											kFSEventStreamEventIdSinceNow, 1.0,
-											kFSEventStreamCreateFlagUseCFTypes |
-											kFSEventStreamCreateFlagIgnoreSelf |
-											kFSEventStreamCreateFlagFileEvents);
+									  (__bridge CFArrayRef)array,
+									  kFSEventStreamEventIdSinceNow, 1.0,
+									  kFSEventStreamCreateFlagUseCFTypes |
+										  kFSEventStreamCreateFlagIgnoreSelf |
+										  kFSEventStreamCreateFlagFileEvents);
 }
 
-- (void) start {
-    if (_running)
+- (void)start
+{
+	if (_running)
 		return;
 
 	// set initial state
@@ -291,8 +296,9 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 	_running = YES;
 }
 
-- (void) stop {
-    if (!_running)
+- (void)stop
+{
+	if (!_running)
 		return;
 
 	if (eventStream) {

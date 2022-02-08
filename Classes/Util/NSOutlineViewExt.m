@@ -18,7 +18,7 @@
 		[parents insertObject:item atIndex:0];
 		item = [item parent];
 	}
-	
+
 	for (id p in parents)
 		[self expandItem:p];
 }

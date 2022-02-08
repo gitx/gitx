@@ -15,7 +15,8 @@
 	return NO;
 }
 
-+ (BOOL)isKeyExcludedFromWebScript:(const char *)name {
++ (BOOL)isKeyExcludedFromWebScript:(const char *)name
+{
 	return NO;
 }
 

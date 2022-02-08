@@ -5,3 +5,5 @@ DerivedData/
 .DS_Store
 __pycache__/
 *.pyc
+/GitX.xcworkspace/xcuserdata
+.idea

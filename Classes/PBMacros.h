@@ -8,13 +8,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-#if (GITX_NO_DEPRECATE || DEBUG)
-#define GITX_DEPRECATED
-#else
-#define GITX_DEPRECATED __attribute__ ((deprecated))
-#endif
+#define GITX_DEPRECATED __attribute__((deprecated))
+#define GITX_DEPRECATED_MSG(x) __attribute__((deprecated(x)))
 
-#define PBLogFunction(x, ...) PBLogFunctionImpl(__FUNCTION__, x, ## __VA_ARGS__)
+#define PBLogFunction(x, ...) PBLogFunctionImpl(__FUNCTION__, x, ##__VA_ARGS__)
 #define PBLogError(x) PBLogErrorImpl(__FUNCTION__, x)
 
 

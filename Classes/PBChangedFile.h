@@ -34,5 +34,5 @@ typedef enum {
 - (NSImage *)icon;
 - (NSString *)indexInfo;
 
-- (id) initWithPath:(NSString *)p;
+- (id)initWithPath:(NSString *)p;
 @end

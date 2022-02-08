@@ -9,9 +9,7 @@
 #import <Cocoa/Cocoa.h>
 @class PBGitRepository;
 
-@interface PBGitXProtocol : NSURLProtocol {
-	NSFileHandle *handle;
-}
+@interface PBGitXProtocol : NSURLProtocol
 @end
 
 @interface NSURLRequest (PBGitXProtocol)
@@ -21,4 +19,3 @@
 @interface NSMutableURLRequest (PBGitXProtocol)
 @property (nonatomic, strong) PBGitRepository *repository;
 @end
-

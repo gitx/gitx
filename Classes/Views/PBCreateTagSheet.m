@@ -11,6 +11,7 @@
 #import "PBGitCommit.h"
 #import "PBGitRef.h"
 #import "PBGitWindowController.h"
+#import "PBGitRepositoryDocument.h"
 #import "PBGitRevSpecifier.h"
 
 @implementation PBCreateTagSheet
@@ -18,28 +19,27 @@
 #pragma mark -
 #pragma mark PBCreateTagSheet
 
-+ (void) beginSheetWithRefish:(id <PBGitRefish>)refish windowController:(PBGitWindowController *)windowController
++ (void)beginSheetWithRefish:(id<PBGitRefish>)refish windowController:(PBGitWindowController *)windowController completionHandler:(RJSheetCompletionHandler)handler
 {
 	PBCreateTagSheet *sheet = [[self alloc] initWithWindowNibName:@"PBCreateTagSheet" windowController:windowController];
-	[sheet beginCreateTagSheetAtRefish:refish];
+	[sheet beginCreateTagSheetAtRefish:refish completionHandler:handler];
 }
 
 
-- (void) beginCreateTagSheetAtRefish:(id <PBGitRefish>)refish
+- (void)beginCreateTagSheetAtRefish:(id<PBGitRefish>)refish completionHandler:(RJSheetCompletionHandler)handler
 {
-	self.targetRefish  = refish;
+	self.targetRefish = refish;
 
 	[self window];
 	[self.errorMessageField setStringValue:@""];
 
-	[self show];
+	[self beginSheetWithCompletionHandler:handler];
 }
-
 
 
 #pragma mark IBActions
 
-- (IBAction) createTag:(id)sender
+- (IBAction)createTag:(id)sender
 {
 	NSString *tagName = [self.tagNameField stringValue];
 	[self.errorMessageField setHidden:YES];
@@ -59,20 +59,14 @@
 			return;
 		}
 	}
-
-
-	NSString *message = [self.tagMessageText string];
-	[self.repository createTag:tagName message:message atRefish:self.targetRefish];
-	
-	[self closeCreateTagSheet:sender];
+	[self acceptSheet:sender];
 }
 
 
-- (IBAction) closeCreateTagSheet:(id)sender
+- (IBAction)closeCreateTagSheet:(id)sender
 {
-	[self hide];
+	[self cancelSheet:sender];
 }
-
 
 
 @end

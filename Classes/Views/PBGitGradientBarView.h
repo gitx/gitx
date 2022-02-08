@@ -13,7 +13,7 @@
 	NSGradient *gradient;
 }
 
-- (void) setTopShade:(float)topShade bottomShade:(float)bottomShade;
-- (void) setTopColor:(NSColor *)topShade bottomColor:(NSColor *)bottomColor;
+- (void)setTopShade:(float)topShade bottomShade:(float)bottomShade;
+- (void)setTopColor:(NSColor *)topShade bottomColor:(NSColor *)bottomColor;
 
 @end

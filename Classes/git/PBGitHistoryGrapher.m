@@ -13,14 +13,15 @@
 @implementation PBGitHistoryGrapher
 
 
-- (id) initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id)theDelegate
+- (instancetype)initWithBaseCommits:(NSSet *)commits viewAllBranches:(BOOL)viewAll queue:(NSOperationQueue *)queue delegate:(id<PBGitHistoryGrapherDelegate>)theDelegate
 {
-    self = [super init];
+	self = [super init];
+	if (!self) return nil;
 
 	delegate = theDelegate;
 	currentQueue = queue;
 	searchOIDs = [NSMutableSet setWithSet:commits];
-	grapher = [[PBGitGrapher alloc] initWithRepository:nil];
+	grapher = [[PBGitGrapher alloc] init];
 	viewAllBranches = viewAll;
 
 	return self;
@@ -29,18 +30,17 @@
 
 - (void)sendCommits:(NSArray *)commits
 {
-	NSDictionary *commitData = [NSDictionary dictionaryWithObjectsAndKeys:currentQueue, kCurrentQueueKey, commits, kNewCommitsKey, nil];
-	id strongDelegate = delegate;
-	[strongDelegate performSelectorOnMainThread:@selector(updateCommitsFromGrapher:) withObject:commitData waitUntilDone:NO];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self->delegate updateCommitsFromGrapher:@{kCurrentQueueKey : self->currentQueue, kNewCommitsKey : commits}];
+	});
 }
 
 
-- (void) graphCommits:(NSArray *)revList
+- (void)graphCommits:(NSArray *)revList
 {
 	if (!revList || [revList count] == 0)
 		return;
 
-	id strongDelegate = delegate;
 	//NSDate *start = [NSDate date];
 	NSThread *currentThread = [NSThread currentThread];
 	NSDate *lastUpdate = [NSDate date];
@@ -71,7 +71,10 @@
 	//NSLog(@"Graphed %i commits in %f seconds (%f/sec)", counter, duration, counter/duration);
 
 	[self sendCommits:commits];
-	[strongDelegate performSelectorOnMainThread:@selector(finishedGraphing) withObject:nil waitUntilDone:NO];
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self->delegate finishedGraphing];
+	});
 }
 
 

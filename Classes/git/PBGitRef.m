@@ -9,28 +9,45 @@
 #import "PBGitRef.h"
 
 
-NSString * const kGitXTagType    = @"tag";
-NSString * const kGitXBranchType = @"branch";
-NSString * const kGitXRemoteType = @"remote";
-NSString * const kGitXRemoteBranchType = @"remote branch";
-NSString * const kGitXStashType  = @"stash";
+NSString *const kGitXTagType = @"tag";
+NSString *const kGitXBranchType = @"branch";
+NSString *const kGitXRemoteType = @"remote";
+NSString *const kGitXRemoteBranchType = @"remote branch";
+NSString *const kGitXStashType = @"stash";
 
-NSString * const kGitXTagRefPrefix    = @"refs/tags/";
-NSString * const kGitXBranchRefPrefix = @"refs/heads/";
-NSString * const kGitXRemoteRefPrefix = @"refs/remotes/";
-NSString * const kGitXStashRefPrefix  = @"refs/stash@";
+NSString *const kGitXTagRefPrefix = @"refs/tags/";
+NSString *const kGitXBranchRefPrefix = @"refs/heads/";
+NSString *const kGitXRemoteRefPrefix = @"refs/remotes/";
+NSString *const kGitXStashRefPrefix = @"refs/stash@";
 
 @interface PBGitRef ()
 
-@property(nonatomic, strong) NSString* ref;
+@property (nonatomic, strong) NSString *ref;
 
 @end
 
 @implementation PBGitRef
 
-@synthesize ref;
++ (instancetype)refFromString:(NSString *)s
+{
+	return [[PBGitRef alloc] initWithString:s];
+}
 
-- (NSString *) tagName
+- (instancetype)initWithString:(NSString *)s
+{
+	self = [super init];
+	if (!self) return nil;
+
+	_ref = s;
+	return self;
+}
+
+- (NSString *)debugDescription
+{
+	return [NSString stringWithFormat:@"<%@: %p ref: %@", NSStringFromClass([self class]), self, self.ref];
+}
+
+- (NSString *)tagName
 {
 	if (![self isTag])
 		return nil;
@@ -38,7 +55,7 @@ NSString * const kGitXStashRefPrefix  = @"refs/stash@";
 	return [self shortName];
 }
 
-- (NSString *) branchName
+- (NSString *)branchName
 {
 	if (![self isBranch])
 		return nil;
@@ -46,23 +63,24 @@ NSString * const kGitXStashRefPrefix  = @"refs/stash@";
 	return [self shortName];
 }
 
-- (NSString *) remoteName
+- (NSString *)remoteName
 {
 	if (![self isRemote])
 		return nil;
 
-	return (NSString *)[[ref componentsSeparatedByString:@"/"] objectAtIndex:2];
+	return (NSString *)[[self.ref componentsSeparatedByString:@"/"] objectAtIndex:2];
 }
 
-- (NSString *) remoteBranchName
+- (NSString *)remoteBranchName
 {
 	if (![self isRemoteBranch])
 		return nil;
 
-	return [[self shortName] substringFromIndex:[[self remoteName] length] + 1];;
+	return [[self shortName] substringFromIndex:[[self remoteName] length] + 1];
+	;
 }
 
-- (NSString *) type
+- (NSString *)type
 {
 	if ([self isBranch])
 		return @"head";
@@ -75,40 +93,40 @@ NSString * const kGitXStashRefPrefix  = @"refs/stash@";
 	return nil;
 }
 
-- (BOOL) isBranch
+- (BOOL)isBranch
 {
-	return [ref hasPrefix:kGitXBranchRefPrefix];
+	return [self.ref hasPrefix:kGitXBranchRefPrefix];
 }
 
-- (BOOL) isTag
+- (BOOL)isTag
 {
-	return [ref hasPrefix:kGitXTagRefPrefix];
+	return [self.ref hasPrefix:kGitXTagRefPrefix];
 }
 
-- (BOOL) isRemote
+- (BOOL)isRemote
 {
-	return [ref hasPrefix:kGitXRemoteRefPrefix];
+	return [self.ref hasPrefix:kGitXRemoteRefPrefix];
 }
 
-- (BOOL) isRemoteBranch
+- (BOOL)isRemoteBranch
 {
 	if (![self isRemote])
 		return NO;
 
-	return ([[ref componentsSeparatedByString:@"/"] count] > 3);
+	return ([[self.ref componentsSeparatedByString:@"/"] count] > 3);
 }
 
-- (BOOL) isStash
+- (BOOL)isStash
 {
-	return [ref hasPrefix:kGitXStashRefPrefix];
+	return [self.ref hasPrefix:kGitXStashRefPrefix];
 }
 
-- (BOOL) isEqualToRef:(PBGitRef *)otherRef
+- (BOOL)isEqualToRef:(PBGitRef *)otherRef
 {
-	return [ref isEqualToString:[otherRef ref]];
+	return [self.ref isEqualToString:[otherRef ref]];
 }
 
-- (PBGitRef *) remoteRef
+- (PBGitRef *)remoteRef
 {
 	if (![self isRemote])
 		return nil;
@@ -116,48 +134,34 @@ NSString * const kGitXStashRefPrefix  = @"refs/stash@";
 	return [PBGitRef refFromString:[kGitXRemoteRefPrefix stringByAppendingString:[self remoteName]]];
 }
 
-+ (PBGitRef*) refFromString: (NSString*) s
-{
-	return [[PBGitRef alloc] initWithString:s];
-}
-
-- (PBGitRef*) initWithString: (NSString*) s
-{
-	self = [super init];
-	if (!self) {
-		return nil;
-	}
-	ref = s;
-	return self;
-}
-
 + (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector
 {
 	return NO;
 }
 
-+ (BOOL)isKeyExcludedFromWebScript:(const char *)name {
++ (BOOL)isKeyExcludedFromWebScript:(const char *)name
+{
 	return NO;
 }
 
 
 #pragma mark <PBGitRefish>
 
-- (NSString *) refishName
+- (NSString *)refishName
 {
-	return ref;
+	return self.ref;
 }
 
-- (NSString *) shortName
+- (NSString *)shortName
 {
-    if ([self isStash])
-        return [ref substringFromIndex:5];
+	if ([self isStash])
+		return [self.ref substringFromIndex:5];
 	if ([self type])
-		return [ref substringFromIndex:[[self type] length] + 7];
-	return ref;
+		return [self.ref substringFromIndex:[[self type] length] + 7];
+	return self.ref;
 }
 
-- (NSString *) refishType
+- (NSString *)refishType
 {
 	if ([self isBranch])
 		return kGitXBranchType;
@@ -167,8 +171,8 @@ NSString * const kGitXStashRefPrefix  = @"refs/stash@";
 		return kGitXRemoteBranchType;
 	if ([self isRemote])
 		return kGitXRemoteType;
-    if ([self isStash])
-        return kGitXStashType;
+	if ([self isStash])
+		return kGitXStashType;
 	return nil;
 }
 

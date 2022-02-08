@@ -6,21 +6,19 @@
 //  Copyright 2010 Nathan Kinsinger. All rights reserved.
 //
 
-#import "PBGitSVFolderItem.h"
+#import "PBSourceViewFolderItem.h"
 
 
-@implementation PBGitSVFolderItem
+@implementation PBSourceViewFolderItem
 
-+ (id)folderItemWithTitle:(NSString *)title
++ (instancetype)folderItemWithTitle:(NSString *)title
 {
-	PBGitSVFolderItem *item = [self itemWithTitle:title];
-	
-	return item;
+	return [self itemWithTitle:title];
 }
 
-- (NSString*) iconName
+- (NSString *)iconName
 {
-    return (self.isExpanded) ? @"FolderTemplate" : @"FolderClosedTemplate";
+	return self.isExpanded ? @"FolderTemplate" : @"FolderClosedTemplate";
 }
 
 @end

@@ -6,23 +6,19 @@
 //  Copyright 2010 Nathan Kinsinger. All rights reserved.
 //
 
-#import "PBGitSVRemoteBranchItem.h"
+#import "PBSourceViewGitRemoteBranchItem.h"
 #import "PBGitRevSpecifier.h"
 
-@implementation PBGitSVRemoteBranchItem
+@implementation PBSourceViewGitRemoteBranchItem
 
-
-+ (id)remoteBranchItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier
++ (instancetype)remoteBranchItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier
 {
-	PBGitSVRemoteBranchItem *item = [self itemWithTitle:[[revSpecifier description] lastPathComponent]];
-	item.revSpecifier = revSpecifier;
-	
-	return item;
+	return [[self alloc] initWithTitle:revSpecifier.description.lastPathComponent revSpecifier:revSpecifier];
 }
 
-- (NSString*) iconName
+- (NSString *)iconName
 {
-    return @"RemoteBranchTemplate";
+	return @"RemoteBranchTemplate";
 }
 
 @end

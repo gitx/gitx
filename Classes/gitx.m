@@ -16,7 +16,6 @@
 
 void usage(char const *programName)
 {
-
 	printf("Usage: %s (--help|--version|--git-path)\n", programName);
 	printf("   or: %s (--commit)\n", programName);
 	printf("   or: %s (--all|--local|--branch) [branch/tag]\n", programName);
@@ -85,7 +84,7 @@ void usage(char const *programName)
 
 void version_info()
 {
-    NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
+	NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
 	printf("GitX version %s\n", [version UTF8String]);
 	exit(1);
 }
@@ -101,6 +100,7 @@ void handleSTDINDiff()
 
 	if (diff && [diff length] > 0) {
 		GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+		[gitXApp setSendMode:kAENoReply];
 		[gitXApp activate];
 		[gitXApp showDiff:diff];
 		exit(0);
@@ -110,6 +110,7 @@ void handleSTDINDiff()
 void handleDiffWithArguments(NSURL *repositoryURL, NSArray *arguments)
 {
 	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+	[gitXApp setSendMode:kAENoReply];
 	[gitXApp activate];
 	[gitXApp performDiffIn:repositoryURL withOptions:arguments];
 	exit(0);
@@ -117,10 +118,11 @@ void handleDiffWithArguments(NSURL *repositoryURL, NSArray *arguments)
 
 void handleOpenRepository(NSURL *repositoryURL, NSArray *arguments)
 {
-    GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+	GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
+	[gitXApp setSendMode:kAENoReply];
+	[gitXApp open:repositoryURL withOptions:arguments];
 	[gitXApp activate];
-    [gitXApp open:repositoryURL withOptions:arguments];
-    return;
+	return;
 }
 
 void handleInit(NSURL *repositoryURL)
@@ -144,8 +146,7 @@ void handleClone(NSURL *repositoryURL, NSMutableArray *arguments)
 
 		GitXApplication *gitXApp = [SBApplication applicationWithBundleIdentifier:kGitXBundleIdentifier];
 		[gitXApp cloneRepository:repository to:repositoryURL isBare:NO];
-	}
-	else {
+	} else {
 		printf("Error: --clone needs the URL of the repository to clone.\n");
 		exit(2);
 	}
@@ -187,21 +188,18 @@ PBHistorySearchMode searchModeForCommandLineArgument(NSString *argument)
 
 GitXDocument *documentForURL(SBElementArray *documents, NSURL *theURL)
 {
-	for (GitXDocument *document in documents)
-	{
-		NSURL* docURL = [document file];
-		if ([docURL isEqualTo:theURL])
-		{
+	for (GitXDocument *document in documents) {
+		NSURL *docURL = [document file];
+		if ([docURL isEqualTo:theURL]) {
 			return document;
 		}
 	}
 	return nil;
 }
 
-void handleGitXSearch(NSURL *repositoryURL, NSMutableArray *arguments)
+void handleGitXSearch(NSURL *repositoryURL, PBHistorySearchMode mode, NSMutableArray *arguments)
 {
 	NSString *searchString = [arguments componentsJoinedByString:@" "];
-	NSInteger mode = searchModeForCommandLineArgument(searchString);
 
 	// remove the prefix from search string before sending it
 	NSArray *prefixes = commandLineSearchPrefixes();
@@ -315,7 +313,7 @@ NSURL *workingDirectoryURL(NSMutableArray *arguments)
 	return [PBRepositoryFinder fileURLForURL:[NSURL fileURLWithPath:workingDirectory]];
 }
 
-int main(int argc, const char** argv)
+int main(int argc, const char **argv)
 {
 	@autoreleasepool {
 		if (argc >= 2 && (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-h")))
@@ -323,9 +321,9 @@ int main(int argc, const char** argv)
 		if (argc >= 2 && (!strcmp(argv[1], "--version") || !strcmp(argv[1], "-v")))
 			version_info();
 		if (argc >= 2 && !strcmp(argv[1], "--git-path")) {
-            printf("gitx now uses libgit2 to work.");
-            exit(1);
-        }
+			printf("gitx now uses libgit2 to work.");
+			exit(1);
+		}
 
 		// gitx can be used to pipe diff output to be displayed in GitX
 		if (!isatty(STDIN_FILENO) && fdopen(STDIN_FILENO, "r"))
@@ -337,38 +335,43 @@ int main(int argc, const char** argv)
 
 		// From this point, we require a working directory and the arguments
 		NSURL *wdURL = workingDirectoryURL(arguments);
-		if (!wdURL)
-		{
+		if (!wdURL) {
 			printf("Could not find a git working directory.\n");
 			exit(0);
 		}
-		
+
 		if ([arguments count]) {
 			NSString *firstArgument = [arguments objectAtIndex:0];
-			
+
 			if ([firstArgument isEqualToString:@"--diff"] || [firstArgument isEqualToString:@"-d"]) {
 				[arguments removeObjectAtIndex:0];
 				handleDiffWithArguments(wdURL, arguments);
 			}
-			
+
 			if ([firstArgument isEqualToString:@"--init"]) {
 				[arguments removeObjectAtIndex:0];
 				handleInit(wdURL);
 			}
-			
+
 			if ([firstArgument isEqualToString:@"--clone"]) {
 				[arguments removeObjectAtIndex:0];
 				handleClone(wdURL, arguments);
 			}
-			
-			if (searchModeForCommandLineArgument(firstArgument)) {
-				handleGitXSearch(wdURL, arguments);
+
+			PBHistorySearchMode mode;
+			if ((mode = searchModeForCommandLineArgument(firstArgument))) {
+				handleGitXSearch(wdURL, mode, arguments);
+			}
+
+			if ([firstArgument isEqualToString:@"--"]) {
+				[arguments removeObjectAtIndex:0];
+				handleGitXSearch(wdURL, PBHistorySearchModePath, arguments);
 			}
 		}
-		
+
 		// No commands handled by gitx, open the current dir in GitX with the arguments
 		handleOpenRepository(wdURL, arguments);
-		
+
 		return 0;
 	}
 }

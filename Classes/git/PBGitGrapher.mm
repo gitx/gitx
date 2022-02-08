@@ -34,7 +34,7 @@ typedef std::vector<PBGitLane *> LaneCollection;
 
 @implementation PBGitGrapher
 
-- (id) initWithRepository: (PBGitRepository*) repo
+- (id) init
 {
 	self = [super init];
 	if (!self) {

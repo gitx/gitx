@@ -7,64 +7,60 @@
 //
 
 #import "PBSourceViewBadge.h"
-#import "PBSourceViewCell.h"
 
 
 @implementation PBSourceViewBadge
 
 
-+ (NSColor *) badgeHighlightColor
++ (NSColor *)badgeHighlightColor
 {
 	return [NSColor colorWithCalibratedHue:0.612 saturation:0.275 brightness:0.735 alpha:1.000];
 }
 
 
-+ (NSColor *) badgeBackgroundColor
++ (NSColor *)badgeBackgroundColor
 {
 	return [NSColor colorWithCalibratedWhite:0.6 alpha:1.00];
 }
 
 
-+ (NSColor *) badgeColorForCell:(NSTextFieldCell *)cell
++ (NSColor *)badgeColorForCell:(NSTableCellView *)cell
 {
-	if ([cell isHighlighted])
+	if ([cell backgroundStyle] == NSBackgroundStyleDark)
 		return [NSColor whiteColor];
 
-	if ([[[cell controlView] window] isMainWindow])
+	if ([[cell window] isMainWindow])
 		return [self badgeHighlightColor];
 
 	return [self badgeBackgroundColor];
 }
 
 
-+ (NSColor *) badgeTextColorForCell:(NSTextFieldCell *)cell
++ (NSColor *)badgeTextColorForCell:(NSTableCellView *)cell
 {
-	if (![cell isHighlighted])
+	if ([cell backgroundStyle] != NSBackgroundStyleDark)
 		return [NSColor whiteColor];
 
-	if (![[[cell controlView] window] isKeyWindow]) {
-		if ([[[cell controlView] window] isMainWindow]) {
+	if (![[cell window] isKeyWindow]) {
+		if ([[cell window] isMainWindow]) {
 			return [self badgeHighlightColor];
 		} else {
 			return [self badgeBackgroundColor];
-        }
-    }
-
-	if ([[[cell controlView] window] firstResponder] == [cell controlView])
-		return [self badgeHighlightColor];
+		}
+	}
 
 	return [self badgeBackgroundColor];
 }
 
 
-+ (NSMutableDictionary *) badgeTextAttributes
++ (NSMutableDictionary *)badgeTextAttributes
 {
 	NSMutableDictionary *badgeTextAttributes = nil;
 	if (!badgeTextAttributes) {
 		NSMutableParagraphStyle *centerStyle = [[NSMutableParagraphStyle alloc] init];
 		[centerStyle setAlignment:NSCenterTextAlignment];
 
-		badgeTextAttributes =  [NSMutableDictionary dictionary];
+		badgeTextAttributes = [NSMutableDictionary dictionary];
 		[badgeTextAttributes setObject:[NSFont boldSystemFontOfSize:[NSFont systemFontSize] - 2] forKey:NSFontAttributeName];
 		[badgeTextAttributes setObject:centerStyle forKey:NSParagraphStyleAttributeName];
 	}
@@ -73,11 +69,10 @@
 }
 
 
-
 #pragma mark -
 #pragma mark badges
 
-+ (NSImage *) badge:(NSString *)badge forCell:(NSTextFieldCell *)cell
++ (NSImage *)badge:(NSString *)badge forCell:(NSTableCellView *)cell
 {
 	NSColor *badgeColor = [self badgeColorForCell:cell];
 
@@ -110,12 +105,12 @@
 	return badgeImage;
 }
 
-+ (NSImage *) checkedOutBadgeForCell:(NSTextFieldCell *)cell
++ (NSImage *)checkedOutBadgeForCell:(NSTableCellView *)cell
 {
 	return [self badge:@"✔" forCell:cell];
 }
 
-+ (NSImage *) numericBadge:(NSInteger)number forCell:(NSTextFieldCell *)cell
++ (NSImage *)numericBadge:(NSInteger)number forCell:(NSTableCellView *)cell
 {
 	return [self badge:[NSString stringWithFormat:@"%ld", number] forCell:cell];
 }

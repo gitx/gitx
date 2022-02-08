@@ -8,6 +8,7 @@
 
 #import "PBWebController.h"
 #import "PBGitRepository.h"
+#import "PBGitRepository_PBGitBinarySupport.h"
 #import "PBGitXProtocol.h"
 #import "PBGitDefaults.h"
 
@@ -21,20 +22,38 @@
 
 @synthesize startFile, repository;
 
-- (void) awakeFromNib
+- (void)awakeFromNib
 {
 	NSString *path = [NSString stringWithFormat:@"html/views/%@", startFile];
-	NSString* file = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
-	NSURLRequest * request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:file]];
-	callbacks = [NSMapTable mapTableWithKeyOptions:(NSPointerFunctionsObjectPointerPersonality|NSPointerFunctionsStrongMemory) valueOptions:(NSPointerFunctionsObjectPointerPersonality|NSPointerFunctionsStrongMemory)];
+	NSString *file = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
+	NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:file]];
+	callbacks = [NSMapTable mapTableWithKeyOptions:(NSPointerFunctionsObjectPointerPersonality | NSPointerFunctionsStrongMemory) valueOptions:(NSPointerFunctionsObjectPointerPersonality | NSPointerFunctionsStrongMemory)];
 
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 	[nc addObserver:self
-	       selector:@selector(preferencesChangedWithNotification:)
-		   name:NSUserDefaultsDidChangeNotification
-		 object:nil];
+		   selector:@selector(preferencesChangedWithNotification:)
+			   name:NSUserDefaultsDidChangeNotification
+			 object:nil];
+
+	[nc addObserver:self
+		   selector:@selector(windowWillStartLiveResizeWithNotification:)
+			   name:NSWindowWillStartLiveResizeNotification
+			 object:self.view.window];
+
+	[nc addObserver:self
+		   selector:@selector(windowDidEndLiveResizeWithNotification:)
+			   name:NSWindowDidEndLiveResizeNotification
+			 object:self.view.window];
+
+	[nc addObserver:self
+		   selector:@selector(effectiveAppearanceDidChange:)
+			   name:PBEffectiveAppearanceChanged
+			 object:nil];
 
 	finishedLoading = NO;
+
+	[self.view setDrawsBackground:NO];
+
 	[self.view setUIDelegate:self];
 	[self.view setFrameLoadDelegate:self];
 	[self.view setResourceLoadDelegate:self];
@@ -42,9 +61,15 @@
 	[self.view.mainFrame loadRequest:request];
 }
 
-- (WebScriptObject *) script
+- (WebScriptObject *)script
 {
 	return self.view.windowScriptObject;
+}
+
+- (void)effectiveAppearanceDidChange:(NSNotification *)notif
+{
+	NSString *mode = [NSApp isDarkMode] ? @"DARK" : @"LIGHT";
+	[self.script callWebScriptMethod:@"setAppearance" withArguments:@[ mode ]];
 }
 
 - (void)closeView
@@ -57,7 +82,11 @@
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-# pragma mark Delegate methods
+- (void)didLoad
+{
+}
+
+#pragma mark Delegate methods
 
 - (void)webView:(WebView *)sender didClearWindowObject:(WebScriptObject *)windowObject forFrame:(WebFrame *)frame
 {
@@ -65,11 +94,12 @@
 	[script setValue:self forKey:@"Controller"];
 }
 
-- (void) webView:(id) v didFinishLoadForFrame:(id) frame
+- (void)webView:(id)v didFinishLoadForFrame:(id)frame
 {
 	finishedLoading = YES;
 	if ([self respondsToSelector:@selector(didLoad)])
 		[self performSelector:@selector(didLoad)];
+	[self effectiveAppearanceDidChange:nil];
 }
 
 - (void)webView:(WebView *)webView addMessageToConsole:(NSDictionary *)dictionary
@@ -78,10 +108,10 @@
 }
 
 - (NSURLRequest *)webView:(WebView *)sender
-                 resource:(id)identifier
-          willSendRequest:(NSURLRequest *)request
-         redirectResponse:(NSURLResponse *)redirectResponse
-           fromDataSource:(WebDataSource *)dataSource
+				 resource:(id)identifier
+		  willSendRequest:(NSURLRequest *)request
+		 redirectResponse:(NSURLResponse *)redirectResponse
+		   fromDataSource:(WebDataSource *)dataSource
 {
 	if (!self.repository)
 		return request;
@@ -96,28 +126,25 @@
 }
 
 - (void)webView:(WebView *)sender
-decidePolicyForNavigationAction:(NSDictionary *)actionInformation
-        request:(NSURLRequest *)request
-		  frame:(WebFrame *)frame
-decisionListener:(id <WebPolicyDecisionListener>)listener
+	decidePolicyForNavigationAction:(NSDictionary *)actionInformation
+							request:(NSURLRequest *)request
+							  frame:(WebFrame *)frame
+				   decisionListener:(id<WebPolicyDecisionListener>)listener
 {
-	NSString* scheme = [[request URL] scheme];
+	NSString *scheme = [[request URL] scheme];
 	if ([scheme compare:@"http"] == NSOrderedSame ||
-		[scheme compare:@"https"] == NSOrderedSame)
-	{
+		[scheme compare:@"https"] == NSOrderedSame) {
 		[listener ignore];
 		[[NSWorkspace sharedWorkspace] openURL:[request URL]];
-	}
-	else
-	{
+	} else {
 		[listener use];
 	}
 }
 
 - (NSUInteger)webView:(WebView *)webView
-dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
+	dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
 {
-    return NSDragOperationNone;
+	return NSDragOperationNone;
 }
 
 + (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector
@@ -125,24 +152,25 @@ dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
 	return NO;
 }
 
-+ (BOOL)isKeyExcludedFromWebScript:(const char *)name {
++ (BOOL)isKeyExcludedFromWebScript:(const char *)name
+{
 	return NO;
 }
 
 #pragma mark Functions to be used from JavaScript
 
-- (void) log: (NSString*) logMessage
+- (void)log:(NSString *)logMessage
 {
 	NSLog(@"%@", logMessage);
 }
 
-- (BOOL) isReachable:(NSString *)hostname
+- (BOOL)isReachable:(NSString *)hostname
 {
-    SCNetworkReachabilityRef target;
-    SCNetworkConnectionFlags flags = 0;
-    Boolean reachable;
-    target = SCNetworkReachabilityCreateWithName(NULL, [hostname cStringUsingEncoding:NSASCIIStringEncoding]);
-    reachable = SCNetworkReachabilityGetFlags(target, &flags);
+	SCNetworkReachabilityRef target;
+	SCNetworkConnectionFlags flags = 0;
+	Boolean reachable;
+	target = SCNetworkReachabilityCreateWithName(NULL, [hostname cStringUsingEncoding:NSASCIIStringEncoding]);
+	reachable = SCNetworkReachabilityGetFlags(target, &flags);
 	CFRelease(target);
 
 	if (!reachable)
@@ -155,15 +183,15 @@ dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
 	return flags > 0;
 }
 
-- (BOOL) isFeatureEnabled:(NSString *)feature
+- (BOOL)isFeatureEnabled:(NSString *)feature
 {
-	if([feature isEqualToString:@"gravatar"])
+	if ([feature isEqualToString:@"gravatar"])
 		return [PBGitDefaults isGravatarEnabled];
-	else if([feature isEqualToString:@"gist"])
+	else if ([feature isEqualToString:@"gist"])
 		return [PBGitDefaults isGistEnabled];
-	else if([feature isEqualToString:@"confirmGist"])
+	else if ([feature isEqualToString:@"confirmGist"])
 		return [PBGitDefaults confirmPublicGists];
-	else if([feature isEqualToString:@"publicGist"])
+	else if ([feature isEqualToString:@"publicGist"])
 		return [PBGitDefaults isGistPublic];
 	else
 		return YES;
@@ -171,7 +199,7 @@ dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
 
 #pragma mark Using async function from JS
 
-- (void) runCommand:(WebScriptObject *)arguments inRepository:(PBGitRepository *)repo callBack:(WebScriptObject *)callBack
+- (void)runCommand:(WebScriptObject *)arguments inRepository:(PBGitRepository *)repo callBack:(WebScriptObject *)callBack
 {
 	// The JS bridge does not handle JS Arrays, even though the docs say it does. So, we convert it ourselves.
 	int length = [[arguments valueForKey:@"length"] intValue];
@@ -180,47 +208,43 @@ dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
 	for (i = 0; i < length; i++)
 		[realArguments addObject:[arguments webScriptValueAtIndex:i]];
 
-	NSFileHandle *handle = [repo handleInWorkDirForArguments:realArguments];
-	[callbacks setObject:callBack forKey:handle];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(JSRunCommandDone:) name:NSFileHandleReadToEndOfFileCompletionNotification object:handle]; 
-	[handle readToEndOfFileInBackgroundAndNotify];
+	PBTask *task = [repo taskWithArguments:realArguments];
+	[task performTaskWithCompletionHandler:^(NSData *_Nullable readData, NSError *_Nullable error) {
+		if (error) {
+			/* FIXME: Might want to inform the JS that something went wrong */
+			NSLog(@"error: %@", error);
+			return;
+		}
+		[callBack callWebScriptMethod:@"call" withArguments:@[ @"", readData ]];
+	}];
 }
 
-- (void) returnCallBackForObject:(id)object withData:(id)data
-{
-	WebScriptObject *a = [callbacks objectForKey: object];
-	if (!a) {
-		NSLog(@"Could not find a callback for object: %@", object);
-		return;
-	}
-
-	[callbacks removeObjectForKey:object];
-	[a callWebScriptMethod:@"call" withArguments:[NSArray arrayWithObjects:@"", data, nil]];
-}
-
-- (void) threadFinished:(NSArray *)arguments
-{
-	[self returnCallBackForObject:[arguments objectAtIndex:0] withData:[arguments objectAtIndex:1]];
-}
-
-- (void) JSRunCommandDone:(NSNotification *)notification
-{
-	NSString *data = [[NSString alloc] initWithData:[[notification userInfo] valueForKey:NSFileHandleNotificationDataItem] encoding:NSUTF8StringEncoding];
-	[self returnCallBackForObject:[notification object] withData:data];
-}
-
-- (void) preferencesChanged
+- (void)preferencesChanged
 {
 }
+
+- (void)makeWebViewFirstResponder
+{
+	[self.view.window makeFirstResponder:self.view];
+}
+
+
+#pragma mark - Notifications
 
 - (void)preferencesChangedWithNotification:(NSNotification *)theNotification
 {
 	[self preferencesChanged];
 }
 
-- (void)makeWebViewFirstResponder
+- (void)windowWillStartLiveResizeWithNotification:(NSNotification *)theNotification
 {
-	[self.view.window makeFirstResponder:self.view];
+	self.view.autoresizingMask = NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewHeightSizable;
+}
+
+- (void)windowDidEndLiveResizeWithNotification:(NSNotification *)theNotification
+{
+	self.view.autoresizingMask = NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable | NSViewHeightSizable;
+	self.view.frame = self.view.superview.bounds;
 }
 
 @end

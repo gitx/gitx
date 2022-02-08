@@ -9,44 +9,44 @@
 #import <Cocoa/Cocoa.h>
 #import "PBGitRefish.h"
 
-extern NSString * const kGitXTagType;
-extern NSString * const kGitXBranchType;
-extern NSString * const kGitXRemoteType;
-extern NSString * const kGitXRemoteBranchType;
-extern NSString * const kGitXStashType;
+NS_ASSUME_NONNULL_BEGIN
 
-extern NSString * const kGitXTagRefPrefix;
-extern NSString * const kGitXBranchRefPrefix;
-extern NSString * const kGitXRemoteRefPrefix;
-extern NSString * const kGitXStashRefPrefix;
+extern NSString *const kGitXTagType;
+extern NSString *const kGitXBranchType;
+extern NSString *const kGitXRemoteType;
+extern NSString *const kGitXRemoteBranchType;
+extern NSString *const kGitXStashType;
 
+extern NSString *const kGitXTagRefPrefix;
+extern NSString *const kGitXBranchRefPrefix;
+extern NSString *const kGitXRemoteRefPrefix;
+extern NSString *const kGitXStashRefPrefix;
 
 @interface PBGitRef : NSObject <PBGitRefish>
 
-// <PBGitRefish>
-- (NSString *) refishName;
-- (NSString *) shortName;
-- (NSString *) refishType;
++ (instancetype)refFromString:(NSString *)s;
+- (instancetype)initWithString:(NSString *)s;
 
-- (NSString *) tagName;
-- (NSString *) branchName;
-- (NSString *) remoteName;
-- (NSString *) remoteBranchName;
 
-- (NSString *) type;
-- (BOOL) isBranch;
-- (BOOL) isTag;
-- (BOOL) isRemote;
-- (BOOL) isRemoteBranch;
-- (BOOL) isStash;
+@property (nullable, readonly) NSString *tagName;
+@property (nullable, readonly) NSString *branchName;
+@property (nullable, readonly) NSString *remoteName;
+@property (nullable, readonly) NSString *remoteBranchName;
 
-- (PBGitRef *) remoteRef;
+@property (nullable, readonly) NSString *type;
 
-- (BOOL) isEqualToRef:(PBGitRef *)otherRef;
+@property (readonly, getter=isBranch) BOOL branch;
+@property (readonly, getter=isTag) BOOL tag;
+@property (readonly, getter=isRemote) BOOL remote;
+@property (readonly, getter=isRemoteBranch) BOOL remoteBranch;
+@property (readonly, getter=isStash) BOOL stash;
 
-+ (PBGitRef*) refFromString: (NSString*) s;
-- (PBGitRef*) initWithString: (NSString*) s;
+- (nullable PBGitRef *)remoteRef;
 
-@property(nonatomic, strong, readonly) NSString* ref;
+- (BOOL)isEqualToRef:(PBGitRef *)otherRef;
+
+@property (nonatomic, strong, readonly) NSString *ref;
 
 @end
+
+NS_ASSUME_NONNULL_END

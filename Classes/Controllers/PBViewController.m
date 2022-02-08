@@ -15,8 +15,8 @@
 
 @implementation PBViewController
 
-@synthesize repository=repository;
-@synthesize windowController=superController;
+@synthesize repository = repository;
+@synthesize windowController = superController;
 
 - (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
 {
@@ -27,7 +27,7 @@
 
 	repository = theRepository;
 	superController = controller;
-	
+
 	return self;
 }
 
@@ -48,16 +48,12 @@
 	return nil;
 }
 
-- (IBAction) refresh: sender
+- (IBAction)refresh:sender
 {
 }
 
 // The next methods should be implemented in the subclass if necessary
 - (void)updateView
-{
-}
-
-- (void)viewLoaded
 {
 }
 

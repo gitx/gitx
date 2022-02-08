@@ -11,11 +11,11 @@
 #import "PBHistorySearchController.h"
 #import "PBGitHistoryController.h"
 #import "PBGitRepository.h"
+#import "PBGitRepository_PBGitBinarySupport.h"
 #import "PBGitDefaults.h"
 #import "PBCommitList.h"
-#import "PBEasyPipe.h"
-#import "PBGitBinary.h"
 #import "PBGitCommit.h"
+#import "PBError.h"
 
 @interface PBHistorySearchController ()
 
@@ -40,9 +40,7 @@
 #define kGitXPickaxeSearchLabel NSLocalizedString(@"Commit (pickaxe)", @"Option in Search menu to use the pickaxe search")
 #define kGitXRegexSearchLabel NSLocalizedString(@"Commit (pickaxe regex)", @"Option in Search menu to use the pickaxe search with regular expressions")
 #define kGitXPathSearchLabel NSLocalizedString(@"File path", @"Option in Search menu to search for file paths in the commit")
-
-#define kGitXSearchArrangedObjectsContext @"GitXSearchArrangedObjectsContext"
-
+#define kGitXRawSearchLabel NSLocalizedString(@"Raw", @"Option in Search menu to search for raw git log options")
 
 @implementation PBHistorySearchController
 
@@ -70,7 +68,7 @@
 
 - (void)selectSearchMode:(id)sender
 {
-	[self setSearchMode:PBSearchModeForInteger([(NSView*)sender tag])];
+	[self setSearchMode:PBSearchModeForInteger([(NSView *)sender tag])];
 	[self updateSearch:self];
 }
 
@@ -129,25 +127,14 @@
 
 	[self updateUI];
 
-	[commitController addObserver:self forKeyPath:@"arrangedObjects" options:0 context:kGitXSearchArrangedObjectsContext];
+	[commitController addObserver:self
+						  keyPath:@"arrangedObjects"
+						  options:0
+							block:^(MAKVONotification *notification) {
+								// the objects in the commitlist changed so the result indexes are no longer valid
+								[self clearSearch];
+							}];
 }
-
-- (void)dealloc {
-	[commitController removeObserver:self forKeyPath:@"arrangedObjects" context:kGitXSearchArrangedObjectsContext];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if ([(__bridge NSString *)context isEqualToString:kGitXSearchArrangedObjectsContext]) {
-		// the objects in the commitlist changed so the result indexes are no longer valid
-		[self clearSearch];
-		return;
-	}
-
-	[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-}
-
-
 
 #pragma mark -
 #pragma mark Private methods
@@ -200,8 +187,8 @@
 		return NSLocalizedString(@"1 match", @"Search count (left of search field): exactly one result");
 
 	return [NSString stringWithFormat:
-			NSLocalizedString(@"%lu matches", @"Search count (left of search field): number of results"),
-			numberOfMatches];
+						 NSLocalizedString(@"%lu matches", @"Search count (left of search field): number of results"),
+						 numberOfMatches];
 }
 
 - (void)updateUI
@@ -209,12 +196,15 @@
 	if ([[searchField stringValue] isEqualToString:@""]) {
 		[numberOfMatchesField setHidden:YES];
 		[stepper setHidden:YES];
-	}
-	else {
+	} else {
 		[numberOfMatchesField setStringValue:[self numberOfMatchesString]];
 		[numberOfMatchesField setHidden:NO];
 		[stepper setHidden:NO];
+
+		// Preserve selection
+		NSIndexSet *selectedRowIndexes = historyController.commitList.selectedRowIndexes;
 		[historyController.commitList reloadData];
+		[historyController.commitList selectRowIndexes:selectedRowIndexes byExtendingSelection:NO];
 	}
 	[self clearProgressIndicator];
 }
@@ -237,52 +227,57 @@
 - (void)setupSearchMenuTemplate
 {
 	NSMenu *searchMenu = [[NSMenu alloc] initWithTitle:NSLocalizedString(@"Search Menu", @"Title of the Search menu.")];
-    NSMenuItem *item;
+	NSMenuItem *item;
 
 	item = [[NSMenuItem alloc] initWithTitle:kGitXBasicSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
 	[item setTarget:self];
-    [item setTag:PBHistorySearchModeBasic];
-    [searchMenu addItem:item];
+	[item setTag:PBHistorySearchModeBasic];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:kGitXPickaxeSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
 	[item setTarget:self];
-    [item setTag:PBHistorySearchModePickaxe];
-    [searchMenu addItem:item];
+	[item setTag:PBHistorySearchModePickaxe];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:kGitXRegexSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
 	[item setTarget:self];
-    [item setTag:PBHistorySearchModeRegex];
-    [searchMenu addItem:item];
+	[item setTag:PBHistorySearchModeRegex];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:kGitXPathSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
 	[item setTarget:self];
-    [item setTag:PBHistorySearchModePath];
-    [searchMenu addItem:item];
+	[item setTag:PBHistorySearchModePath];
+	[searchMenu addItem:item];
 
-    item = [NSMenuItem separatorItem];
-    [searchMenu addItem:item];
+	item = [[NSMenuItem alloc] initWithTitle:kGitXRawSearchLabel action:@selector(selectSearchMode:) keyEquivalent:@""];
+	[item setTarget:self];
+	[item setTag:PBHistorySearchModeRaw];
+	[searchMenu addItem:item];
+
+	item = [NSMenuItem separatorItem];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Recent Searches", @"Searches menu: title of inactive headline item for Recent Searches section") action:NULL keyEquivalent:@""];
-    [item setTag:NSSearchFieldRecentsTitleMenuItemTag];
-    [searchMenu addItem:item];
+	[item setTag:NSSearchFieldRecentsTitleMenuItemTag];
+	[searchMenu addItem:item];
 
-    item = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
-    [item setTag:NSSearchFieldRecentsMenuItemTag];
-    [searchMenu addItem:item];
+	item = [[NSMenuItem alloc] initWithTitle:@"" action:NULL keyEquivalent:@""];
+	[item setTag:NSSearchFieldRecentsMenuItemTag];
+	[searchMenu addItem:item];
 
-    item = [NSMenuItem separatorItem];
-    [item setTag:NSSearchFieldRecentsTitleMenuItemTag];
-    [searchMenu addItem:item];
+	item = [NSMenuItem separatorItem];
+	[item setTag:NSSearchFieldRecentsTitleMenuItemTag];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"Clear Recent Searches", @"Searches menu: title of clear recent searches item") action:NULL keyEquivalent:@""];
-    [item setTag:NSSearchFieldClearRecentsMenuItemTag];
-    [searchMenu addItem:item];
+	[item setTag:NSSearchFieldClearRecentsMenuItemTag];
+	[searchMenu addItem:item];
 
 	item = [[NSMenuItem alloc] initWithTitle:NSLocalizedString(@"No Recent Searches", @"Searches menu: title of dummy item displayed in recent searches section when there are no recent searches") action:NULL keyEquivalent:@""];
-    [item setTag:NSSearchFieldNoRecentsMenuItemTag];
-    [searchMenu addItem:item];
+	[item setTag:NSSearchFieldNoRecentsMenuItemTag];
+	[searchMenu addItem:item];
 
-    [[searchField cell] setSearchMenuTemplate:searchMenu];
+	[[searchField cell] setSearchMenuTemplate:searchMenu];
 }
 
 - (void)updateSearchMenuState
@@ -295,14 +290,16 @@
 	[self updateSearchModeMenuItemWithTag:PBHistorySearchModePickaxe inMenu:searchMenu];
 	[self updateSearchModeMenuItemWithTag:PBHistorySearchModeRegex inMenu:searchMenu];
 	[self updateSearchModeMenuItemWithTag:PBHistorySearchModePath inMenu:searchMenu];
+	[self updateSearchModeMenuItemWithTag:PBHistorySearchModeRaw inMenu:searchMenu];
 
-    [[searchField cell] setSearchMenuTemplate:searchMenu];
+	[[searchField cell] setSearchMenuTemplate:searchMenu];
 
 	[PBGitDefaults setHistorySearchMode:searchMode];
 }
 
-- (void) updateSearchModeMenuItemWithTag:(PBHistorySearchMode)menuItemSearchMode inMenu:(NSMenu *) searchMenu {
-	NSMenuItem * menuItem = [searchMenu itemWithTag:menuItemSearchMode];
+- (void)updateSearchModeMenuItemWithTag:(PBHistorySearchMode)menuItemSearchMode inMenu:(NSMenu *)searchMenu
+{
+	NSMenuItem *menuItem = [searchMenu itemWithTag:menuItemSearchMode];
 	[menuItem setState:(searchMode == menuItemSearchMode) ? NSOnState : NSOffState];
 }
 
@@ -317,6 +314,9 @@
 			break;
 		case PBHistorySearchModePath:
 			[[searchField cell] setPlaceholderString:kGitXPathSearchLabel];
+			break;
+		case PBHistorySearchModeRaw:
+			[[searchField cell] setPlaceholderString:kGitXRawSearchLabel];
 			break;
 		default:
 			[[searchField cell] setPlaceholderString:kGitXBasicSearchLabel];
@@ -338,7 +338,7 @@
 	[self updateSearchPlaceholderString];
 }
 
-- (void)searchTimerFired:(NSTimer*)theTimer
+- (void)searchTimerFired:(NSTimer *)theTimer
 {
 	[self.progressIndicator setHidden:NO];
 	[self.progressIndicator startAnimation:self];
@@ -359,7 +359,6 @@
 	[stepper setHidden:YES];
 	searchTimer = [NSTimer scheduledTimerWithTimeInterval:0.25 target:self selector:@selector(searchTimerFired:) userInfo:nil repeats:NO];
 }
-
 
 
 #pragma mark Basic Search
@@ -388,14 +387,11 @@
 }
 
 
-
 #pragma mark Background Search
 
 - (void)startBackgroundSearch
 {
 	if (backgroundSearchTask) {
-		NSFileHandle *handle = [[backgroundSearchTask standardOutput] fileHandleForReading];
-		[[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleReadToEndOfFileCompletionNotification object:handle];
 		[backgroundSearchTask terminate];
 	}
 
@@ -407,7 +403,7 @@
 
 	results = nil;
 
-	NSMutableArray *searchArguments = [NSMutableArray arrayWithObjects:@"log", @"--pretty=format:%H", nil];
+	NSMutableArray *searchArguments = [NSMutableArray arrayWithObjects:@"log", @"--pretty=format:%H", @"--no-textconv", nil];
 	switch (self.searchMode) {
 		case PBHistorySearchModeRegex:
 			[searchArguments addObject:@"--pickaxe-regex"];
@@ -418,26 +414,40 @@
 			[searchArguments addObject:@"--"];
 			[searchArguments addObjectsFromArray:[searchString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
 			break;
+		case PBHistorySearchModeRaw:
+			[searchArguments addObjectsFromArray:[searchString componentsSeparatedByCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]]];
+			break;
 		default:
 			return;
 	}
 
-	backgroundSearchTask = [PBEasyPipe taskForCommand:[PBGitBinary path] withArgs:searchArguments inDir:[[historyController.repository workingDirectoryURL] path]];
-	[backgroundSearchTask launch];
+	backgroundSearchTask = [historyController.repository taskWithArguments:searchArguments];
+	[backgroundSearchTask performTaskWithCompletionHandler:^(NSData *readData, NSError *taskError) {
+		if (taskError.domain == PBTaskErrorDomain && taskError.code == PBTaskCaughtSignalError) {
+			/* Silently ignore task termination */
+			return;
+		}
 
-	NSFileHandle *handle = [[backgroundSearchTask standardOutput] fileHandleForReading];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(parseBackgroundSearchResults:) name:NSFileHandleReadToEndOfFileCompletionNotification object:handle];
-	[handle readToEndOfFileInBackgroundAndNotify];
+		if (!readData) {
+			[self clearProgressIndicator];
+			NSString *desc = NSLocalizedString(@"Search failed", @"Search Controller - Background search failed error description");
+			NSString *reason = NSLocalizedString(@"The search for \"%@\" failed.", @"Search Controller - Background search failed error reason");
+			reason = [NSString stringWithFormat:reason, searchString];
+			NSError *error = [NSError pb_errorWithDescription:desc
+												failureReason:reason
+											  underlyingError:taskError];
+			[self->historyController.windowController showErrorSheet:error];
+			return;
+		}
+		[self parseBackgroundSearchResults:readData];
+	}];
 
 	[self startProgressIndicator];
 }
 
-- (void)parseBackgroundSearchResults:(NSNotification *)notification
+- (void)parseBackgroundSearchResults:(NSData *)data
 {
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSFileHandleReadToEndOfFileCompletionNotification object:[notification object]];
 	backgroundSearchTask = nil;
-
-	NSData *data = [[notification userInfo] valueForKey:NSFileHandleNotificationDataItem];
 
 	NSString *resultsString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 	NSArray *resultsArray = [resultsString componentsSeparatedByString:@"\n"];
@@ -460,7 +470,6 @@
 	[self clearProgressIndicator];
 	[self updateSelectedResult];
 }
-
 
 
 #pragma mark -
@@ -495,7 +504,6 @@
 	[panel setOpaque:NO];
 	[panel setBackgroundColor:[NSColor clearColor]];
 	[panel setHasShadow:NO];
-	[panel useOptimizedDrawing:YES];
 	[panel setAlphaValue:0.0f];
 
 	NSBox *box = [[NSBox alloc] initWithFrame:[[panel contentView] frame]];
@@ -520,8 +528,8 @@
 {
 	CAKeyframeAnimation *animation = [CAKeyframeAnimation animation];
 	animation.duration = 1.0f;
-	animation.values = @[@1.0f, @1.0f, @0.0f, @0.0f];
-	animation.keyTimes = @[@0.1f, @0.3f, @0.7f, [NSNumber numberWithDouble:animation.duration]];
+	animation.values = @[ @1.0f, @1.0f, @0.0f, @0.0f ];
+	animation.keyTimes = @[ @0.1f, @0.3f, @0.7f, [NSNumber numberWithDouble:animation.duration] ];
 	return animation;
 }
 
@@ -542,9 +550,9 @@
 	NSImage *reversedRewindImage = [NSImage imageWithSize:rewindImage.size
 												  flipped:isReversed
 										   drawingHandler:^BOOL(NSRect destRect) {
-		[rewindImage drawInRect:destRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
-		return YES;
-	}];
+											   [rewindImage drawInRect:destRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
+											   return YES;
+										   }];
 	NSImageView *rewindImageView = [rewindPanel.contentView viewWithTag:kRewindPanelImageViewTag];
 	[rewindImageView setImage:reversedRewindImage];
 

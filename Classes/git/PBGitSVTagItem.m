@@ -6,23 +6,19 @@
 //  Copyright 2010 Nathan Kinsinger. All rights reserved.
 //
 
-#import "PBGitSVTagItem.h"
+#import "PBSourceViewGitTagItem.h"
 #import "PBGitRevSpecifier.h"
 
-@implementation PBGitSVTagItem
+@implementation PBSourceViewGitTagItem
 
-
-+ (id)tagItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier
++ (instancetype)tagItemWithRevSpec:(PBGitRevSpecifier *)revSpecifier
 {
-	PBGitSVTagItem *item = [self itemWithTitle:[[revSpecifier description] lastPathComponent]];
-	item.revSpecifier = revSpecifier;
-	
-	return item;
+	return [[self alloc] initWithTitle:[[revSpecifier description] lastPathComponent] revSpecifier:revSpecifier];
 }
 
-- (NSString*) iconName
+- (NSString *)iconName
 {
-    return @"TagTemplate";
+	return @"TagTemplate";
 }
 
 @end

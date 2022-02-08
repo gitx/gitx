@@ -6,15 +6,29 @@
 //
 //
 
-#import "PBGitSVSubmoduleItem.h"
+#import "PBSourceViewGitSubmoduleItem.h"
 
-@implementation PBGitSVSubmoduleItem
+@interface PBSourceViewGitSubmoduleItem ()
 
-+ (id) itemWithSubmodule:(GTSubmodule*)submodule
+@property (nonatomic, retain) GTSubmodule *submodule;
+
+@end
+
+@implementation PBSourceViewGitSubmoduleItem
+
++ (instancetype)itemWithSubmodule:(GTSubmodule *)submodule
 {
-    PBGitSVSubmoduleItem* item = [[self alloc] init];
-	item.submodule = submodule;
-    return item;
+	return [[self alloc] initWithSubmodule:submodule];
+}
+
+- (instancetype)initWithSubmodule:(GTSubmodule *)submodule
+{
+	self = [self initWithTitle:submodule.name revSpecifier:nil];
+	if (!self) return nil;
+
+	_submodule = submodule;
+
+	return self;
 }
 
 - (NSString *)title

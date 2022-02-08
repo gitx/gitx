@@ -9,44 +9,51 @@
 #import "PBServicesController.h"
 #import "PBGitRepositoryDocument.h"
 #import "PBGitRepository.h"
+#import "PBGitRepository_PBGitBinarySupport.h"
 
 @implementation PBServicesController
 
 - (NSString *)completeSHA1For:(NSString *)sha error:(NSString **)error
 {
 	NSArray *documents = [[NSApplication sharedApplication] orderedDocuments];
-	for (PBGitRepositoryDocument *doc in documents)
-	{
-		int ret = 1;
-		NSString *s = [doc.repository outputForArguments:[NSArray arrayWithObjects:@"log", @"-1", @"--pretty=format:%h (%s)", sha, nil] retValue:&ret];
-		if (!ret)
+	for (PBGitRepositoryDocument *doc in documents) {
+		NSError *error = nil;
+		NSString *s = [doc.repository outputOfTaskWithArguments:@[ @"log", @"-1", @"--pretty=format:%h (%s)", sha ] error:&error];
+		if (s) {
 			return s;
+		}
 	}
 
 	if (error) *error = @"Unable to resolve SHA in opened repositories";
 	return nil;
 }
 
-- (NSString *)runNameRevFor:(NSString *)s error:(NSString **)error
+- (NSString *)runNameRevFor:(NSString *)s error:(NSString **)errorStr
 {
 	NSArray *repositories = [[NSApplication sharedApplication] orderedDocuments];
 	if ([repositories count] == 0)
 		return s;
 	PBGitRepositoryDocument *doc = [repositories objectAtIndex:0];
-	int ret = 1;
-	NSString *returnString = [doc.repository outputForArguments:[NSArray arrayWithObjects:@"name-rev", @"--stdin", nil] inputString:s retValue:&ret];
-	if (!ret)
-		return returnString;
 
-	if (error) *error = @"Unable to resolve SHA in opened repositories";
+	NSError *error = nil;
+	PBTask *task = [doc.repository taskWithArguments:@[]];
+	task.standardInputData = [s dataUsingEncoding:NSUTF8StringEncoding];
+	BOOL success = [task launchTask:&error];
+
+	if (success) {
+		return task.standardOutputString;
+	} else {
+		PBLogError(error);
+	}
+
+	if (errorStr) *errorStr = @"Unable to resolve SHA in opened repositories";
 	return nil;
 }
 
 - (void)completeSha:(NSPasteboard *)pboard userData:(NSString *)userData error:(NSString **)error
 {
 	NSArray *types = [pboard types];
-	if (![types containsObject:NSStringPboardType])
-	{
+	if (![types containsObject:NSStringPboardType]) {
 		*error = @"Could not get data";
 		return;
 	}

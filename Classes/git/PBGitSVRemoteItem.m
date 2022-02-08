@@ -6,26 +6,23 @@
 //  Copyright 2010 Nathan Kinsinger. All rights reserved.
 //
 
-#import "PBGitSVRemoteItem.h"
+#import "PBSourceViewGitRemoteItem.h"
 #import "PBGitRef.h"
 
 
-@implementation PBGitSVRemoteItem
+@implementation PBSourceViewGitRemoteItem
 
-
-+ (id)remoteItemWithTitle:(NSString *)title
++ (instancetype)remoteItemWithTitle:(NSString *)title
 {
-	PBGitSVRemoteItem *item = [self itemWithTitle:title];
-	
-	return item;
+	return [[self alloc] initWithTitle:title revSpecifier:nil];
 }
 
-- (NSString*) iconName
+- (NSString *)iconName
 {
-    return @"RemoteTemplate";
+	return @"RemoteTemplate";
 }
 
-- (PBGitRef *) ref
+- (PBGitRef *)ref
 {
 	return [PBGitRef refFromString:[kGitXRemoteRefPrefix stringByAppendingString:self.title]];
 }

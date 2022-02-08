@@ -9,6 +9,25 @@ body {
 	font-size: 12px;
 }
 
+.body--light {
+    background: #fff;
+}
+
+.body--dark {
+    -webkit-filter: invert(0.89) hue-rotate(180deg);
+}
+
+.body--dark > * {
+    background-color: #fff;
+    color: #000;
+}
+
+.body--dark img {
+    -webkit-filter: invert(0.89)
+    hue-rotate(180deg)
+    contrast(160%);
+}
+
 table {
 	font-size: 12px;
 }
@@ -30,4 +49,8 @@ table {
 .SHA {
 	font-family: Menlo, Monaco, monospace;
 	text-decoration: none;
+}
+
+.hidden {
+	display: none;
 }

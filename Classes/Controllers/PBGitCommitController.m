@@ -13,6 +13,7 @@
 #import "PBGitIndex.h"
 #import "PBGitRepositoryWatcher.h"
 #import "PBCommitMessageView.h"
+#import "PBTask.h"
 #import "NSSplitView+GitX.h"
 
 #import <ObjectiveGit/GTRepository.h>
@@ -45,8 +46,8 @@
 
 @implementation PBGitCommitController
 
-@synthesize stagedTable=stagedTable;
-@synthesize unstagedTable=unstagedTable;
+@synthesize stagedTable = stagedTable;
+@synthesize unstagedTable = unstagedTable;
 
 - (id)initWithRepository:(PBGitRepository *)theRepository superController:(PBGitWindowController *)controller
 {
@@ -76,20 +77,29 @@
 	commitMessageView.repository = self.repository;
 	commitMessageView.delegate = self;
 
-	[commitMessageView setTypingAttributes:[NSDictionary dictionaryWithObject:[NSFont fontWithName:@"Menlo" size:12.0] forKey:NSFontAttributeName]];
-	
+	NSMutableDictionary *attrs = commitMessageView.typingAttributes.mutableCopy;
+	if (!attrs) {
+		attrs = [NSMutableDictionary dictionary];
+	}
+	attrs[NSFontAttributeName] = [NSFont fontWithName:@"Menlo" size:12.0];
+	commitMessageView.typingAttributes = attrs;
+
 	[unstagedFilesController setFilterPredicate:[NSPredicate predicateWithFormat:@"hasUnstagedChanges == 1"]];
 	[stagedFilesController setFilterPredicate:[NSPredicate predicateWithFormat:@"hasStagedChanges == 1"]];
-    [trackedFilesController setFilterPredicate:[NSPredicate predicateWithFormat:@"status > 0"]];
-	
-	[unstagedFilesController setSortDescriptors:[NSArray arrayWithObjects:
-		[[NSSortDescriptor alloc] initWithKey:@"status" ascending:false],
-		[[NSSortDescriptor alloc] initWithKey:@"path" ascending:true], nil]];
-	[stagedFilesController setSortDescriptors:[NSArray arrayWithObject:
-		[[NSSortDescriptor alloc] initWithKey:@"path" ascending:true]]];
+	[trackedFilesController setFilterPredicate:[NSPredicate predicateWithFormat:@"status > 0"]];
 
-    // listen for updates
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:repository];
+	[unstagedFilesController setSortDescriptors:[NSArray arrayWithObjects:
+															 [[NSSortDescriptor alloc] initWithKey:@"status"
+																						 ascending:false],
+															 [[NSSortDescriptor alloc] initWithKey:@"path"
+																						 ascending:true],
+															 nil]];
+	[stagedFilesController setSortDescriptors:[NSArray arrayWithObject:
+														   [[NSSortDescriptor alloc] initWithKey:@"path"
+																					   ascending:true]]];
+
+	// listen for updates
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:self.repository];
 
 	[stagedFilesController setAutomaticallyRearrangesObjects:NO];
 	[unstagedFilesController setAutomaticallyRearrangesObjects:NO];
@@ -100,31 +110,33 @@
 	[unstagedTable setTarget:self];
 	[stagedTable setTarget:self];
 
-	[unstagedTable registerForDraggedTypes: [NSArray arrayWithObject:FileChangesTableViewType]];
-	[stagedTable registerForDraggedTypes: [NSArray arrayWithObject:FileChangesTableViewType]];
+	[unstagedTable registerForDraggedTypes:[NSArray arrayWithObject:FileChangesTableViewType]];
+	[stagedTable registerForDraggedTypes:[NSArray arrayWithObject:FileChangesTableViewType]];
 
 	// Copy the menu over so we have two discrete menu objects
 	// which allows us to tell them apart in our delegate methods
 	stagedTable.menu = [unstagedTable.menu copy];
 }
 
-- (void) _repositoryUpdatedNotification:(NSNotification *)notification {
-    PBGitRepositoryWatcherEventType eventType = [(NSNumber *)[[notification userInfo] objectForKey:kPBGitRepositoryEventTypeUserInfoKey] unsignedIntValue];
-    if(eventType & (PBGitRepositoryWatcherEventTypeWorkingDirectory | PBGitRepositoryWatcherEventTypeIndex)){
-      // refresh if the working directory or index is modified
-      [self refresh:self];
-    }
+- (void)_repositoryUpdatedNotification:(NSNotification *)notification
+{
+	PBGitRepositoryWatcherEventType eventType = [(NSNumber *)[[notification userInfo] objectForKey:kPBGitRepositoryEventTypeUserInfoKey] unsignedIntValue];
+	if (eventType & (PBGitRepositoryWatcherEventTypeWorkingDirectory | PBGitRepositoryWatcherEventTypeIndex)) {
+		// refresh if the working directory or index is modified
+		[self refresh:self];
+	}
 }
 
-- (void) updateView
+- (void)updateView
 {
 	[self refresh:nil];
 }
 
 - (void)closeView
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[webController closeView];
+	[super closeView];
 }
 
 - (NSResponder *)firstResponder;
@@ -132,27 +144,28 @@
 	return commitMessageView;
 }
 
-- (PBGitIndex *) index {
-	return repository.index;
+- (PBGitIndex *)index
+{
+	return self.repository.index;
 }
 
-- (void) commitWithVerification:(BOOL) doVerify
+- (void)commitWithVerification:(BOOL)doVerify
 {
-	if ([[NSFileManager defaultManager] fileExistsAtPath:[repository.gitURL.path stringByAppendingPathComponent:@"MERGE_HEAD"]]) {
-		NSString * message = NSLocalizedString(@"Cannot commit merges",
-											   @"Title for sheet that GitX cannot create merge commits");
-		NSString * info = NSLocalizedString(@"GitX cannot commit merges yet. Please commit your changes from the command line.",
-											@"Information text for sheet that GitX cannot create merge commits");
+	if ([[NSFileManager defaultManager] fileExistsAtPath:[self.repository.gitURL.path stringByAppendingPathComponent:@"MERGE_HEAD"]]) {
+		NSString *message = NSLocalizedString(@"Cannot commit merges",
+											  @"Title for sheet that GitX cannot create merge commits");
+		NSString *info = NSLocalizedString(@"GitX cannot commit merges yet. Please commit your changes from the command line.",
+										   @"Information text for sheet that GitX cannot create merge commits");
 
 		[self.windowController showMessageSheet:message infoText:info];
 		return;
 	}
 
 	if ([[stagedFilesController arrangedObjects] count] == 0) {
-		NSString * message = NSLocalizedString(@"No changes to commit",
-											   @"Title for sheet that you need to stage changes before creating a commit");
-		NSString * info = NSLocalizedString(@"You need to stage some changed files before committing by moving them to the list of Staged Changes.",
-											@"Information text for sheet that you need to stage changes before creating a commit");
+		NSString *message = NSLocalizedString(@"No changes to commit",
+											  @"Title for sheet that you need to stage changes before creating a commit");
+		NSString *info = NSLocalizedString(@"You need to stage some changed files before committing by moving them to the list of Staged Changes.",
+										   @"Information text for sheet that you need to stage changes before creating a commit");
 
 		[self.windowController showMessageSheet:message infoText:info];
 		return;
@@ -160,13 +173,13 @@
 
 	NSString *commitMessage = [commitMessageView string];
 	if (commitMessage.length < kMinimalCommitMessageLength) {
-		NSString * message = NSLocalizedString(@"Missing commit message",
-											   @"Title for sheet that you need to enter a commit message before creating a commit");
-		NSString * info = [NSString stringWithFormat:
-						   NSLocalizedString(@"Please enter a commit message at least %i characters long before commiting.",
-											 @"Format for sheet that you need to enter a commit message before creating a commit giving the minimum length of the commit message required"),
-						   kMinimalCommitMessageLength ];
-		[self.windowController showMessageSheet:message infoText:info ];
+		NSString *message = NSLocalizedString(@"Missing commit message",
+											  @"Title for sheet that you need to enter a commit message before creating a commit");
+		NSString *info = [NSString stringWithFormat:
+									   NSLocalizedString(@"Please enter a commit message at least %i characters long before commiting.",
+														 @"Format for sheet that you need to enter a commit message before creating a commit giving the minimum length of the commit message required"),
+									   kMinimalCommitMessageLength];
+		[self.windowController showMessageSheet:message infoText:info];
 		return;
 	}
 
@@ -176,14 +189,12 @@
 	self.isBusy = YES;
 	commitMessageView.editable = NO;
 
-	[repository.index commitWithMessage:commitMessage andVerify:doVerify];
+	[self.repository.index commitWithMessage:commitMessage andVerify:doVerify];
 }
 
 - (void)discardChangesForFiles:(NSArray *)files force:(BOOL)force
 {
-	void (^performDiscard)(NSModalResponse) = ^(NSModalResponse returnCode) {
-		if (returnCode != NSAlertFirstButtonReturn) return;
-
+	void (^performDiscard)(void) = ^{
 		[self.repository.index discardChangesForFiles:files];
 	};
 
@@ -196,9 +207,9 @@
 		[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel button in Discard Changes sheet")];
 
 
-		[alert beginSheetModalForWindow:self.windowController.window completionHandler:performDiscard];
+		[self.windowController confirmDialog:alert suppressionIdentifier:nil forAction:performDiscard];
 	} else {
-		performDiscard(NSAlertFirstButtonReturn);
+		performDiscard();
 	}
 }
 
@@ -207,47 +218,63 @@
 - (IBAction)signOff:(id)sender
 {
 	NSError *error = nil;
-	GTConfiguration *config = [repository.gtRepo configurationWithError:&error];
+	GTConfiguration *config = [self.repository.gtRepo configurationWithError:&error];
 	NSString *userName = [config stringForKey:@"user.name"];
 	NSString *userEmail = [config stringForKey:@"user.email"];
 	if (!(userName && userEmail)) {
-		return [[repository windowController]
-				showMessageSheet:NSLocalizedString(@"User‘s name not set",
-												   @"Title for sheet that the user’s name is not set in the git configuration")
-				infoText:NSLocalizedString(@"Signing off a commit requires setting user.name and user.email in your git config",
-										   @"Information text for sheet that the user’s name is not set in the git configuration")];
+		return [self.windowController showMessageSheet:NSLocalizedString(@"User‘s name not set",
+																		 @"Title for sheet that the user’s name is not set in the git configuration")
+											  infoText:NSLocalizedString(@"Signing off a commit requires setting user.name and user.email in your git config",
+																		 @"Information text for sheet that the user’s name is not set in the git configuration")];
 	}
 
 	NSString *SOBline = [NSString stringWithFormat:NSLocalizedString(@"Signed-off-by: %@ <%@>",
 																	 @"Signed off message format. Most likely this should not be localised."),
-						 userName,
-						 userEmail];
+												   userName,
+												   userEmail];
 
-	if([commitMessageView.string rangeOfString:SOBline].location == NSNotFound) {
+	if ([commitMessageView.string rangeOfString:SOBline].location == NSNotFound) {
 		NSArray *selectedRanges = [commitMessageView selectedRanges];
 		commitMessageView.string = [NSString stringWithFormat:@"%@\n\n%@", commitMessageView.string, SOBline];
 		[commitMessageView setSelectedRanges:selectedRanges];
 	}
 }
 
-- (IBAction) refresh:(id) sender
+- (IBAction)refresh:(id)sender
 {
 	self.isBusy = YES;
 	self.status = NSLocalizedString(@"Refreshing index…", @"Message in status bar while the index is refreshing");
-	[repository.index refresh];
+	[self.repository.index refresh];
 
 	// Reload refs (in case HEAD changed)
-	[repository reloadRefs];
+	[self.repository reloadRefs];
 }
 
-- (IBAction) commit:(id) sender
+- (IBAction)prepareCommitMessage:(id)sender
 {
-    [self commitWithVerification:YES];
+	self.isBusy = YES;
+
+	NSString *prepareCommitMessage = [[[self repository] index] createPrepareCommitMessage];
+
+	if (prepareCommitMessage != nil) {
+		NSRange replacementRange = NSMakeRange(0, [[commitMessageView string] length]);
+
+		if ([commitMessageView shouldChangeTextInRange:replacementRange replacementString:prepareCommitMessage]) {
+			[commitMessageView replaceCharactersInRange:replacementRange withString:prepareCommitMessage];
+		}
+	}
+
+	self.isBusy = NO;
 }
 
-- (IBAction) forceCommit:(id) sender
+- (IBAction)commit:(id)sender
 {
-    [self commitWithVerification:NO];
+	[self commitWithVerification:YES];
+}
+
+- (IBAction)forceCommit:(id)sender
+{
+	[self commitWithVerification:NO];
 }
 
 - (IBAction)toggleAmendCommit:(id)sender
@@ -255,7 +282,7 @@
 	[[[self repository] index] setAmend:![[[self repository] index] isAmend]];
 }
 
-- (NSArray <PBChangedFile *> *)selectedFilesForSender:(id)sender
+- (NSArray<PBChangedFile *> *)selectedFilesForSender:(id)sender
 {
 	NSParameterAssert(sender != nil);
 
@@ -268,9 +295,9 @@
 
 - (IBAction)openFiles:(id)sender
 {
-	NSArray <PBChangedFile *> *selectedFiles = [self selectedFilesForSender:sender];
+	NSArray<PBChangedFile *> *selectedFiles = [self selectedFilesForSender:sender];
 
-	NSMutableArray <NSURL *> *fileURLs = [NSMutableArray array];
+	NSMutableArray<NSURL *> *fileURLs = [NSMutableArray array];
 	NSURL *workingDirectoryURL = self.repository.workingDirectoryURL;
 	for (PBChangedFile *file in selectedFiles) {
 		[fileURLs addObject:[workingDirectoryURL URLByAppendingPathComponent:file.path]];
@@ -280,9 +307,9 @@
 
 - (IBAction)revealInFinder:(id)sender
 {
-	NSArray <PBChangedFile *> *selectedFiles = [self selectedFilesForSender:sender];
+	NSArray<PBChangedFile *> *selectedFiles = [self selectedFilesForSender:sender];
 
-	NSMutableArray <NSURL *> *fileURLs = [NSMutableArray array];
+	NSMutableArray<NSURL *> *fileURLs = [NSMutableArray array];
 	NSURL *workingDirectoryURL = self.repository.workingDirectoryURL;
 	for (PBChangedFile *file in selectedFiles) {
 		[fileURLs addObject:[workingDirectoryURL URLByAppendingPathComponent:file.path]];
@@ -292,7 +319,7 @@
 
 - (IBAction)moveToTrash:(id)sender
 {
-	NSArray <PBChangedFile *> *selectedFiles = [self selectedFilesForSender:sender];
+	NSArray<PBChangedFile *> *selectedFiles = [self selectedFilesForSender:sender];
 
 	NSURL *workingDirectoryURL = self.repository.workingDirectoryURL;
 
@@ -303,33 +330,30 @@
 	[confirmTrash addButtonWithTitle:NSLocalizedString(@"OK", @"Move to trash alert - OK button")];
 	[confirmTrash addButtonWithTitle:NSLocalizedString(@"Cancel", @"Move to trash alert - Cancel button")];
 
-	[confirmTrash beginSheetModalForWindow:self.windowController.window completionHandler:^(NSModalResponse returnCode) {
-		if (returnCode != NSAlertFirstButtonReturn) return;
+	[self.windowController confirmDialog:confirmTrash
+				   suppressionIdentifier:nil
+							   forAction:^{
+								   BOOL anyTrashed = NO;
+								   for (PBChangedFile *file in selectedFiles) {
+									   NSURL *fileURL = [workingDirectoryURL URLByAppendingPathComponent:[file path]];
 
-		BOOL anyTrashed = NO;
-		for (PBChangedFile *file in selectedFiles)
-		{
-			NSURL* fileURL = [workingDirectoryURL URLByAppendingPathComponent:[file path]];
-
-			NSError* error = nil;
-			NSURL* resultURL = nil;
-			if ([[NSFileManager defaultManager] trashItemAtURL:fileURL
-											  resultingItemURL:&resultURL
-														 error:&error])
-			{
-				anyTrashed = YES;
-			}
-		}
-		if (anyTrashed)
-		{
-			[self.repository.index refresh];
-		}
-	}];
+									   NSError *error = nil;
+									   NSURL *resultURL = nil;
+									   if ([[NSFileManager defaultManager] trashItemAtURL:fileURL
+																		 resultingItemURL:&resultURL
+																					error:&error]) {
+										   anyTrashed = YES;
+									   }
+								   }
+								   if (anyTrashed) {
+									   [self.repository.index refresh];
+								   }
+							   }];
 }
 
-- (IBAction)ignoreFiles:(id) sender
+- (IBAction)ignoreFiles:(id)sender
 {
-	NSArray <PBChangedFile *> *selectedFiles = [self selectedFilesForSender:sender];
+	NSArray<PBChangedFile *> *selectedFiles = [self selectedFilesForSender:sender];
 	if ([selectedFiles count] == 0)
 		return;
 
@@ -358,12 +382,14 @@ static void reselectNextFile(NSArrayController *controller)
 	});
 }
 
-- (IBAction)stageFiles:(id)sender {
+- (IBAction)stageFiles:(id)sender
+{
 	[self.repository.index stageFiles:unstagedFilesController.selectedObjects];
 	reselectNextFile(unstagedFilesController);
 }
 
-- (IBAction)unstageFiles:(id)sender {
+- (IBAction)unstageFiles:(id)sender
+{
 	[self.repository.index unstageFiles:stagedFilesController.selectedObjects];
 	reselectNextFile(stagedFilesController);
 }
@@ -382,7 +408,7 @@ static void reselectNextFile(NSArrayController *controller)
 		[self discardChangesForFiles:selectedFiles force:TRUE];
 }
 
-# pragma mark PBGitIndex Notification handling
+#pragma mark PBGitIndex Notification handling
 
 - (void)refreshFinished:(NSNotification *)notification
 {
@@ -400,7 +426,7 @@ static void reselectNextFile(NSArrayController *controller)
 	commitMessageView.editable = YES;
 	commitMessageView.string = @"";
 	[webController setStateMessage:notification.userInfo[kNotificationDictionaryDescriptionKey]];
-}	
+}
 
 - (void)commitFailed:(NSNotification *)notification
 {
@@ -409,11 +435,11 @@ static void reselectNextFile(NSArrayController *controller)
 
 	NSString *reason = notification.userInfo[kNotificationDictionaryDescriptionKey];
 	self.status = [NSString stringWithFormat:
-				   NSLocalizedString(@"Commit failed: %@",
-									 @"Message in status bar when creating a commit has failed, including the reason for the failure"),
-				   reason];
-	[repository.windowController showMessageSheet:NSLocalizedString(@"Commit failed", @"Title for sheet that creating a commit has failed")
-										 infoText:reason];
+								NSLocalizedString(@"Commit failed: %@",
+												  @"Message in status bar when creating a commit has failed, including the reason for the failure"),
+								reason];
+	[self.windowController showMessageSheet:NSLocalizedString(@"Commit failed", @"Title for sheet that creating a commit has failed")
+								   infoText:reason];
 }
 
 - (void)commitHookFailed:(NSNotification *)notification
@@ -423,12 +449,12 @@ static void reselectNextFile(NSArrayController *controller)
 
 	NSString *reason = notification.userInfo[kNotificationDictionaryDescriptionKey];
 	self.status = [NSString stringWithFormat:
-				   NSLocalizedString(@"Commit hook failed: %@",
-									 @"Message in status bar when running a commit hook failed, including the reason for the failure"),
-				   reason];
-	[repository.windowController showCommitHookFailedSheet:NSLocalizedString(@"Commit hook failed", @"Title for sheet that running a commit hook has failed")
-												  infoText:reason
-										  commitController:self];
+								NSLocalizedString(@"Commit hook failed: %@",
+												  @"Message in status bar when running a commit hook failed, including the reason for the failure"),
+								reason];
+	[self.windowController showCommitHookFailedSheet:NSLocalizedString(@"Commit hook failed", @"Title for sheet that running a commit hook has failed")
+											infoText:reason
+									commitController:self];
 }
 
 - (void)amendCommit:(NSNotification *)notification
@@ -438,7 +464,7 @@ static void reselectNextFile(NSArrayController *controller)
 	if ([[commitMessageView string] length] > kMinimalCommitMessageLength) {
 		return;
 	}
-	
+
 	NSString *message = notification.userInfo[kNotificationDictionaryMessageKey];
 	commitMessageView.string = message;
 }
@@ -447,38 +473,38 @@ static void reselectNextFile(NSArrayController *controller)
 {
 	[stagedFilesController rearrangeObjects];
 	[unstagedFilesController rearrangeObjects];
-    
-    commitButton.enabled = ([[stagedFilesController arrangedObjects] count] > 0);
+
+	commitButton.enabled = ([[stagedFilesController arrangedObjects] count] > 0);
 }
 
 - (void)indexOperationFailed:(NSNotification *)notification
 {
-	[repository.windowController showMessageSheet:NSLocalizedString(@"Index operation failed", @"Title for sheet that running an index operation has failed")
-										 infoText:notification.userInfo[kNotificationDictionaryDescriptionKey]];
+	[self.windowController showMessageSheet:NSLocalizedString(@"Index operation failed", @"Title for sheet that running an index operation has failed")
+								   infoText:notification.userInfo[kNotificationDictionaryDescriptionKey]];
 }
 
 #pragma mark NSTextView delegate methods
 
 - (void)focusTable:(NSTableView *)table
 {
-    if ([table numberOfRows] > 0) {
-        if ([table numberOfSelectedRows] == 0) {
-            [table selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
-        }
-        [[table window] makeFirstResponder:table];
-    }
+	if ([table numberOfRows] > 0) {
+		if ([table numberOfSelectedRows] == 0) {
+			[table selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+		}
+		[[table window] makeFirstResponder:table];
+	}
 }
 
 - (BOOL)textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector;
 {
-    if (commandSelector == @selector(insertTab:)) {
-        [self focusTable:stagedTable];
-        return YES;
-    } else if (commandSelector == @selector(insertBacktab:)) {
-        [self focusTable:unstagedTable];
-        return YES;
+	if (commandSelector == @selector(insertTab:)) {
+		[self focusTable:stagedTable];
+		return YES;
+	} else if (commandSelector == @selector(insertBacktab:)) {
+		[self focusTable:unstagedTable];
+		return YES;
 	}
-    return NO;
+	return NO;
 }
 
 #pragma mark NSMenu delegate
@@ -487,8 +513,7 @@ NSString *PBLocalizedStringForArray(NSArray<PBChangedFile *> *array, NSString *s
 {
 	if (array.count == 0) {
 		return defaultString;
-	}
-	else if (array.count == 1) {
+	} else if (array.count == 1) {
 		return [NSString stringWithFormat:singleFormat, array.firstObject.path.lastPathComponent];
 	}
 	return [NSString stringWithFormat:multipleFormat, array.count];
@@ -496,29 +521,26 @@ NSString *PBLocalizedStringForArray(NSArray<PBChangedFile *> *array, NSString *s
 
 BOOL canDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 {
-	for (PBChangedFile *file in files)
-	{
-		if (file.hasUnstagedChanges)
-		{
+	for (PBChangedFile *file in files) {
+		if (file.hasUnstagedChanges) {
 			return YES;
 		}
 	}
 	return NO;
 }
 
-BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
+BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 {
-	for (PBChangedFile *file in files)
-	{
-		if (file.status != NEW)
-		{
+	for (PBChangedFile *file in files) {
+		if (file.status != NEW) {
 			return NO;
 		}
 	}
 	return YES;
 }
 
-- (void)menuNeedsUpdate:(NSMenu *)menu {
+- (void)menuNeedsUpdate:(NSMenu *)menu
+{
 	for (NSMenuItem *item in menu.itemArray) {
 		[self validateMenuItem:item];
 	}
@@ -527,9 +549,9 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
 {
 	NSTableView *table = (menuItem.menu == stagedTable.menu ? stagedTable : unstagedTable);
-	NSArray <PBChangedFile *> *filesForStaging = unstagedFilesController.selectedObjects;
-	NSArray <PBChangedFile *> *filesForUnstaging = stagedFilesController.selectedObjects;
-	NSArray <PBChangedFile *> *selectedFiles = (table.tag == 0 ? filesForStaging : filesForUnstaging);
+	NSArray<PBChangedFile *> *filesForStaging = unstagedFilesController.selectedObjects;
+	NSArray<PBChangedFile *> *filesForUnstaging = stagedFilesController.selectedObjects;
+	NSArray<PBChangedFile *> *selectedFiles = (table.tag == 0 ? filesForStaging : filesForUnstaging);
 	BOOL isInContextualMenu = (menuItem.parentItem == nil);
 
 	if (menuItem.action == @selector(stageFiles:)) {
@@ -542,8 +564,7 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 			menuItem.hidden = (filesForStaging.count == 0);
 		}
 		return filesForStaging.count > 0;
-	}
-	else if (menuItem.action == @selector(unstageFiles:)) {
+	} else if (menuItem.action == @selector(unstageFiles:)) {
 		if (isInContextualMenu) {
 			menuItem.title = PBLocalizedStringForArray(filesForUnstaging,
 													   NSLocalizedString(@"Unstage “%@”", @"Unstage file menu item (single file with name)"),
@@ -553,8 +574,7 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 			menuItem.hidden = (filesForUnstaging.count == 0);
 		}
 		return filesForUnstaging.count > 0;
-	}
-	else if (menuItem.action == @selector(discardFiles:)) {
+	} else if (menuItem.action == @selector(discardFiles:)) {
 		if (isInContextualMenu) {
 			menuItem.title = PBLocalizedStringForArray(filesForStaging,
 													   NSLocalizedString(@"Discard changes to “%@”…", @"Discard changes menu item (single file with name)"),
@@ -564,8 +584,7 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 			menuItem.hidden = shouldTrashInsteadOfDiscardAnyFileIn(filesForStaging);
 		}
 		return filesForStaging.count > 0 && canDiscardAnyFileIn(filesForStaging);
-	}
-	else if (menuItem.action == @selector(discardFilesForcibly:)) {
+	} else if (menuItem.action == @selector(discardFilesForcibly:)) {
 		if (isInContextualMenu) {
 			menuItem.title = PBLocalizedStringForArray(filesForStaging,
 													   NSLocalizedString(@"Discard changes to “%@”", @"Force Discard changes menu item (single file with name)"),
@@ -577,8 +596,7 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 			menuItem.alternate = !shouldHide;
 		}
 		return filesForStaging.count > 0 && canDiscardAnyFileIn(filesForStaging);
-	}
-	else if (menuItem.action == @selector(trashFiles:)) {
+	} else if (menuItem.action == @selector(moveToTrash:)) {
 		if (isInContextualMenu) {
 			menuItem.title = PBLocalizedStringForArray(filesForStaging,
 													   NSLocalizedString(@"Move “%@” to Trash", @"Move to Trash menu item (single file with name)"),
@@ -588,15 +606,14 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 			menuItem.hidden = !isVisible;
 		}
 		return filesForStaging.count > 0 && canDiscardAnyFileIn(filesForStaging);
-	}
-	else if (menuItem.action == @selector(openFiles:)) {
+	} else if (menuItem.action == @selector(openFiles:)) {
 		if (selectedFiles.count == 0) return NO;
 
 		NSString *filePath = selectedFiles.firstObject.path;
 		if (isInContextualMenu) {
 			if (selectedFiles.count == 1 && [self.repository submoduleAtPath:filePath error:NULL] != nil) {
 				menuItem.title = [NSString stringWithFormat:NSLocalizedString(@"Open Submodule “%@” in GitX", @"Open Submodule Repository in GitX menu item (single file with name)"),
-								  filePath.stringByStandardizingPath];
+															filePath.stringByStandardizingPath];
 			} else {
 				menuItem.title = PBLocalizedStringForArray(selectedFiles,
 														   NSLocalizedString(@"Open “%@”", @"Open File menu item (single file with name)"),
@@ -605,8 +622,7 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 			}
 		}
 		return YES;
-	}
-	else if (menuItem.action == @selector(ignoreFiles:)) {
+	} else if (menuItem.action == @selector(ignoreFiles:)) {
 		BOOL isActive = selectedFiles.count > 0 && table.tag == 0;
 		if (isInContextualMenu) {
 			menuItem.title = PBLocalizedStringForArray(selectedFiles,
@@ -616,23 +632,24 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 			menuItem.hidden = !isActive;
 		}
 		return isActive;
-	}
-	else if (menuItem.action == @selector(revealInFinder:)) {
+	} else if (menuItem.action == @selector(revealInFinder:)) {
 		BOOL active = selectedFiles.count == 1;
 		if (isInContextualMenu) {
 			if (active) {
 				menuItem.title = [NSString stringWithFormat:NSLocalizedString(@"Reveal “%@” in Finder", @"Reveal File in Finder contextual menu item (single file with name)"),
-								  selectedFiles.firstObject.path.lastPathComponent];
+															selectedFiles.firstObject.path.lastPathComponent];
 			} else {
 				menuItem.title = NSLocalizedString(@"Reveal in Finder", @"Reveal File in Finder contextual menu item (empty selection)");
 			}
 			menuItem.hidden = !active;
 		}
 		return active;
-	}
-	else if (menuItem.action == @selector(toggleAmendCommit:)) {
+	} else if (menuItem.action == @selector(toggleAmendCommit:)) {
 		menuItem.state = [[[self repository] index] isAmend] ? NSOnState : NSOffState;
 		return YES;
+	}
+	else if (menuItem.action == @selector(prepareCommitMessage:)) {
+		return [self.repository hookExists:@"prepare-commit-msg"];
 	}
 
 	return menuItem.enabled;
@@ -640,27 +657,27 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 
 #pragma mark PBFileChangedTableView delegate
 
-- (void)tableView:(NSTableView*)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn*)tableColumn row:(NSInteger)rowIndex
+- (void)tableView:(NSTableView *)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
 	id controller = [tableView tag] == 0 ? unstagedFilesController : stagedFilesController;
 	[[tableColumn dataCell] setImage:[[[controller arrangedObjects] objectAtIndex:rowIndex] icon]];
 }
 
-- (void) didDoubleClickOnTable:(NSTableView *) tableView
+- (void)didDoubleClickOnTable:(NSTableView *)tableView
 {
-	NSArrayController *controller = [tableView tag] == 0 ? unstagedFilesController : stagedFilesController;
+	NSArrayController *controller = (tableView == unstagedTable ? unstagedFilesController : stagedFilesController);
 
 	NSIndexSet *selectionIndexes = [tableView selectedRowIndexes];
 	NSArray *files = [[controller arrangedObjects] objectsAtIndexes:selectionIndexes];
-	if ([tableView tag] == 0) {
+
+	if (tableView == unstagedTable) {
 		[self.index stageFiles:files];
-	}
-	else {
+	} else {
 		[self.index unstageFiles:files];
 	}
 }
 
-- (BOOL) tableView:(NSTableView *)tv writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard*)pboard
+- (BOOL)tableView:(NSTableView *)tv writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
 {
 	// Copy the row numbers to the pasteboard.
 	[pboard declareTypes:[NSArray arrayWithObjects:FileChangesTableViewType, NSFilenamesPboardType, nil] owner:self];
@@ -674,17 +691,17 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 	NSArray *files = [controller.arrangedObjects objectsAtIndexes:rowIndexes];
 	NSURL *workingDirectoryURL = self.repository.workingDirectoryURL;
 
-	NSMutableArray<NSURL *> *URLs = [NSMutableArray arrayWithCapacity:rowIndexes.count];
+	NSMutableArray<NSString *> *paths = [NSMutableArray arrayWithCapacity:rowIndexes.count];
 	for (PBChangedFile *file in files) {
-		[URLs addObject:[workingDirectoryURL URLByAppendingPathComponent:file.path]];
+		[paths addObject:[[workingDirectoryURL URLByAppendingPathComponent:file.path] path]];
 	}
-	[pboard writeObjects:URLs];
+	[pboard setPropertyList:paths forType:NSFilenamesPboardType];
 
 	return YES;
 }
 
-- (NSDragOperation)tableView:(NSTableView*)tableView
-				validateDrop:(id <NSDraggingInfo>)info
+- (NSDragOperation)tableView:(NSTableView *)tableView
+				validateDrop:(id<NSDraggingInfo>)info
 				 proposedRow:(NSInteger)row
 	   proposedDropOperation:(NSTableViewDropOperation)operation
 {
@@ -696,21 +713,20 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray <PBChangedFile *> *files)
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView
-	   acceptDrop:(id <NSDraggingInfo>)info
+	   acceptDrop:(id<NSDraggingInfo>)info
 			  row:(NSInteger)row
 	dropOperation:(NSTableViewDropOperation)operation
 {
-	NSPasteboard* pboard = [info draggingPasteboard];
-	NSData* rowData = [pboard dataForType:FileChangesTableViewType];
-	NSIndexSet* rowIndexes = [NSKeyedUnarchiver unarchiveObjectWithData:rowData];
+	NSPasteboard *pboard = [info draggingPasteboard];
+	NSData *rowData = [pboard dataForType:FileChangesTableViewType];
+	NSIndexSet *rowIndexes = [NSKeyedUnarchiver unarchiveObjectWithData:rowData];
 
 	NSArrayController *controller = [aTableView tag] == 0 ? stagedFilesController : unstagedFilesController;
 	NSArray *files = [[controller arrangedObjects] objectsAtIndexes:rowIndexes];
 
 	if ([aTableView tag] == 0) {
 		[self.index unstageFiles:files];
-	}
-	else {
+	} else {
 		[self.index stageFiles:files];
 	}
 
