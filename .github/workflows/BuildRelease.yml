@@ -26,6 +26,13 @@ jobs:
           skip-unshallow: 'true'
           abbrev: false
           commit-ish: HEAD
+      - name: Build Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@main
+        with:
+          configuration: ".github/changelog-configuration.json"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Set XCode Version
         run: sudo xcode-select -s /Applications/${{ matrix.xcode }}.app
       - name: pre build
@@ -45,6 +52,7 @@ jobs:
           tag_name: ${{steps.tagger.outputs.tag}}
           release_name: Release ${{steps.tagger.outputs.tag}}
           draft: false
+          body: ${{steps.github_release.outputs.changelog}}
           prerelease: false
       - name: Upload Release Asset ${{steps.tagger.outputs.tag}}
         id: upload-release-asset
