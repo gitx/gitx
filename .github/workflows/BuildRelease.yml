@@ -1,0 +1,58 @@
+name: build-gitx
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-gitx:
+    name: build-gitx
+    runs-on: macos-11
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: [ Xcode_13.2.1 ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Find Tag
+        id: tagger
+        uses: jimschubert/query-tag-action@v2
+        with:
+          skip-unshallow: 'true'
+          abbrev: false
+          commit-ish: HEAD
+      - name: Set XCode Version
+        run: sudo xcode-select -s /Applications/${{ matrix.xcode }}.app
+      - name: pre build
+        run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
+      - name: Build project
+        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="x86_64 arm64"
+      - name: Prepare artifact
+        run: |
+          mv GitX.xcarchive/Products/Applications/GitX.app .
+          hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX.dmg
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{steps.tagger.outputs.tag}}
+          release_name: Release ${{steps.tagger.outputs.tag}}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset ${{steps.tagger.outputs.tag}}
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: GitX.dmg
+          asset_name: GitX built by ${{ matrix.xcode }}.dmg
+          asset_content_type: application/zip
