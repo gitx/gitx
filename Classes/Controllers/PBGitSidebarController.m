@@ -222,13 +222,31 @@
 
 - (void)openSubmoduleAtURL:(NSURL *)submoduleURL
 {
-	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:submoduleURL
-																		   display:YES
-																 completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
-																	 if (error) {
-																		 [self.windowController showErrorSheet:error];
-																	 }
-																 }];
+  NSWindow *currentWindow = [[NSApplication sharedApplication] keyWindow];
+  NSEvent *theEvent = [[NSApplication sharedApplication] currentEvent];
+  BOOL openInTab = (theEvent && [theEvent modifierFlags] & NSEventModifierFlagOption)!=0;
+  [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:submoduleURL
+                                                   display:YES
+                                                   completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
+
+    if (error) {
+      [self.windowController showErrorSheet:error];
+    }
+    else if (!documentWasAlreadyOpen) {
+      if (@available(macOS 10.13, *)) {
+        if (openInTab) {
+          // move into a tab of the original window
+          if (currentWindow) {
+            NSWindow *myWindow = [[document.windowControllers firstObject] window];
+            if (myWindow) {
+              NSWindowTabGroup *tabGroup = currentWindow.tabGroup;
+              [tabGroup addWindow:myWindow];
+            }
+          }
+        }
+      }
+    }
+  }];
 }
 
 #pragma mark NSOutlineView delegate methods
