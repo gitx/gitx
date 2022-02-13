@@ -38,11 +38,11 @@ jobs:
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
-        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="x86_64 arm64"
+        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="x86_64"
       - name: Prepare artifact
         run: |
           mv GitX.xcarchive/Products/Applications/GitX.app .
-          hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX.dmg
+          hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-x86_64.dmg
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -61,6 +61,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: GitX.dmg
-          asset_name: GitX built by ${{ matrix.xcode }}.dmg
+          asset_path: GitX-x86_64.dmg
+          asset_name: GitX built by ${{ matrix.xcode }}-x86_64.dmg
           asset_content_type: application/zip
