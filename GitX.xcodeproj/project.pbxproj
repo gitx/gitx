@@ -825,7 +825,7 @@
 			isa = PBXGroup;
 			children = (
 				4A5D757D14A9A90500DF6C68 /* Credits.html */,
-				4A5D760214A9A99E00DF6C68 /* English.lproj */,
+				4A5D760214A9A99E00DF6C68 /* en.lproj */,
 				4A90A73414A9D24300D0DA02 /* GitX.sdef */,
 				4A90A72914A9C12F00D0DA02 /* GitX_Prefix.pch */,
 				F5D619ED0EAE62EA00341D73 /* html */,
@@ -893,7 +893,7 @@
 			path = XIBs;
 			sourceTree = "<group>";
 		};
-		4A5D760214A9A99E00DF6C68 /* English.lproj */ = {
+		4A5D760214A9A99E00DF6C68 /* en.lproj */ = {
 			isa = PBXGroup;
 			children = (
 				4A5D760314A9A99E00DF6C68 /* InfoPlist.strings */,
@@ -906,7 +906,7 @@
 				4A5D761314A9A99E00DF6C68 /* Preferences.xib */,
 				4A5D761514A9A99E00DF6C68 /* RepositoryWindow.xib */,
 			);
-			path = English.lproj;
+			path = en.lproj;
 			sourceTree = "<group>";
 		};
 		4A5D762114A9A9CC00DF6C68 /* Classes */ = {
