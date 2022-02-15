@@ -171,15 +171,17 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file)
 static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)(void))
 {
 	if (isCanceled()) return nil;
-	GTDiffFindOptionsFlags flags = GTDiffFindOptionsFlagsFindRenames;
+	GTDiffOptionsFlags diffFlags = GTDiffOptionsFlagsNormal;
+	GTDiffFindOptionsFlags findFlags = GTDiffFindOptionsFlagsFindRenames;
 	if (![PBGitDefaults showWhitespaceDifferences]) {
-		flags |= GTDiffFindOptionsFlagsIgnoreWhitespace;
+		diffFlags |= GTDiffOptionsFlagsIgnoreWhitespace;
+		findFlags |= GTDiffFindOptionsFlagsIgnoreWhitespace;
 	}
 	NSError *err = nil;
 	GTDiff *d = [GTDiff diffOldTree:commit.parents.firstObject.tree
 						withNewTree:commit.tree
 					   inRepository:repo
-							options:@{}
+							options:@{GTDiffOptionsFlagsKey : @(diffFlags)}
 							  error:&err];
 
 	if (!d) {
@@ -188,7 +190,10 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 	}
 
 	// Rewrite the diff to display moved files.
-	[d findSimilarWithOptions:@{GTDiffFindOptionsFlagsKey : @(flags)}];
+	[d findSimilarWithOptions:
+	 @{GTDiffFindOptionsFlagsKey : @(findFlags),
+	   GTDiffFindOptionsRenameLimitKey : @(2000)
+	 }];
 
 	if (isCanceled()) return nil;
 	NSMutableArray<NSDictionary<NSString *, NSObject *> *> *fileDeltas = [NSMutableArray array];
