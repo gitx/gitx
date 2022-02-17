@@ -65,4 +65,4 @@ jobs:
           asset_name: GitX built by ${{ matrix.xcode }}-x86_64.dmg
           asset_content_type: application/zip
       - name: update Sparkle
-        run: curl -u hannes2:${{ secrets.GITHUBTOKEN }} -X POST https://api.github.com/repos/gitx/gitx/pages/builds
+        run: curl -u $GITHUB_ACTOR:${{ secrets.GITHUBTOKEN }} -X POST https://api.github.com/repos/$GITHUB_REPOSITORY/pages/builds
