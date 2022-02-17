@@ -11,7 +11,7 @@ include_prereleases: false
             {% if release.prerelease and page.include_prereleases != true %}{% continue %}{% endif %}
 
             {% assign version = release.tag_name %}
-            {% assign short_version = nil %}
+            {% assign short_version = release.tag_name %}
 
             {% for asset in release.assets %}
                 {% assign asset_ext = asset.browser_download_url | slice: -3, 3 %}
@@ -24,10 +24,10 @@ include_prereleases: false
                 <title>{{ release.name }}</title>
                 <description><![CDATA[{{ release.body | markdownify }}]]></description>
                 <pubDate>{{ release.published_at | date_to_rfc822 }}</pubDate>
+                <sparkle:version>{{ version }}</sparkle:version>
+                <sparkle:shortVersionString>{{ version }}</sparkle:shortVersionString>
                 <enclosure
                     url="{{ asset_url }}"
-                    sparkle:version="{{ version }}"
-                    {% if short_version %}sparkle:shortVersionString="{{ short_version }}"{% endif %}
                     length="{{ asset_size }}"
                     type="application/octet-stream"
                 />
