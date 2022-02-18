@@ -64,3 +64,5 @@ jobs:
           asset_path: GitX-x86_64.dmg
           asset_name: GitX built by ${{ matrix.xcode }}-x86_64.dmg
           asset_content_type: application/zip
+      - name: update Sparkle
+        run: curl -u $GITHUB_ACTOR:${{ secrets.GITHUBTOKEN }} -X POST https://api.github.com/repos/$GITHUB_REPOSITORY/pages/builds
