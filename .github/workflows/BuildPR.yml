@@ -18,7 +18,7 @@ jobs:
       - name: ls Xcode
         run: ls -la /Applications/Xcode*
       - name: Checkout
-        uses: actions/checkout@v2.4.0
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: recursive
