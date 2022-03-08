@@ -26,11 +26,6 @@
     "gradle-wrapper"
   ],
   "sort": "ASC",
-  "tag_resolver": {
-    "filter": {
-      "pattern": "^\\d"
-    }
-  },
   "template": "${{CHANGELOG}}",
   "pr_template": "- ${{TITLE}}\n   - PR: #${{NUMBER}}",
   "empty_template": "- no changes"
