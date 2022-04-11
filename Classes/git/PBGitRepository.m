@@ -1127,6 +1127,22 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return [self executeHook:name arguments:arguments output:NULL error:error];
 }
 
+- (NSString *)pathForHook:(NSString *)name
+{
+	NSError *error = nil;
+	GTConfiguration *config = [self.gtRepo configurationWithError:&error];
+	NSString *customHooksPath = [config stringForKey:@"core.hookspath"];
+
+	NSString *hooksPath;
+	if (customHooksPath != nil) {
+		hooksPath = [[NSURL fileURLWithPath:[customHooksPath stringByExpandingTildeInPath] relativeToURL:[self workingDirectoryURL]] path];
+	} else {
+		hooksPath = [[[self gitURL] path] stringByAppendingPathComponent:@"hooks"];
+	}
+
+	return [hooksPath stringByAppendingPathComponent:name];
+}
+
 - (BOOL)executeHook:(NSString *)name arguments:(NSArray *)arguments output:(NSString **)outputPtr error:(NSError **)error
 {
 	NSParameterAssert(name != nil);
@@ -1136,8 +1152,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		return YES;
 	}
 
-	NSString *hookPath = [[[[self gitURL] path] stringByAppendingPathComponent:@"hooks"] stringByAppendingPathComponent:name];
-	PBTask *task = [PBTask taskWithLaunchPath:hookPath arguments:arguments inDirectory:self.workingDirectory];
+	PBTask *task = [PBTask taskWithLaunchPath:[self pathForHook:name] arguments:arguments inDirectory:self.workingDirectory];
 	task.additionalEnvironment = @{
 		@"GIT_DIR" : self.gitURL.path,
 		@"GIT_INDEX_FILE" : [self.gitURL.path stringByAppendingPathComponent:@"index"],
@@ -1167,7 +1182,8 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 - (BOOL)hookExists:(NSString *)name
 {
-	NSURL *hookURL = [[[self gitURL] URLByAppendingPathComponent:@"hooks"] URLByAppendingPathComponent:name];
+	NSURL *hookURL = [NSURL fileURLWithPath:[self pathForHook:name]];
+
 	NSNumber *executable;
 
 	return [hookURL getResourceValue:&executable forKey:NSURLIsExecutableKey error:NULL] && [executable boolValue];
