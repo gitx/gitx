@@ -33,7 +33,7 @@ jobs:
           mv GitX.xcarchive/Products/Applications/GitX.app .
           hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-x86_64.dmg
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: ${{ success() }}
         with:
           name: GitX built by ${{ matrix.xcode }}-x86_64
