@@ -7,12 +7,18 @@ on:
 
 jobs:
   build-gitx:
-    name: build-gitx
-    runs-on: macos-11
+    name: build
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         xcode: [ Xcode_13.2.1 ]
+        os: [ macos-11 ]
+        abi: [ x86_64 ]
+        include:
+          - xcode: Xcode
+            os: ARM64
+            abi: arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -38,31 +44,52 @@ jobs:
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
-        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="x86_64"
+        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}"
       - name: Prepare artifact
         run: |
           mv GitX.xcarchive/Products/Applications/GitX.app .
-          hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-x86_64.dmg
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+          hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-${{ matrix.abi }}.dmg
+      - uses: actions/upload-artifact@v3
+        with:
+          name: GitX-${{ matrix.abi }}.dmg
+          path: GitX-${{ matrix.abi }}.dmg
+
+  release:
+    needs: build-gitx
+    runs-on: macos-11
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Find Tag
+        id: tagger
+        uses: jimschubert/query-tag-action@v2
+        with:
+          skip-unshallow: 'true'
+          abbrev: false
+          commit-ish: HEAD
+      - name: Build Changelog
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@main
+        with:
+          configuration: ".github/changelog-configuration.json"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/download-artifact@v3
         with:
-          tag_name: ${{steps.tagger.outputs.tag}}
-          release_name: Release ${{steps.tagger.outputs.tag}}
-          draft: false
-          body: ${{steps.github_release.outputs.changelog}}
-          prerelease: false
-      - name: Upload Release Asset ${{steps.tagger.outputs.tag}}
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
+          name: GitX-x86_64.dmg
+      - uses: actions/download-artifact@v3
+        with:
+          name: GitX-arm64.dmg
+
+      - run: |
+          assetsDmg=$(find . -name "GitX*.dmg" | while read -r asset ; do echo "-a $asset" ; done)
+          hub release create ${assetsDmg} -m ${{steps.tagger.outputs.tag}} ${{steps.tagger.outputs.tag}}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: GitX-x86_64.dmg
-          asset_name: GitX built by ${{ matrix.xcode }}-x86_64.dmg
-          asset_content_type: application/zip
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{steps.tagger.outputs.tag}}
+
       - name: update Sparkle
         run: curl -u $GITHUB_ACTOR:${{ secrets.GITHUBTOKEN }} -X POST https://api.github.com/repos/$GITHUB_REPOSITORY/pages/builds
