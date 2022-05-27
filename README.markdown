@@ -21,3 +21,7 @@ for build instructions.
 ![Staging View](screenshot-stage.png)
 
 ![History View](screenshot-history.png)
+
+### License
+
+GitX is licensed under the GPL version 2. For more information, see the attached COPYING file.
