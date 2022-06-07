@@ -22,6 +22,12 @@ for build instructions.
 
 ![History View](screenshot-history.png)
 
+### Apple Silicon
+
+This project is supported by MacStadium Open Source Developer Program with a free Mac mini for our CI. Thank you !
+
+<img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" width="300" />
+
 ### License
 
 GitX is licensed under the GPL version 2. For more information, see the attached COPYING file.
