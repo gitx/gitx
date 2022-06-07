@@ -16,11 +16,10 @@ jobs:
         xcode: [ Xcode_12.5, Xcode_13.2.1 ]
         os: [ macos-11 ]
         abi: [ x86_64 ]
-#        arm64 runner: disabled, because currently during pull request it makes not that much sense
-#        include:
-#          - xcode: Xcode
-#            os: ARM64
-#            abi: arm64
+        include:
+          - xcode: Xcode
+            os: ARM64
+            abi: arm64
     steps:
       - name: ls Xcode
         run: ls -la /Applications/Xcode*
