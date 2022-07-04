@@ -13,8 +13,7 @@ GitX**](https://github.com/gitx/gitx.github.io/issues/1).
 
 ### How to Build & Install:
 
-See [the wiki page](https://github.com/gitx/gitx/wiki/Build-instructions)
-for build instructions.
+See [github action](https://github.com/gitx/gitx/blob/master/.github/workflows/BuildPR.yml#L33-L36) for the way how we build it.
 
 ### Screenshots
 
