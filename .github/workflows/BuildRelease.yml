@@ -71,7 +71,7 @@ jobs:
           name: GitX-arm64.dmg
 
       - name: Create Release
-        uses: softprops/action-gh-release@v0.1.14
+        uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{steps.tagger.outputs.tag}}
           generate_release_notes: true
