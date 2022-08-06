@@ -38,9 +38,12 @@ jobs:
         run: |
           mv GitX.xcarchive/Products/Applications/GitX.app .
           hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-${{ matrix.abi }}.dmg
+          zip -r GitX-${{ matrix.abi }}.zip GitX.app
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         if: ${{ success() }}
         with:
           name: GitX built by ${{ matrix.xcode }}-${{ matrix.abi }}
-          path: GitX-${{ matrix.abi }}.dmg
+          path: |
+            GitX-${{ matrix.abi }}.dmg
+            GitX-${{ matrix.abi }}.zip

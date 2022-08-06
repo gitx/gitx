@@ -42,10 +42,13 @@ jobs:
         run: |
           mv GitX.xcarchive/Products/Applications/GitX.app .
           hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-${{ matrix.abi }}.dmg
+          zip -r GitX-${{ matrix.abi }}.zip GitX.app
       - uses: actions/upload-artifact@v3
         with:
           name: GitX-${{ matrix.abi }}.dmg
-          path: GitX-${{ matrix.abi }}.dmg
+          path: |
+            GitX-${{ matrix.abi }}.dmg
+            GitX-${{ matrix.abi }}.zip
 
   release:
     needs: build-gitx
@@ -69,6 +72,12 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: GitX-arm64.dmg
+      - uses: actions/download-artifact@v3
+        with:
+          name: GitX-x86_64.zip
+      - uses: actions/download-artifact@v3
+        with:
+          name: GitX-arm64.zip
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -79,7 +88,9 @@ jobs:
           name: ${{steps.tagger.outputs.tag}}
           files: |
             GitX-x86_64.dmg
+            GitX-x86_64.zip
             GitX-arm64.dmg
+            GitX-arm64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
