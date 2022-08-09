@@ -80,13 +80,23 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: GitX-arm64.zip
-
+      - name: Check pre-release
+        run: |
+          echo "tag=${{steps.tagger.outputs.tag}}"
+          if [[ ${{ steps.tagger.outputs.tag }} == *alpha* || ${{ steps.tagger.outputs.tag }} == *beta* ]]
+          then
+             prerelease=true
+          else
+             prerelease=false
+          fi
+          echo "PRE_RELEASE=$prerelease" >> $GITHUB_ENV
+          echo "prerelease=$prerelease"
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{steps.tagger.outputs.tag}}
           generate_release_notes: true
-          prerelease: true
+          prerelease: ${{ env.PRE_RELEASE }}
           name: ${{steps.tagger.outputs.tag}}
           files: |
             GitX-x86_64.dmg
