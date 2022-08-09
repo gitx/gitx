@@ -46,9 +46,11 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: GitX-${{ matrix.abi }}.dmg
-          path: |
-            GitX-${{ matrix.abi }}.dmg
-            GitX-${{ matrix.abi }}.zip
+          path: GitX-${{ matrix.abi }}.dmg
+      - uses: actions/upload-artifact@v3
+        with:
+          name: GitX-${{ matrix.abi }}.zip
+          path: GitX-${{ matrix.abi }}.zip
 
   release:
     needs: build-gitx
