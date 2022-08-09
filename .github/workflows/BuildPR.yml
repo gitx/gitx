@@ -43,7 +43,11 @@ jobs:
         uses: actions/upload-artifact@v3
         if: ${{ success() }}
         with:
-          name: GitX built by ${{ matrix.xcode }}-${{ matrix.abi }}
-          path: |
-            GitX-${{ matrix.abi }}.dmg
-            GitX-${{ matrix.abi }}.zip
+          name: GitX-${{ matrix.abi }}.dmg
+          path: GitX-${{ matrix.abi }}.dmg
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        if: ${{ success() }}
+        with:
+          name: GitX-${{ matrix.abi }}.zip
+          path: GitX-${{ matrix.abi }}.zip
