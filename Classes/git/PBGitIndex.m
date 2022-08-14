@@ -351,6 +351,10 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 		[arguments addObject:parent];
 	}
 
+    if (/* gpg-signing preference is set */ true) {
+        [arguments addObject:@"--gpg-sign"];
+    }
+
 	[self postCommitUpdate:@"Creating commit"];
 
 	if (doVerify) {
