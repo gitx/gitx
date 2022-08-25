@@ -180,7 +180,10 @@
 
 	[commitList registerForDraggedTypes:[NSArray arrayWithObject:@"PBGitRef"]];
 
-	[upperToolbarView setTopShade:237 / 255.0f bottomShade:216 / 255.0f];
+	commitList.target = self;
+	commitList.doubleAction = @selector(didDoubleClickCommitList:);
+
+	[upperToolbarView setTopShade:237/255.0f bottomShade:216/255.0f];
 	[scopeBarView setTopColor:[NSColor colorWithCalibratedHue:0.579 saturation:0.068 brightness:0.898 alpha:1.000]
 				  bottomColor:[NSColor colorWithCalibratedHue:0.579 saturation:0.119 brightness:0.765 alpha:1.000]];
 	[self updateBranchFilterMatrix];
@@ -759,6 +762,35 @@
 	return YES;
 }
 
+- (void)didDoubleClickCommitList:(id)sender
+{
+	NSPoint location = [commitList mouseDownPoint];
+	NSInteger row = [commitList rowAtPoint:location];
+	NSInteger column = [commitList columnAtPoint:location];
+
+	PBGitRevisionCell *cell = (PBGitRevisionCell *)[commitList viewAtColumn:column row:row makeIfNecessary:NO];
+	PBGitCommit *commit = [[commitController arrangedObjects] objectAtIndex:row];
+
+	int index = -1;
+	if ([cell respondsToSelector:@selector(indexAtX:)]) {
+		NSRect cellFrame = [commitList frameOfCellAtColumn:column row:row];
+		CGFloat deltaX = location.x - cellFrame.origin.x;
+		index = [cell indexAtX:deltaX];
+	}
+
+	if (index == -1)
+		return;
+
+	PBGitRef *ref = [[commit refs] objectAtIndex:index];
+	if (!ref)
+		return;
+
+	NSError *error = nil;
+	BOOL success = [self.repository checkoutRefish:ref error:&error];
+	if (!success) {
+		[self.windowController showErrorSheet:error];
+	}
+}
 
 #pragma mark -
 #pragma mark File browser
