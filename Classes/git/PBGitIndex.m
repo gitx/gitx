@@ -319,6 +319,14 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 // TODO: make Asynchronous
 - (void)commitWithMessage:(NSString *)commitMessage andVerify:(BOOL)doVerify
 {
+	NSError *error = nil;
+	GTConfiguration *config = [self.repository.gtRepo configurationWithError:&error];
+	if (!config) {
+		PBLogError(error);
+		[self postCommitFailure:@"Failed to load repository configuration"];
+		return;
+	}
+
 	NSMutableString *commitSubject = [@"commit: " mutableCopy];
 	NSRange newLine = [commitMessage rangeOfString:@"\n"];
 	if (newLine.location == NSNotFound)
@@ -333,7 +341,6 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 
 
 	[self postCommitUpdate:@"Creating tree"];
-	NSError *error = nil;
 	NSString *tree = [self.repository outputOfTaskWithArguments:@[ @"write-tree" ] error:&error];
 	if (!tree) {
 		PBLogError(error);
@@ -351,9 +358,10 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 		[arguments addObject:parent];
 	}
 
-    if (/* gpg-signing preference is set */ true) {
-        [arguments addObject:@"--gpg-sign"];
-    }
+	BOOL gpgSign = [config boolForKey:@"commit.gpgSign"];
+	if (gpgSign) {
+		[arguments addObject:@"--gpg-sign"];
+	}
 
 	[self postCommitUpdate:@"Creating commit"];
 
@@ -394,7 +402,13 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	NSString *commit = [[task standardOutputString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 	if (!success || commit.length != 40) {
 		PBLogError(error);
-		return [self postCommitFailure:@"Could not create a commit object"];
+		NSString *taskOutput = error.userInfo[PBTaskTerminationOutputKey];
+		if (gpgSign && [taskOutput hasPrefix:@"error: cannot run gpg"]) {
+			[self postCommitFailure:@"GPG signing seems to have failed.\n\nMake sure you have configured your environment correctly and have set gpg.program to point at your gpg binary."];
+		} else {
+			[self postCommitFailure:@"Could not create a commit object"];
+		}
+		return;
 	}
 
 	[self postCommitUpdate:@"Updating HEAD"];
