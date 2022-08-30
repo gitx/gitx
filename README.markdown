@@ -8,8 +8,7 @@ control system.
 GitX has a long history of various branches and versions maintained by
 various people over the years. This github org & repo are an attempt to
 consolidate and move forward with a current, common, community-maintained
-version. See discussion at [**Forking, and plans for the future of
-GitX**](https://github.com/gitx/gitx.github.io/issues/1).
+version.
 
 ### How to Build & Install:
 
