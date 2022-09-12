@@ -30,9 +30,19 @@ jobs:
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
         run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}"
-      - name: Prepare artifact
+      - name: Notarization
         run: |
           mv GitX.xcarchive/Products/Applications/GitX.app .
+          APP_PATH="GitX.app"
+          ZIP_PATH="GitX.zip"
+          ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
+          xcrun notarytool submit "$ZIP_PATH" --apple-id ${{ secrets.APPLE_ID }} --team-id ${{ secrets.APPLE_TEAM_ID }} --password ${{ secrets.APPLE_PASSWORD }} --wait --webhook "https://example.com/notarization"
+      - name: Check Notarization
+        run: |
+          ls -la GitX.app
+      #          spctl -a -vv GitX.app
+      - name: Prepare artifact
+        run: |
           hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-${{ matrix.abi }}.dmg
           zip -r GitX-${{ matrix.abi }}.zip GitX.app
       - name: Upload artifact
