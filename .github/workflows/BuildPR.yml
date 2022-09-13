@@ -36,7 +36,7 @@ jobs:
           APP_PATH="GitX.app"
           ZIP_PATH="GitX.zip"
           ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
-          xcrun notarytool submit "$ZIP_PATH" --apple-id ${{ secrets.APPLE_ID }} --team-id ${{ secrets.APPLE_TEAM_ID }} --password ${{ secrets.APPLE_PASSWORD }} --wait --webhook "https://example.com/notarization"
+          xcrun notarytool submit "$ZIP_PATH" --apple-id ${{ secrets.APPLE_ID }} --team-id ${{ secrets.APPLE_TEAM_ID }} --password ${{ secrets.APPLE_PASSWORD }} --wait
       - name: Check Notarization
         run: |
           ls -la GitX.app
