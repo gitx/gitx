@@ -35,8 +35,15 @@ jobs:
           mv GitX.xcarchive/Products/Applications/GitX.app .
           APP_PATH="GitX.app"
           ZIP_PATH="GitX.zip"
+          NOTARY_LOG="notary.log"
+          ID_FILE="id.txt"
           ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
-          xcrun notarytool submit "$ZIP_PATH" --apple-id ${{ secrets.APPLE_ID }} --team-id ${{ secrets.APPLE_TEAM_ID }} --password ${{ secrets.APPLE_PASSWORD }} --wait
+          xcrun notarytool submit "$ZIP_PATH" --apple-id ${{ secrets.APPLE_ID }} --team-id ${{ secrets.APPLE_TEAM_ID }} --password ${{ secrets.APPLE_PASSWORD }} --wait | tee "$NOTARY_LOG"
+          echo "print log output"
+          cat "$NOTARY_LOG"
+          ID=$(cat "$NOTARY_LOG" | tail -3 | cut -d':' -f2 | head -n 1)
+          echo "Id is: $ID"
+          xcrun notarytool log $ID --apple-id ${{ secrets.APPLE_ID }} --team-id ${{ secrets.APPLE_TEAM_ID }} --password ${{ secrets.APPLE_PASSWORD }}
       - name: Check Notarization
         run: |
           ls -la GitX.app
