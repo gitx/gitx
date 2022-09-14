@@ -30,9 +30,23 @@ jobs:
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
         run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}"
+      - name: Prepare for signing and notarization
+        run: mv GitX.xcarchive/Products/Applications/GitX.app .
+      - name: Signing code
+        run: |
+          APP="GitX.app"
+          codesign --remove-signature "${APP}"
+          codesign --remove-signature "${APP}/Contents/Frameworks/MGScopeBar.framework"
+          codesign --remove-signature "${APP}/Contents/Frameworks/ObjectiveGit.framework"
+          codesign --remove-signature "${APP}/Contents/Frameworks/Sparkle.framework"
+          DID="Developer ID Application: ${{ secrets.APPLE_TEAM_ID }}"
+          echo "${DID}"
+          codesign -s "${DID}" -f --timestamp "${APP}/Contents/Frameworks/MGScopeBar.framework"
+          codesign -s "${DID}" -f --timestamp "${APP}/Contents/Frameworks/ObjectiveGit.framework"
+          codesign -s "${DID}" -f --timestamp "${APP}/Contents/Frameworks/Sparkle.framework"
+          codesign -s "${DID}" -f --timestamp -o runtime --entitlements "app.entitlements" "${APP}"
       - name: Notarization
         run: |
-          mv GitX.xcarchive/Products/Applications/GitX.app .
           APP_PATH="GitX.app"
           ZIP_PATH="GitX.zip"
           NOTARY_LOG="notary.log"
