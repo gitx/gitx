@@ -650,6 +650,9 @@
 		50DCC65820111E4000999D3D /* PBGitRevisionRow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBGitRevisionRow.h; sourceTree = "<group>"; };
 		50DCC65920111E4000999D3D /* PBGitRevisionRow.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PBGitRevisionRow.m; sourceTree = "<group>"; };
 		551BF111112F371800265053 /* gitx_askpasswd */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gitx_askpasswd; sourceTree = BUILT_PRODUCTS_DIR; };
+		62E3BAA728D5104C00DCD7B2 /* GitX.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GitX.entitlements; sourceTree = "<group>"; };
+		62E3BAC428D5105200DCD7B2 /* cli tool.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "cli tool.entitlements"; sourceTree = SOURCE_ROOT; };
+		62E3BAC528D5105600DCD7B2 /* gitx_askpasswd.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = gitx_askpasswd.entitlements; sourceTree = SOURCE_ROOT; };
 		643952751603EF9B00BB7AFF /* PBSourceViewGitSubmoduleItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewGitSubmoduleItem.h; sourceTree = "<group>"; };
 		643952761603EF9B00BB7AFF /* PBSourceViewGitSubmoduleItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBSourceViewGitSubmoduleItem.m; sourceTree = "<group>"; };
 		6C2581091C2720E60080A89A /* GitXCommitCopier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitXCommitCopier.h; sourceTree = "<group>"; };
@@ -756,6 +759,7 @@
 		29B97314FDCFA39411CA2CEA /* GitTest */ = {
 			isa = PBXGroup;
 			children = (
+				62E3BAA728D5104C00DCD7B2 /* GitX.entitlements */,
 				4A90A72B14A9C12F00D0DA02 /* README.markdown */,
 				4A5D762114A9A9CC00DF6C68 /* Classes */,
 				4A5D773E14A9AB3A00DF6C68 /* External Sources */,
@@ -793,6 +797,7 @@
 		37A5656C1EAD077400CA0332 /* cli tool */ = {
 			isa = PBXGroup;
 			children = (
+				62E3BAC428D5105200DCD7B2 /* cli tool.entitlements */,
 				4A5D768614A9A9CC00DF6C68 /* gitx.m */,
 				4A90A73314A9D1E800D0DA02 /* GitX.h */,
 				4DC1853818E6F93200E8DB8F /* Info-gitx.plist */,
@@ -804,6 +809,7 @@
 		37A5656D1EAD07C200CA0332 /* gitx_askpasswd */ = {
 			isa = PBXGroup;
 			children = (
+				62E3BAC528D5105600DCD7B2 /* gitx_askpasswd.entitlements */,
 				4A5D768714A9A9CC00DF6C68 /* gitx_askpasswd_main.m */,
 			);
 			name = gitx_askpasswd;
@@ -1157,10 +1163,10 @@
 			children = (
 				4A68AD6714A0050F006DE321 /* Sparkle.framework */,
 				D19D706227B8DA2A00A5C740 /* Autoupdate */,
-				D19D706427B8DA2A00A5C740 /* org.sparkle-project.InstallerLauncher.xpc */,
-				D19D706627B8DA2A00A5C740 /* org.sparkle-project.InstallerConnection.xpc */,
-				D19D706827B8DA2A00A5C740 /* org.sparkle-project.InstallerStatus.xpc */,
-				D19D706A27B8DA2A00A5C740 /* org.sparkle-project.Downloader.xpc */,
+				D19D706427B8DA2A00A5C740 /* Installer.xpc */,
+				D19D706627B8DA2A00A5C740 /* InstallerConnection.xpc */,
+				D19D706827B8DA2A00A5C740 /* InstallerStatus.xpc */,
+				D19D706A27B8DA2A00A5C740 /* Downloader.xpc */,
 				4A68AD6914A0050F006DE321 /* Sparkle Test App.app */,
 				D19D706C27B8DA2A00A5C740 /* TestAppHelper.xpc */,
 				4A68AD6B14A0050F006DE321 /* Sparkle Unit Tests.xctest */,
@@ -1423,31 +1429,31 @@
 			remoteRef = D19D706127B8DA2A00A5C740 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		D19D706427B8DA2A00A5C740 /* org.sparkle-project.InstallerLauncher.xpc */ = {
+		D19D706427B8DA2A00A5C740 /* Installer.xpc */ = {
 			isa = PBXReferenceProxy;
 			fileType = "wrapper.xpc-service";
-			path = "org.sparkle-project.InstallerLauncher.xpc";
+			path = Installer.xpc;
 			remoteRef = D19D706327B8DA2A00A5C740 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		D19D706627B8DA2A00A5C740 /* org.sparkle-project.InstallerConnection.xpc */ = {
+		D19D706627B8DA2A00A5C740 /* InstallerConnection.xpc */ = {
 			isa = PBXReferenceProxy;
 			fileType = "wrapper.xpc-service";
-			path = "org.sparkle-project.InstallerConnection.xpc";
+			path = InstallerConnection.xpc;
 			remoteRef = D19D706527B8DA2A00A5C740 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		D19D706827B8DA2A00A5C740 /* org.sparkle-project.InstallerStatus.xpc */ = {
+		D19D706827B8DA2A00A5C740 /* InstallerStatus.xpc */ = {
 			isa = PBXReferenceProxy;
 			fileType = "wrapper.xpc-service";
-			path = "org.sparkle-project.InstallerStatus.xpc";
+			path = InstallerStatus.xpc;
 			remoteRef = D19D706727B8DA2A00A5C740 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		D19D706A27B8DA2A00A5C740 /* org.sparkle-project.Downloader.xpc */ = {
+		D19D706A27B8DA2A00A5C740 /* Downloader.xpc */ = {
 			isa = PBXReferenceProxy;
 			fileType = "wrapper.xpc-service";
-			path = "org.sparkle-project.Downloader.xpc";
+			path = Downloader.xpc;
 			remoteRef = D19D706927B8DA2A00A5C740 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1827,8 +1833,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-gitx";
+				CODE_SIGN_ENTITLEMENTS = GitX.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "\"$(PROJECT_DIR)\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1849,8 +1857,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-gitx";
+				CODE_SIGN_ENTITLEMENTS = GitX.entitlements;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "\"$(PROJECT_DIR)\"";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
@@ -1985,7 +1995,9 @@
 		551BF113112F371800265053 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = gitx_askpasswd.entitlements;
 				CODE_SIGN_IDENTITY = "-";
+				ENABLE_HARDENED_RUNTIME = YES;
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_NAME = gitx_askpasswd;
 				SKIP_INSTALL = YES;
@@ -1995,7 +2007,9 @@
 		551BF114112F371800265053 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = gitx_askpasswd.entitlements;
 				CODE_SIGN_IDENTITY = "-";
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_PREFIX_HEADER = $PROJECT_TEMP_DIR/revision;
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = /usr/local/bin;
@@ -2007,7 +2021,9 @@
 		551BF115112F371800265053 /* Install */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = gitx_askpasswd.entitlements;
 				CODE_SIGN_IDENTITY = "-";
+				ENABLE_HARDENED_RUNTIME = YES;
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_NAME = gitx_askpasswd;
 				SKIP_INSTALL = YES;
@@ -2017,8 +2033,10 @@
 		913D5E4B0E55644600CECEA2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "cli tool.entitlements";
 				CODE_SIGN_IDENTITY = "-";
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				INFOPLIST_FILE = "Resources/Info-gitx.plist";
@@ -2032,8 +2050,10 @@
 		913D5E4C0E55644600CECEA2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "cli tool.entitlements";
 				CODE_SIGN_IDENTITY = "-";
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				INFOPLIST_FILE = "Resources/Info-gitx.plist";
