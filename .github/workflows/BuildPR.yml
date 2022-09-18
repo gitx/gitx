@@ -102,6 +102,8 @@ jobs:
 
           xcrun stapler staple "$APP_PATH"
           ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
+      - name: Check Notarization
+        run: spctl -a -vv GitX.app
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         if: ${{ success() }}
