@@ -67,11 +67,10 @@ jobs:
           EXPORT_OPTIONS: ${{ secrets.NOTARY_EXPORT_OPTIONS }}
         run: |
           EXPORT_OPTIONS_PATH=$RUNNER_TEMP/ExportOptions.plist
-
           echo -n "$EXPORT_OPTIONS" > EXPORT_OPTIONS_PATH
-
+          echo "EXPORT_OPTIONS_PATH=$EXPORT_OPTIONS_PATH"
           xcodebuild -exportArchive -archivePath GitX.xcarchive -exportPath . -exportOptionsPlist EXPORT_OPTIONS_PATH
-
+          echo "Create GitX-${{ matrix.abi }}.dmg"
           hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-${{ matrix.abi }}.dmg
           zip -r GitX-${{ matrix.abi }}.zip GitX.app
       - name: Notarize App
@@ -97,12 +96,12 @@ jobs:
           xcrun notarytool log $ID --apple-id $APPLE_ID --team-id $TEAM_ID --password $APPLE_PASSWORD
       - name: Staple Notarization
         run: |
-          # While you can notarize a ZIP archive, you can’t staple to it directly. 
-          # Instead, run stapler against each item that you added to the archive. 
+          # While you can notarize a ZIP archive, you can’t staple to it directly.
+          # Instead, run stapler against each item that you added to the archive.
           # Then create a new ZIP file containing the stapled items for distribution.
           # Reference: https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution/customizing_the_notarization_workflow
           APP_PATH="GitX.app"
-              ZIP_PATH="GitX.zip"
+          ZIP_PATH="GitX.zip"
 
           xcrun stapler staple "$APP_PATH"
           ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
