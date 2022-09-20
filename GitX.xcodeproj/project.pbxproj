@@ -1845,7 +1845,7 @@
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
+				PRODUCT_BUNDLE_IDENTIFIER = com.themacronaut.net.phere.GitX;
 				PRODUCT_NAME = GitX;
 				VALID_ARCHS = "x86_64 arm64";
 				VERSIONING_SYSTEM = "apple-generic";
@@ -1869,7 +1869,7 @@
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
-				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
+				PRODUCT_BUNDLE_IDENTIFIER = com.themacronaut.net.phere.GitX;
 				PRODUCT_NAME = GitX;
 				STRIP_INSTALLED_PRODUCT = YES;
 				VALID_ARCHS = "x86_64 arm64";
@@ -2041,7 +2041,7 @@
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				INFOPLIST_FILE = "Resources/Info-gitx.plist";
 				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_BUNDLE_IDENTIFIER = "net.phere.gitx-cli";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.themacronaut.net.phere.GitX-cli";
 				PRODUCT_NAME = gitx;
 				SKIP_INSTALL = YES;
 			};
@@ -2058,7 +2058,7 @@
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				INFOPLIST_FILE = "Resources/Info-gitx.plist";
 				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_BUNDLE_IDENTIFIER = "net.phere.gitx-cli";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.themacronaut.net.phere.GitX-cli";
 				PRODUCT_NAME = gitx;
 				SKIP_INSTALL = YES;
 				STRIP_INSTALLED_PRODUCT = YES;

@@ -65,7 +65,7 @@ jobs:
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
-        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}" PRODUCT_BUNDLE_IDENTIFIER=${{ secrets.NOTARY_BUNDLE_IDENTIFIER}}
+        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}" PRODUCT_BUNDLE_IDENTIFIER=com.themacronaut.com.themacronaut.net.phere.GitX
       - name: Prepare artifact
         env:
           EXPORT_OPTIONS: ${{ secrets.NOTARY_EXPORT_OPTIONS }}
