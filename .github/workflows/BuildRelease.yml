@@ -6,7 +6,7 @@ on:
       - '*'
 
 jobs:
-  build-gitx:
+  buildRelease:
     name: build
     runs-on: ${{ matrix.os }}
     strategy:
