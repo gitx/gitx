@@ -30,83 +30,16 @@ jobs:
           submodules: recursive
       - name: Set XCode Version
         run: sudo xcode-select -s /Applications/${{ matrix.xcode }}.app
-      - name: Install the Apple certificate and provisioning profile
-        env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
-          P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
-        run: |
-          # create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
-          PP_PATH=$RUNNER_TEMP/build_pp.provisionprofile
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
-
-          # import certificate and provisioning profile from secrets
-          echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode --output $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode --output $PP_PATH
-
-          # create temporary keychain
-          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
-
-          # import certificate to keychain
-          security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security list-keychain -d user -s $KEYCHAIN_PATH
-
-          # apply provisioning profile
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Build project
         run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}" PRODUCT_BUNDLE_IDENTIFIER=net.phere.GitX
       - name: Prepare artifact
-        env:
-          EXPORT_OPTIONS: ${{ secrets.NOTARY_EXPORT_OPTIONS }}
         run: |
-          EXPORT_OPTIONS_PATH=$RUNNER_TEMP/ExportOptions.plist
-          echo -n "$EXPORT_OPTIONS" > EXPORT_OPTIONS_PATH
-          echo "EXPORT_OPTIONS_PATH=$EXPORT_OPTIONS_PATH"
-          xcodebuild -exportArchive -archivePath GitX.xcarchive -exportPath . -exportOptionsPlist EXPORT_OPTIONS_PATH
+          mv GitX.xcarchive/Products/Applications/GitX.app .
           echo "Create GitX-${{ matrix.abi }}.dmg"
           hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-${{ matrix.abi }}.dmg
           zip -r GitX-${{ matrix.abi }}.zip GitX.app
-      - name: Notarize App
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-          TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          KEY_ID: ${{ secrets.APPLE_KEY_ID }}
-        run: |
-          APP_PATH="GitX.app"
-          ZIP_PATH="GitX.zip"
-          NOTARY_LOG="notary.log"
-          ID_FILE="id.txt"
-
-          ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
-
-          xcrun notarytool submit "$ZIP_PATH" --key-id $KEY_ID --apple-id $APPLE_ID --team-id $TEAM_ID --password $APPLE_PASSWORD --wait | tee "$NOTARY_LOG" echo "print log output"
-          cat "$NOTARY_LOG"
-
-          ID=$(cat "$NOTARY_LOG" | tail -3 | cut -d':' -f2 | head -n 1)
-          echo "Id is: $ID"
-
-          xcrun notarytool log $ID --apple-id $APPLE_ID --team-id $TEAM_ID --password $APPLE_PASSWORD
-      - name: Staple Notarization
-        run: |
-          # While you can notarize a ZIP archive, you can’t staple to it directly.
-          # Instead, run stapler against each item that you added to the archive.
-          # Then create a new ZIP file containing the stapled items for distribution.
-          # Reference: https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution/customizing_the_notarization_workflow
-          APP_PATH="GitX.app"
-          ZIP_PATH="GitX.zip"
-
-          xcrun stapler staple "$APP_PATH"
-          ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
-      - name: Check Notarization
-        run: spctl -a -vv GitX.app
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         if: ${{ success() }}
@@ -119,8 +52,3 @@ jobs:
         with:
           name: GitX-${{ matrix.abi }}.zip
           path: GitX-${{ matrix.abi }}.zip
-      - name: Clean up keychain and provisioning profile
-        if: ${{ always() }}
-        run: |
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.provisionprofile
