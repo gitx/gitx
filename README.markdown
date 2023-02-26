@@ -31,10 +31,14 @@ a config file called `Dev.xcconfig` at the project root like this:
 
 ```
 DEVELOPMENT_TEAM = YOUR_TEAM_ID
+CODE_SIGN_IDENTITY = YOUR_CERT_NAME
 ```
 
-Replace `YOUR_TEAM_ID` with your development team ID.
-If you don't know your ID or don't have one yet, follow the steps below:
+Replace `YOUR_TEAM_ID` with your development team ID and `YOUR_CERT_NAME` with the name of your certificate.
+If you don't know your ID or don't have a certificate yet, follow the steps below.
+
+The certificate name is usually something like _Apple Development, Mac Developer, iPhone Developer, Apple Developer,_ etc.
+In the steps below, we assume the certificate name to be _"Apple Development"_ but you should use the name you see in your keychain.
 
 1. Open the **Xcode** app.
 2. In Settings > Accounts, if you haven't added your Apple ID yet, click the `+` button and add your Apple ID.
