@@ -10,9 +10,10 @@ various people over the years. This github org & repo are an attempt to
 consolidate and move forward with a current, common, community-maintained
 version.
 
-### How to Build & Install:
+### How to Install or Build:
 
-See [github action](https://github.com/gitx/gitx/blob/master/.github/workflows/BuildPR.yml#L33-L36) for the way how we build it.
+- Get the latest release from the [Releases](https://github.com/gitx/gitx/releases) page. For Apple Silicon, please use the `arm64` release.
+- To build it yourself from the source code, please see these [GitHub Actions workflow steps](https://github.com/gitx/gitx/blob/master/.github/workflows/BuildPR.yml#L64-L67).
 
 ### Screenshots
 
