@@ -7,3 +7,6 @@ __pycache__/
 *.pyc
 /GitX.xcworkspace/xcuserdata
 .idea
+GitX.xcarchive/
+GitX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+GitX.xcworkspace/xcshareddata/swiftpm/
