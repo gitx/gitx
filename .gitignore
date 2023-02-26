@@ -10,3 +10,4 @@ __pycache__/
 GitX.xcarchive/
 GitX.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
 GitX.xcworkspace/xcshareddata/swiftpm/
+/Dev.xcconfig
