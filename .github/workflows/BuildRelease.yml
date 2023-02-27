@@ -74,7 +74,9 @@ jobs:
           echo -n "$EXPORT_OPTIONS" > EXPORT_OPTIONS_PATH
           xcodebuild -exportArchive -archivePath GitX.xcarchive -exportPath . -exportOptionsPlist EXPORT_OPTIONS_PATH
           echo "Create GitX-${{ matrix.abi }}.dmg"
-          hdiutil create -fs HFS+ -srcfolder GitX.app -volname GitX GitX-${{ matrix.abi }}.dmg
+          mkdir dist && cp -R GitX.app dist/ && ln -s /Applications dist/
+          hdiutil create -fs HFS+ -srcfolder dist/ -volname GitX GitX-${{ matrix.abi }}.dmg
+          rm -rf dist
           zip -r GitX-${{ matrix.abi }}.zip GitX.app
       - name: Notarize App
         env:
