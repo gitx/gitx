@@ -66,14 +66,8 @@ jobs:
       - name: Build project
         run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}" PRODUCT_BUNDLE_IDENTIFIER=net.phere.GitX
       - name: Prepare artifact
-        if: ${{ env.variableSet != '' }}
-        env:
-          EXPORT_OPTIONS: ${{ secrets.NOTARY_EXPORT_OPTIONS }}
         run: |
-          EXPORT_OPTIONS_PATH=$RUNNER_TEMP/ExportOptions.plist
-          echo -n "$EXPORT_OPTIONS" > EXPORT_OPTIONS_PATH
-          echo "EXPORT_OPTIONS_PATH=$EXPORT_OPTIONS_PATH"
-          xcodebuild -exportArchive -archivePath GitX.xcarchive -exportPath . -exportOptionsPlist EXPORT_OPTIONS_PATH
+          mv GitX.xcarchive/Products/Applications/GitX.app .
           echo "Create GitX-${{ matrix.abi }}.dmg"
           mkdir dist && cp -R GitX.app dist/ && ln -s /Applications dist/
           hdiutil create -fs HFS+ -srcfolder dist/ -volname GitX GitX-${{ matrix.abi }}.dmg
