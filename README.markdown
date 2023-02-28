@@ -32,6 +32,7 @@ a config file called `Dev.xcconfig` at the project root like this:
 ```
 DEVELOPMENT_TEAM = YOUR_TEAM_ID
 CODE_SIGN_IDENTITY = YOUR_CERT_NAME
+ENABLE_HARDENED_RUNTIME = YES
 ```
 
 Replace `YOUR_TEAM_ID` with your development team ID and `YOUR_CERT_NAME` with the name of your certificate.

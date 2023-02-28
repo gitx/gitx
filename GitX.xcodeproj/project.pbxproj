@@ -1835,12 +1835,10 @@
 /* Begin XCBuildConfiguration section */
 		26FC0A850875C7B200E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2DE9B60529ABEB450097873A /* GitX.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-gitx";
 				CODE_SIGN_ENTITLEMENTS = GitX.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "\"$(PROJECT_DIR)\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -1859,7 +1857,6 @@
 		};
 		26FC0A860875C7B200E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2DE9B60529ABEB450097873A /* GitX.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-gitx";
 				CODE_SIGN_ENTITLEMENTS = GitX.entitlements;
@@ -1884,6 +1881,7 @@
 		};
 		26FC0A890875C7B200E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DE9B60529ABEB450097873A /* GitX.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -1936,6 +1934,7 @@
 		};
 		26FC0A8A0875C7B200E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 2DE9B60529ABEB450097873A /* GitX.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
@@ -2001,7 +2000,6 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = gitx_askpasswd.entitlements;
 				CODE_SIGN_IDENTITY = "-";
-				ENABLE_HARDENED_RUNTIME = YES;
 				INSTALL_PATH = /usr/local/bin;
 				PRODUCT_NAME = gitx_askpasswd;
 				SKIP_INSTALL = YES;
@@ -2040,7 +2038,6 @@
 				CODE_SIGN_ENTITLEMENTS = "cli tool.entitlements";
 				CODE_SIGN_IDENTITY = "-";
 				CREATE_INFOPLIST_SECTION_IN_BINARY = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				INFOPLIST_FILE = "Resources/Info-gitx.plist";
