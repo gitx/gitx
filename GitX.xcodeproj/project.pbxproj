@@ -2020,18 +2020,6 @@
 			};
 			name = Release;
 		};
-		551BF115112F371800265053 /* Install */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = gitx_askpasswd.entitlements;
-				CODE_SIGN_IDENTITY = "-";
-				ENABLE_HARDENED_RUNTIME = YES;
-				INSTALL_PATH = /usr/local/bin;
-				PRODUCT_NAME = gitx_askpasswd;
-				SKIP_INSTALL = YES;
-			};
-			name = Install;
-		};
 		913D5E4B0E55644600CECEA2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2101,7 +2089,6 @@
 			buildConfigurations = (
 				551BF113112F371800265053 /* Debug */,
 				551BF114112F371800265053 /* Release */,
-				551BF115112F371800265053 /* Install */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
