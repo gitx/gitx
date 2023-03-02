@@ -122,10 +122,6 @@
                             <constraint firstAttribute="height" constant="31" id="kbj-zH-ihc"/>
                         </constraints>
                     </customView>
-                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Im1-ZH-qxe">
-                        <rect key="frame" x="0.0" y="28" width="890" height="5"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    </box>
                 </subviews>
                 <constraints>
                     <constraint firstItem="351" firstAttribute="top" secondItem="5" secondAttribute="top" id="2S1-Si-krf"/>
