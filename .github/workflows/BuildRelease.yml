@@ -179,3 +179,37 @@ jobs:
 
       - name: update Sparkle
         run: curl -u $GITHUB_ACTOR:${{ secrets.GITHUBTOKEN }} -X POST https://api.github.com/repos/$GITHUB_REPOSITORY/pages/builds
+
+      - name: Checkout brew repo
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PERSONALACCESSTOKEN }}
+          repository: Homebrew/homebrew-cask.git
+          path: brew
+          ref: master
+      - name: Show shasum
+        run: |
+          export shax86=$(shasum -a 256 GitX-x86_64.dmg | cut -d " " -f1)
+          echo "x86 sha256=$shax86"
+          export shaarm64=$(shasum -a 256 GitX-arm64.dmg | cut -d " " -f1)
+          echo "arm64 sha256=$shaarm64"
+          cd brew/Casks
+          sed -n 1,3p gitx.rb > gitx.rb.new
+          echo "  version \"${{ steps.tagger.outputs.tag }}\"" >> gitx.rb.new
+          echo "  sha256 arm:   \"$shaarm64\"," >> gitx.rb.new
+          echo "         intel: \"$shax86\"" >> gitx.rb.new
+          sed -n 7,33p gitx.rb >> gitx.rb.new
+          cat gitx.rb.new
+          cp gitx.rb.new gitx.rb
+          rm gitx.rb.new
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          path: ${{ github.workspace }}/brew
+          commit-message: Bump gitx ${{ steps.tagger.outputs.tag }}
+          title: Bump gitx ${{ steps.tagger.outputs.tag }}
+          body: Bump gitx to ${{ steps.tagger.outputs.tag }}
+          token: ${{ secrets.PERSONALACCESSTOKEN }}
+          push-to-fork: hannesa2/homebrew-cask
+          branch: bump-gitx-${{ steps.tagger.outputs.tag }}
+          base: master

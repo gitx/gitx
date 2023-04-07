@@ -1,4 +1,4 @@
-name: build-gitx
+name: pull request
 
 on:
   push:
