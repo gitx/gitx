@@ -1,0 +1,101 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self' GitX: https://www.gravatar.com; script-src 'self'; style-src 'self';">
+	<title>Details for commit</title>
+	<link rel="stylesheet" href="../../css/GitX.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<script src="../../lib/jquery-2.0.2.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../lib/GitX.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../lib/md5.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../lib/diffHighlighter.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../lib/keyboardNavigation.js" type="text/javascript" charset="utf-8"></script>
+
+	<link rel="stylesheet" href="history.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<script src="history.js" type="text/javascript" charset="utf-8"></script>
+</head>
+
+<body>
+	<div id="commit">
+		<div id="rightcontent">
+			<div id="buttons">
+				<a class="servicebutton" id="gist" href="#">
+					Gist it
+				</a>
+			</div>
+		</div>
+
+		<table class="commit_info">
+			<tr>
+				<th class="property_name">Subject</th>
+				<td id="subjectID"></td>
+			</tr>
+			<tr>
+				<th class="property_name">ID</th>
+				<td>
+					<span id="commitID" class="SHA"></span>
+					<span id="refs"></span>
+				</td>
+			</tr>
+			<tr>
+				<th class="property_name">Parents</th>
+				<td id="parents"></td>
+			</tr>
+			<tr>
+				<th class="property_name">Author</th>
+				<td>
+					<div class="gravatar hidden">
+						<img id="author_gravatar" src="" />
+					</div>
+					<div id="authorID"></div>
+					<div id="date" class="date"></div>
+					<div class="hidden">
+						<span id="commitDate" class="date"></span>
+						(Commit date)
+					</div>
+				</td>
+			</tr>
+			<tr class="hidden">
+				<th class="property_name">Committer</th>
+				<td>
+					<div class="gravatar hidden">
+						<img id="committer_gravatar" src="" />
+					</div>
+					<div id="committerID"></div>
+					<div id="committerDate" class="date"></div>
+				</td>
+			</tr>
+		</table>
+
+		<div id="notification" class="hidden">
+			<img src="../../images/spinner.gif" alt="Spinner" id="spinner" />
+			<div id="notification_message"></div>
+		</div>
+
+		<hr>
+		<pre id="message"></pre>
+		<div id="message_files">
+			<div id="zzzmessage"></div>
+			<div id="files">
+				<ul id="filelist">
+					<li id="file_prototype">
+						<img class="changetype-icon">
+						<span class="filename"></span>
+						<div class="diffstat-numbers binary">binary</div>
+						<div class="diffstat-info">
+							<div class="changes-bar added"></div>
+							<div class="changes-bar removed"></div>
+							<span class="diffstat-numbers details hidden">
+								<span class="added"></span>
+								<span class="removed"></span>
+							</span>
+							<div class="diffstat-numbers summary"></div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<div id="diff"></div>
+	</div>
+	<div id="no-commit-message"></div>
+</body>

@@ -1,0 +1,6 @@
+framework module MGScopeBar {
+  umbrella header "MGScopeBar.h"
+
+  export *
+  module * { export * }
+}

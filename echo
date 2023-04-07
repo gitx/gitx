@@ -1,0 +1,11 @@
+Conducting pre-submission checks for GitX.zip and initiating connection to the Apple notary service...
+Submission ID received
+  id: a24ffcc3-915e-4ac3-9472-4d017f545c25
+Successfully uploaded file
+  id: a24ffcc3-915e-4ac3-9472-4d017f545c25
+  path: /Users/hannes/actions-runner.gitx/_work/gitx/gitx/GitX.zip
+Waiting for processing to complete.
+Current status: In Progress...Current status: In Progress....Current status: In Progress.....Current status: In Progress......Current status: Accepted.......Processing complete
+  id: a24ffcc3-915e-4ac3-9472-4d017f545c25
+  status: Accepted
+
