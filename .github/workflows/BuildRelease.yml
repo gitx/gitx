@@ -1,4 +1,4 @@
-name: build-gitx
+name: build
 
 on:
   push:
@@ -124,7 +124,7 @@ jobs:
           path: GitX-${{ matrix.abi }}.zip
 
   release:
-    needs: build-gitx
+    needs: buildRelease
     runs-on: macos-11
     steps:
       - name: Checkout
