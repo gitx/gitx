@@ -67,7 +67,9 @@ jobs:
           brew uninstall --ignore-dependencies openssl
           rm -rf /usr/local/etc/openssl@3
           rm -rf /usr/local/etc/openssl@1.1
-          brew install openssl@1.1
+          brew install rbenv/tap/openssl@1.0
+          rvm reinstall 1.9.3-p551 --with-openssl-dir='/usr/local/opt/openssl@1.0'
+          gem update --system
           openssl version
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
