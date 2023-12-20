@@ -64,6 +64,11 @@ jobs:
       - name: Show openssl version
         run: |
           openssl version
+          brew uninstall --ignore-dependencies openssl
+          rm -rf /usr/local/etc/openssl@3
+          rm -rf /usr/local/etc/openssl@1.1
+          brew install openssl@1.1
+          openssl version
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
       - name: Show openssl version
