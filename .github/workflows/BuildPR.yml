@@ -26,7 +26,10 @@ jobs:
       - name: ls Xcode
         run: ls -la /Applications/Xcode*
       - name: Show openssl version
-        run: openssl version
+        run: |
+          openssl version
+          brew reinstall openssl
+          openssl version
       - name: Checkout
         uses: actions/checkout@v3
         with:
