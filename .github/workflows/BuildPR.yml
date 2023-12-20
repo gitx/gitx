@@ -17,11 +17,11 @@ jobs:
       matrix:
         xcode: [ Xcode_14.1.0, Xcode_13.3 ]
         os: [ macos-12 ]
-        abi: [ x86_64 ]
-        include:
-          - xcode: Xcode
-            os: ARM64
-            abi: arm64
+#        abi: [ x86_64 ]
+#        include:
+#          - xcode: Xcode
+#            os: ARM64
+#            abi: arm64
     steps:
       - name: ls Xcode
         run: ls -la /Applications/Xcode*
