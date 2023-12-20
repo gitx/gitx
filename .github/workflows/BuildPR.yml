@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         xcode: [ Xcode_14.1.0, Xcode_13.3 ]
-        os: [ macos-12 ]
+        os: [ macOS-13 ]
         abi: [ x86_64 ]
         include:
           - xcode: Xcode
