@@ -15,10 +15,10 @@ jobs:
         xcode: [ Xcode ]
         os: [ ARM64 ]
         abi: [ arm64 ]
-        include:
-          - xcode: Xcode_14.1.0
-            os: macos-12
-            abi: x86_64
+#        include:
+#          - xcode: Xcode_14.1.0
+#            os: macos-12
+#            abi: x86_64
     steps:
       - name: Checkout
         uses: actions/checkout@v3
