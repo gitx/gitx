@@ -203,7 +203,7 @@ jobs:
           cp gitx.rb.new gitx.rb
           rm gitx.rb.new
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
           path: ${{ github.workspace }}/brew
           commit-message: Bump gitx ${{ steps.tagger.outputs.tag }}
