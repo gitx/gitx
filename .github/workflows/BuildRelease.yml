@@ -163,7 +163,7 @@ jobs:
           echo "PRE_RELEASE=$prerelease" >> $GITHUB_ENV
           echo "prerelease=$prerelease"
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{steps.tagger.outputs.tag}}
           generate_release_notes: true
