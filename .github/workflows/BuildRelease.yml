@@ -114,11 +114,11 @@ jobs:
         run: spctl -a -vv GitX.app
       - name: Prepare release job
         run: zip -r GitX-${{ matrix.abi }}.zip GitX.app
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4.3.3
         with:
           name: GitX-${{ matrix.abi }}.dmg
           path: GitX-${{ matrix.abi }}.dmg
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4.3.3
         with:
           name: GitX-${{ matrix.abi }}.zip
           path: GitX-${{ matrix.abi }}.zip
