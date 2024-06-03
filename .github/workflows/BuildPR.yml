@@ -22,9 +22,6 @@ jobs:
           - xcode: Xcode_14.1.0
             os: macos-12
             abi: x86_64
-          - xcode: Xcode_13.3
-            os: macos-12
-            abi: x86_64
     steps:
       - name: ls Xcode
         run: ls -la /Applications/Xcode*
