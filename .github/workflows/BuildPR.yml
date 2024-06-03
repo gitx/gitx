@@ -20,7 +20,7 @@ jobs:
         abi: [ arm64 ]
         include:
           - xcode: Xcode_14.1.0
-            os: macos-12
+            os: macos-13
             abi: x86_64
     steps:
       - name: ls Xcode
