@@ -136,6 +136,7 @@ jobs:
         with:
           name: GitX-${{ matrix.abi }}.dmg
           path: GitX-${{ matrix.abi }}.dmg
+          overwrite: true
       - name: Upload artifact
         uses: actions/upload-artifact@v4.3.3
         if: ${{ success() }}
