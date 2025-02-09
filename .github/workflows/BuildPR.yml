@@ -131,14 +131,14 @@ jobs:
         if: ${{ env.variableSet != '' }}
         run: spctl -a -vv GitX.app
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.6.0
         if: ${{ success() }}
         with:
           name: GitX-${{ matrix.abi }}.dmg
           path: GitX-${{ matrix.abi }}.dmg
           overwrite: true
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.6.0
         if: ${{ success() }}
         with:
           name: GitX-${{ matrix.abi }}.zip
