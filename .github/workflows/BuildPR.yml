@@ -68,10 +68,13 @@ jobs:
       - name: Show openssl version
         run: |
           openssl version
-          brew uninstall --ignore-dependencies openssl
-          rm -rf /usr/local/etc/openssl@3
-          rm -rf /usr/local/etc/openssl@1.1
+          brew uninstall --ignore-dependencies openssl || echo "nothing to uninstall"
+          rm -rf /usr/local/etc/openssl@3 || echo "nothing to delete for x86 openssl"
+          rm -rf /usr/local/etc/openssl@1.1 || echo "nothing to delete for x86 openssl"
+          rm -rf /opt/homebrew/etc/openssl@1.1 || echo "nothing to delete for arm64 openssl"
+          rm -rf /opt/homebrew/etc/openssl@3 || echo "nothing to delete for arm64 openssl"
           brew install openssl@3
+          echo
           openssl version
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
