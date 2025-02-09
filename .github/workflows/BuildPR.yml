@@ -19,6 +19,9 @@ jobs:
         os: [ ARM64 ]
         abi: [ arm64 ]
         include:
+          - xcode: Xcode
+            os: macos-14
+            abi: arm64
           - xcode: Xcode_14.1.0
             os: macos-13
             abi: x86_64
@@ -64,10 +67,13 @@ jobs:
       - name: Show openssl version
         run: |
           openssl version
-          brew uninstall --ignore-dependencies openssl
-          rm -rf /usr/local/etc/openssl@3
-          rm -rf /usr/local/etc/openssl@1.1
+          brew uninstall --ignore-dependencies openssl || echo "nothing to uninstall"
+          rm -rf /usr/local/etc/openssl@3 || echo "nothing to delete for x86 openssl"
+          rm -rf /usr/local/etc/openssl@1.1 || echo "nothing to delete for x86 openssl"
+          rm -rf /opt/homebrew/etc/openssl@1.1 || echo "nothing to delete for arm64 openssl"
+          rm -rf /opt/homebrew/etc/openssl@3 || echo "nothing to delete for arm64 openssl"
           brew install openssl@3
+          echo
           openssl version
       - name: pre build
         run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
@@ -131,14 +137,14 @@ jobs:
         if: ${{ env.variableSet != '' }}
         run: spctl -a -vv GitX.app
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.6.0
         if: ${{ success() }}
         with:
           name: GitX-${{ matrix.abi }}.dmg
           path: GitX-${{ matrix.abi }}.dmg
           overwrite: true
       - name: Upload artifact
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.6.0
         if: ${{ success() }}
         with:
           name: GitX-${{ matrix.abi }}.zip
