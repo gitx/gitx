@@ -1,6 +1,6 @@
 # What is GitX?
 
-[![GitHub Actions Build Status](https://github.com/gitx/gitx/workflows/build-gitx/badge.svg)](https://github.com/gitx/gitx/actions?query=workflow%3Abuild-gitx)
+[![pull request](https://github.com/gitx/gitx/actions/workflows/BuildPR.yml/badge.svg)](https://github.com/gitx/gitx/actions/workflows/BuildPR.yml)
 
 GitX is an OS X (MacOS) native graphical client for the `git` version
 control system.
