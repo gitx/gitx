@@ -67,10 +67,10 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
       - name: Show openssl version
         run: |
-          openssl version
-          brew uninstall --ignore-dependencies openssl
-          rm -rf /usr/local/etc/openssl@3
-          rm -rf /usr/local/etc/openssl@1.1
+          openssl version || echo "Run into error"
+          brew uninstall --ignore-dependencies openssl || echo "Run into error"
+          rm -rf /usr/local/etc/openssl@3 || echo "Run into error"
+          rm -rf /usr/local/etc/openssl@1.1 || echo "Run into error"
           brew install openssl@3
           brew install libssh2
           openssl version
