@@ -16,11 +16,11 @@ jobs:
       fail-fast: false
       matrix:
         xcode: [ 16.2.0 ]
-        os: [ ARM64 ]
+        os: [ macos-14 ]
         abi: [ arm64 ]
         include:
           - xcode: 16.2.0
-            os: macos-14
+            os: ARM64
             abi: arm64
           - xcode: 14.1.0
             os: macos-13
