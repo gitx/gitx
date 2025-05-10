@@ -15,11 +15,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode: [ Xcode ]
-        os: [ ARM64 ]
+        xcode: [ 16.2.0 ]
+        os: [ macos-14 ]
         abi: [ arm64 ]
         include:
-          - xcode: Xcode_14.1.0
+#          - xcode: 16.2.0
+#            os: ARM64
+#            abi: arm64
+          - xcode: 14.1.0
             os: macos-13
             abi: x86_64
     steps:
@@ -30,8 +33,9 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - name: Set XCode Version
-        run: sudo xcode-select -s /Applications/${{ matrix.xcode }}.app
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ matrix.xcode }}
       - name: Install the Apple certificate and provisioning profile
         if: ${{ env.variableSet != '' }}
         env:
