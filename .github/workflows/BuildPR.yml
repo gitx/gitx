@@ -134,14 +134,14 @@ jobs:
       - name: Check Notarization
         if: ${{ env.variableSet != '' }}
         run: spctl -a -vv GitX.app
-      - name: Upload artifact
+      - name: Upload dmg
         uses: actions/upload-artifact@v4.6.2
         if: ${{ success() }}
         with:
           name: GitX-${{ matrix.abi }}.dmg
           path: GitX-${{ matrix.abi }}.dmg
           overwrite: true
-      - name: Upload artifact
+      - name: Upload zip
         uses: actions/upload-artifact@v4.6.2
         if: ${{ success() }}
         with:
