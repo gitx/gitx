@@ -16,8 +16,8 @@ jobs:
         os: [ macos-14 ]
         abi: [ arm64 ]
         include:
-          - xcode: Xcode_14.1.0
-            os: macos-13
+          - xcode: 16.4.0
+            os: macos-15-intel
             abi: x86_64
     steps:
       - name: Checkout
