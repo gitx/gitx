@@ -123,7 +123,7 @@ static const NSInteger kReturnCodeCancel = 1;
 		gitxIconBox.size.width = 64;
 		NSImageView *gitxIconView = [[NSImageView alloc] initWithFrame:gitxIconBox];
 		[gitxIconView setEditable:NO];
-		NSString *gitxIconPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"gitx.icns"];
+		NSString *gitxIconPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"AppIcon.icns"];
 		NSImage *gitxIcon = [[NSImage alloc] initWithContentsOfFile:gitxIconPath];
 		[gitxIconView setImage:gitxIcon];
 		[[mPasswordPanel contentView] addSubview:gitxIconView];

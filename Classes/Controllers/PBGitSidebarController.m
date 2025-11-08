@@ -233,15 +233,13 @@
       [self.windowController showErrorSheet:error];
     }
     else if (!documentWasAlreadyOpen) {
-      if (@available(macOS 10.13, *)) {
-        if (openInTab) {
-          // move into a tab of the original window
-          if (currentWindow) {
-            NSWindow *myWindow = [[document.windowControllers firstObject] window];
-            if (myWindow) {
-              NSWindowTabGroup *tabGroup = currentWindow.tabGroup;
-              [tabGroup addWindow:myWindow];
-            }
+      if (openInTab) {
+        // move into a tab of the original window
+        if (currentWindow) {
+          NSWindow *myWindow = [[document.windowControllers firstObject] window];
+          if (myWindow) {
+            NSWindowTabGroup *tabGroup = currentWindow.tabGroup;
+            [tabGroup addWindow:myWindow];
           }
         }
       }
