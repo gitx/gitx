@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode: [ Xcode ]
+        xcode: [ 16.2.0 ]
         os: [ macos-14 ]
         abi: [ arm64 ]
         include:
@@ -125,7 +125,7 @@ jobs:
 
   release:
     needs: buildRelease
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v5
