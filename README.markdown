@@ -20,9 +20,9 @@ See also: [How to Build in Xcode](#how-to-build-in-xcode)
 
 ### Screenshots
 
-![Staging View](screenshot-stage.png)
+![Staging View](assets/screenshot-stage.png)
 
-![History View](screenshot-history.png)
+![History View](assets/screenshot-history.png)
 
 ### How to Build in Xcode:
 
