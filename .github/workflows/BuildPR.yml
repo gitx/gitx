@@ -233,7 +233,7 @@ jobs:
           cat gitx.rb.new
           cp gitx.rb.new gitx.rb
           rm gitx.rb.new
-      - name: Create Pull Request in brew
+      - name: Create Pull Request in brew https://github.com/Homebrew/homebrew-cask
         uses: peter-evans/create-pull-request@v7
         if: ${{ env.PRE_RELEASE == 'false' }}
         with:
