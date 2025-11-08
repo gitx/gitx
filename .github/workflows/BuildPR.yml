@@ -216,15 +216,15 @@ jobs:
           token: ${{ secrets.PERSONALACCESSTOKEN }}
           repository: Homebrew/homebrew-cask.git
           path: brew
-          ref: master
+          ref: main
       - name: Show shasum
         run: |
-          find . -name "*.rb"
+          find . -name "gitx.rb"
           export shax86=$(shasum -a 256 GitX-x86_64.dmg | cut -d " " -f1)
           echo "x86 sha256=$shax86"
           export shaarm64=$(shasum -a 256 GitX-arm64.dmg | cut -d " " -f1)
           echo "arm64 sha256=$shaarm64"
-          cd brew/Casks
+          cd brew/Casks/g
           sed -n 1,3p gitx.rb > gitx.rb.new
           echo "  version \"${{ steps.tagger.outputs.tag }}\"" >> gitx.rb.new
           echo "  sha256 arm:   \"$shaarm64\"," >> gitx.rb.new
@@ -244,4 +244,4 @@ jobs:
           token: ${{ secrets.PERSONALACCESSTOKEN }}
           push-to-fork: hannesa2/homebrew-cask
           branch: bump-gitx-${{ steps.tagger.outputs.tag }}
-          base: master
+          base: main
