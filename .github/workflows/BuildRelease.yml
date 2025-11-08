@@ -32,8 +32,9 @@ jobs:
           skip-unshallow: 'true'
           abbrev: false
           commit-ish: HEAD
-      - name: Set XCode Version
-        run: sudo xcode-select -s /Applications/${{ matrix.xcode }}.app
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ matrix.xcode }}
       - name: Install the Apple certificate and provisioning profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
