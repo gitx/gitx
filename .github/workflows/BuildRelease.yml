@@ -179,6 +179,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: update Sparkle
+        if: ${{ env.PRE_RELEASE }} == false
         run: curl -u $GITHUB_ACTOR:${{ secrets.GITHUBTOKEN }} -X POST https://api.github.com/repos/$GITHUB_REPOSITORY/pages/builds
 
       - name: Checkout brew repo
@@ -205,6 +206,7 @@ jobs:
           rm gitx.rb.new
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
+        if: ${{ env.PRE_RELEASE }} == false
         with:
           path: ${{ github.workspace }}/brew
           commit-message: Bump gitx ${{ steps.tagger.outputs.tag }}
