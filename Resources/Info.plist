@@ -7,6 +7,10 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeIconFile</key>
+			<string></string>
+			<key>CFBundleTypeIconSystemGenerated</key>
+			<true/>
 			<key>CFBundleTypeName</key>
 			<string>Folder</string>
 			<key>CFBundleTypeOSTypes</key>
@@ -15,6 +19,8 @@
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
@@ -23,11 +29,15 @@
 				<string></string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>gitx.icns</string>
+			<string></string>
+			<key>CFBundleTypeIconSystemGenerated</key>
+			<true/>
 			<key>CFBundleTypeName</key>
 			<string>Git Repository</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
 			<key>LSTypeIsPackage</key>
 			<true/>
 			<key>NSDocumentClass</key>
@@ -36,8 +46,6 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
-	<key>CFBundleIconFile</key>
-	<string>AppIcon-gitx.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>

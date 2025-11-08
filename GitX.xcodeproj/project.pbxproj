@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -154,6 +154,7 @@
 		6C4855C81D57DCFC0027A7B4 /* PBTerminalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C4855C71D57DCFC0027A7B4 /* PBTerminalUtil.m */; };
 		6C4855DA1D57E4FA0027A7B4 /* PBOpenShallowRepositoryErrorRecoveryAttempter.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C4855D91D57E4FA0027A7B4 /* PBOpenShallowRepositoryErrorRecoveryAttempter.m */; };
 		6C5244131E00C66E0051DE20 /* PBHistorySearchMode.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C5244121E00C66E0051DE20 /* PBHistorySearchMode.m */; };
+		7EDCE8EE2EBEFEEF0062CE78 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 7EDCE8ED2EBEFEEF0062CE78 /* AppIcon.icon */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		911112370E5A097800BF76B4 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 911112360E5A097800BF76B4 /* Security.framework */; };
 		913D5E500E55645900CECEA2 /* gitx in Resources */ = {isa = PBXBuildFile; fileRef = 913D5E490E55644600CECEA2 /* gitx */; };
@@ -181,7 +182,6 @@
 		A2F8D0DF17AAB32500580B84 /* PBGitStash.m in Sources */ = {isa = PBXBuildFile; fileRef = A2F8D0DE17AAB32500580B84 /* PBGitStash.m */; };
 		A2F8D0EB17AAB95E00580B84 /* PBSourceViewGitStashItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A2F8D0EA17AAB95E00580B84 /* PBSourceViewGitStashItem.m */; };
 		BF42F1331E025403004769FF /* GitXTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = BF42F1321E025403004769FF /* GitXTextView.m */; };
-		BFFCB5471E3EFA9F00E0B254 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BFFCB5461E3EFA9F00E0B254 /* Images.xcassets */; };
 		D87127011229A21C00012334 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D87127001229A21C00012334 /* QuartzCore.framework */; };
 		D89E9B141218BA260097A90B /* ScriptingBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D89E9AB21218A9DA0097A90B /* ScriptingBridge.framework */; };
 		D8E3B2B810DC9FB2001096A3 /* ScriptingBridge.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8E3B2B710DC9FB2001096A3 /* ScriptingBridge.framework */; };
@@ -666,6 +666,7 @@
 		6C5244021E00C33F0051DE20 /* PBHistorySearchMode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PBHistorySearchMode.h; sourceTree = "<group>"; };
 		6C5244121E00C66E0051DE20 /* PBHistorySearchMode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBHistorySearchMode.m; sourceTree = "<group>"; };
 		77C82804067257F0000B614F /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		7EDCE8ED2EBEFEEF0062CE78 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* GitX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GitX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		911112360E5A097800BF76B4 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		913D5E490E55644600CECEA2 /* gitx */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gitx; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -697,7 +698,6 @@
 		A2F8D0EA17AAB95E00580B84 /* PBSourceViewGitStashItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBSourceViewGitStashItem.m; sourceTree = "<group>"; };
 		BF42F1321E025403004769FF /* GitXTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitXTextView.m; sourceTree = "<group>"; };
 		BF42F1431E025411004769FF /* GitXTextView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GitXTextView.h; sourceTree = "<group>"; };
-		BFFCB5461E3EFA9F00E0B254 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		D87127001229A21C00012334 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		D89E9AB21218A9DA0097A90B /* ScriptingBridge.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScriptingBridge.framework; path = System/Library/Frameworks/ScriptingBridge.framework; sourceTree = SDKROOT; };
 		D8E3B2B710DC9FB2001096A3 /* ScriptingBridge.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ScriptingBridge.framework; path = /System/Library/Frameworks/ScriptingBridge.framework; sourceTree = "<absolute>"; };
@@ -833,13 +833,13 @@
 		4A5D757C14A9A90500DF6C68 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				7EDCE8ED2EBEFEEF0062CE78 /* AppIcon.icon */,
 				4A5D757D14A9A90500DF6C68 /* Credits.html */,
 				4A5D760214A9A99E00DF6C68 /* en.lproj */,
 				4A90A73414A9D24300D0DA02 /* GitX.sdef */,
 				4A90A72914A9C12F00D0DA02 /* GitX_Prefix.pch */,
 				F5D619ED0EAE62EA00341D73 /* html */,
 				4A5D758114A9A90500DF6C68 /* Images */,
-				BFFCB5461E3EFA9F00E0B254 /* Images.xcassets */,
 				4A5D75B414A9A90500DF6C68 /* Info.plist */,
 				4A5D75B514A9A90500DF6C68 /* source.css */,
 				4A5D75B714A9A90500DF6C68 /* UpdateKey.pem */,
@@ -1274,6 +1274,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1320;
 			};
 			buildConfigurationList = 26FC0A880875C7B200E6366F /* Build configuration list for PBXProject "GitX" */;
@@ -1489,7 +1490,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				913D5E500E55645900CECEA2 /* gitx in Resources */,
-				BFFCB5471E3EFA9F00E0B254 /* Images.xcassets in Resources */,
 				551BF176112F3F4B00265053 /* gitx_askpasswd in Resources */,
 				978357C5189C238300ADC689 /* DetailViewTemplate.pdf in Resources */,
 				4A5D75C114A9A90500DF6C68 /* Credits.html in Resources */,
@@ -1527,6 +1527,7 @@
 				4A5D761914A9A99E00DF6C68 /* PBAddRemoteSheet.xib in Resources */,
 				978357BD189C19A000ADC689 /* PushTemplate.pdf in Resources */,
 				4A5D761A14A9A99E00DF6C68 /* PBCloneRepositoryPanel.xib in Resources */,
+				7EDCE8EE2EBEFEEF0062CE78 /* AppIcon.icon in Resources */,
 				4A5D761C14A9A99E00DF6C68 /* PBCreateBranchSheet.xib in Resources */,
 				4A5D761D14A9A99E00DF6C68 /* PBCreateTagSheet.xib in Resources */,
 				4A5D761E14A9A99E00DF6C68 /* PBRemoteProgressSheet.xib in Resources */,
@@ -1561,6 +1562,7 @@
 		};
 		D14A145A27B23E52008374BA /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -1574,10 +1576,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#!/bin/bash\n\n# This script automatically sets the version and short version string of\n# an Xcode project from the Git repository containing the project.\n#\n# To use this script in Xcode, add the script's path to a \"Run Script\" build\n# phase for your application target.\n\nset -o errexit\nset -o nounset\n\n# First, check for git in $PATH\nhash git 2>/dev/null || { echo >&2 \"Git required, not installed.  Aborting build number update script.\"; exit 0; }\n\n# Alternatively, we could use Xcode's copy of the Git binary,\n# but old Xcodes don't have this.\n#GIT=$(xcrun -find git)\n\n# Run Script build phases that operate on product files of the target that defines them should use the value of this build setting [TARGET_BUILD_DIR]. But Run Script build phases that operate on product files of other targets should use “BUILT_PRODUCTS_DIR” instead.\nINFO_PLIST=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n\n# Build version (closest-tag-or-branch \"-\" commits-since-tag \"-\" short-hash dirty-flag)\nBUILD_VERSION=$(git describe --tags --always --dirty=+)\n\n# Use the latest tag for short version (expected tag format \"vn[.n[.n]]\")\n# or if there are no tags, we make up version 0.0.<commit count>\nLATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null)\nLATEST_TAG=${LATEST_TAG##v} # Remove the \"v\" from the front of the tag\nARCHITECTURE=$(uname -p)\nSHORT_VERSION=\"$LATEST_TAG\"\n\nMASTER_COMMIT_COUNT=$(git rev-list --count HEAD)\nBRANCH_COMMIT_COUNT=0\nBUNDLE_VERSION=\"$SHORT_VERSION\".\"$MASTER_COMMIT_COUNT [$ARCHITECTURE]\"\n\n# For debugging:\necho \"BUILD VERSION: $BUILD_VERSION\"\necho \"SHORT VERSION: $SHORT_VERSION\"\necho \"BUNDLE_VERSION: $BUNDLE_VERSION\"\n\n/usr/libexec/PlistBuddy -c \"Add :CFBundleBuildVersion string $BUILD_VERSION\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Set :CFBundleBuildVersion $BUILD_VERSION\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $BUILD_VERSION\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUNDLE_VERSION\" \"$INFO_PLIST\"\n";
+			shellScript = "#!/bin/bash\n\n# This script automatically sets the version and short version string of\n# an Xcode project from the Git repository containing the project.\n#\n# To use this script in Xcode, add the script's path to a \"Run Script\" build\n# phase for your application target.\n\nset -o errexit\nset -o nounset\n\n# Alternatively, we could use Xcode's copy of the Git binary,\n# but old Xcodes don't have this.\nGIT=$(xcrun -find git)\n\n# Run Script build phases that operate on product files of the target that defines them should use the value of this build setting [TARGET_BUILD_DIR]. But Run Script build phases that operate on product files of other targets should use “BUILT_PRODUCTS_DIR” instead.\nINFO_PLIST=\"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\n\n# Build version (closest-tag-or-branch \"-\" commits-since-tag \"-\" short-hash dirty-flag)\nBUILD_VERSION=$(git describe --tags --always --dirty=+)\n\n# Use the latest tag for short version (expected tag format \"vn[.n[.n]]\")\n# or if there are no tags, we make up version 0.0.<commit count>\nLATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null)\nLATEST_TAG=${LATEST_TAG##v} # Remove the \"v\" from the front of the tag\nARCHITECTURE=$(uname -p)\nSHORT_VERSION=\"$LATEST_TAG\"\n\nMASTER_COMMIT_COUNT=$(git rev-list --count HEAD)\nBRANCH_COMMIT_COUNT=0\nBUNDLE_VERSION=\"$SHORT_VERSION\".\"$MASTER_COMMIT_COUNT [$ARCHITECTURE]\"\n\n# For debugging:\necho \"BUILD VERSION: $BUILD_VERSION\"\necho \"SHORT VERSION: $SHORT_VERSION\"\necho \"BUNDLE_VERSION: $BUNDLE_VERSION\"\n\n/usr/libexec/PlistBuddy -c \"Add :CFBundleBuildVersion string $BUILD_VERSION\" \"$INFO_PLIST\" 2>/dev/null || /usr/libexec/PlistBuddy -c \"Set :CFBundleBuildVersion $BUILD_VERSION\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleShortVersionString $BUILD_VERSION\" \"$INFO_PLIST\"\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $BUNDLE_VERSION\" \"$INFO_PLIST\"\n";
 		};
 		F5CF04A20EAE696C00D75C81 /* Copy HTML files */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			comments = "This is added as a script rather than a 'copy files' phase because those aren't updated correctly when you edit just a single file in a directory.\n\nThis might be improved further by using rsync, but I didn't dive into that yet.";
 			files = (
@@ -1836,7 +1839,8 @@
 		26FC0A850875C7B200E6366F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-gitx";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = GitX.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = "\"$(PROJECT_DIR)\"";
@@ -1844,9 +1848,12 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				INFOPLIST_FILE = Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GitX;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
 				PRODUCT_NAME = GitX;
 				VALID_ARCHS = "x86_64 arm64";
@@ -1858,7 +1865,8 @@
 		26FC0A860875C7B200E6366F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-gitx";
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = GitX.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -1867,9 +1875,12 @@
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
 				INFOPLIST_FILE = Resources/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = GitX;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
 				PRODUCT_NAME = GitX;
 				STRIP_INSTALLED_PRODUCT = YES;
