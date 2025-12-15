@@ -234,7 +234,7 @@ jobs:
           cp gitx.rb.new gitx.rb
           rm gitx.rb.new
       - name: Create Pull Request in brew https://github.com/Homebrew/homebrew-cask
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         if: ${{ env.PRE_RELEASE == 'false' }}
         with:
           path: ${{ github.workspace }}/brew
