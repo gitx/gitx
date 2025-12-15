@@ -168,16 +168,16 @@ jobs:
           skip-unshallow: 'true'
           abbrev: false
           commit-ish: HEAD
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: GitX-x86_64.dmg
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: GitX-arm64.dmg
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: GitX-x86_64.zip
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           name: GitX-arm64.zip
       - name: Check pre-release
