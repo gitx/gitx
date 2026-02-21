@@ -18,10 +18,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - xcode: 16.4.0
+          - xcode: 26.2
             os: macos-15-intel
             abi: x86_64
-          - xcode: 26.1.1
+          - xcode: 26.2
             os: macos-26
             abi: arm64
     steps:
