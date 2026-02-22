@@ -17,18 +17,10 @@ include_prereleases: false
                 <title>{{ release.name }}</title>
                 <description><![CDATA[
                     <p>
-                        At this time, automatic updates are not working and you
+                        At this time, automatic updates are not working, and you
                         will have to <strong>download and install this update
                         yourself</strong> from the
                         <a href="{{ release.html_url }}">GitX release page.</a>
-                    </p>
-
-                    <p>
-                        Builds are available for Intel and Apple Silicon, but
-                        all builds are unsigned at this time.
-                        If you would like to help fix this, please
-                        <a href="https://github.com/gitx/gitx/issues/278">get
-                        in touch</a>.
                     </p>
 
                     {{ release.body | markdownify }}]]></description>
