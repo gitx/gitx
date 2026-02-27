@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+        CC0000010000001 /* GitXScreenshotTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0000020000002 /* GitXScreenshotTests.m */; };
 		0A6858C711F7EA8A00AC2BE4 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6858C611F7EA8A00AC2BE4 /* CoreServices.framework */; };
 		2682AABB1929140E00271A4D /* GTOID+JavaScript.m in Sources */ = {isa = PBXBuildFile; fileRef = 2682AABA1929140E00271A4D /* GTOID+JavaScript.m */; };
 		2DE9B60629ABEB450097873A /* GitX.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2DE9B60529ABEB450097873A /* GitX.xcconfig */; };
@@ -414,6 +415,13 @@
 			remoteGlobalIDString = 721C24451CB753E6005440CB;
 			remoteInfo = "Installer Progress";
 		};
+		CC000007B000007 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = GitX;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -432,6 +440,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CC0000020000002 /* GitXScreenshotTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitXScreenshotTests.m; sourceTree = "<group>"; };
+		CC0000030000003 /* GitXUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GitXUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A6858C611F7EA8A00AC2BE4 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		2682AAB91929140E00271A4D /* GTOID+JavaScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTOID+JavaScript.h"; sourceTree = "<group>"; };
@@ -745,6 +755,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CC0000060000006 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -754,8 +771,18 @@
 				8D1107320486CEB800E47090 /* GitX.app */,
 				913D5E490E55644600CECEA2 /* gitx */,
 				551BF111112F371800265053 /* gitx_askpasswd */,
+				CC0000030000003 /* GitXUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CC0000040000004 /* GitXUITests */ = {
+			isa = PBXGroup;
+			children = (
+				CC0000020000002 /* GitXScreenshotTests.m */,
+			);
+			name = GitXUITests;
+			path = GitXUITests;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* GitTest */ = {
@@ -767,6 +794,7 @@
 				4A5D762114A9A9CC00DF6C68 /* Classes */,
 				4A5D773E14A9AB3A00DF6C68 /* External Sources */,
 				4A5D757C14A9A90500DF6C68 /* Resources */,
+				CC0000040000004 /* GitXUITests */,
 				37A5656C1EAD077400CA0332 /* cli tool */,
 				37A5656D1EAD07C200CA0332 /* gitx_askpasswd */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -1268,6 +1296,23 @@
 			productReference = 913D5E490E55644600CECEA2 /* gitx */;
 			productType = "com.apple.product-type.tool";
 		};
+		CC000008A000008 /* GitXUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CC000009A000009 /* Build configuration list for PBXNativeTarget "GitXUITests" */;
+			buildPhases = (
+				CC0000050000005 /* Sources */,
+				CC0000060000006 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CC000007A000007 /* PBXTargetDependency */,
+			);
+			name = GitXUITests;
+			productName = GitXUITests;
+			productReference = CC0000030000003 /* GitXUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1309,6 +1354,7 @@
 				913D5E480E55644600CECEA2 /* cli tool */,
 				551BF110112F371800265053 /* gitx_askpasswd */,
 				4D3F252B18C37D2E000922D9 /* Generate Scripting Header */,
+				CC000008A000008 /* GitXUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -1715,6 +1761,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CC0000050000005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC0000010000001 /* GitXScreenshotTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1757,6 +1811,11 @@
 			isa = PBXTargetDependency;
 			target = 551BF110112F371800265053 /* gitx_askpasswd */;
 			targetProxy = 551BF174112F3F3500265053 /* PBXContainerItemProxy */;
+		};
+		CC000007A000007 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8D1107260486CEB800E47090 /* GitX */;
+			targetProxy = CC000007B000007 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2065,9 +2124,44 @@
 			};
 			name = Release;
 		};
+		CC00000AA00000A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitXUITests;
+				PRODUCT_NAME = GitXUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = GitX;
+			};
+			name = Debug;
+		};
+		CC00000BA00000B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitXUITests;
+				PRODUCT_NAME = GitXUITests;
+				SDKROOT = macosx;
+				TEST_TARGET_NAME = GitX;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		CC000009A000009 /* Build configuration list for PBXNativeTarget "GitXUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CC00000AA00000A /* Debug */,
+				CC00000BA00000B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		26FC0A840875C7B200E6366F /* Build configuration list for PBXNativeTarget "GitX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
