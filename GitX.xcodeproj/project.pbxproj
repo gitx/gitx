@@ -26,11 +26,6 @@
 		AABBCC0600000006 /* NSColor+RGB.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0700000007 /* NSColor+RGB.swift */; };
 		AABBCC0800000008 /* NSAppearance+PBDarkMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0900000009 /* NSAppearance+PBDarkMode.swift */; };
 		AABBCC0A0000000A /* NSSplitView+GitX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0B0000000B /* NSSplitView+GitX.swift */; };
-		BBCCDD0100000001 /* GitXRelativeDateFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCCDD0200000002 /* GitXRelativeDateFormatterTests.swift */; };
-		BBCCDD0300000003 /* NSColorRGBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCCDD0400000004 /* NSColorRGBTests.swift */; };
-		BBCCDD0500000005 /* NSAppearanceDarkModeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCCDD0600000006 /* NSAppearanceDarkModeTests.swift */; };
-		BBCCDD0700000007 /* NSSplitViewGitXTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBCCDD0800000008 /* NSSplitViewGitXTests.swift */; };
-		BBCCDD0900000009 /* GitX.app in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D1107320486CEB800E47090 /* GitX.app */; };
 		0A6858C711F7EA8A00AC2BE4 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6858C611F7EA8A00AC2BE4 /* CoreServices.framework */; };
 		2682AABB1929140E00271A4D /* GTOID+JavaScript.m in Sources */ = {isa = PBXBuildFile; fileRef = 2682AABA1929140E00271A4D /* GTOID+JavaScript.m */; };
 		2DE9B60629ABEB450097873A /* GitX.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2DE9B60529ABEB450097873A /* GitX.xcconfig */; };
@@ -424,13 +419,6 @@
 			remoteGlobalIDString = 721C24451CB753E6005440CB;
 			remoteInfo = "Installer Progress";
 		};
-		BBCCDDE000000E02 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = GitX;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -455,11 +443,6 @@
 		AABBCC0700000007 /* NSColor+RGB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSColor+RGB.swift"; sourceTree = "<group>"; };
 		AABBCC0900000009 /* NSAppearance+PBDarkMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSAppearance+PBDarkMode.swift"; sourceTree = "<group>"; };
 		AABBCC0B0000000B /* NSSplitView+GitX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSSplitView+GitX.swift"; sourceTree = "<group>"; };
-		BBCCDD0200000002 /* GitXRelativeDateFormatterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitXRelativeDateFormatterTests.swift; sourceTree = "<group>"; };
-		BBCCDD0400000004 /* NSColorRGBTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSColorRGBTests.swift; sourceTree = "<group>"; };
-		BBCCDD0600000006 /* NSAppearanceDarkModeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSAppearanceDarkModeTests.swift; sourceTree = "<group>"; };
-		BBCCDD0800000008 /* NSSplitViewGitXTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSSplitViewGitXTests.swift; sourceTree = "<group>"; };
-		BBCCDDF000000F00 /* GitXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GitXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0A6858C611F7EA8A00AC2BE4 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		2682AAB91929140E00271A4D /* GTOID+JavaScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTOID+JavaScript.h"; sourceTree = "<group>"; };
@@ -773,13 +756,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BBCCDDD000000D00 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -789,21 +765,8 @@
 				8D1107320486CEB800E47090 /* GitX.app */,
 				913D5E490E55644600CECEA2 /* gitx */,
 				551BF111112F371800265053 /* gitx_askpasswd */,
-				BBCCDDF000000F00 /* GitXTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		BBCCDDEE0000EE00 /* GitXTests */ = {
-			isa = PBXGroup;
-			children = (
-				BBCCDD0200000002 /* GitXRelativeDateFormatterTests.swift */,
-				BBCCDD0400000004 /* NSColorRGBTests.swift */,
-				BBCCDD0600000006 /* NSAppearanceDarkModeTests.swift */,
-				BBCCDD0800000008 /* NSSplitViewGitXTests.swift */,
-			);
-			name = GitXTests;
-			path = GitXTests;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* GitTest */ = {
@@ -815,7 +778,6 @@
 				4A5D762114A9A9CC00DF6C68 /* Classes */,
 				4A5D773E14A9AB3A00DF6C68 /* External Sources */,
 				4A5D757C14A9A90500DF6C68 /* Resources */,
-				BBCCDDEE0000EE00 /* GitXTests */,
 				37A5656C1EAD077400CA0332 /* cli tool */,
 				37A5656D1EAD07C200CA0332 /* gitx_askpasswd */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -1323,23 +1285,6 @@
 			productReference = 913D5E490E55644600CECEA2 /* gitx */;
 			productType = "com.apple.product-type.tool";
 		};
-		BBCCDDA000000A00 /* GitXTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = BBCCDDB000000B00 /* Build configuration list for PBXNativeTarget "GitXTests" */;
-			buildPhases = (
-				BBCCDDC000000C00 /* Sources */,
-				BBCCDDD000000D00 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				BBCCDDE000000E01 /* PBXTargetDependency */,
-			);
-			name = GitXTests;
-			productName = GitXTests;
-			productReference = BBCCDDF000000F00 /* GitXTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1381,7 +1326,6 @@
 				913D5E480E55644600CECEA2 /* cli tool */,
 				551BF110112F371800265053 /* gitx_askpasswd */,
 				4D3F252B18C37D2E000922D9 /* Generate Scripting Header */,
-				BBCCDDA000000A00 /* GitXTests */,
 			);
 		};
 /* End PBXProject section */
@@ -1790,17 +1734,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BBCCDDC000000C00 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BBCCDD0100000001 /* GitXRelativeDateFormatterTests.swift in Sources */,
-				BBCCDD0300000003 /* NSColorRGBTests.swift in Sources */,
-				BBCCDD0500000005 /* NSAppearanceDarkModeTests.swift in Sources */,
-				BBCCDD0700000007 /* NSSplitViewGitXTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1843,11 +1776,6 @@
 			isa = PBXTargetDependency;
 			target = 551BF110112F371800265053 /* gitx_askpasswd */;
 			targetProxy = 551BF174112F3F3500265053 /* PBXContainerItemProxy */;
-		};
-		BBCCDDE000000E01 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8D1107260486CEB800E47090 /* GitX */;
-			targetProxy = BBCCDDE000000E02 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -2162,46 +2090,9 @@
 			};
 			name = Release;
 		};
-		BBCCDDB100000001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "-";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitXTests;
-				PRODUCT_NAME = GitXTests;
-				SDKROOT = macosx;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GitX.app/Contents/MacOS/GitX";
-			};
-			name = Debug;
-		};
-		BBCCDDB200000002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "-";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitXTests;
-				PRODUCT_NAME = GitXTests;
-				SDKROOT = macosx;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GitX.app/Contents/MacOS/GitX";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		BBCCDDB000000B00 /* Build configuration list for PBXNativeTarget "GitXTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				BBCCDDB100000001 /* Debug */,
-				BBCCDDB200000002 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		26FC0A840875C7B200E6366F /* Build configuration list for PBXNativeTarget "GitX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
