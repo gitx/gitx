@@ -15,6 +15,7 @@
 
 // ── App-level helpers ────────────────────────────────────────────────────────
 #import "NSAppearance+PBDarkMode.h"
+// NSColor+RGB is now implemented in NSColor+RGB.swift; header kept for ObjC callers
 #import "NSColor+RGB.h"
 #import "NSSplitView+GitX.h"
 #import "PBMacros.h"
@@ -25,6 +26,7 @@
 #import "PBGraphCellInfo.h"
 #import "PBSidebarList.h"
 #import "PBCLIProxy.h"
+// GitXRelativeDateFormatter is now implemented in GitXRelativeDateFormatter.swift; header kept for ObjC callers
 #import "GitXRelativeDateFormatter.h"
 #import "GitXScriptingConstants.h"
 #import "PBNSURLPathUserDefaultsTransfomer.h"
