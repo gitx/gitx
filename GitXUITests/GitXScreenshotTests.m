@@ -20,40 +20,24 @@
     self.continueAfterFailure = NO;
     self.app = [[XCUIApplication alloc] init];
 
-    // Find a git repo to open: prefer a fixture bundled with the test target,
-    // fall back to the source repo alongside the built product.
-    NSString *repoPath = nil;
-
-    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-    NSURL *bundledRepo = [bundle URLForResource:@"testrepo" withExtension:nil];
-    if (bundledRepo && [[NSFileManager defaultManager] fileExistsAtPath:bundledRepo.path]) {
-        repoPath = bundledRepo.path;
-    }
+    // GITX_UITEST_REPO is set to $(SRCROOT) in the scheme's TestAction
+    // environment variables, so it is always available both locally and on CI.
+    NSString *repoPath = [[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_UITEST_REPO"];
 
     if (!repoPath) {
-        // Use the gitx source repo itself — always present on any checkout
-        NSURL *bundleURL = bundle.bundleURL;
-        // Walk up from <DerivedData>/…/Build/Products/<config>/<TestBundle>.xctest
-        NSURL *candidate = bundleURL;
-        for (int i = 0; i < 8; i++) {
-            candidate = candidate.URLByDeletingLastPathComponent;
-            NSURL *gitDir = [candidate URLByAppendingPathComponent:@".git"];
-            if ([[NSFileManager defaultManager] fileExistsAtPath:gitDir.path]) {
-                repoPath = candidate.path;
-                break;
-            }
+        // Fallback: a fixture repo bundled with the test target
+        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+        NSURL *bundledRepo = [bundle URLForResource:@"testrepo" withExtension:nil];
+        if (bundledRepo && [[NSFileManager defaultManager] fileExistsAtPath:bundledRepo.path]) {
+            repoPath = bundledRepo.path;
         }
     }
 
-    // Suppress the "Open Recent" dialog that would otherwise appear when no
-    // document is provided, by disabling the untitled-file prompt.
-    self.app.launchArguments = @[@"-AppleNoUntitledDocuments", @"YES"];
-
-    [self.app launch];
+    NSLog(@"[GitXScreenshotTests] repoPath = %@", repoPath ?: @"(none)");
 
     if (repoPath) {
-        // GITX_UITEST_REPO is read in applicationDidFinishLaunching: to open
-        // the repo directly, giving XCUITests a reliable document window.
+        // Passed to the app via applicationDidFinishLaunching: which opens
+        // the repo directly, giving the test a reliable document window.
         self.app.launchEnvironment = @{@"GITX_UITEST_REPO": repoPath};
     }
 
@@ -72,9 +56,17 @@
     if ([window waitForExistenceWithTimeout:20]) {
         return YES;
     }
-    // As a last resort, activate the app and try once more
+    // Window didn't appear — the app may be sitting at the "Open Recent" panel
+    // or showing nothing. Try opening via the File menu.
     [self.app activate];
-    return [self.app.windows.firstMatch waitForExistenceWithTimeout:10];
+    NSString *repoPath = self.app.launchEnvironment[@"GITX_UITEST_REPO"];
+    if (repoPath) {
+        // Use NSWorkspace to ask the already-running app to open the path.
+        // This works because XCUIApplication keeps the process alive and
+        // NSWorkspace sends an Apple Event to the running instance.
+        [[NSWorkspace sharedWorkspace] openURL:[NSURL fileURLWithPath:repoPath]];
+    }
+    return [self.app.windows.firstMatch waitForExistenceWithTimeout:15];
 }
 
 - (void)saveScreenshotNamed:(NSString *)name {
