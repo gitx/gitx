@@ -2,51 +2,13 @@
 //  NSAppearance+PBDarkMode.m
 //  GitX
 //
-//  Created by Etienne on 18/11/2018.
+//  Only the global constant definition remains here — the category
+//  implementations have been moved to NSAppearance+PBDarkMode.swift.
 //
 
 #import "NSAppearance+PBDarkMode.h"
 
+// This definition satisfies the `extern NSString *const` declaration in the
+// header for all Objective-C callers.  The Swift side imports the same value
+// as a plain Swift String via the bridging header.
 NSString *const PBEffectiveAppearanceChanged = @"PBEffectiveAppearanceChanged";
-
-@implementation NSAppearance (PBDarkMode)
-
-- (BOOL)isDarkMode
-{
-	if (@available(macOS 10.14, *)) {
-		if ([self bestMatchFromAppearancesWithNames:@[ NSAppearanceNameDarkAqua, NSAppearanceNameAqua ]] == NSAppearanceNameDarkAqua)
-			return YES;
-		return NO;
-	} else {
-		return NO;
-	}
-}
-
-@end
-
-@implementation NSApplication (PBDarkMode)
-
-- (BOOL)isDarkMode
-{
-	if (@available(macOS 10.14, *)) {
-		return self.effectiveAppearance.isDarkMode;
-	} else {
-		return NO;
-	}
-}
-
-- (void)registerObserverForAppearanceChanges:(id)observer
-{
-	if (@available(macOS 10.14, *)) {
-		/* This leaks the observation, but since it's tied to the life of NSApp
-		 * it doesn't matter ;-) */
-		[[NSApplication sharedApplication] addObserver:observer
-											   keyPath:@"effectiveAppearance"
-											   options:0
-												 block:^(MAKVONotification *notification) {
-													 [[NSNotificationCenter defaultCenter] postNotificationName:PBEffectiveAppearanceChanged object:observer];
-												 }];
-	}
-}
-
-@end

@@ -1697,6 +1697,7 @@
 				507367411FD1F54E003F73E1 /* PBGitCommitTableViewCell.m in Sources */,
 				4A5D772B14A9A9CC00DF6C68 /* PBCommitMessageView.m in Sources */,
 				4A5D772C14A9A9CC00DF6C68 /* PBCreateBranchSheet.m in Sources */,
+				4DF173E921A1D60A003CD3CE /* NSAppearance+PBDarkMode.m in Sources */,
 				4A5D772D14A9A9CC00DF6C68 /* PBCreateTagSheet.m in Sources */,
 				4A5D772E14A9A9CC00DF6C68 /* PBFileChangesTableView.m in Sources */,
 				6C5244131E00C66E0051DE20 /* PBHistorySearchMode.m in Sources */,

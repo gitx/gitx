@@ -5,11 +5,16 @@
 //  Converted from NSAppearance+PBDarkMode.m
 //  Original by Etienne, 2018.
 //
+//  Note: NSAppearance+PBDarkMode.m is still compiled solely to provide the
+//  `extern NSString *const PBEffectiveAppearanceChanged` definition for ObjC
+//  callers.  The category implementations live here.
+//
 
 import AppKit
 
-/// Posted whenever the effective appearance of NSApplication changes.
-@objc let PBEffectiveAppearanceChanged = "PBEffectiveAppearanceChanged"
+// Swift-side alias so Swift code can use the constant by name.
+// The authoritative definition lives in NSAppearance+PBDarkMode.m.
+let PBEffectiveAppearanceChanged: String = "PBEffectiveAppearanceChanged"
 
 // MARK: - NSAppearance
 
@@ -39,8 +44,7 @@ extension NSApplication {
                 object: observer
             )
         }
-        // Retain the token on NSApp via the ObjC associated-objects API so it
-        // is never deallocated (same intentional "leak" as the original comment).
+        // Retain the token on NSApp so it lives for the lifetime of the app.
         objc_setAssociatedObject(
             self,
             &NSApplication.appearanceObservationKey,
