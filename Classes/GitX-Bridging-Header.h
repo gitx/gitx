@@ -14,9 +14,11 @@
 #import "MAKVONotificationCenter.h"
 
 // ── App-level helpers ────────────────────────────────────────────────────────
+// NSAppearance+PBDarkMode is now implemented in NSAppearance+PBDarkMode.swift; header kept for ObjC callers
 #import "NSAppearance+PBDarkMode.h"
 // NSColor+RGB is now implemented in NSColor+RGB.swift; header kept for ObjC callers
 #import "NSColor+RGB.h"
+// NSSplitView+GitX is now implemented in NSSplitView+GitX.swift; header kept for ObjC callers
 #import "NSSplitView+GitX.h"
 #import "PBMacros.h"
 
