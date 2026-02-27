@@ -52,15 +52,12 @@
     [self.app launch];
 
     if (repoPath) {
-        // Use 'open' to tell the already-running app to open the repo.
-        // This triggers application:openFiles: reliably regardless of how
-        // NSDocumentController handles launch arguments.
-        NSTask *task = [[NSTask alloc] init];
-        task.launchPath = @"/usr/bin/open";
-        task.arguments = @[@"-b", @"net.phere.GitX", repoPath];
-        [task launch];
-        [task waitUntilExit];
+        // GITX_UITEST_REPO is read in applicationDidFinishLaunching: to open
+        // the repo directly, giving XCUITests a reliable document window.
+        self.app.launchEnvironment = @{@"GITX_UITEST_REPO": repoPath};
     }
+
+    [self.app launch];
 }
 
 - (void)tearDown {
