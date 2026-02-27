@@ -80,6 +80,8 @@ jobs:
       - name: Unlink openssl 3
         run: |
           brew unlink openssl@3
+      - name: Run tests
+        run: xcodebuild test -workspace GitX.xcworkspace -scheme GitX -destination "platform=macOS,arch=${{ matrix.abi }}" ARCHS="${{ matrix.abi }}" CODE_SIGN_IDENTITY="-"
       - name: Build project
         run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}" PRODUCT_BUNDLE_IDENTIFIER=net.phere.GitX
       - name: Prepare artifact
