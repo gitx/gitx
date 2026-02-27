@@ -82,6 +82,28 @@ jobs:
           brew unlink openssl@3
       - name: Build project
         run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}" PRODUCT_BUNDLE_IDENTIFIER=net.phere.GitX
+      - name: Run tests
+        run: |
+          xcodebuild test \
+            -workspace GitX.xcworkspace \
+            -scheme GitX \
+            -destination "platform=macOS,arch=${{ matrix.abi }}" \
+            ARCHS="${{ matrix.abi }}" \
+            CODE_SIGN_IDENTITY="-" \
+            -resultBundlePath TestResults-${{ matrix.abi }}.xcresult
+      - name: Extract screenshots from test results
+        if: always()
+        run: |
+          python3 scripts/extract_screenshots.py \
+            TestResults-${{ matrix.abi }}.xcresult \
+            screenshots-${{ matrix.abi }}
+          ls -la screenshots-${{ matrix.abi }}
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Screenshots-${{ matrix.abi }}
+          path: screenshots-${{ matrix.abi }}
       - name: Prepare artifact
         if: ${{ env.variableSet != '' }}
         env:
@@ -150,7 +172,7 @@ jobs:
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
           rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.provisionprofile
-
+          
   release:
     if: startsWith(github.event.ref, 'refs/tags/')
     needs: build-gitx
