@@ -56,17 +56,10 @@
     if ([window waitForExistenceWithTimeout:20]) {
         return YES;
     }
-    // Window didn't appear — the app may be sitting at the "Open Recent" panel
-    // or showing nothing. Try opening via the File menu.
+    // Activate the app and give it one more chance — it may have launched
+    // but not yet brought its window to the front.
     [self.app activate];
-    NSString *repoPath = self.app.launchEnvironment[@"GITX_UITEST_REPO"];
-    if (repoPath) {
-        // Use NSWorkspace to ask the already-running app to open the path.
-        // This works because XCUIApplication keeps the process alive and
-        // NSWorkspace sends an Apple Event to the running instance.
-        [[NSWorkspace sharedWorkspace] openURL:[NSURL fileURLWithPath:repoPath]];
-    }
-    return [self.app.windows.firstMatch waitForExistenceWithTimeout:15];
+    return [self.app.windows.firstMatch waitForExistenceWithTimeout:10];
 }
 
 - (void)saveScreenshotNamed:(NSString *)name {
