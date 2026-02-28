@@ -21,6 +21,11 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		AABBCC0300000003 /* GitXSwift.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0200000002 /* GitXSwift.swift */; };
+		AABBCC0400000004 /* GitXRelativeDateFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0500000005 /* GitXRelativeDateFormatter.swift */; };
+		AABBCC0600000006 /* NSColor+RGB.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0700000007 /* NSColor+RGB.swift */; };
+		AABBCC0800000008 /* NSAppearance+PBDarkMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0900000009 /* NSAppearance+PBDarkMode.swift */; };
+		AABBCC0A0000000A /* NSSplitView+GitX.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABBCC0B0000000B /* NSSplitView+GitX.swift */; };
 		0A6858C711F7EA8A00AC2BE4 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A6858C611F7EA8A00AC2BE4 /* CoreServices.framework */; };
 		2682AABB1929140E00271A4D /* GTOID+JavaScript.m in Sources */ = {isa = PBXBuildFile; fileRef = 2682AABA1929140E00271A4D /* GTOID+JavaScript.m */; };
 		2DE9B60629ABEB450097873A /* GitX.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 2DE9B60529ABEB450097873A /* GitX.xcconfig */; };
@@ -432,6 +437,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AABBCC0100000001 /* GitX-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GitX-Bridging-Header.h"; sourceTree = "<group>"; };
+		AABBCC0200000002 /* GitXSwift.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitXSwift.swift; sourceTree = "<group>"; };
+		AABBCC0500000005 /* GitXRelativeDateFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GitXRelativeDateFormatter.swift; sourceTree = "<group>"; };
+		AABBCC0700000007 /* NSColor+RGB.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSColor+RGB.swift"; sourceTree = "<group>"; };
+		AABBCC0900000009 /* NSAppearance+PBDarkMode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSAppearance+PBDarkMode.swift"; sourceTree = "<group>"; };
+		AABBCC0B0000000B /* NSSplitView+GitX.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSSplitView+GitX.swift"; sourceTree = "<group>"; };
 		0A6858C611F7EA8A00AC2BE4 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		2682AAB91929140E00271A4D /* GTOID+JavaScript.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GTOID+JavaScript.h"; sourceTree = "<group>"; };
@@ -925,12 +936,15 @@
 				4A5D764D14A9A9CC00DF6C68 /* git */,
 				4A5D768814A9A9CC00DF6C68 /* GitXRelativeDateFormatter.h */,
 				4A5D768914A9A9CC00DF6C68 /* GitXRelativeDateFormatter.m */,
+				AABBCC0500000005 /* GitXRelativeDateFormatter.swift */,
 				4A5D768A14A9A9CC00DF6C68 /* GitXScriptingConstants.h */,
 				4A5D768B14A9A9CC00DF6C68 /* main.m */,
 				4A2125A217C0C78A00B5B582 /* NSColor+RGB.h */,
 				4A2125A317C0C78A00B5B582 /* NSColor+RGB.m */,
+				AABBCC0700000007 /* NSColor+RGB.swift */,
 				373F9A1E1EAF97A200A77B4C /* NSSplitView+GitX.h */,
 				373F9A1F1EAF97A200A77B4C /* NSSplitView+GitX.m */,
+				AABBCC0B0000000B /* NSSplitView+GitX.swift */,
 				4A5D768C14A9A9CC00DF6C68 /* PBChangedFile.h */,
 				4A5D768D14A9A9CC00DF6C68 /* PBChangedFile.m */,
 				4A5D768E14A9A9CC00DF6C68 /* PBCLIProxy.h */,
@@ -952,7 +966,10 @@
 				4D6E4F791E56851A004C3A6F /* PBMacros.h */,
 				4DF173E721A1D60A003CD3CE /* NSAppearance+PBDarkMode.h */,
 				4DF173E821A1D60A003CD3CE /* NSAppearance+PBDarkMode.m */,
+				AABBCC0900000009 /* NSAppearance+PBDarkMode.swift */,
 				A1021294218C5A2000D97D11 /* iTerm2GeneratedScriptingBridge.h */,
+				AABBCC0100000001 /* GitX-Bridging-Header.h */,
+				AABBCC0200000002 /* GitXSwift.swift */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1658,7 +1675,6 @@
 				4A5D770C14A9A9CC00DF6C68 /* PBGitTree.m in Sources */,
 				4A5D770D14A9A9CC00DF6C68 /* PBError.m in Sources */,
 				4A5D770E14A9A9CC00DF6C68 /* PBGitXProtocol.m in Sources */,
-				4A5D771114A9A9CC00DF6C68 /* GitXRelativeDateFormatter.m in Sources */,
 				4A5D771214A9A9CC00DF6C68 /* main.m in Sources */,
 				2682AABB1929140E00271A4D /* GTOID+JavaScript.m in Sources */,
 				4A5D771314A9A9CC00DF6C68 /* PBChangedFile.m in Sources */,
@@ -1692,7 +1708,6 @@
 				4A5D773414A9A9CC00DF6C68 /* PBQLOutlineView.m in Sources */,
 				4A5D773514A9A9CC00DF6C68 /* PBQLTextView.m in Sources */,
 				4A5D773714A9A9CC00DF6C68 /* PBRemoteProgressSheet.m in Sources */,
-				373F9A201EAF97A200A77B4C /* NSSplitView+GitX.m in Sources */,
 				4A5D773914A9A9CC00DF6C68 /* PBSourceViewItem.m in Sources */,
 				4A5D777414A9AEB000DF6C68 /* PBSourceViewBadge.m in Sources */,
 				BF42F1331E025403004769FF /* GitXTextView.m in Sources */,
@@ -1700,9 +1715,13 @@
 				643952771603EF9B00BB7AFF /* PBSourceViewGitSubmoduleItem.m in Sources */,
 				4AB057E31652652000DE751D /* PBRepositoryFinder.m in Sources */,
 				50660A551FD6F48A004342B0 /* PBSidebarList.m in Sources */,
-				4A2125A417C0C78A00B5B582 /* NSColor+RGB.m in Sources */,
 				A2F8D0DF17AAB32500580B84 /* PBGitStash.m in Sources */,
 				A2F8D0EB17AAB95E00580B84 /* PBSourceViewGitStashItem.m in Sources */,
+				AABBCC0300000003 /* GitXSwift.swift in Sources */,
+				AABBCC0400000004 /* GitXRelativeDateFormatter.swift in Sources */,
+				AABBCC0600000006 /* NSColor+RGB.swift in Sources */,
+				AABBCC0800000008 /* NSAppearance+PBDarkMode.swift in Sources */,
+				AABBCC0A0000000A /* NSSplitView+GitX.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1843,11 +1862,14 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = GitX.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				FRAMEWORK_SEARCH_PATHS = "\"$(PROJECT_DIR)\"";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				INFOPLIST_FILE = Resources/Info.plist;
+				SWIFT_OBJC_BRIDGING_HEADER = Classes/GitX-Bridging-Header.h;
+				SWIFT_VERSION = 5.0;
 				INFOPLIST_KEY_CFBundleDisplayName = GitX;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
@@ -1869,12 +1891,15 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = GitX.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = "\"$(PROJECT_DIR)\"";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = Resources/GitX_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS_NOT_USED_IN_PRECOMPS = "";
 				INFOPLIST_FILE = Resources/Info.plist;
+				SWIFT_OBJC_BRIDGING_HEADER = Classes/GitX-Bridging-Header.h;
+				SWIFT_VERSION = 5.0;
 				INFOPLIST_KEY_CFBundleDisplayName = GitX;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
