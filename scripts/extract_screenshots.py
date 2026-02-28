@@ -31,8 +31,8 @@ def main():
     out_dir = sys.argv[2]
     os.makedirs(out_dir, exist_ok=True)
 
-    result = subprocess.run(
-        ['xcrun', 'xcresulttool', 'get', '--path', bundle, '--format', 'json'],
+result = subprocess.run(
+        ['xcrun', 'xcresulttool', 'get', 'object', '--legacy', '--path', bundle, '--format', 'json'],
         capture_output=True
     )
     if result.returncode != 0:
