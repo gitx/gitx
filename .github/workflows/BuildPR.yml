@@ -80,6 +80,34 @@ jobs:
       - name: Unlink openssl 3
         run: |
           brew unlink openssl@3
+      - name: Run tests
+        run: |
+          xcodebuild test \
+            -workspace GitX.xcworkspace \
+            -scheme GitX \
+            -destination "platform=macOS,arch=${{ matrix.abi }}" \
+            ARCHS="${{ matrix.abi }}" \
+            CODE_SIGN_IDENTITY="-" \
+            -resultBundlePath TestResults-${{ matrix.abi }}.xcresult
+      - name: Upload test results (screenshots)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults-${{ matrix.abi }}
+          path: TestResults-${{ matrix.abi }}.xcresult
+      - name: Extract screenshots from test results
+        if: always()
+        run: |
+          python3 scripts/extract_screenshots.py \
+            TestResults-${{ matrix.abi }}.xcresult \
+            screenshots-${{ matrix.abi }} || echo "No attachments extracted"
+          ls -la screenshots-${{ matrix.abi }}/ || echo "No screenshots directory"
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Screenshots-${{ matrix.abi }}
+          path: screenshots-${{ matrix.abi }}/
       - name: Build project
         run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}" PRODUCT_BUNDLE_IDENTIFIER=net.phere.GitX
       - name: Prepare artifact

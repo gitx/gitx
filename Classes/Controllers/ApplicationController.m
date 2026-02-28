@@ -95,6 +95,10 @@ static OpenRecentController *recentsDialog = nil;
 {
 	if (!started || [[[NSDocumentController sharedDocumentController] documents] count])
 		return NO;
+	// Suppress the recents dialog during UI tests so the test-repo window
+	// opens cleanly without a competing sheet/panel.
+	if ([[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_UITEST_REPO"])
+		return NO;
 	return YES;
 }
 
@@ -121,6 +125,24 @@ static OpenRecentController *recentsDialog = nil;
 	[NSApp registerObserverForAppearanceChanges:self];
 	[self registerServices];
 	started = YES;
+
+	// UI-test hook: open a repo path passed via environment variable so that
+	// XCUITests always get a document window without relying on recents or
+	// Launch Services registration.
+	NSString *uitestRepo = [[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_UITEST_REPO"];
+	if (uitestRepo.length > 0) {
+		NSURL *repoURL = [NSURL fileURLWithPath:uitestRepo];
+		PBRepositoryDocumentController *controller = [PBRepositoryDocumentController sharedDocumentController];
+		// Defer to the next run-loop iteration so the app is fully initialised.
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[controller openDocumentWithContentsOfURL:repoURL
+											  display:YES
+									completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
+										if (!document)
+											NSLog(@"[UITest] Failed to open repo %@: %@", uitestRepo, error);
+									}];
+		});
+	}
 }
 
 - (void)windowWillClose:sender
