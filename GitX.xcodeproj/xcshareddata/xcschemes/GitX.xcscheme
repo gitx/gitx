@@ -67,7 +67,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "GITX_UITEST_REPO"
-            value = "$(SRCROOT)"
+            value = "$(GITX_SCREENSHOT_REPO)"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

@@ -20,9 +20,11 @@
     self.continueAfterFailure = NO;
     self.app = [[XCUIApplication alloc] init];
 
-    // GITX_UITEST_REPO is set to $(SRCROOT) in the scheme's TestAction
-    // environment variables, so it is always available both locally and on CI.
-    NSString *repoPath = [[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_UITEST_REPO"];
+    // GITX_UITEST_REPO is set by the scheme to $(GITX_SCREENSHOT_REPO).
+    // Locally this expands to $(SRCROOT). On CI, xcodebuild overrides
+    // GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo (the fixed commit checkout).
+    NSDictionary *env = [[NSProcessInfo processInfo] environment];
+    NSString *repoPath = env[@"GITX_UITEST_REPO"];
 
     if (!repoPath) {
         // Fallback: a fixture repo bundled with the test target
