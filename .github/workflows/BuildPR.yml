@@ -136,11 +136,9 @@ jobs:
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
           rm -rf TestResults-${{ matrix.abi }}.xcresult
-          rm -rf screenshots-${{ matrix.abi }}
+          rm -rf screenshots-${{ matrix.abi }}.xcresult
           git status
-          [ "$(git status -s \
-            -- ':!screenshotsToCompare${{ matrix.abi }}' \
-               ':!screenshotDiffs')" ] && exit 1 || exit 0
+          [ "$(git status -s -uno -- ':!screenshotsToCompare${{ matrix.abi }}')" ] && exit 1 || exit 0
       # end test
           
       - name: Build project
