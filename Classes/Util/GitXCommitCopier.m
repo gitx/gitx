@@ -74,8 +74,8 @@
 {
 	if (string.length > 0) {
 		NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
-		[pasteboard declareTypes:@[ NSStringPboardType ] owner:self];
-		[pasteboard setString:string forType:NSStringPboardType];
+		[pasteboard declareTypes:@[ NSPasteboardTypeString ] owner:self];
+		[pasteboard setString:string forType:NSPasteboardTypeString];
 	}
 }
 
