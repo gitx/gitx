@@ -133,9 +133,11 @@ jobs:
         if: ${{ always() && matrix.abi == 'arm64' }}
         run: |
           rm -rf TestResults-${{ matrix.abi }}.xcresult
-          rm -rf screenshots-${{ matrix.abi }}.xcresult
+          rm -rf screenshots-${{ matrix.abi }}
           git status
-          [ "$(git status -s -uno -- ':!screenshotsToCompare${{ matrix.abi }}')" ] && exit 1 || exit 0
+          [ "$(git status -s \
+            -- ':!screenshotsToCompare${{ matrix.abi }}' \
+               ':!screenshotDiffs')" ] && exit 1 || exit 0
       # end test
           
       - name: Build project
