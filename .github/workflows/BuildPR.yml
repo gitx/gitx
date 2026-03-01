@@ -80,6 +80,10 @@ jobs:
       - name: Unlink openssl 3
         run: |
           brew unlink openssl@3
+          
+      # Test
+      - name: Prepare screenshot comparison
+        run: brew install exiftool imagemagick
       - name: Checkout fixed repo snapshot for screenshots
         run: |
           git clone --no-checkout "$GITHUB_WORKSPACE" /tmp/gitx-screenshot-repo
@@ -107,6 +111,32 @@ jobs:
         with:
           name: Screenshots-${{ matrix.abi }}
           path: screenshots-${{ matrix.abi }}
+      - name: Compare screenshots
+        if: ${{ always() && matrix.abi == 'arm64' }}
+        env:
+          CLASSIC_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
+          SCREENSHOT_USER: ${{ secrets.SCREENSHOT_USER }}
+          SCREENSHOT_PASSWORD: ${{ secrets.SCREENSHOT_PASSWORD }}
+          emulatorApi: ${{ matrix.abi }}
+        run: |
+          ls -ls Screenshots-${{ matrix.abi }}
+          cp Screenshots-${{ matrix.abi }}/* scripts/Screenshots-${{ matrix.abi }}
+          ./screenShotScript/screenShotCompare.sh
+      - name: Archive screenshots diffs
+        if: ${{ always() && matrix.abi == 'arm64' }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: gitx-Screenshots-diffs-${{ matrix.abi }}
+          path: |
+            screenshotDiffs
+      - name: Show git status
+        if: ${{ always() && matrix.abi == 'arm64' }}
+        run: |
+          rm -rf TestResults-${{ matrix.abi }}.xcresult
+          rm -rf screenshots-${{ matrix.abi }}.xcresult
+          git status
+          [ "$(git status -s -uno -- ':!screenshotsToCompare${{ matrix.abi }}')" ] && exit 1 || exit 0
+      # end test
           
       - name: Build project
         run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}" PRODUCT_BUNDLE_IDENTIFIER=net.phere.GitX
