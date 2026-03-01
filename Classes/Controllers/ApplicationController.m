@@ -97,7 +97,8 @@ static OpenRecentController *recentsDialog = nil;
 		return NO;
 	// Suppress the recents dialog during UI tests so the test-repo window
 	// opens cleanly without a competing sheet/panel.
-	if ([[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_UITEST_REPO"])
+	if ([[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_UITEST_REPO"] ||
+		[[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_SCREENSHOT_REPO"])
 		return NO;
 	return YES;
 }
@@ -130,7 +131,7 @@ static OpenRecentController *recentsDialog = nil;
 	// XCUITests always get a document window without relying on recents or
 	// Launch Services registration.
 	NSDictionary *env = [[NSProcessInfo processInfo] environment];
-	NSString *uitestRepo = env[@"GITX_UITEST_REPO"];
+	NSString *uitestRepo = env[@"GITX_UITEST_REPO"] ?: env[@"GITX_SCREENSHOT_REPO"];
 	if (uitestRepo.length > 0) {
 		NSURL *repoURL = [NSURL fileURLWithPath:uitestRepo];
 		PBRepositoryDocumentController *controller = [PBRepositoryDocumentController sharedDocumentController];
