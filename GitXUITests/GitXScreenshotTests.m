@@ -122,5 +122,42 @@
 //     [self saveScreenshotNamed:@"full-screen"];
 // }
 
+- (void)testCommitContextMenuScreenshot {
+    if (![self waitForWindow]) { return; }
+
+    // The commit list is a table — find the first (most recent) commit row
+    XCUIElement *window = self.app.windows.firstMatch;
+    XCUIElement *table = window.tables.firstMatch;
+    if (![table waitForExistenceWithTimeout:10]) {
+        NSLog(@"[GitXScreenshotTests] Commit table not found, skipping context menu screenshot");
+        return;
+    }
+
+    // Let the history list fully load
+    [NSThread sleepForTimeInterval:1.0];
+
+    XCUIElement *firstRow = [table.tableRows elementBoundByIndex:0];
+    if (!firstRow.exists) {
+        NSLog(@"[GitXScreenshotTests] No commit rows found, skipping context menu screenshot");
+        return;
+    }
+
+    // Right-click to open the context menu
+    [firstRow rightClick];
+
+    // Wait for the menu to appear
+    XCUIElement *menu = self.app.menus.firstMatch;
+    if (![menu waitForExistenceWithTimeout:5]) {
+        NSLog(@"[GitXScreenshotTests] Context menu did not appear");
+        return;
+    }
+
+    [NSThread sleepForTimeInterval:0.3]; // let the menu fully render
+    [self saveWindowScreenshotNamed:@"commit-context-menu"];
+
+    // Dismiss the menu
+    [window typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+}
+
 @end
 
