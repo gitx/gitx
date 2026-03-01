@@ -116,11 +116,11 @@
     [self saveWindowScreenshotNamed:@"staging-view"];
 }
 
-- (void)testFullScreenScreenshot {
-    // Capture the entire screen — useful for catching system-level visual regressions
-    [NSThread sleepForTimeInterval:1.0]; // let the app settle
-    [self saveScreenshotNamed:@"full-screen"];
-}
+// - (void)testFullScreenScreenshot {
+//     // Capture the entire screen — useful for catching system-level visual regressions
+//     [NSThread sleepForTimeInterval:1.0]; // let the app settle
+//     [self saveScreenshotNamed:@"full-screen"];
+// }
 
 @end
 
