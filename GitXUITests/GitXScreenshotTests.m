@@ -159,5 +159,127 @@
     [window typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
 }
 
+// MARK: - Settings / Preferences
+
+- (void)openPreferencesWindow {
+    // Use the menu bar — more reliable than ⌘, in UI tests because the
+    // main window is guaranteed to have focus after waitForWindow.
+    XCUIElement *appMenu = self.app.menuBars.firstMatch;
+    // "GitX" application menu
+    XCUIElement *gitxMenu = appMenu.menuBarItems[@"GitX"];
+    if (gitxMenu.exists) {
+        [gitxMenu click];
+        XCUIElement *prefsItem = self.app.menuItems[@"Preferences…"];
+        if (!prefsItem.exists) {
+            prefsItem = self.app.menuItems[@"Settings…"];
+        }
+        if (prefsItem.exists) {
+            [prefsItem click];
+            return;
+        }
+        // Dismiss the menu before falling back
+        [appMenu typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+    }
+    // Fallback: keyboard shortcut
+    [self.app typeKey:@"," modifierFlags:XCUIKeyModifierCommand];
+}
+
+- (XCUIElement *)waitForPreferencesWindow {
+    // Try matching by title first
+    XCUIElement *prefsWindow = [self.app.windows elementMatchingPredicate:
+        [NSPredicate predicateWithFormat:@"title CONTAINS[c] 'Preferences' OR title CONTAINS[c] 'Settings'"]];
+    if ([prefsWindow waitForExistenceWithTimeout:5]) {
+        return prefsWindow;
+    }
+    // Fall back: any second window that appears after the main one
+    [NSThread sleepForTimeInterval:1.0];
+    if (self.app.windows.count > 1) {
+        return [self.app.windows elementBoundByIndex:1];
+    }
+    return prefsWindow; // still return (non-existent) so callers can check .exists
+}
+
+- (void)saveWindowElementScreenshotNamed:(NSString *)name element:(XCUIElement *)element {
+    XCUIScreenshot *screenshot = element.exists ? [element screenshot]
+                                                : [[XCUIScreen mainScreen] screenshot];
+    XCTAttachment *attachment = [XCTAttachment attachmentWithScreenshot:screenshot];
+    attachment.name = name;
+    attachment.lifetime = XCTAttachmentLifetimeKeepAlways;
+    [self addAttachment:attachment];
+}
+
+- (XCUIElement *)findPrefsTabButton:(NSString *)label inWindow:(XCUIElement *)window {
+    // NSPanel toolbars are not always in .toolbars — search the full descendant tree.
+    XCUIElement *btn = [window.toolbars.buttons elementMatchingPredicate:
+        [NSPredicate predicateWithFormat:@"label == %@ OR title == %@ OR identifier == %@",
+         label, label, label]];
+    if (btn.exists) return btn;
+
+    // Broader: any button or toolbar button anywhere in the window
+    btn = [window.buttons elementMatchingPredicate:
+        [NSPredicate predicateWithFormat:@"label == %@ OR title == %@", label, label]];
+    if (btn.exists) return btn;
+
+    // Fallback: search all descendants
+    NSPredicate *pred = [NSPredicate predicateWithFormat:
+        @"(elementType == %d OR elementType == %d) AND (label == %@ OR title == %@)",
+        XCUIElementTypeButton, XCUIElementTypeToolbarButton, label, label];
+    XCUIElementQuery *q = [window descendantsMatchingType:XCUIElementTypeAny];
+    btn = [q elementMatchingPredicate:pred];
+    return btn;
+}
+
+- (void)testSettingsGeneralTabScreenshot {
+    XCTAssertTrue([self waitForWindow], @"Main window must appear before opening Preferences");
+
+    [self openPreferencesWindow];
+    XCUIElement *prefsWindow = [self waitForPreferencesWindow];
+
+    if (prefsWindow.exists) {
+        XCUIElement *btn = [self findPrefsTabButton:@"General" inWindow:prefsWindow];
+        if (btn.exists) {
+            [btn click];
+            [NSThread sleepForTimeInterval:0.6];
+        } else {
+            NSLog(@"[GitXScreenshotTests] General toolbar button not found");
+        }
+    } else {
+        NSLog(@"[GitXScreenshotTests] Preferences window not found for General tab");
+    }
+
+    [self saveWindowElementScreenshotNamed:@"settings-general" element:prefsWindow];
+
+    if (prefsWindow.exists) {
+        [prefsWindow typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+        [NSThread sleepForTimeInterval:0.3];
+    }
+}
+
+- (void)testSettingsIntegrationTabScreenshot {
+    XCTAssertTrue([self waitForWindow], @"Main window must appear before opening Preferences");
+
+    [self openPreferencesWindow];
+    XCUIElement *prefsWindow = [self waitForPreferencesWindow];
+
+    if (prefsWindow.exists) {
+        XCUIElement *btn = [self findPrefsTabButton:@"Integration" inWindow:prefsWindow];
+        if (btn.exists) {
+            [btn click];
+            [NSThread sleepForTimeInterval:0.6];
+        } else {
+            NSLog(@"[GitXScreenshotTests] Integration toolbar button not found");
+        }
+    } else {
+        NSLog(@"[GitXScreenshotTests] Preferences window not found for Integration tab");
+    }
+
+    [self saveWindowElementScreenshotNamed:@"settings-integration" element:prefsWindow];
+
+    if (prefsWindow.exists) {
+        [prefsWindow typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+        [NSThread sleepForTimeInterval:0.3];
+    }
+}
+
 @end
 
