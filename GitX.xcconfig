@@ -3,4 +3,8 @@
 
 CODE_SIGN_IDENTITY = -
 
+// Default repo for UI screenshot tests. Override on CI via:
+//   xcodebuild ... GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo
+GITX_SCREENSHOT_REPO = $(SRCROOT)
+
 #include? "Dev.xcconfig"
