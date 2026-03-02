@@ -83,12 +83,15 @@ jobs:
           
       # Test
       - name: Prepare screenshot comparison
+        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: brew install exiftool imagemagick
       - name: Checkout fixed repo snapshot for screenshots
+        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
           git clone --no-checkout "$GITHUB_WORKSPACE" /tmp/gitx-screenshot-repo
           git -C /tmp/gitx-screenshot-repo checkout 52ff1051d0c8e5cf3ee5
       - name: Run tests
+        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
           xcodebuild test \
             -workspace GitX.xcworkspace \
@@ -99,20 +102,20 @@ jobs:
             GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo \
             -resultBundlePath TestResults-${{ matrix.abi }}.xcresult
       - name: Extract screenshots from test results
-        if: always()
+        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
           python3 scripts/extract_screenshots.py \
             TestResults-${{ matrix.abi }}.xcresult \
             screenshots-${{ matrix.abi }}
           ls -la screenshots-${{ matrix.abi }}
       - name: Upload screenshots
-        if: always()
+        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v4
         with:
           name: Screenshots-${{ matrix.abi }}
           path: screenshots-${{ matrix.abi }}
       - name: Compare screenshots
-        if: ${{ always() && matrix.abi == 'arm64' }}
+        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         env:
           CLASSIC_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
           SCREENSHOT_USER: ${{ secrets.SCREENSHOT_USER }}
@@ -123,14 +126,14 @@ jobs:
           cp Screenshots-${{ matrix.abi }}/* scripts/Screenshots-${{ matrix.abi }}
           ./screenShotScript/screenShotCompare.sh
       - name: Archive screenshots diffs
-        if: ${{ always() && matrix.abi == 'arm64' }}
+        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v6
         with:
           name: gitx-Screenshots-diffs-${{ matrix.abi }}
           path: |
             screenshotDiffs
       - name: Show git status
-        if: ${{ always() && matrix.abi == 'arm64' }}
+        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
           rm -rf TestResults-${{ matrix.abi }}.xcresult
           rm -rf screenshots-${{ matrix.abi }}
