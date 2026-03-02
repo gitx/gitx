@@ -132,6 +132,16 @@ static OpenRecentController *recentsDialog = nil;
 	// Launch Services registration.
 	NSDictionary *env = [[NSProcessInfo processInfo] environment];
 	NSString *uitestRepo = env[@"GITX_UITEST_REPO"] ?: env[@"GITX_SCREENSHOT_REPO"];
+	// Resolve symlinks so the document controller gets the real path
+	if (uitestRepo.length > 0) {
+		uitestRepo = uitestRepo.stringByResolvingSymlinksInPath;
+	}
+	// Verify the path actually exists before trying to open it
+	if (uitestRepo.length > 0 &&
+		![[NSFileManager defaultManager] fileExistsAtPath:uitestRepo]) {
+		NSLog(@"[UITest] Repo path does not exist: %@, ignoring", uitestRepo);
+		uitestRepo = nil;
+	}
 	if (uitestRepo.length > 0) {
 		NSURL *repoURL = [NSURL fileURLWithPath:uitestRepo];
 		PBRepositoryDocumentController *controller = [PBRepositoryDocumentController sharedDocumentController];
@@ -140,8 +150,13 @@ static OpenRecentController *recentsDialog = nil;
 			[controller openDocumentWithContentsOfURL:repoURL
 											  display:YES
 									completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
-										if (!document)
+										if (!document) {
 											NSLog(@"[UITest] Failed to open repo %@: %@", uitestRepo, error);
+											// Fall back to Open Recent so the app has some window
+											dispatch_async(dispatch_get_main_queue(), ^{
+												[recentsDialog show];
+											});
+										}
 									}];
 		});
 	}

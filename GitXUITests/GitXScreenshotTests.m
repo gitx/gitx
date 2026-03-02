@@ -20,26 +20,29 @@
     self.continueAfterFailure = NO;
     self.app = [[XCUIApplication alloc] init];
 
-    NSDictionary *env = [[NSProcessInfo processInfo] environment];
+    // /tmp/gitx-screenshot-repo is the single agreed-upon repo path:
+    //  - In CI:    BuildPR.yml clones the fixed commit there before running tests.
+    //  - Locally:  run `ln -sf $(pwd) /tmp/gitx-screenshot-repo` once from the
+    //              project root, or use the helper: `scripts/setup-uitest-repo.sh`
+    //
+    // The test runner is sandboxed and cannot see SRCROOT or other build settings,
+    // so /tmp (which is shared across the sandbox boundary) is the only reliable path.
+    NSString *repoPath = @"/tmp/gitx-screenshot-repo";
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:repoPath];
+    NSLog(@"[GitXScreenshotTests] repoPath = %@ (exists=%d)", repoPath, exists);
 
-    // On CI: GITX_SCREENSHOT_REPO is passed as an xcodebuild build setting,
-    // which xcodebuild exports into the test runner's process environment.
-    // Locally: SRCROOT is always set by xcodebuild.
-    NSString *repoPath = env[@"GITX_SCREENSHOT_REPO"]
-                      ?: env[@"GITX_UITEST_REPO"]
-                      ?: env[@"SRCROOT"];
-
-    NSLog(@"[GitXScreenshotTests] repoPath = %@", repoPath ?: @"(none)");
-
-    // Always set launchEnvironment explicitly — this is the only reliable way
-    // to pass env vars to the app under test via XCUIApplication.
-    NSMutableDictionary *launchEnv = [NSMutableDictionary dictionary];
-    if (repoPath.length > 0) {
-        launchEnv[@"GITX_UITEST_REPO"] = repoPath;
-        launchEnv[@"GITX_SCREENSHOT_REPO"] = repoPath;
+    if (exists) {
+        // launchEnvironment IS forwarded by XCUIApplication to the app under test
+        self.app.launchEnvironment = @{
+            @"GITX_UITEST_REPO":     repoPath,
+            @"GITX_SCREENSHOT_REPO": repoPath
+        };
     }
-    self.app.launchEnvironment = launchEnv;
 
+    // Ensure a fresh launch — if an existing GitX is already running (e.g. during
+    // local development), XCUIApplication.launch would reuse it and our
+    // launchEnvironment + applicationDidFinishLaunching: would never fire.
+    [self.app terminate];
     [self.app launch];
 }
 
