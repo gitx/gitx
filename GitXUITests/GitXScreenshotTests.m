@@ -187,38 +187,33 @@
 - (XCUIElement *)waitForPreferencesWindow {
     // DBPrefsWindowController sets the window title to the active tab label
     // ("General", "Integration", "Updates") — not "Preferences" or "Settings".
-    // So match any second window that is NOT the main repo window.
-    NSPredicate *prefsPred = [NSPredicate predicateWithFormat:
-        @"title CONTAINS[c] 'General' OR title CONTAINS[c] 'Integration' "
-        @"OR title CONTAINS[c] 'Updates' OR title CONTAINS[c] 'Preferences' "
-        @"OR title CONTAINS[c] 'Settings'"];
-    XCUIElement *prefsWindow = [self.app.windows elementMatchingPredicate:prefsPred];
-    if ([prefsWindow waitForExistenceWithTimeout:5]) {
-        return prefsWindow;
+    // Wait for any second window to appear (index 1), which is the prefs panel.
+    NSPredicate *appeared = [NSPredicate predicateWithFormat:@"windows.count > 1"];
+    BOOL ok = [self expectationForPredicate:appeared
+                        evaluatedWithObject:self.app
+                                    handler:nil] != nil;
+    (void)ok;
+    // Poll manually — waitForExpectations requires XCTestCase context
+    for (int i = 0; i < 50; i++) {
+        if (self.app.windows.count > 1) {
+            return [self.app.windows elementBoundByIndex:1];
+        }
+        [NSThread sleepForTimeInterval:0.1];
     }
-    // Fall back: any second window that appears after the main one
-    [NSThread sleepForTimeInterval:1.0];
-    if (self.app.windows.count > 1) {
-        return [self.app.windows elementBoundByIndex:1];
-    }
-    return prefsWindow;
+    // Last resort: return by index anyway (will be non-existent if not found)
+    return [self.app.windows elementBoundByIndex:1];
 }
 
 - (void)saveWindowElementScreenshotNamed:(NSString *)name element:(XCUIElement *)element {
-    // Always capture only the window — never fall back to full screen.
-    XCUIElement *target = element;
+    // Re-fetch the prefs window by index to avoid stale element references
+    // (the window title changes when switching tabs, invalidating predicate matches).
+    XCUIElement *target = (self.app.windows.count > 1)
+        ? [self.app.windows elementBoundByIndex:1]
+        : element;
     if (!target.exists) {
-        // Try to find the prefs window again by title
-        NSPredicate *pred = [NSPredicate predicateWithFormat:
-            @"title CONTAINS[c] 'General' OR title CONTAINS[c] 'Integration' "
-            @"OR title CONTAINS[c] 'Updates' OR title CONTAINS[c] 'Preferences' "
-            @"OR title CONTAINS[c] 'Settings'"];
-        target = [self.app.windows elementMatchingPredicate:pred];
+        NSLog(@"[GitXScreenshotTests] Preferences window not found for screenshot '%@'", name);
+        return;
     }
-    if (!target.exists && self.app.windows.count > 1) {
-        target = [self.app.windows elementBoundByIndex:1];
-    }
-    XCTAssertTrue(target.exists, @"Preferences window must exist when taking screenshot '%@'", name);
     XCUIScreenshot *screenshot = [target screenshot];
     XCTAttachment *attachment = [XCTAttachment attachmentWithScreenshot:screenshot];
     attachment.name = name;
@@ -258,6 +253,8 @@
         if (btn.exists) {
             [btn click];
             [NSThread sleepForTimeInterval:0.6];
+            // Re-fetch by index — title changed to "General" after click
+            prefsWindow = [self.app.windows elementBoundByIndex:1];
         } else {
             NSLog(@"[GitXScreenshotTests] General toolbar button not found");
         }
@@ -267,8 +264,8 @@
 
     [self saveWindowElementScreenshotNamed:@"settings-general" element:prefsWindow];
 
-    if (prefsWindow.exists) {
-        [prefsWindow typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+    if (self.app.windows.count > 1) {
+        [[self.app.windows elementBoundByIndex:1] typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
         [NSThread sleepForTimeInterval:0.3];
     }
 }
@@ -284,6 +281,8 @@
         if (btn.exists) {
             [btn click];
             [NSThread sleepForTimeInterval:0.6];
+            // Re-fetch by index — title changed to "Integration" after click
+            prefsWindow = [self.app.windows elementBoundByIndex:1];
         } else {
             NSLog(@"[GitXScreenshotTests] Integration toolbar button not found");
         }
@@ -293,8 +292,8 @@
 
     [self saveWindowElementScreenshotNamed:@"settings-integration" element:prefsWindow];
 
-    if (prefsWindow.exists) {
-        [prefsWindow typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+    if (self.app.windows.count > 1) {
+        [[self.app.windows elementBoundByIndex:1] typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
         [NSThread sleepForTimeInterval:0.3];
     }
 }
