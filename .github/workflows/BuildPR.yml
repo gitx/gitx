@@ -81,7 +81,7 @@ jobs:
         run: |
           brew unlink openssl@3
           
-      # Test
+      # Test (only on arm64 to avoid tripling CI time)
       - name: Prepare screenshot comparison
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: brew install exiftool imagemagick
