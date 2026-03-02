@@ -185,9 +185,14 @@
 }
 
 - (XCUIElement *)waitForPreferencesWindow {
-    // Try matching by title first
-    XCUIElement *prefsWindow = [self.app.windows elementMatchingPredicate:
-        [NSPredicate predicateWithFormat:@"title CONTAINS[c] 'Preferences' OR title CONTAINS[c] 'Settings'"]];
+    // DBPrefsWindowController sets the window title to the active tab label
+    // ("General", "Integration", "Updates") — not "Preferences" or "Settings".
+    // So match any second window that is NOT the main repo window.
+    NSPredicate *prefsPred = [NSPredicate predicateWithFormat:
+        @"title CONTAINS[c] 'General' OR title CONTAINS[c] 'Integration' "
+        @"OR title CONTAINS[c] 'Updates' OR title CONTAINS[c] 'Preferences' "
+        @"OR title CONTAINS[c] 'Settings'"];
+    XCUIElement *prefsWindow = [self.app.windows elementMatchingPredicate:prefsPred];
     if ([prefsWindow waitForExistenceWithTimeout:5]) {
         return prefsWindow;
     }
@@ -196,12 +201,25 @@
     if (self.app.windows.count > 1) {
         return [self.app.windows elementBoundByIndex:1];
     }
-    return prefsWindow; // still return (non-existent) so callers can check .exists
+    return prefsWindow;
 }
 
 - (void)saveWindowElementScreenshotNamed:(NSString *)name element:(XCUIElement *)element {
-    XCUIScreenshot *screenshot = element.exists ? [element screenshot]
-                                                : [[XCUIScreen mainScreen] screenshot];
+    // Always capture only the window — never fall back to full screen.
+    XCUIElement *target = element;
+    if (!target.exists) {
+        // Try to find the prefs window again by title
+        NSPredicate *pred = [NSPredicate predicateWithFormat:
+            @"title CONTAINS[c] 'General' OR title CONTAINS[c] 'Integration' "
+            @"OR title CONTAINS[c] 'Updates' OR title CONTAINS[c] 'Preferences' "
+            @"OR title CONTAINS[c] 'Settings'"];
+        target = [self.app.windows elementMatchingPredicate:pred];
+    }
+    if (!target.exists && self.app.windows.count > 1) {
+        target = [self.app.windows elementBoundByIndex:1];
+    }
+    XCTAssertTrue(target.exists, @"Preferences window must exist when taking screenshot '%@'", name);
+    XCUIScreenshot *screenshot = [target screenshot];
     XCTAttachment *attachment = [XCTAttachment attachmentWithScreenshot:screenshot];
     attachment.name = name;
     attachment.lifetime = XCTAttachmentLifetimeKeepAlways;
