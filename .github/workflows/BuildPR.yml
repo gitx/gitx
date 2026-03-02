@@ -110,7 +110,7 @@ jobs:
           ls -la screenshots-${{ matrix.abi }}
       - name: Upload screenshots
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Screenshots-${{ matrix.abi }}
           path: screenshots-${{ matrix.abi }}
@@ -127,7 +127,7 @@ jobs:
           ./screenShotScript/screenShotCompare.sh
       - name: Archive screenshots diffs
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: gitx-Screenshots-diffs-${{ matrix.abi }}
           path: |
@@ -197,14 +197,14 @@ jobs:
         if: ${{ env.variableSet != '' }}
         run: spctl -a -vv GitX.app
       - name: Upload dmg
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7
         if: ${{ success() }}
         with:
           name: GitX-${{ matrix.abi }}.dmg
           path: GitX-${{ matrix.abi }}.dmg
           overwrite: true
       - name: Upload zip
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v7
         with:
           name: GitX-${{ matrix.abi }}.zip
           path: GitX-${{ matrix.abi }}.zip
