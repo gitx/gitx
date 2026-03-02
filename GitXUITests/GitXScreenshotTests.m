@@ -187,13 +187,7 @@
 - (XCUIElement *)waitForPreferencesWindow {
     // DBPrefsWindowController sets the window title to the active tab label
     // ("General", "Integration", "Updates") — not "Preferences" or "Settings".
-    // Wait for any second window to appear (index 1), which is the prefs panel.
-    NSPredicate *appeared = [NSPredicate predicateWithFormat:@"windows.count > 1"];
-    BOOL ok = [self expectationForPredicate:appeared
-                        evaluatedWithObject:self.app
-                                    handler:nil] != nil;
-    (void)ok;
-    // Poll manually — waitForExpectations requires XCTestCase context
+    // Poll for a second window to appear (index 1), which is the prefs panel.
     for (int i = 0; i < 50; i++) {
         if (self.app.windows.count > 1) {
             return [self.app.windows elementBoundByIndex:1];
