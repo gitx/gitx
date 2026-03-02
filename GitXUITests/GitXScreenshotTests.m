@@ -20,28 +20,25 @@
     self.continueAfterFailure = NO;
     self.app = [[XCUIApplication alloc] init];
 
-    // GITX_UITEST_REPO is set by the scheme to $(GITX_SCREENSHOT_REPO).
-    // Locally this expands to $(SRCROOT). On CI, xcodebuild overrides
-    // GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo (the fixed commit checkout).
     NSDictionary *env = [[NSProcessInfo processInfo] environment];
-    NSString *repoPath = env[@"GITX_UITEST_REPO"];
 
-    if (!repoPath) {
-        // Fallback: a fixture repo bundled with the test target
-        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-        NSURL *bundledRepo = [bundle URLForResource:@"testrepo" withExtension:nil];
-        if (bundledRepo && [[NSFileManager defaultManager] fileExistsAtPath:bundledRepo.path]) {
-            repoPath = bundledRepo.path;
-        }
-    }
+    // On CI: GITX_SCREENSHOT_REPO is passed as an xcodebuild build setting,
+    // which xcodebuild exports into the test runner's process environment.
+    // Locally: SRCROOT is always set by xcodebuild.
+    NSString *repoPath = env[@"GITX_SCREENSHOT_REPO"]
+                      ?: env[@"GITX_UITEST_REPO"]
+                      ?: env[@"SRCROOT"];
 
     NSLog(@"[GitXScreenshotTests] repoPath = %@", repoPath ?: @"(none)");
 
-    if (repoPath) {
-        // Passed to the app via applicationDidFinishLaunching: which opens
-        // the repo directly, giving the test a reliable document window.
-        self.app.launchEnvironment = @{@"GITX_UITEST_REPO": repoPath};
+    // Always set launchEnvironment explicitly — this is the only reliable way
+    // to pass env vars to the app under test via XCUIApplication.
+    NSMutableDictionary *launchEnv = [NSMutableDictionary dictionary];
+    if (repoPath.length > 0) {
+        launchEnv[@"GITX_UITEST_REPO"] = repoPath;
+        launchEnv[@"GITX_SCREENSHOT_REPO"] = repoPath;
     }
+    self.app.launchEnvironment = launchEnv;
 
     [self.app launch];
 }
