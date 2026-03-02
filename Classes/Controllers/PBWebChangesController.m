@@ -151,8 +151,8 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 		}
 	}
 	NSString *result = [processedLines componentsJoinedByString:@"\n"];
-	[[NSPasteboard generalPasteboard] declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-	[[NSPasteboard generalPasteboard] setString:result forType:NSStringPboardType];
+	[[NSPasteboard generalPasteboard] declareTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:nil];
+	[[NSPasteboard generalPasteboard] setString:result forType:NSPasteboardTypeString];
 }
 
 - (BOOL)webView:(WebView *)webView

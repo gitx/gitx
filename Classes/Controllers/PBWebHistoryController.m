@@ -287,8 +287,8 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 {
 	NSString *source = [(DOMHTMLElement *)self.view.mainFrame.DOMDocument.documentElement outerHTML];
 	NSPasteboard *a = [NSPasteboard generalPasteboard];
-	[a declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:self];
-	[a setString:source forType:NSStringPboardType];
+	[a declareTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:self];
+	[a setString:source forType:NSPasteboardTypeString];
 }
 
 - (NSArray *)webView:(WebView *)sender

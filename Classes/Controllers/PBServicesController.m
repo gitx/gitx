@@ -53,12 +53,12 @@
 - (void)completeSha:(NSPasteboard *)pboard userData:(NSString *)userData error:(NSString **)error
 {
 	NSArray *types = [pboard types];
-	if (![types containsObject:NSStringPboardType]) {
+	if (![types containsObject:NSPasteboardTypeString]) {
 		*error = @"Could not get data";
 		return;
 	}
 
-	NSString *s = [pboard stringForType:NSStringPboardType];
+	NSString *s = [pboard stringForType:NSPasteboardTypeString];
 	if ([s rangeOfString:@" "].location == NSNotFound)
 		s = [self completeSHA1For:s error:error];
 	else
@@ -66,7 +66,7 @@
 
 	if (!s) return;
 
-	[pboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-	[pboard setString:s forType:NSStringPboardType];
+	[pboard declareTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:nil];
+	[pboard setString:s forType:NSPasteboardTypeString];
 }
 @end

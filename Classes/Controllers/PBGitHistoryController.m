@@ -680,7 +680,7 @@
 		[pboard declareTypes:[NSArray arrayWithObject:@"PBGitRef"] owner:self];
 		[pboard setData:data forType:@"PBGitRef"];
 	} else {
-		[pboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:self];
+		[pboard declareTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:self];
 
 		NSString *info = nil;
 		if (column == [tv columnWithIdentifier:@"ShortSHAColumn"]) {
@@ -689,7 +689,7 @@
 			info = [NSString stringWithFormat:@"%@ (%@)", [commit shortName], [commit subject]];
 		}
 
-		[pboard setString:info forType:NSStringPboardType];
+		[pboard setString:info forType:NSPasteboardTypeString];
 	}
 
 	return YES;
