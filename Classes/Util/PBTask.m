@@ -203,7 +203,7 @@ const BOOL PBTaskDebugEnable = NO;
 
 	__block NSError *taskError = nil;
 
-	[self performTaskOnQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)
+	[self performTaskOnQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
 		   completionHandler:^(NSData *readData, NSError *error) {
 			   taskError = error;
 
