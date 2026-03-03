@@ -45,6 +45,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	dispatch_queue_t _indexRefreshQueue;
 	dispatch_group_t _indexRefreshGroup;
 	BOOL _amend;
+	BOOL _refreshInProgress;
 }
 
 @property (retain) NSDictionary *amendEnvironment;
@@ -65,6 +66,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	_files = [NSMutableArray array];
 
 	_indexRefreshGroup = dispatch_group_create();
+	_indexRefreshQueue = dispatch_queue_create("org.gitx.indexRefresh", DISPATCH_QUEUE_SERIAL);
 
 	return self;
 }
@@ -149,26 +151,34 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 
 - (void)refresh
 {
-	dispatch_group_enter(_indexRefreshGroup);
+	//
+	// Guard against concurrent refresh calls — skip if one is already running
+	__block BOOL shouldSkip = NO;
+	dispatch_sync(_indexRefreshQueue, ^{
+		if (self->_refreshInProgress) {
+			shouldSkip = YES;
+			return;
+		}
+		self->_refreshInProgress = YES;
+	});
 
-	// Ask Git to refresh the index
-	[PBTask launchTask:[PBGitBinary path]
-				arguments:@[ @"update-index", @"-q", @"--unmerged", @"--ignore-missing", @"--refresh" ]
-			  inDirectory:self.repository.workingDirectoryURL.path
-		completionHandler:^(NSData *readData, NSError *error) {
-			if (error) {
-				[self postIndexRefreshSuccess:NO message:@"update-index failed"];
-			} else {
-				[self postIndexRefreshSuccess:YES message:@"update-index success"];
-			}
+	if (shouldSkip) {
+		return;
+	}
 
-			dispatch_group_leave(self->_indexRefreshGroup);
-		}];
+	// Enter the group for ALL tasks upfront, before launching any of them.
+	// This prevents dispatch_group_notify from firing prematurely if an
+	// early task completes before later tasks have called group_enter.
+	dispatch_group_enter(_indexRefreshGroup); // update-index
+	BOOL isBare = [self.repository isBareRepository];
+	if (!isBare) {
+		dispatch_group_enter(_indexRefreshGroup); // ls-files
+		dispatch_group_enter(_indexRefreshGroup); // diff-index
+		dispatch_group_enter(_indexRefreshGroup); // diff-files
+	}
 
-
-	// This block is called when each of the other blocks scheduled are done,
-	// which means we can delete all files previously marked as deletable.
-	// Note, there are scheduled blocks *below* this one ;-).
+	// Register the notify block AFTER all group_enter calls.
+	// This block runs once all tasks have called group_leave.
 	dispatch_group_notify(_indexRefreshGroup, dispatch_get_main_queue(), ^{
 		// At this point, all index operations have finished.
 		// We need to find all files that don't have either
@@ -187,74 +197,96 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 			[self didChangeValueForKey:@"indexChanges"];
 		}
 
+		dispatch_async(self->_indexRefreshQueue, ^{
+			self->_refreshInProgress = NO;
+		});
+
 		[self postIndexRefreshFinished];
 	});
 
-	if ([self.repository isBareRepository]) {
+	// Ask Git to refresh the index
+	[PBTask launchTask:[PBGitBinary path]
+				arguments:@[ @"update-index", @"-q", @"--unmerged", @"--ignore-missing", @"--refresh" ]
+			  inDirectory:self.repository.workingDirectoryURL.path
+		completionHandler:^(NSData *readData, NSError *error) {
+			if (error) {
+				[self postIndexRefreshSuccess:NO message:@"update-index failed"];
+			} else {
+				[self postIndexRefreshSuccess:YES message:@"update-index success"];
+			}
+
+			dispatch_group_leave(self->_indexRefreshGroup);
+		}];
+
+	if (isBare) {
 		return;
 	}
 
-	// Other files
-	dispatch_group_enter(_indexRefreshGroup);
+	// Other files (untracked)
 	[PBTask launchTask:[PBGitBinary path]
 				arguments:@[ @"ls-files", @"--others", @"--exclude-standard", @"-z" ]
 			  inDirectory:self.repository.workingDirectoryURL.path
 		completionHandler:^(NSData *readData, NSError *error) {
-			if (error) {
-				[self postIndexRefreshSuccess:NO message:@"ls-files failed"];
-			} else {
-				NSArray *lines = [self linesFromData:readData];
-				NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] initWithCapacity:[lines count]];
-				// Other files are untracked, so we don't have any real index information. Instead, we can just fake it.
-				// The line below is not used at all, as for these files the commitBlob isn't set
-				NSArray *fileStatus = [NSArray arrayWithObjects:@":000000", @"100644", @"0000000000000000000000000000000000000000", @"0000000000000000000000000000000000000000", @"A", nil];
-				for (NSString *path in lines) {
-					if ([path length] == 0)
-						continue;
-					[dictionary setObject:fileStatus forKey:path];
+			// Serialize access to self.files via _indexRefreshQueue
+			dispatch_sync(self->_indexRefreshQueue, ^{
+				if (error) {
+					[self postIndexRefreshSuccess:NO message:@"ls-files failed"];
+				} else {
+					NSArray *lines = [self linesFromData:readData];
+					NSMutableDictionary *dictionary = [[NSMutableDictionary alloc] initWithCapacity:[lines count]];
+					// Other files are untracked, so we don't have any real index information. Instead, we can just fake it.
+					// The line below is not used at all, as for these files the commitBlob isn't set
+					NSArray *fileStatus = [NSArray arrayWithObjects:@":000000", @"100644", @"0000000000000000000000000000000000000000", @"0000000000000000000000000000000000000000", @"A", nil];
+					for (NSString *path in lines) {
+						if ([path length] == 0)
+							continue;
+						[dictionary setObject:fileStatus forKey:path];
+					}
+
+					[self addFilesFromDictionary:dictionary staged:NO tracked:NO];
+					[self postIndexRefreshSuccess:YES message:@"ls-files success"];
 				}
+			});
 
-				[self addFilesFromDictionary:dictionary staged:NO tracked:NO];
-			}
-
-			[self postIndexRefreshSuccess:YES message:@"ls-files success"];
 			dispatch_group_leave(self->_indexRefreshGroup);
 		}];
 
 	// Staged files
-	dispatch_group_enter(_indexRefreshGroup);
 	[PBTask launchTask:[PBGitBinary path]
 				arguments:@[ @"diff-index", @"--cached", @"-z", [self parentTree] ]
 			  inDirectory:self.repository.workingDirectoryURL.path
 		completionHandler:^(NSData *readData, NSError *error) {
-			if (error) {
-				[self postIndexRefreshSuccess:NO message:@"diff-index failed"];
-			} else {
-				NSArray *lines = [self linesFromData:readData];
-				NSMutableDictionary *dic = [self dictionaryForLines:lines];
-				[self addFilesFromDictionary:dic staged:YES tracked:YES];
-			}
-
-			[self postIndexRefreshSuccess:YES message:@"diff-index success"];
+			// Serialize access to self.files via _indexRefreshQueue
+			dispatch_sync(self->_indexRefreshQueue, ^{
+				if (error) {
+					[self postIndexRefreshSuccess:NO message:@"diff-index failed"];
+				} else {
+					NSArray *lines = [self linesFromData:readData];
+					NSMutableDictionary *dic = [self dictionaryForLines:lines];
+					[self addFilesFromDictionary:dic staged:YES tracked:YES];
+					[self postIndexRefreshSuccess:YES message:@"diff-index success"];
+				}
+			});
 
 			dispatch_group_leave(self->_indexRefreshGroup);
 		}];
 
-
 	// Unstaged files
-	dispatch_group_enter(_indexRefreshGroup);
 	[PBTask launchTask:[PBGitBinary path]
 				arguments:@[ @"diff-files", @"-z" ]
 			  inDirectory:self.repository.workingDirectoryURL.path
 		completionHandler:^(NSData *readData, NSError *error) {
-			if (error) {
-				[self postIndexRefreshSuccess:NO message:@"diff-files failed"];
-			} else {
-				NSArray *lines = [self linesFromData:readData];
-				NSMutableDictionary *dic = [self dictionaryForLines:lines];
-				[self addFilesFromDictionary:dic staged:NO tracked:YES];
-			}
-			[self postIndexRefreshSuccess:YES message:@"diff-files success"];
+			// Serialize access to self.files via _indexRefreshQueue
+			dispatch_sync(self->_indexRefreshQueue, ^{
+				if (error) {
+					[self postIndexRefreshSuccess:NO message:@"diff-files failed"];
+				} else {
+					NSArray *lines = [self linesFromData:readData];
+					NSMutableDictionary *dic = [self dictionaryForLines:lines];
+					[self addFilesFromDictionary:dic staged:NO tracked:YES];
+					[self postIndexRefreshSuccess:YES message:@"diff-files success"];
+				}
+			});
 
 			dispatch_group_leave(self->_indexRefreshGroup);
 		}];
