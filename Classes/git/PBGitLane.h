@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#ifdef __cplusplus
+
 class PBGitLane
 {
 	git_oid d_sha;
@@ -39,3 +41,6 @@ class PBGitLane
 
 	int index() const;
 };
+
+#endif // __cplusplus
+

@@ -93,13 +93,14 @@ jobs:
       - name: Run tests
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
+          # /tmp/gitx-screenshot-repo must exist — setUp reads it directly (sandbox cannot see SRCROOT)
+          test -d /tmp/gitx-screenshot-repo || ln -sf "$GITHUB_WORKSPACE" /tmp/gitx-screenshot-repo
           xcodebuild test \
             -workspace GitX.xcworkspace \
             -scheme GitX \
             -destination "platform=macOS,arch=${{ matrix.abi }}" \
             ARCHS="${{ matrix.abi }}" \
             CODE_SIGN_IDENTITY="-" \
-            GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo \
             -resultBundlePath TestResults-${{ matrix.abi }}.xcresult
       - name: Extract screenshots from test results
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
@@ -136,11 +137,9 @@ jobs:
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
           rm -rf TestResults-${{ matrix.abi }}.xcresult
-          rm -rf screenshots-${{ matrix.abi }}
+          rm -rf screenshots-${{ matrix.abi }}.xcresult
           git status
-          [ "$(git status -s \
-            -- ':!screenshotsToCompare${{ matrix.abi }}' \
-               ':!screenshotDiffs')" ] && exit 1 || exit 0
+          [ "$(git status -s -uno -- ':!screenshotsToCompare${{ matrix.abi }}')" ] && exit 1 || exit 0
       # end test
           
       - name: Build project

@@ -97,7 +97,8 @@ static OpenRecentController *recentsDialog = nil;
 		return NO;
 	// Suppress the recents dialog during UI tests so the test-repo window
 	// opens cleanly without a competing sheet/panel.
-	if ([[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_UITEST_REPO"])
+	if ([[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_UITEST_REPO"] ||
+		[[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_SCREENSHOT_REPO"])
 		return NO;
 	return YES;
 }
@@ -130,7 +131,17 @@ static OpenRecentController *recentsDialog = nil;
 	// XCUITests always get a document window without relying on recents or
 	// Launch Services registration.
 	NSDictionary *env = [[NSProcessInfo processInfo] environment];
-	NSString *uitestRepo = env[@"GITX_UITEST_REPO"];
+	NSString *uitestRepo = env[@"GITX_UITEST_REPO"] ?: env[@"GITX_SCREENSHOT_REPO"];
+	// Resolve symlinks so the document controller gets the real path
+	if (uitestRepo.length > 0) {
+		uitestRepo = uitestRepo.stringByResolvingSymlinksInPath;
+	}
+	// Verify the path actually exists before trying to open it
+	if (uitestRepo.length > 0 &&
+		![[NSFileManager defaultManager] fileExistsAtPath:uitestRepo]) {
+		NSLog(@"[UITest] Repo path does not exist: %@, ignoring", uitestRepo);
+		uitestRepo = nil;
+	}
 	if (uitestRepo.length > 0) {
 		NSURL *repoURL = [NSURL fileURLWithPath:uitestRepo];
 		PBRepositoryDocumentController *controller = [PBRepositoryDocumentController sharedDocumentController];
@@ -139,8 +150,13 @@ static OpenRecentController *recentsDialog = nil;
 			[controller openDocumentWithContentsOfURL:repoURL
 											  display:YES
 									completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
-										if (!document)
+										if (!document) {
 											NSLog(@"[UITest] Failed to open repo %@: %@", uitestRepo, error);
+											// Fall back to Open Recent so the app has some window
+											dispatch_async(dispatch_get_main_queue(), ^{
+												[recentsDialog show];
+											});
+										}
 									}];
 		});
 	}
