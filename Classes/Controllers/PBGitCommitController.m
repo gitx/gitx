@@ -64,12 +64,18 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(amendCommit:) name:PBGitIndexAmendMessageAvailable object:index];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(indexChanged:) name:PBGitIndexIndexUpdated object:index];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(indexOperationFailed:) name:PBGitIndexOperationFailed object:index];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:theRepository];
 
 	return self;
 }
 
 - (void)awakeFromNib
 {
+	/* FIXME: Be careful with this method: since PBGitCommitController is refrerenced from multiple NIBS
+	 * and therefore this method is called *really* often. Be sure not to register for listener here as this results
+	 * into multi receptions of notifications! Use method `initWithRepository` instead for register notitifications.
+	 */
+	
 	[commitSplitView pb_restoreAutosavedPositions];
 
 	[super awakeFromNib];
@@ -98,9 +104,6 @@
 														   [[NSSortDescriptor alloc] initWithKey:@"path"
 																					   ascending:true]]];
 
-	// listen for updates
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:self.repository];
-
 	[stagedFilesController setAutomaticallyRearrangesObjects:NO];
 	[unstagedFilesController setAutomaticallyRearrangesObjects:NO];
 
@@ -118,7 +121,7 @@
 	stagedTable.menu = [unstagedTable.menu copy];
 }
 
-- (void)_repositoryUpdatedNotification:(NSNotification *)notification
+- (void)repositoryUpdatedNotification:(NSNotification *)notification
 {
 	PBGitRepositoryWatcherEventType eventType = [(NSNumber *)[[notification userInfo] objectForKey:kPBGitRepositoryEventTypeUserInfoKey] unsignedIntValue];
 	if (eventType & (PBGitRepositoryWatcherEventTypeWorkingDirectory | PBGitRepositoryWatcherEventTypeIndex)) {
