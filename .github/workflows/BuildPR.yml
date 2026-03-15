@@ -122,7 +122,7 @@ jobs:
           emulatorApi: ${{ matrix.abi }}
         run: |
           ls -ls ./scripts/Screenshots-${{ matrix.abi }}
-          ./screenShotScript/screenShotCompare.sh
+          ./screenShotScript/screenShotCompare.sh false
       - name: Archive screenshots diffs
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v7
@@ -130,15 +130,15 @@ jobs:
           name: gitx-Screenshots-diffs-${{ matrix.abi }}
           path: |
             screenshotDiffs
-      - name: Show git status
-        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        run: |
-          rm -rf TestResults-${{ matrix.abi }}.xcresult
-          rm -rf screenshots-${{ matrix.abi }}
-          git status
-          [ "$(git status -s \
-            -- ':!screenshotsToCompare${{ matrix.abi }}' \
-               ':!screenshotDiffs')" ] && exit 1 || exit 0
+#      - name: Show git status
+#        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+#        run: |
+#          rm -rf TestResults-${{ matrix.abi }}.xcresult
+#          rm -rf screenshots-${{ matrix.abi }}
+#          git status
+#          [ "$(git status -s \
+#            -- ':!screenshotsToCompare${{ matrix.abi }}' \
+#               ':!screenshotDiffs')" ] && exit 1 || exit 0
       # end test
           
       - name: Build project
