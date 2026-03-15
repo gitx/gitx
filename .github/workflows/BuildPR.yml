@@ -106,14 +106,13 @@ jobs:
         run: |
           python3 scripts/extract_screenshots.py \
             TestResults-${{ matrix.abi }}.xcresult \
-            screenshots-${{ matrix.abi }}
-          ls -la screenshots-${{ matrix.abi }}
+            ./scripts/screenshots-${{ matrix.abi }}
       - name: Upload screenshots
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         uses: actions/upload-artifact@v7
         with:
           name: Screenshots-${{ matrix.abi }}
-          path: screenshots-${{ matrix.abi }}
+          path: ./scripts/screenshots-${{ matrix.abi }}
       - name: Compare screenshots
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         env:
@@ -122,8 +121,7 @@ jobs:
           SCREENSHOT_PASSWORD: ${{ secrets.SCREENSHOT_PASSWORD }}
           emulatorApi: ${{ matrix.abi }}
         run: |
-          ls -ls Screenshots-${{ matrix.abi }}
-          cp Screenshots-${{ matrix.abi }}/* scripts/Screenshots-${{ matrix.abi }}
+          ls -ls ./scripts/Screenshots-${{ matrix.abi }}
           ./screenShotScript/screenShotCompare.sh
       - name: Archive screenshots diffs
         if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
