@@ -20,10 +20,11 @@
 	__weak IBOutlet id repository;
 }
 
-@property (weak) IBOutlet WebView *view;
+@property (weak) IBOutlet WKWebView *view;
 @property NSString *startFile;
 @property (weak) id repository;
 
-- (WebScriptObject *)script;
+- (void)evaluateJavaScript:(NSString *)script completionHandler:(void (^)(id result, NSError *error))completionHandler;
+- (void)callJavaScriptFunction:(NSString *)functionName withArguments:(NSArray *)arguments completionHandler:(void (^)(id result, NSError *error))completionHandler;
 - (void)closeView;
 @end

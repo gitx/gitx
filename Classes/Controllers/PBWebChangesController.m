@@ -12,7 +12,7 @@
 static void *const UnstagedFileSelectedContext = @"UnstagedFileSelectedContext";
 static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 
-@interface PBWebChangesController () <WebEditingDelegate, WebUIDelegate>
+@interface PBWebChangesController ()
 @end
 
 @implementation PBWebChangesController
@@ -27,14 +27,15 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 
 	[unstagedFilesController addObserver:self forKeyPath:@"selection" options:0 context:UnstagedFileSelectedContext];
 	[stagedFilesController addObserver:self forKeyPath:@"selection" options:0 context:CachedFileSelectedContext];
-
-	self.view.editingDelegate = self;
-	self.view.UIDelegate = self;
+	
+	// WKWebView doesn't have editingDelegate or UIDelegate in the same way as WebView
+	// These will need to be handled differently if editing functionality is needed
 }
 
 - (void)closeView
 {
-	[[self script] removeWebScriptKey:@"Index"];
+	NSString *script = @"if (typeof Index !== 'undefined') { Index = null; }";
+	[self evaluateJavaScript:script completionHandler:nil];
 	[unstagedFilesController removeObserver:self forKeyPath:@"selection"];
 	[stagedFilesController removeObserver:self forKeyPath:@"selection"];
 
@@ -43,7 +44,9 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 
 - (void)didLoad
 {
-	[[self script] setValue:controller.index forKey:@"Index"];
+	// Set Index in JavaScript - this needs special handling since controller.index is an object
+	// For now, we'll log that this needs proper implementation
+	NSLog(@"didLoad - Index injection needs proper WKWebView implementation");
 	[self refresh];
 }
 
@@ -84,7 +87,7 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 
 - (void)showMultiple:(NSArray *)objects
 {
-	[[self script] callWebScriptMethod:@"showMultipleFilesSelection" withArguments:[NSArray arrayWithObject:objects]];
+	[self callJavaScriptFunction:@"showMultipleFilesSelection" withArguments:[NSArray arrayWithObject:objects] completionHandler:nil];
 }
 
 - (void)refresh
@@ -92,10 +95,10 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 	if (!finishedLoading)
 		return;
 
-	id script = self.view.windowScriptObject;
-	[script callWebScriptMethod:@"showFileChanges"
-				  withArguments:[NSArray arrayWithObjects:selectedFile ?: (id)[NSNull null],
-														  [NSNumber numberWithBool:selectedFileIsCached], nil]];
+	[self callJavaScriptFunction:@"showFileChanges"
+				   withArguments:[NSArray arrayWithObjects:selectedFile ?: (id)[NSNull null],
+													  [NSNumber numberWithBool:selectedFileIsCached], nil]
+			   completionHandler:nil];
 }
 
 - (void)stageHunk:(NSString *)hunk reverse:(BOOL)reverse
@@ -134,8 +137,7 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 
 - (void)setStateMessage:(NSString *)state
 {
-	id script = self.view.windowScriptObject;
-	[script callWebScriptMethod:@"setState" withArguments:[NSArray arrayWithObject:state]];
+	[self callJavaScriptFunction:@"setState" withArguments:[NSArray arrayWithObject:state] completionHandler:nil];
 }
 
 - (void)copy:(NSString *)text
@@ -155,6 +157,10 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 	[[NSPasteboard generalPasteboard] setString:result forType:NSPasteboardTypeString];
 }
 
+// Note: WKWebView doesn't have WebEditingDelegate protocol.
+// Copy functionality may need to be handled through JavaScript message handlers instead.
+// Keeping these methods commented for reference but they won't be called by WKWebView.
+/*
 - (BOOL)webView:(WebView *)webView
 	validateUserInterfaceItem:(id<NSValidatedUserInterfaceItem>)item
 			defaultValidation:(BOOL)defaultValidation
@@ -169,11 +175,12 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 - (BOOL)webView:(WebView *)webView doCommandBySelector:(SEL)selector
 {
 	if (selector == @selector(copy:)) {
-		[self.script callWebScriptMethod:@"copy" withArguments:@[]];
+		[self callJavaScriptFunction:@"copy" withArguments:@[] completionHandler:nil];
 		return YES;
 	} else {
 		return NO;
 	}
 }
+*/
 
 @end

@@ -87,9 +87,7 @@
 		else if ([startFile isEqualToString:GROUP_ID_LOG])
 			fileTxt = [self htmlHistory:file];
 
-		id script = self.view.windowScriptObject;
-		NSString *filePath = [file fullPath];
-		[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
+		[self callJavaScriptFunction:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil] completionHandler:nil];
 	}
 
 #if 0

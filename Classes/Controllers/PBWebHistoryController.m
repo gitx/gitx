@@ -36,7 +36,8 @@
 
 - (void)closeView
 {
-	[[self script] setValue:nil forKey:@"commit"];
+	NSString *script = @"if (typeof commit !== 'undefined') { commit = null; }";
+	[self evaluateJavaScript:script completionHandler:nil];
 
 	[super closeView];
 }
@@ -67,7 +68,7 @@
 		   NSLocalizedString(@"Use the Copy command to copy their information.", @"Multiple selection Message: Copy Command"),
 		   NSLocalizedString(@"Or select a single commit to see its diff.", @"Multiple selection Message: Diff Hint") ]
 	];
-	[[self script] callWebScriptMethod:@"showMultipleSelectionMessage" withArguments:arguments];
+	[self callJavaScriptFunction:@"showMultipleSelectionMessage" withArguments:arguments completionHandler:nil];
 }
 
 static NSString *deltaTypeName(GTDeltaType t)
@@ -117,37 +118,37 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file)
 {
 	// The sha is the same, but refs may have changed. reload it lazy
 	if ([currentOID isEqual:commit.OID]) {
-		[[self script] callWebScriptMethod:@"reload" withArguments:nil];
+		[self callJavaScriptFunction:@"reload" withArguments:nil completionHandler:nil];
 		return;
 	}
 
 	NSArray *arguments = @[ commit, [[[historyController repository] headRef] simpleRef] ];
-	id scriptResult = [[self script] callWebScriptMethod:@"loadCommit" withArguments:arguments];
-	if (!scriptResult) {
-		// the web view is not really ready for scripting???
-		[self performSelector:_cmd withObject:commit afterDelay:0.05];
-		return;
-	}
-	currentOID = commit.OID;
+	[self callJavaScriptFunction:@"loadCommit" withArguments:arguments completionHandler:^(id result, NSError *error) {
+		if (error || !result) {
+			// the web view is not really ready for scripting???
+			[self performSelector:_cmd withObject:commit afterDelay:0.05];
+			return;
+		}
+		self->currentOID = commit.OID;
 
-	unsigned long gen = atomic_fetch_add(&_commitSummaryGeneration, 1) + 1;
+		unsigned long gen = atomic_fetch_add(&self->_commitSummaryGeneration, 1) + 1;
 
-	// Open a new repo instance for the background queue
-	NSError *err = nil;
-	GTRepository *repo =
-		[GTRepository repositoryWithURL:[repository gtRepo].gitDirectoryURL
-								  error:&err];
-	if (!repo) {
-		NSLog(@"Failed to open repository: %@", err);
-		return;
-	}
-	GTCommit *queueCommit = [repo lookUpObjectByOID:commit.OID error:&err];
-	if (!queueCommit) {
-		NSLog(@"Failed to find commit: %@", err);
-		return;
-	}
+		// Open a new repo instance for the background queue
+		NSError *err = nil;
+		GTRepository *repo =
+			[GTRepository repositoryWithURL:[self->repository gtRepo].gitDirectoryURL
+									  error:&err];
+		if (!repo) {
+			NSLog(@"Failed to open repository: %@", err);
+			return;
+		}
+		GTCommit *queueCommit = [repo lookUpObjectByOID:commit.OID error:&err];
+		if (!queueCommit) {
+			NSLog(@"Failed to find commit: %@", err);
+			return;
+		}
 
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 		NSDictionary *summary = loadCommitSummary(repo, queueCommit, ^BOOL {
 			return gen != atomic_load(&self->_commitSummaryGeneration);
 		});
@@ -269,7 +270,7 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 		return;
 	}
 
-	[self.view.windowScriptObject callWebScriptMethod:@"loadCommitDiff" withArguments:@[ summaryJSON ]];
+	[self callJavaScriptFunction:@"loadCommitDiff" withArguments:@[ summaryJSON ] completionHandler:nil];
 }
 
 - (void)selectCommit:(NSString *)sha
@@ -279,61 +280,38 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 
 - (void)sendKey:(NSString *)key
 {
-	id script = self.view.windowScriptObject;
-	[script callWebScriptMethod:@"handleKeyFromCocoa" withArguments:[NSArray arrayWithObject:key]];
+	[self callJavaScriptFunction:@"handleKeyFromCocoa" withArguments:[NSArray arrayWithObject:key] completionHandler:nil];
 }
 
 - (void)copySource
 {
-	NSString *source = [(DOMHTMLElement *)self.view.mainFrame.DOMDocument.documentElement outerHTML];
-	NSPasteboard *a = [NSPasteboard generalPasteboard];
-	[a declareTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:self];
-	[a setString:source forType:NSPasteboardTypeString];
+	// WKWebView doesn't provide direct DOM access, so we need to get the HTML via JavaScript
+	[self evaluateJavaScript:@"document.documentElement.outerHTML" completionHandler:^(id result, NSError *error) {
+		if (error) {
+			NSLog(@"Error getting HTML: %@", error);
+			return;
+		}
+		NSString *source = result;
+		NSPasteboard *a = [NSPasteboard generalPasteboard];
+		[a declareTypes:[NSArray arrayWithObject:NSPasteboardTypeString] owner:self];
+		[a setString:source forType:NSPasteboardTypeString];
+	}];
 }
 
-- (NSArray *)webView:(WebView *)sender
-	contextMenuItemsForElement:(NSDictionary *)element
-			  defaultMenuItems:(NSArray *)defaultMenuItems
-{
-	DOMNode *node = [element valueForKey:@"WebElementDOMNode"];
-
-	while (node) {
-		// Every ref has a class name of 'refs' and some other class. We check on that to see if we pressed on a ref.
-		if ([[node className] hasPrefix:@"refs "]) {
-			NSString *selectedRefString = [[[node childNodes] item:0] textContent];
-			for (PBGitRef *ref in historyController.webCommits.firstObject.refs) {
-				if ([[ref shortName] isEqualToString:selectedRefString])
-					return [historyController menuItemsForRef:ref];
-			}
-			NSLog(@"Could not find selected ref!");
-			return defaultMenuItems;
-		}
-		if ([node hasAttributes] && [[node attributes] getNamedItem:@"representedFile"])
-			return [historyController menuItemsForPaths:[NSArray arrayWithObject:[[[node attributes] getNamedItem:@"representedFile"] nodeValue]]];
-		else if ([[node class] isEqual:[DOMHTMLImageElement class]]) {
-			// Copy Image is the only menu item that makes sense here since we don't need
-			// to download the image or open it in a new window (besides with the
-			// current implementation these two entries can crash GitX anyway)
-			for (NSMenuItem *item in defaultMenuItems)
-				if ([item tag] == WebMenuItemTagCopyImageToClipboard)
-					return [NSArray arrayWithObject:item];
-			return nil;
-		}
-
-		node = [node parentNode];
-	}
-
-	return defaultMenuItems;
-}
-
+// Note: WKWebView has limited context menu support compared to WebView.
+// This implementation provides basic functionality but may need enhancement.
+// The WKUIDelegate provides contextMenuConfigurationForElement which we can implement if needed.
 
 // Open external links in the default browser
-- (void)webView:(WebView *)sender decidePolicyForNewWindowAction:(NSDictionary *)actionInformation
-						   request:(NSURLRequest *)request
-					  newFrameName:(NSString *)frameName
-				  decisionListener:(id<WebPolicyDecisionListener>)listener
+- (void)webView:(WKWebView *)sender decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-	[[NSWorkspace sharedWorkspace] openURL:[request URL]];
+	if (navigationAction.targetFrame == nil || navigationAction.navigationType == WKNavigationTypeLinkActivated) {
+		// This is a link that would open in a new window/tab
+		[[NSWorkspace sharedWorkspace] openURL:[navigationAction.request URL]];
+		decisionHandler(WKNavigationActionPolicyCancel);
+	} else {
+		decisionHandler(WKNavigationActionPolicyAllow);
+	}
 }
 
 - getConfig:(NSString *)key
@@ -346,7 +324,7 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 
 - (void)preferencesChanged
 {
-	[[self script] callWebScriptMethod:@"enableFeatures" withArguments:nil];
+	[self callJavaScriptFunction:@"enableFeatures" withArguments:nil completionHandler:nil];
 }
 
 @end

@@ -10,12 +10,15 @@
 #import "PBGitRepository.h"
 #import "PBGitRepository_PBGitBinarySupport.h"
 #import "PBGitXProtocol.h"
+#import "PBGitXSchemeHandler.h"
 #import "PBGitDefaults.h"
 
 #include <SystemConfiguration/SCNetworkReachability.h>
 
-@interface PBWebController () <WebUIDelegate, WebFrameLoadDelegate, WebResourceLoadDelegate>
+@interface PBWebController () <WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler>
+@property (strong, nonatomic) PBGitXSchemeHandler *schemeHandler;
 - (void)preferencesChangedWithNotification:(NSNotification *)theNotification;
+- (void)setupJavaScriptBridge;
 @end
 
 @implementation PBWebController
@@ -26,7 +29,9 @@
 {
 	NSString *path = [NSString stringWithFormat:@"html/views/%@", startFile];
 	NSString *file = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
-	NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:file]];
+	NSURL *fileURL = [NSURL fileURLWithPath:file];
+	NSURL *directoryURL = [fileURL URLByDeletingLastPathComponent];
+	
 	callbacks = [NSMapTable mapTableWithKeyOptions:(NSPointerFunctionsObjectPointerPersonality | NSPointerFunctionsStrongMemory) valueOptions:(NSPointerFunctionsObjectPointerPersonality | NSPointerFunctionsStrongMemory)];
 
 	NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
@@ -52,31 +57,97 @@
 
 	finishedLoading = NO;
 
-	[self.view setDrawsBackground:NO];
-
-	[self.view setUIDelegate:self];
-	[self.view setFrameLoadDelegate:self];
-	[self.view setResourceLoadDelegate:self];
-	[self.view.preferences setDefaultFontSize:(int)[NSFont systemFontSize]];
-	[self.view.mainFrame loadRequest:request];
+	// Configure WKWebView
+	self.view.navigationDelegate = self;
+	self.view.UIDelegate = self;
+	
+	// Set up custom scheme handler for gitx:// URLs
+	self.schemeHandler = [[PBGitXSchemeHandler alloc] init];
+	self.schemeHandler.repository = self.repository;
+	[self.view.configuration setURLSchemeHandler:self.schemeHandler forURLScheme:@"gitx"];
+	
+	// Set up JavaScript bridge
+	[self setupJavaScriptBridge];
+	
+	// Load the request
+	[self.view loadFileURL:fileURL allowingReadAccessToURL:directoryURL];
 }
 
-- (WebScriptObject *)script
+- (void)setupJavaScriptBridge
 {
-	return self.view.windowScriptObject;
+	// Add script message handlers for communication from JavaScript to Objective-C
+	WKUserContentController *contentController = self.view.configuration.userContentController;
+	[contentController addScriptMessageHandler:self name:@"log"];
+	[contentController addScriptMessageHandler:self name:@"isReachable"];
+	[contentController addScriptMessageHandler:self name:@"isFeatureEnabled"];
+	[contentController addScriptMessageHandler:self name:@"runCommand"];
+	[contentController addScriptMessageHandler:self name:@"makeWebViewFirstResponder"];
+}
+
+- (void)evaluateJavaScript:(NSString *)script completionHandler:(void (^)(id result, NSError *error))completionHandler
+{
+	[self.view evaluateJavaScript:script completionHandler:completionHandler];
+}
+
+- (void)callJavaScriptFunction:(NSString *)functionName withArguments:(NSArray *)arguments completionHandler:(void (^)(id result, NSError *error))completionHandler
+{
+	NSMutableString *script = [NSMutableString stringWithFormat:@"if (typeof %@ === 'function') { %@(", functionName, functionName];
+	
+	if (arguments && arguments.count > 0) {
+		for (NSUInteger i = 0; i < arguments.count; i++) {
+			id arg = arguments[i];
+			if ([arg isKindOfClass:[NSString class]]) {
+				// Escape string and wrap in quotes
+				NSString *escapedString = [(NSString *)arg stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+				escapedString = [escapedString stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
+				escapedString = [escapedString stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+				escapedString = [escapedString stringByReplacingOccurrencesOfString:@"\r" withString:@"\\r"];
+				[script appendFormat:@"'%@'", escapedString];
+			} else if ([arg isKindOfClass:[NSNumber class]]) {
+				[script appendString:[arg stringValue]];
+			} else {
+				// For complex objects, convert to JSON
+				NSError *jsonError = nil;
+				NSData *jsonData = [NSJSONSerialization dataWithJSONObject:arg options:0 error:&jsonError];
+				if (!jsonError && jsonData) {
+					NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+					[script appendString:jsonString];
+				} else {
+					[script appendString:@"null"];
+				}
+			}
+			
+			if (i < arguments.count - 1) {
+				[script appendString:@", "];
+			}
+		}
+	}
+	
+	[script appendString:@"); }"];
+	
+	[self evaluateJavaScript:script completionHandler:completionHandler];
 }
 
 - (void)effectiveAppearanceDidChange:(NSNotification *)notif
 {
 	NSString *mode = [NSApp isDarkMode] ? @"DARK" : @"LIGHT";
-	[self.script callWebScriptMethod:@"setAppearance" withArguments:@[ mode ]];
+	NSString *script = [NSString stringWithFormat:@"if (typeof setAppearance === 'function') { setAppearance('%@'); }", mode];
+	[self evaluateJavaScript:script completionHandler:nil];
 }
 
 - (void)closeView
 {
 	if (self.view) {
-		[[self script] setValue:nil forKey:@"Controller"];
-		[self.view close];
+		NSString *script = @"if (typeof Controller !== 'undefined') { Controller = null; }";
+		[self evaluateJavaScript:script completionHandler:nil];
+		
+		// Remove script message handlers
+		WKUserContentController *contentController = self.view.configuration.userContentController;
+		[contentController removeScriptMessageHandlerForName:@"log"];
+		[contentController removeScriptMessageHandlerForName:@"isReachable"];
+		[contentController removeScriptMessageHandlerForName:@"isFeatureEnabled"];
+		[contentController removeScriptMessageHandlerForName:@"runCommand"];
+		[contentController removeScriptMessageHandlerForName:@"makeWebViewFirstResponder"];
 	}
 
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -88,73 +159,52 @@
 
 #pragma mark Delegate methods
 
-- (void)webView:(WebView *)sender didClearWindowObject:(WebScriptObject *)windowObject forFrame:(WebFrame *)frame
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
-	id script = self.view.windowScriptObject;
-	[script setValue:self forKey:@"Controller"];
+	// Inject the Controller object into JavaScript
+	NSString *script = @"window.Controller = {};";
+	[self evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
+		// Set up the bridge by exposing controller methods
+		self->finishedLoading = YES;
+		if ([self respondsToSelector:@selector(didLoad)])
+			[self performSelector:@selector(didLoad)];
+		[self effectiveAppearanceDidChange:nil];
+	}];
 }
 
-- (void)webView:(id)v didFinishLoadForFrame:(id)frame
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-	finishedLoading = YES;
-	if ([self respondsToSelector:@selector(didLoad)])
-		[self performSelector:@selector(didLoad)];
-	[self effectiveAppearanceDidChange:nil];
-}
-
-- (void)webView:(WebView *)webView addMessageToConsole:(NSDictionary *)dictionary
-{
-	NSLog(@"Error from webkit: %@", dictionary);
-}
-
-- (NSURLRequest *)webView:(WebView *)sender
-				 resource:(id)identifier
-		  willSendRequest:(NSURLRequest *)request
-		 redirectResponse:(NSURLResponse *)redirectResponse
-		   fromDataSource:(WebDataSource *)dataSource
-{
-	if (!self.repository)
-		return request;
-
-	if ([PBGitXProtocol canInitWithRequest:request]) {
-		NSMutableURLRequest *newRequest = [request mutableCopy];
-		[newRequest setRepository:self.repository];
-		return newRequest;
-	}
-
-	return request;
-}
-
-- (void)webView:(WebView *)sender
-	decidePolicyForNavigationAction:(NSDictionary *)actionInformation
-							request:(NSURLRequest *)request
-							  frame:(WebFrame *)frame
-				   decisionListener:(id<WebPolicyDecisionListener>)listener
-{
-	NSString *scheme = [[request URL] scheme];
+	NSString *scheme = [[navigationAction.request URL] scheme];
 	if ([scheme compare:@"http"] == NSOrderedSame ||
 		[scheme compare:@"https"] == NSOrderedSame) {
-		[listener ignore];
-		[[NSWorkspace sharedWorkspace] openURL:[request URL]];
+		decisionHandler(WKNavigationActionPolicyCancel);
+		[[NSWorkspace sharedWorkspace] openURL:[navigationAction.request URL]];
 	} else {
-		[listener use];
+		decisionHandler(WKNavigationActionPolicyAllow);
 	}
 }
 
-- (NSUInteger)webView:(WebView *)webView
-	dragDestinationActionMaskForDraggingInfo:(id<NSDraggingInfo>)draggingInfo
-{
-	return NSDragOperationNone;
-}
+#pragma mark WKScriptMessageHandler
 
-+ (BOOL)isSelectorExcludedFromWebScript:(SEL)aSelector
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
 {
-	return NO;
-}
-
-+ (BOOL)isKeyExcludedFromWebScript:(const char *)name
-{
-	return NO;
+	if ([message.name isEqualToString:@"log"]) {
+		[self log:message.body];
+	} else if ([message.name isEqualToString:@"isReachable"]) {
+		BOOL reachable = [self isReachable:message.body];
+		NSString *callbackScript = [NSString stringWithFormat:@"window._isReachableCallback && window._isReachableCallback(%@);", reachable ? @"true" : @"false"];
+		[self evaluateJavaScript:callbackScript completionHandler:nil];
+	} else if ([message.name isEqualToString:@"isFeatureEnabled"]) {
+		BOOL enabled = [self isFeatureEnabled:message.body];
+		NSString *callbackScript = [NSString stringWithFormat:@"window._isFeatureEnabledCallback && window._isFeatureEnabledCallback(%@);", enabled ? @"true" : @"false"];
+		[self evaluateJavaScript:callbackScript completionHandler:nil];
+	} else if ([message.name isEqualToString:@"runCommand"]) {
+		// Handle runCommand - this is more complex and needs special handling
+		// For now, log that it was called
+		NSLog(@"runCommand called with message: %@", message.body);
+	} else if ([message.name isEqualToString:@"makeWebViewFirstResponder"]) {
+		[self makeWebViewFirstResponder];
+	}
 }
 
 #pragma mark Functions to be used from JavaScript
@@ -201,7 +251,12 @@
 
 - (void)runCommand:(WebScriptObject *)arguments inRepository:(PBGitRepository *)repo callBack:(WebScriptObject *)callBack
 {
-	// The JS bridge does not handle JS Arrays, even though the docs say it does. So, we convert it ourselves.
+	// TODO: This method needs to be refactored for WKWebView
+	// The WebScriptObject-based approach doesn't work with WKWebView's message passing
+	// We'll need to handle this through evaluateJavaScript callbacks instead
+	NSLog(@"runCommand called - needs refactoring for WKWebView");
+	
+	/* Original implementation - needs conversion:
 	int length = [[arguments valueForKey:@"length"] intValue];
 	NSMutableArray *realArguments = [NSMutableArray arrayWithCapacity:length];
 	int i = 0;
@@ -211,12 +266,12 @@
 	PBTask *task = [repo taskWithArguments:realArguments];
 	[task performTaskWithCompletionHandler:^(NSData *_Nullable readData, NSError *_Nullable error) {
 		if (error) {
-			/* FIXME: Might want to inform the JS that something went wrong */
 			NSLog(@"error: %@", error);
 			return;
 		}
 		[callBack callWebScriptMethod:@"call" withArguments:@[ @"", readData ]];
 	}];
+	*/
 }
 
 - (void)preferencesChanged
