@@ -151,7 +151,7 @@
 	NSString *path = [NSString stringWithFormat:@"html/views/%@", identifier];
 	NSString *html = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
 	NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:html]];
-	[self.view.mainFrame loadRequest:request];
+	[self.view loadRequest:request];
 }
 
 - (NSView *)accessoryViewForScopeBar:(MGScopeBar *)scopeBar
