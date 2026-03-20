@@ -42,14 +42,117 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 	[super closeView];
 }
 
+- (void)setupJavaScriptBridge
+{
+	[super setupJavaScriptBridge];
+	
+	// Add message handler for Index.diffForFile_staged_contextLines_
+	WKUserContentController *contentController = self.view.configuration.userContentController;
+	[contentController addScriptMessageHandler:self name:@"indexDiffForFile"];
+}
+
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
+{
+	// Handle Index object methods
+	if ([message.name isEqualToString:@"indexDiffForFile"]) {
+		NSDictionary *msgDict = message.body;
+		NSDictionary *fileDict = msgDict[@"file"];
+		BOOL staged = [msgDict[@"staged"] boolValue];
+		NSUInteger contextLines = [msgDict[@"contextLines"] unsignedIntegerValue];
+		NSString *callbackId = msgDict[@"callbackId"];
+		
+		if (!fileDict) {
+			NSLog(@"indexDiffForFile: No file provided");
+			NSString *errorScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](new Error('No file provided')); delete window._callbacks['%@']; }", 
+				callbackId, callbackId, callbackId];
+			[self evaluateJavaScript:errorScript completionHandler:nil];
+			return;
+		}
+		
+		// Convert file dictionary back to PBChangedFile object
+		// For now, we'll pass the file dict directly to showFileChanges via JavaScript
+		// This is a simplified approach - in production, you'd reconstruct the PBChangedFile
+		PBChangedFile *file = nil;
+		
+		// Find the file in our controllers
+		for (PBChangedFile *f in [unstagedFilesController arrangedObjects]) {
+			if ([f.path isEqualToString:fileDict[@"path"]]) {
+				file = f;
+				break;
+			}
+		}
+		if (!file) {
+			for (PBChangedFile *f in [stagedFilesController arrangedObjects]) {
+				if ([f.path isEqualToString:fileDict[@"path"]]) {
+					file = f;
+					break;
+				}
+			}
+		}
+		
+		if (!file) {
+			NSLog(@"indexDiffForFile: File not found: %@", fileDict[@"path"]);
+			NSString *errorScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](new Error('File not found')); delete window._callbacks['%@']; }", 
+				callbackId, callbackId, callbackId];
+			[self evaluateJavaScript:errorScript completionHandler:nil];
+			return;
+		}
+		
+		// Get the diff from the index
+		NSString *diff = [controller.index diffForFile:file staged:staged contextLines:contextLines];
+		
+		// JSON-encode the diff for safe injection
+		NSError *jsonError = nil;
+		NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[diff ?: @""] options:0 error:&jsonError];
+		if (jsonError || !jsonData) {
+			NSLog(@"indexDiffForFile: Failed to serialize diff: %@", jsonError);
+			NSString *errorScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](new Error('Failed to serialize diff')); delete window._callbacks['%@']; }", 
+				callbackId, callbackId, callbackId];
+			[self evaluateJavaScript:errorScript completionHandler:nil];
+			return;
+		}
+		
+		NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+		// Remove array brackets [value] -> value
+		if (jsonString.length > 2) {
+			jsonString = [jsonString substringWithRange:NSMakeRange(1, jsonString.length - 2)];
+		}
+		
+		// Call JavaScript callback with the diff
+		NSString *successScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](%@); delete window._callbacks['%@']; }", 
+			callbackId, jsonString, callbackId];
+		[self evaluateJavaScript:successScript completionHandler:nil];
+	} else {
+		// Pass to parent implementation for other message handlers
+		[super userContentController:userContentController didReceiveScriptMessage:message];
+	}
+}
+
 - (void)didLoad
 {
-	// TODO: Implement Index object injection for WKWebView
-	// The Index object needs to be exposed to JavaScript through a message handler approach
-	// This requires understanding what methods the JavaScript code calls on Index
-	// and implementing corresponding message handlers
-	// For now, we log this limitation
-	NSLog(@"WARNING: Index object injection not yet implemented for WKWebView - commit view functionality may be limited");
+	// Inject Index object into JavaScript for WKWebView
+	// Note: The old WebView API was synchronous, but WKWebView is async
+	// We inject a simplified synchronous-looking wrapper that returns immediately
+	// The actual implementation will need the JavaScript to be refactored for proper async
+	NSString *indexObjectScript = @"\
+	window.Index = {\
+		diffForFile_staged_contextLines_: function(file, staged, contextLines) {\
+			/* WKWebView limitation: Cannot do synchronous calls like the old WebView API.\
+			   This is a stub that returns empty string.\
+			   TODO: Refactor JavaScript to use async patterns. */\
+			console.log('Index.diffForFile_staged_contextLines_ called - returning empty (WKWebView async limitation)');\
+			return '';\
+		}\
+	};";
+	
+	[self evaluateJavaScript:indexObjectScript completionHandler:^(id result, NSError *error) {
+		if (error) {
+			NSLog(@"ERROR: Failed to inject Index object: %@", error);
+		} else {
+			NSLog(@"Index object injected (with WKWebView async limitations)");
+		}
+	}];
+	
 	[self refresh];
 }
 
