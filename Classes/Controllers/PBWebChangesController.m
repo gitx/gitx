@@ -120,7 +120,7 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 		
 		// Call JavaScript callback with the diff
 		NSString *successScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](%@); delete window._callbacks['%@']; }", 
-			callbackId, jsonString, callbackId];
+			callbackId, callbackId, jsonString, callbackId];
 		[self evaluateJavaScript:successScript completionHandler:nil];
 	} else {
 		// Pass to parent implementation for other message handlers
