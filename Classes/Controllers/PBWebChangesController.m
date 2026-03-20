@@ -44,9 +44,12 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 
 - (void)didLoad
 {
-	// Set Index in JavaScript - this needs special handling since controller.index is an object
-	// For now, we'll log that this needs proper implementation
-	NSLog(@"didLoad - Index injection needs proper WKWebView implementation");
+	// TODO: Implement Index object injection for WKWebView
+	// The Index object needs to be exposed to JavaScript through a message handler approach
+	// This requires understanding what methods the JavaScript code calls on Index
+	// and implementing corresponding message handlers
+	// For now, we log this limitation
+	NSLog(@"WARNING: Index object injection not yet implemented for WKWebView - commit view functionality may be limited");
 	[self refresh];
 }
 

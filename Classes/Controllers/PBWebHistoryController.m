@@ -125,8 +125,8 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file)
 	NSArray *arguments = @[ commit, [[[historyController repository] headRef] simpleRef] ];
 	[self callJavaScriptFunction:@"loadCommit" withArguments:arguments completionHandler:^(id result, NSError *error) {
 		if (error || !result) {
-			// the web view is not really ready for scripting???
-			[self performSelector:_cmd withObject:commit afterDelay:0.05];
+			// the web view is not really ready for scripting??? Retry with explicit selector
+			[self performSelector:@selector(changeContentToCommit:) withObject:commit afterDelay:0.05];
 			return;
 		}
 		self->currentOID = commit.OID;

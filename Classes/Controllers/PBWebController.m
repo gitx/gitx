@@ -112,25 +112,21 @@
 	if (arguments && arguments.count > 0) {
 		for (NSUInteger i = 0; i < arguments.count; i++) {
 			id arg = arguments[i];
-			if ([arg isKindOfClass:[NSString class]]) {
-				// Escape string and wrap in quotes
-				NSString *escapedString = [(NSString *)arg stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
-				escapedString = [escapedString stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
-				escapedString = [escapedString stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
-				escapedString = [escapedString stringByReplacingOccurrencesOfString:@"\r" withString:@"\\r"];
-				[script appendFormat:@"'%@'", escapedString];
-			} else if ([arg isKindOfClass:[NSNumber class]]) {
-				[script appendString:[arg stringValue]];
-			} else {
-				// For complex objects, convert to JSON
-				NSError *jsonError = nil;
-				NSData *jsonData = [NSJSONSerialization dataWithJSONObject:arg options:0 error:&jsonError];
-				if (!jsonError && jsonData) {
-					NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-					[script appendString:jsonString];
-				} else {
-					[script appendString:@"null"];
+			
+			// Convert arguments to JSON for safe serialization
+			NSError *jsonError = nil;
+			NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[arg] options:0 error:&jsonError];
+			if (!jsonError && jsonData) {
+				NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+				// Extract the value from the array wrapper [value] -> value
+				if (jsonString.length > 2) {
+					jsonString = [jsonString substringWithRange:NSMakeRange(1, jsonString.length - 2)];
 				}
+				[script appendString:jsonString];
+			} else {
+				// Fallback to null if serialization fails
+				NSLog(@"Failed to serialize argument: %@, error: %@", arg, jsonError);
+				[script appendString:@"null"];
 			}
 			
 			if (i < arguments.count - 1) {
@@ -147,8 +143,7 @@
 - (void)effectiveAppearanceDidChange:(NSNotification *)notif
 {
 	NSString *mode = [NSApp isDarkMode] ? @"DARK" : @"LIGHT";
-	NSString *script = [NSString stringWithFormat:@"if (typeof setAppearance === 'function') { setAppearance('%@'); }", mode];
-	[self evaluateJavaScript:script completionHandler:nil];
+	[self callJavaScriptFunction:@"setAppearance" withArguments:@[mode] completionHandler:nil];
 }
 
 - (void)closeView
@@ -177,9 +172,31 @@
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation
 {
-	// Inject the Controller object into JavaScript
-	NSString *script = @"window.Controller = {};";
+	// Inject the Controller object into JavaScript with proper method stubs
+	// These stubs will post messages back to Objective-C via webkit.messageHandlers
+	// Using a callback registry to handle asynchronous responses
+	NSString *script = @"\
+window._callbacks = {};\
+window._callbackId = 0;\
+window.Controller = {\
+    log: function(message) { webkit.messageHandlers.log.postMessage(message); },\
+    isReachable: function(hostname, callback) {\
+        var callbackId = 'cb_' + (++window._callbackId);\
+        window._callbacks[callbackId] = callback;\
+        webkit.messageHandlers.isReachable.postMessage({hostname: hostname, callbackId: callbackId});\
+    },\
+    isFeatureEnabled: function(feature, callback) {\
+        var callbackId = 'cb_' + (++window._callbackId);\
+        window._callbacks[callbackId] = callback;\
+        webkit.messageHandlers.isFeatureEnabled.postMessage({feature: feature, callbackId: callbackId});\
+    },\
+    makeWebViewFirstResponder: function() { webkit.messageHandlers.makeWebViewFirstResponder.postMessage(null); }\
+};";
+	
 	[self evaluateJavaScript:script completionHandler:^(id result, NSError *error) {
+		if (error) {
+			NSLog(@"Failed to inject Controller: %@", error);
+		}
 		// Set up the bridge by exposing controller methods
 		self->finishedLoading = YES;
 		if ([self respondsToSelector:@selector(didLoad)])
@@ -207,17 +224,29 @@
 	if ([message.name isEqualToString:@"log"]) {
 		[self log:message.body];
 	} else if ([message.name isEqualToString:@"isReachable"]) {
-		BOOL reachable = [self isReachable:message.body];
-		NSString *callbackScript = [NSString stringWithFormat:@"window._isReachableCallback && window._isReachableCallback(%@);", reachable ? @"true" : @"false"];
+		// Extract hostname and callback ID from message body
+		NSDictionary *msgDict = message.body;
+		NSString *hostname = msgDict[@"hostname"];
+		NSString *callbackId = msgDict[@"callbackId"];
+		
+		BOOL reachable = [self isReachable:hostname];
+		NSString *callbackScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](%@); delete window._callbacks['%@']; }", 
+			callbackId, callbackId, reachable ? @"true" : @"false", callbackId];
 		[self evaluateJavaScript:callbackScript completionHandler:nil];
 	} else if ([message.name isEqualToString:@"isFeatureEnabled"]) {
-		BOOL enabled = [self isFeatureEnabled:message.body];
-		NSString *callbackScript = [NSString stringWithFormat:@"window._isFeatureEnabledCallback && window._isFeatureEnabledCallback(%@);", enabled ? @"true" : @"false"];
+		// Extract feature and callback ID from message body
+		NSDictionary *msgDict = message.body;
+		NSString *feature = msgDict[@"feature"];
+		NSString *callbackId = msgDict[@"callbackId"];
+		
+		BOOL enabled = [self isFeatureEnabled:feature];
+		NSString *callbackScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](%@); delete window._callbacks['%@']; }", 
+			callbackId, callbackId, enabled ? @"true" : @"false", callbackId];
 		[self evaluateJavaScript:callbackScript completionHandler:nil];
 	} else if ([message.name isEqualToString:@"runCommand"]) {
 		// Handle runCommand - this is more complex and needs special handling
-		// For now, log that it was called
 		NSLog(@"runCommand called with message: %@", message.body);
+		// TODO: Implement runCommand with proper callback handling
 	} else if ([message.name isEqualToString:@"makeWebViewFirstResponder"]) {
 		[self makeWebViewFirstResponder];
 	}
@@ -267,12 +296,18 @@
 
 - (void)runCommand:(WebScriptObject *)arguments inRepository:(PBGitRepository *)repo callBack:(WebScriptObject *)callBack
 {
-	// TODO: This method needs to be refactored for WKWebView
+	// TODO: Critical - This method needs complete refactoring for WKWebView
 	// The WebScriptObject-based approach doesn't work with WKWebView's message passing
-	// We'll need to handle this through evaluateJavaScript callbacks instead
-	NSLog(@"runCommand called - needs refactoring for WKWebView");
+	// 
+	// Required changes:
+	// 1. Convert this to use WKScriptMessageHandler to receive command arrays
+	// 2. Use evaluateJavaScript to call back with results instead of WebScriptObject
+	// 3. Update JavaScript code to use webkit.messageHandlers.runCommand.postMessage()
+	//
+	// This is critical functionality - without it, git operations from JavaScript won't work
+	NSLog(@"ERROR: runCommand not implemented for WKWebView - git operations from JavaScript will fail");
 	
-	/* Original implementation - needs conversion:
+	/* Original implementation for reference:
 	int length = [[arguments valueForKey:@"length"] intValue];
 	NSMutableArray *realArguments = [NSMutableArray arrayWithCapacity:length];
 	int i = 0;
@@ -285,6 +320,7 @@
 			NSLog(@"error: %@", error);
 			return;
 		}
+		// Need to call JavaScript callback with results
 		[callBack callWebScriptMethod:@"call" withArguments:@[ @"", readData ]];
 	}];
 	*/
