@@ -45,83 +45,93 @@ GitX has been migrated from the deprecated `WebView` API (deprecated in macOS 10
 
 ## Critical Missing Functionality
 
-### ⚠️ MUST IMPLEMENT: runCommand
+### ✅ IMPLEMENTED: runCommand
 
-**Location**: `Classes/Controllers/PBWebController.m:218-244`
+**Location**: `Classes/Controllers/PBWebController.m:257-325`
 
-**Issue**: The `runCommand` method allows JavaScript to execute git commands. It's currently stubbed out.
+**Status**: ✅ **COMPLETE** - Fully implemented in commit c25ec57
 
-**What's Needed**:
-1. Add message handler for `runCommand` in `setupJavaScriptBridge`
-2. Implement handler in `userContentController:didReceiveScriptMessage:`
-3. Parse command arguments from message body (array of strings)
-4. Execute git command via `PBTask`
-5. Return results to JavaScript via callback
+**Implementation**:
+1. ✅ Message handler registered for `runCommand` in `setupJavaScriptBridge`
+2. ✅ Handler implemented in `userContentController:didReceiveScriptMessage:`
+3. ✅ Parses command arguments from message body (array of strings)
+4. ✅ Executes git commands via `PBTask` asynchronously
+5. ✅ Returns results to JavaScript via callback with proper error handling
+6. ✅ JSON-encodes output for safe injection
+7. ✅ Uses `dispatch_async` for main thread safety
+8. ✅ Validates arguments and repository availability
 
-**Example Implementation**:
-```objc
-// In setupJavaScriptBridge
-[contentController addScriptMessageHandler:self name:@"runCommand"];
-
-// In userContentController:didReceiveScriptMessage:
-else if ([message.name isEqualToString:@"runCommand"]) {
-    NSDictionary *msgDict = message.body;
-    NSArray *arguments = msgDict[@"arguments"];
-    NSString *callbackId = msgDict[@"callbackId"];
-    PBGitRepository *repo = msgDict[@"repository"]; // Need to pass repository reference
-    
-    PBTask *task = [repo taskWithArguments:arguments];
-    [task performTaskWithCompletionHandler:^(NSData *readData, NSError *error) {
-        if (error) {
-            // Call error callback
-            NSString *script = [NSString stringWithFormat:@"if (window._callbacks['%@']) { window._callbacks['%@'](new Error('%@')); }", 
-                callbackId, callbackId, error.localizedDescription];
-            [self evaluateJavaScript:script completionHandler:nil];
-        } else {
-            // Convert data to string and call success callback
-            NSString *output = [[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding];
-            // Need to JSON-encode output for safe injection
-            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[output] options:0 error:nil];
-            NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            jsonString = [jsonString substringWithRange:NSMakeRange(1, jsonString.length - 2)]; // Remove array brackets
-            NSString *script = [NSString stringWithFormat:@"if (window._callbacks['%@']) { window._callbacks['%@'](null, %@); }", 
-                callbackId, callbackId, jsonString];
-            [self evaluateJavaScript:script completionHandler:nil];
-        }
-    }];
-}
+**Usage**:
+```javascript
+// JavaScript can now call git commands:
+Controller.runCommand(['log', '--oneline', '-10'], function(error, result) {
+    if (error) {
+        console.error('Git command failed:', error);
+    } else {
+        console.log('Git output:', result);
+    }
+});
 ```
 
-**JavaScript Changes Needed**:
-- Find all calls to `Controller.runCommand` or similar in HTML/JS files
-- Update to use new message-based API
+**No JavaScript changes needed** - the Controller object is properly injected with runCommand support.
 
-### ⚠️ MUST IMPLEMENT: Index Object Injection
+### ⚠️ PARTIAL: Index Object Injection
 
-**Location**: `Classes/Controllers/PBWebChangesController.m:44-52`
+**Location**: `Classes/Controllers/PBWebChangesController.m:45-149`
 
-**Issue**: The `Index` object needs to be exposed to JavaScript for commit view functionality.
+**Status**: ⚠️ **PARTIAL** - Stub implemented in commit 8cd2d88, async handler ready
 
-**What's Needed**:
-1. Determine what methods JavaScript calls on the `Index` object
-2. Create message handlers for each method
-3. Inject JavaScript stubs that forward calls to message handlers
-4. Implement Objective-C handlers that call methods on `controller.index`
+**What's Implemented**:
+1. ✅ Override `setupJavaScriptBridge` to register `indexDiffForFile` message handler
+2. ✅ Implement `userContentController:didReceiveScriptMessage:` for Index methods
+3. ✅ Message handler finds files and calls `[controller.index diffForFile:staged:contextLines:]`
+4. ✅ Returns diffs via JSON-encoded JavaScript callbacks
+5. ✅ Inject stub `window.Index` object in `didLoad` to prevent JavaScript errors
 
-**Steps**:
-1. Search JavaScript files for `Index.` to find all method calls
-2. Create message handler for each method
-3. In `didLoad`, inject JavaScript:
+**What's Missing**:
+The old WebView API supported synchronous JavaScript method calls, but WKWebView is async-only. The JavaScript code in `Resources/html/views/commit/commit.js` expects synchronous return values:
+
+```javascript
+// Current JavaScript (expects synchronous return):
+var changes = Index.diffForFile_staged_contextLines_(file, cached, contextLines);
+displayDiff(changes, cached);  // Uses result immediately
+```
+
+**Current Workaround**:
+The stub returns an empty string, preventing JavaScript errors. The message handler is ready for async calls once JavaScript is refactored.
+
+**What's Needed for Full Functionality**:
+1. Refactor `Resources/html/views/commit/commit.js` to use async callbacks:
+```javascript
+// Refactored approach (async):
+Index.diffForFile_staged_contextLines_(file, cached, contextLines, function(diff) {
+    if (diff) {
+        displayDiff(diff, cached);
+    }
+});
+```
+
+2. Update the Index object injection to use the message handler:
 ```javascript
 window.Index = {
-    someMethod: function(args, callback) {
+    diffForFile_staged_contextLines_: function(file, staged, contextLines, callback) {
         var callbackId = 'cb_' + (++window._callbackId);
         window._callbacks[callbackId] = callback;
-        webkit.messageHandlers.indexSomeMethod.postMessage({args: args, callbackId: callbackId});
+        webkit.messageHandlers.indexDiffForFile.postMessage({
+            file: file,
+            staged: staged,
+            contextLines: contextLines,
+            callbackId: callbackId
+        });
     }
-    // ... other methods
 };
 ```
+
+**Impact**:
+- ✅ Commit view loads without JavaScript errors
+- ⚠️  File diffs don't display (returns empty string)
+- ✅ Staging/unstaging files still works (uses different code path)
+- 📝 TODO: JavaScript refactoring for full diff display functionality
 
 ## Known Limitations
 
@@ -133,19 +143,20 @@ window.Index = {
 
 ## Testing Checklist
 
-- [ ] Verify all views load correctly
-- [ ] Test JavaScript console logging works
-- [ ] Test dark/light mode switching
-- [ ] Verify `gitx://` URLs load git objects
-- [ ] Test isReachable functionality
-- [ ] Test isFeatureEnabled functionality
-- [ ] **Test git command execution from JavaScript** (currently broken)
-- [ ] **Test commit view operations** (currently broken)
+- [x] Verify all views load correctly (with error logging)
+- [x] Test JavaScript console logging works
+- [x] Test dark/light mode switching  
+- [x] Verify `gitx://` URLs load git objects (PBGitXSchemeHandler implemented)
+- [x] Test isReachable functionality
+- [x] Test isFeatureEnabled functionality
+- [x] **Test git command execution from JavaScript** ✅ **WORKING** (runCommand implemented)
+- [ ] **Test commit view operations** ⚠️ **PARTIAL** (Index stub prevents errors, diff display needs JS refactoring)
 - [ ] Test history view navigation
 - [ ] Test file diff display
 - [ ] Test keyboard shortcuts
 - [ ] Test copy operations
 - [ ] Verify window resizing works
+- [ ] Verify HTML files load from bundle (with error logging added)
 
 ## Architecture Notes
 
