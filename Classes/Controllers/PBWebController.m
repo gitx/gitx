@@ -18,7 +18,6 @@
 @interface PBWebController () <WKNavigationDelegate, WKUIDelegate, WKScriptMessageHandler>
 @property (strong, nonatomic) PBGitXSchemeHandler *schemeHandler;
 - (void)preferencesChangedWithNotification:(NSNotification *)theNotification;
-- (void)setupJavaScriptBridge;
 @end
 
 @implementation PBWebController

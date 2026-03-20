@@ -24,6 +24,7 @@
 @property NSString *startFile;
 @property (weak) id repository;
 
+- (void)setupJavaScriptBridge;
 - (void)evaluateJavaScript:(NSString *)script completionHandler:(void (^)(id result, NSError *error))completionHandler;
 - (void)callJavaScriptFunction:(NSString *)functionName withArguments:(NSArray *)arguments completionHandler:(void (^)(id result, NSError *error))completionHandler;
 - (void)closeView;
