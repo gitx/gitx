@@ -58,7 +58,9 @@
 	if (!file) {
 		NSLog(@"ERROR: Could not find index.html in bundle at path: %@", path);
 		NSLog(@"ERROR: startFile = %@", startFile);
-		// Try to continue anyway - callbacks still need to be initialized
+		NSLog(@"ERROR: This is a critical error. The view will not load correctly.");
+		// We continue to initialize callbacks and JavaScript bridge to prevent crashes,
+		// but the view will remain empty. Check console for this error message.
 	}
 	
 	NSURL *fileURL = file ? [NSURL fileURLWithPath:file] : nil;
@@ -282,11 +284,22 @@ window.Controller = {\
 		[task performTaskWithCompletionHandler:^(NSData *_Nullable readData, NSError *_Nullable error) {
 			if (error) {
 				NSLog(@"runCommand error: %@", error);
-				// Escape error message for JavaScript
-				NSString *errorMsg = [error.localizedDescription stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
-				errorMsg = [errorMsg stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
-				NSString *errorScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](new Error('%@')); delete window._callbacks['%@']; }", 
-					callbackId, callbackId, errorMsg, callbackId];
+				// JSON-encode error message for safe JavaScript injection
+				NSString *errorMsg = error.localizedDescription ?: @"Unknown error";
+				NSError *jsonError = nil;
+				NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[errorMsg] options:0 error:&jsonError];
+				NSString *jsonString = nil;
+				if (!jsonError && jsonData) {
+					jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+					// Remove array brackets [value] -> value
+					if (jsonString.length > 2) {
+						jsonString = [jsonString substringWithRange:NSMakeRange(1, jsonString.length - 2)];
+					}
+				} else {
+					jsonString = @"\"Error encoding failed\"";
+				}
+				NSString *errorScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](new Error(%@)); delete window._callbacks['%@']; }", 
+					callbackId, callbackId, jsonString, callbackId];
 				dispatch_async(dispatch_get_main_queue(), ^{
 					[self evaluateJavaScript:errorScript completionHandler:nil];
 				});

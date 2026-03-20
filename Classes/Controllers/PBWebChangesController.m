@@ -130,26 +130,48 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 
 - (void)didLoad
 {
-	// Inject Index object into JavaScript for WKWebView
-	// Note: The old WebView API was synchronous, but WKWebView is async
-	// We inject a simplified synchronous-looking wrapper that returns immediately
-	// The actual implementation will need the JavaScript to be refactored for proper async
+	// Inject Index object stub into JavaScript for WKWebView
+	// 
+	// IMPORTANT: This is a compatibility stub only!
+	// 
+	// The old WebView API supported synchronous JavaScript calls, but WKWebView requires
+	// async patterns. The JavaScript code in Resources/html/views/commit/commit.js expects
+	// synchronous return values from Index.diffForFile_staged_contextLines_().
+	//
+	// Current state:
+	// - Lines 57-124: Async message handler IS implemented and working
+	// - Lines 137-146: Stub returns empty string for compatibility
+	// - JavaScript calls stub synchronously, stub returns empty (diffs don't display)
+	//
+	// To enable full functionality:
+	// 1. Refactor Resources/html/views/commit/commit.js to use async callbacks
+	// 2. Replace this stub with one that calls webkit.messageHandlers.indexDiffForFile
+	// 3. The existing message handler (lines 57-124) will then work correctly
+	//
+	// Example of what the JavaScript refactoring needs:
+	//   // OLD (sync): var changes = Index.diffForFile_staged_contextLines_(file, cached, lines);
+	//   // NEW (async): Index.diffForFile_staged_contextLines_(file, cached, lines, function(err, diff) { ... });
+	//
 	NSString *indexObjectScript = @"\
 	window.Index = {\
 		diffForFile_staged_contextLines_: function(file, staged, contextLines) {\
-			/* WKWebView limitation: Cannot do synchronous calls like the old WebView API.\
-			   This is a stub that returns empty string.\
-			   TODO: Refactor JavaScript to use async patterns. */\
-			console.log('Index.diffForFile_staged_contextLines_ called - returning empty (WKWebView async limitation)');\
+			/* STUB: WKWebView limitation - cannot do synchronous calls like old WebView API.\
+			   Returns empty string to prevent JavaScript errors.\
+			   \
+			   The async message handler is implemented (PBWebChangesController.m:57-124)\
+			   but cannot be called until JavaScript is refactored to use async callbacks.\
+			   \
+			   TODO: Refactor commit.js to accept async callbacks, then update this stub. */\
+			console.log('Index.diffForFile_staged_contextLines_ called - returning empty (WKWebView requires async)');\
 			return '';\
 		}\
 	};";
 	
 	[self evaluateJavaScript:indexObjectScript completionHandler:^(id result, NSError *error) {
 		if (error) {
-			NSLog(@"ERROR: Failed to inject Index object: %@", error);
+			NSLog(@"ERROR: Failed to inject Index object stub: %@", error);
 		} else {
-			NSLog(@"Index object injected (with WKWebView async limitations)");
+			NSLog(@"Index object stub injected (async message handler ready at lines 57-124)");
 		}
 	}];
 	
