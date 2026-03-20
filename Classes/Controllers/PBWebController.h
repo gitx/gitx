@@ -20,7 +20,7 @@
 	__weak IBOutlet id repository;
 }
 
-@property (weak) IBOutlet WKWebView *view;
+@property (strong) IBOutlet WKWebView *view;
 @property NSString *startFile;
 @property (weak) id repository;
 

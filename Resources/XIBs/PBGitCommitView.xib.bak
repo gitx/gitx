@@ -32,19 +32,19 @@
                 <splitView autosaveName="Commit" translatesAutoresizingMaskIntoConstraints="NO" id="186">
                     <rect key="frame" x="0.0" y="0.0" width="852" height="432"/>
                     <subviews>
-                        <wkWebView id="125">
+                        <webView id="125">
                             <rect key="frame" x="0.0" y="0.0" width="852" height="181"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <constraints>
                                 <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="150" id="HKc-oj-R06"/>
                             </constraints>
-                            <wkPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
+                            <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                 <nil key="identifier"/>
                             </webPreferences>
                             <connections>
-                                <outlet property="navigationDelegate" destination="96" id="137"/>
+                                <outlet property="frameLoadDelegate" destination="96" id="137"/>
                             </connections>
-                        </wkWebView>
+                        </webView>
                         <splitView autosaveName="Staging" vertical="YES" id="209">
                             <rect key="frame" x="0.0" y="190" width="852" height="242"/>
                             <autoresizingMask key="autoresizingMask"/>

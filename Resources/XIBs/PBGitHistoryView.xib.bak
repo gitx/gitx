@@ -197,7 +197,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="955" height="165"/>
                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                         <subviews>
-                                            <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" autosaveName="CommitView" rowHeight="20" rowSizeStyle="automatic" headerView="30" viewBased="YES" id="27" userLabel="Commit List" customClass="PBCommitList" customModule="GitX" customModuleProvider="target">
+                                            <tableView focusRingType="none" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="firstColumnOnly" alternatingRowBackgroundColors="YES" autosaveName="CommitView" rowHeight="20" rowSizeStyle="automatic" headerView="30" viewBased="YES" id="27" userLabel="Commit List" customClass="PBCommitList">
                                                 <rect key="frame" x="0.0" y="0.0" width="955" height="142"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                                 <size key="intercellSpacing" width="3" height="2"/>
@@ -586,17 +586,18 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="955" height="207"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <wkWebView focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="21">
+                                                                <webView focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="21">
                                                                     <rect key="frame" x="-1" y="-1" width="957" height="209"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                                    <wkPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
+                                                                    <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                                                         <nil key="identifier"/>
                                                                     </webPreferences>
                                                                     <connections>
                                                                         <outlet property="UIDelegate" destination="40" id="85"/>
-                                                                        <outlet property="navigationDelegate" destination="40" id="84"/>
-                                                                        </connections>
-                                                                </wkWebView>
+                                                                        <outlet property="frameLoadDelegate" destination="40" id="84"/>
+                                                                        <outlet property="policyDelegate" destination="40" id="109"/>
+                                                                    </connections>
+                                                                </webView>
                                                             </subviews>
                                                         </view>
                                                         <color key="fillColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -666,13 +667,13 @@
                                                                 <rect key="frame" x="234" y="0.0" width="721" height="214"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
-                                                                    <wkWebView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="450" userLabel="FileViewer">
+                                                                    <webView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="450" userLabel="FileViewer">
                                                                         <rect key="frame" x="0.0" y="0.0" width="721" height="189"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                                        <wkPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
+                                                                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                                                             <nil key="identifier"/>
                                                                         </webPreferences>
-                                                                    </wkWebView>
+                                                                    </webView>
                                                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="475" userLabel="TypeBar" customClass="MGScopeBar">
                                                                         <rect key="frame" x="0.0" y="190" width="721" height="24"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>

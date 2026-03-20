@@ -28,16 +28,16 @@
                 <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <wkWebView id="7">
+                    <webView id="7">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <animations/>
-                        <wkPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12"/>
+                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12"/>
                         <connections>
                             <outlet property="UIDelegate" destination="8" id="11"/>
-                            <outlet property="navigationDelegate" destination="8" id="10"/>
+                            <outlet property="frameLoadDelegate" destination="8" id="10"/>
                         </connections>
-                    </wkWebView>
+                    </webView>
                 </subviews>
                 <animations/>
             </view>

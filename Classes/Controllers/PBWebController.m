@@ -27,6 +27,31 @@
 
 - (void)awakeFromNib
 {
+	// WKWebView configuration must be set before creation, but since the view comes from XIB,
+	// we need to replace it with a properly configured one
+	if (self.view) {
+		NSView *superview = self.view.superview;
+		NSRect frame = self.view.frame;
+		NSUInteger autoresizingMask = self.view.autoresizingMask;
+		
+		// Create configuration with custom scheme handler
+		WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+		self.schemeHandler = [[PBGitXSchemeHandler alloc] init];
+		self.schemeHandler.repository = self.repository;
+		[configuration setURLSchemeHandler:self.schemeHandler forURLScheme:@"gitx"];
+		
+		// Create new WKWebView with configuration
+		WKWebView *newView = [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+		newView.autoresizingMask = autoresizingMask;
+		newView.navigationDelegate = self;
+		newView.UIDelegate = self;
+		
+		// Replace the old view
+		[self.view removeFromSuperview];
+		[superview addSubview:newView];
+		self.view = newView;
+	}
+	
 	NSString *path = [NSString stringWithFormat:@"html/views/%@", startFile];
 	NSString *file = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
 	NSURL *fileURL = [NSURL fileURLWithPath:file];
@@ -56,15 +81,6 @@
 			 object:nil];
 
 	finishedLoading = NO;
-
-	// Configure WKWebView
-	self.view.navigationDelegate = self;
-	self.view.UIDelegate = self;
-	
-	// Set up custom scheme handler for gitx:// URLs
-	self.schemeHandler = [[PBGitXSchemeHandler alloc] init];
-	self.schemeHandler.repository = self.repository;
-	[self.view.configuration setURLSchemeHandler:self.schemeHandler forURLScheme:@"gitx"];
 	
 	// Set up JavaScript bridge
 	[self setupJavaScriptBridge];
