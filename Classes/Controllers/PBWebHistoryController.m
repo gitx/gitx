@@ -149,24 +149,25 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file)
 		}
 
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-		NSDictionary *summary = loadCommitSummary(repo, queueCommit, ^BOOL {
-			return gen != atomic_load(&self->_commitSummaryGeneration);
+			NSDictionary *summary = loadCommitSummary(repo, queueCommit, ^BOOL {
+				return gen != atomic_load(&self->_commitSummaryGeneration);
+			});
+			if (!summary) return;
+			NSError *err = nil;
+			NSString *summaryJSON =
+				[[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:summary
+																			   options:0
+																				 error:&err]
+									  encoding:NSUTF8StringEncoding];
+			if (!summaryJSON) {
+				NSLog(@"Commit summary JSON error: %@", err);
+				return;
+			}
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[self commitSummaryLoaded:summaryJSON forOID:commit.OID];
+			});
 		});
-		if (!summary) return;
-		NSError *err = nil;
-		NSString *summaryJSON =
-			[[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:summary
-																		   options:0
-																			 error:&err]
-								  encoding:NSUTF8StringEncoding];
-		if (!summaryJSON) {
-			NSLog(@"Commit summary JSON error: %@", err);
-			return;
-		}
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[self commitSummaryLoaded:summaryJSON forOID:commit.OID];
-		});
-	});
+	}];
 }
 
 static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOOL (^isCanceled)(void))
