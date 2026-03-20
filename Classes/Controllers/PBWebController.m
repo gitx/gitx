@@ -255,9 +255,75 @@ window.Controller = {\
 			callbackId, callbackId, enabled ? @"true" : @"false", callbackId];
 		[self evaluateJavaScript:callbackScript completionHandler:nil];
 	} else if ([message.name isEqualToString:@"runCommand"]) {
-		// Handle runCommand - this is more complex and needs special handling
-		NSLog(@"runCommand called with message: %@", message.body);
-		// TODO: Implement runCommand with proper callback handling
+		// Handle runCommand - execute git commands from JavaScript
+		NSDictionary *msgDict = message.body;
+		NSArray *arguments = msgDict[@"arguments"];
+		NSString *callbackId = msgDict[@"callbackId"];
+		
+		if (!arguments || ![arguments isKindOfClass:[NSArray class]]) {
+			NSLog(@"runCommand: Invalid arguments - expected array, got %@", arguments);
+			NSString *errorScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](new Error('Invalid arguments')); delete window._callbacks['%@']; }", 
+				callbackId, callbackId, callbackId];
+			[self evaluateJavaScript:errorScript completionHandler:nil];
+			return;
+		}
+		
+		if (!self.repository) {
+			NSLog(@"runCommand: No repository available");
+			NSString *errorScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](new Error('No repository available')); delete window._callbacks['%@']; }", 
+				callbackId, callbackId, callbackId];
+			[self evaluateJavaScript:errorScript completionHandler:nil];
+			return;
+		}
+		
+		NSLog(@"runCommand: Executing git command with args: %@", arguments);
+		
+		PBTask *task = [self.repository taskWithArguments:arguments];
+		[task performTaskWithCompletionHandler:^(NSData *_Nullable readData, NSError *_Nullable error) {
+			if (error) {
+				NSLog(@"runCommand error: %@", error);
+				// Escape error message for JavaScript
+				NSString *errorMsg = [error.localizedDescription stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
+				errorMsg = [errorMsg stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+				NSString *errorScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](new Error('%@')); delete window._callbacks['%@']; }", 
+					callbackId, callbackId, errorMsg, callbackId];
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[self evaluateJavaScript:errorScript completionHandler:nil];
+				});
+			} else {
+				// Convert data to string and call success callback
+				NSString *output = [[NSString alloc] initWithData:readData encoding:NSUTF8StringEncoding];
+				if (!output) {
+					output = @"";
+				}
+				
+				// JSON-encode output for safe injection
+				NSError *jsonError = nil;
+				NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[output] options:0 error:&jsonError];
+				if (jsonError || !jsonData) {
+					NSLog(@"runCommand: Failed to serialize output: %@", jsonError);
+					NSString *errorScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](new Error('Failed to serialize output')); delete window._callbacks['%@']; }", 
+						callbackId, callbackId, callbackId];
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[self evaluateJavaScript:errorScript completionHandler:nil];
+					});
+					return;
+				}
+				
+				NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+				// Remove array brackets [value] -> value
+				if (jsonString.length > 2) {
+					jsonString = [jsonString substringWithRange:NSMakeRange(1, jsonString.length - 2)];
+				}
+				
+				// Call JavaScript callback: callback(null, output)
+				NSString *successScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](null, %@); delete window._callbacks['%@']; }", 
+					callbackId, callbackId, jsonString, callbackId];
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[self evaluateJavaScript:successScript completionHandler:nil];
+				});
+			}
+		}];
 	} else if ([message.name isEqualToString:@"makeWebViewFirstResponder"]) {
 		[self makeWebViewFirstResponder];
 	}
