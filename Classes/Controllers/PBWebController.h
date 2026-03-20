@@ -25,6 +25,7 @@
 @property (weak) id repository;
 
 - (void)setupJavaScriptBridge;
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message;
 - (void)evaluateJavaScript:(NSString *)script completionHandler:(void (^)(id result, NSError *error))completionHandler;
 - (void)callJavaScriptFunction:(NSString *)functionName withArguments:(NSArray *)arguments completionHandler:(void (^)(id result, NSError *error))completionHandler;
 - (void)closeView;
