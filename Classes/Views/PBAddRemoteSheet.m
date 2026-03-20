@@ -84,7 +84,7 @@
 
 - (IBAction)showHideHiddenFiles:(id)sender
 {
-	[self.browseSheet setShowsHiddenFiles:[sender state] == NSOnState];
+	[self.browseSheet setShowsHiddenFiles:[sender state] == NSControlStateValueOn];
 }
 
 - (IBAction)cancelOperation:(id)sender

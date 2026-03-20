@@ -913,7 +913,7 @@
 						  return;
 					  }
 
-					  if (identifier && [alert.suppressionButton state] == NSOnState)
+					  if (identifier && [alert.suppressionButton state] == NSControlStateValueOn)
 						  [PBGitDefaults suppressDialogWarningForDialog:identifier];
 
 					  actionBlock();
