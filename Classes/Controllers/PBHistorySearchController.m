@@ -300,7 +300,7 @@
 - (void)updateSearchModeMenuItemWithTag:(PBHistorySearchMode)menuItemSearchMode inMenu:(NSMenu *)searchMenu
 {
 	NSMenuItem *menuItem = [searchMenu itemWithTag:menuItemSearchMode];
-	[menuItem setState:(searchMode == menuItemSearchMode) ? NSOnState : NSOffState];
+	[menuItem setState:(searchMode == menuItemSearchMode) ? NSControlStateValueOn : NSControlStateValueOff];
 }
 
 - (void)updateSearchPlaceholderString

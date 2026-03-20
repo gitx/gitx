@@ -173,7 +173,7 @@
 - (IBAction)showHideHiddenFiles:(id)sender
 {
 	// This uses undocumented OpenPanel features to show hidden files (required for 10.5 support)
-	NSNumber *showHidden = [NSNumber numberWithBool:[sender state] == NSOnState];
+	NSNumber *showHidden = [NSNumber numberWithBool:[sender state] == NSControlStateValueOn];
 	[[browseRepositoryPanel valueForKey:@"_navView"] setValue:showHidden forKey:@"showsHiddenFiles"];
 }
 

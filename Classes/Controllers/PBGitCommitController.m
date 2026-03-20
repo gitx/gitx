@@ -648,7 +648,7 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 		}
 		return active;
 	} else if (menuItem.action == @selector(toggleAmendCommit:)) {
-		menuItem.state = [[[self repository] index] isAmend] ? NSOnState : NSOffState;
+		menuItem.state = [[[self repository] index] isAmend] ? NSControlStateValueOn : NSControlStateValueOff;
 		return YES;
 	}
 	else if (menuItem.action == @selector(prepareCommitMessage:)) {

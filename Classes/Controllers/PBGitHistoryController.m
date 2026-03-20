@@ -390,9 +390,9 @@
 	SEL action = menuItem.action;
 
 	if (action == @selector(setDetailedView:)) {
-		[menuItem setState:(self.selectedCommitDetailsIndex == kHistoryDetailViewIndex) ? NSOnState : NSOffState];
+		[menuItem setState:(self.selectedCommitDetailsIndex == kHistoryDetailViewIndex) ? NSControlStateValueOn : NSControlStateValueOff];
 	} else if (action == @selector(setTreeView:)) {
-		[menuItem setState:(self.selectedCommitDetailsIndex == kHistoryTreeViewIndex) ? NSOnState : NSOffState];
+		[menuItem setState:(self.selectedCommitDetailsIndex == kHistoryTreeViewIndex) ? NSControlStateValueOn : NSControlStateValueOff];
 	}
 
 	if ([self respondsToSelector:action]) {

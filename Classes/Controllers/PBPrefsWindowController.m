@@ -80,7 +80,7 @@
 - (IBAction)showHideAllFiles:sender
 {
 	/* FIXME: This uses undocumented OpenPanel features to show hidden files! */
-	NSNumber *showHidden = [NSNumber numberWithBool:[sender state] == NSOnState];
+	NSNumber *showHidden = [NSNumber numberWithBool:[sender state] == NSControlStateValueOn];
 	[[gitPathOpenPanel valueForKey:@"_navView"] setValue:showHidden forKey:@"showsHiddenFiles"];
 }
 
