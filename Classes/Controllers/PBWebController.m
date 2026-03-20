@@ -54,7 +54,14 @@
 	
 	NSString *path = [NSString stringWithFormat:@"html/views/%@", startFile];
 	NSString *file = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
-	NSURL *fileURL = [NSURL fileURLWithPath:file];
+	
+	if (!file) {
+		NSLog(@"ERROR: Could not find index.html in bundle at path: %@", path);
+		NSLog(@"ERROR: startFile = %@", startFile);
+		// Try to continue anyway - callbacks still need to be initialized
+	}
+	
+	NSURL *fileURL = file ? [NSURL fileURLWithPath:file] : nil;
 	NSURL *directoryURL = [fileURL URLByDeletingLastPathComponent];
 	
 	callbacks = [NSMapTable mapTableWithKeyOptions:(NSPointerFunctionsObjectPointerPersonality | NSPointerFunctionsStrongMemory) valueOptions:(NSPointerFunctionsObjectPointerPersonality | NSPointerFunctionsStrongMemory)];
@@ -86,7 +93,11 @@
 	[self setupJavaScriptBridge];
 	
 	// Load the request
-	[self.view loadFileURL:fileURL allowingReadAccessToURL:directoryURL];
+	if (fileURL && directoryURL) {
+		[self.view loadFileURL:fileURL allowingReadAccessToURL:directoryURL];
+	} else {
+		NSLog(@"ERROR: Cannot load content - invalid file URL (fileURL: %@, directoryURL: %@)", fileURL, directoryURL);
+	}
 }
 
 - (void)setupJavaScriptBridge
