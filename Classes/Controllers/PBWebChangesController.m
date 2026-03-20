@@ -118,8 +118,8 @@ static void *const CachedFileSelectedContext = @"CachedFileSelectedContext";
 			jsonString = [jsonString substringWithRange:NSMakeRange(1, jsonString.length - 2)];
 		}
 		
-		// Call JavaScript callback with the diff
-		NSString *successScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](%@); delete window._callbacks['%@']; }", 
+		// Call JavaScript callback with the diff (error-first callback pattern)
+		NSString *successScript = [NSString stringWithFormat:@"if (window._callbacks && window._callbacks['%@']) { window._callbacks['%@'](null, %@); delete window._callbacks['%@']; }", 
 			callbackId, callbackId, jsonString, callbackId];
 		[self evaluateJavaScript:successScript completionHandler:nil];
 	} else {
