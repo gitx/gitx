@@ -40,7 +40,7 @@
                             </constraints>
                             <wkPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                 <nil key="identifier"/>
-                            </webPreferences>
+                            </wkPreferences>
                             <connections>
                                 <outlet property="navigationDelegate" destination="96" id="137"/>
                             </connections>

@@ -591,7 +591,7 @@
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <wkPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                                                         <nil key="identifier"/>
-                                                                    </webPreferences>
+                                                                    </wkPreferences>
                                                                     <connections>
                                                                         <outlet property="UIDelegate" destination="40" id="85"/>
                                                                         <outlet property="navigationDelegate" destination="40" id="84"/>
@@ -671,7 +671,7 @@
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                         <wkPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                                                             <nil key="identifier"/>
-                                                                        </webPreferences>
+                                                                        </wkPreferences>
                                                                     </wkWebView>
                                                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="475" userLabel="TypeBar" customClass="MGScopeBar">
                                                                         <rect key="frame" x="0.0" y="190" width="721" height="24"/>
