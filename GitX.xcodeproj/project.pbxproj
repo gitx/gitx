@@ -1911,7 +1911,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
 				PRODUCT_NAME = GitX;
@@ -1938,7 +1938,7 @@
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_OTHER_PREPROCESSOR_FLAGS = "-traditional";
 				INSTALL_PATH = /Applications;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitX;
 				PRODUCT_NAME = GitX;
@@ -1992,7 +1992,7 @@
 					"\"$(PROJECT_DIR)/External/objective-git/External/libgit2/include\"",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-Werror=incompatible-pointer-types";
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -2042,7 +2042,7 @@
 					"\"$(PROJECT_DIR)/External/objective-git/External/libgit2/include\"",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-Werror=incompatible-pointer-types";
 				RUN_CLANG_STATIC_ANALYZER = YES;
@@ -2129,7 +2129,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitXUITests;
 				PRODUCT_NAME = GitXUITests;
 				SDKROOT = macosx;
@@ -2142,7 +2142,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				PRODUCT_BUNDLE_IDENTIFIER = net.phere.GitXUITests;
 				PRODUCT_NAME = GitXUITests;
 				SDKROOT = macosx;
