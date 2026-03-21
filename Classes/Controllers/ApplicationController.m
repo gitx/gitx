@@ -19,12 +19,14 @@
 #import "OpenRecentController.h"
 #import "PBGitBinary.h"
 
-#import <Sparkle/SUUpdater.h>
-#import <Sparkle/SUUpdaterDelegate.h>
+#import <Sparkle/SPUStandardUpdaterController.h>
+#import <Sparkle/SPUUpdater.h>
+#import <Sparkle/SPUUpdaterDelegate.h>
 
 static OpenRecentController *recentsDialog = nil;
 
-@interface ApplicationController () <SUUpdaterDelegate>
+@interface ApplicationController () <SPUUpdaterDelegate>
+@property (nonatomic, strong) SPUStandardUpdaterController *updaterController;
 @end
 
 @implementation ApplicationController
@@ -115,8 +117,8 @@ static OpenRecentController *recentsDialog = nil;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
-	[[SUUpdater sharedUpdater] setSendsSystemProfile:YES];
-	[[SUUpdater sharedUpdater] setDelegate:self];
+	self.updaterController = [[SPUStandardUpdaterController alloc] initWithUpdaterDelegate:self userDriverDelegate:nil];
+	[self.updaterController.updater setSendsSystemProfile:YES];
 
 	// Make sure Git's SSH password requests get forwarded to our little UI tool:
 	setenv("SSH_ASKPASS", [[[NSBundle mainBundle] pathForResource:@"gitx_askpasswd" ofType:@""] UTF8String], 1);
@@ -247,7 +249,7 @@ static OpenRecentController *recentsDialog = nil;
 
 #pragma mark Sparkle delegate methods
 
-- (NSArray *)feedParametersForUpdater:(SUUpdater *)updater sendingSystemProfile:(BOOL)sendingProfile
+- (NSArray *)feedParametersForUpdater:(SPUUpdater *)updater sendingSystemProfile:(BOOL)sendingProfile
 {
 	NSArray *keys = [NSArray arrayWithObjects:@"key", @"displayKey", @"value", @"displayValue", nil];
 	NSMutableArray *feedParameters = [NSMutableArray array];
