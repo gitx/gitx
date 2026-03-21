@@ -20,29 +20,29 @@
     self.continueAfterFailure = NO;
     self.app = [[XCUIApplication alloc] init];
 
-    // GITX_UITEST_REPO is set by the scheme to $(GITX_SCREENSHOT_REPO).
-    // Locally this expands to $(SRCROOT). On CI, xcodebuild overrides
-    // GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo (the fixed commit checkout).
-    NSDictionary *env = [[NSProcessInfo processInfo] environment];
-    NSString *repoPath = env[@"GITX_UITEST_REPO"];
+    // /tmp/gitx-screenshot-repo is the single agreed-upon repo path:
+    //  - In CI:    BuildPR.yml clones the fixed commit there before running tests.
+    //  - Locally:  run `ln -sf $(pwd) /tmp/gitx-screenshot-repo` once from the
+    //              project root, or use the helper: `scripts/setup-uitest-repo.sh`
+    //
+    // The test runner is sandboxed and cannot see SRCROOT or other build settings,
+    // so /tmp (which is shared across the sandbox boundary) is the only reliable path.
+    NSString *repoPath = @"/tmp/gitx-screenshot-repo";
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:repoPath];
+    NSLog(@"[GitXScreenshotTests] repoPath = %@ (exists=%d)", repoPath, exists);
 
-    if (!repoPath) {
-        // Fallback: a fixture repo bundled with the test target
-        NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-        NSURL *bundledRepo = [bundle URLForResource:@"testrepo" withExtension:nil];
-        if (bundledRepo && [[NSFileManager defaultManager] fileExistsAtPath:bundledRepo.path]) {
-            repoPath = bundledRepo.path;
-        }
+    if (exists) {
+        // launchEnvironment IS forwarded by XCUIApplication to the app under test
+        self.app.launchEnvironment = @{
+            @"GITX_UITEST_REPO":     repoPath,
+            @"GITX_SCREENSHOT_REPO": repoPath
+        };
     }
 
-    NSLog(@"[GitXScreenshotTests] repoPath = %@", repoPath ?: @"(none)");
-
-    if (repoPath) {
-        // Passed to the app via applicationDidFinishLaunching: which opens
-        // the repo directly, giving the test a reliable document window.
-        self.app.launchEnvironment = @{@"GITX_UITEST_REPO": repoPath};
-    }
-
+    // Ensure a fresh launch — if an existing GitX is already running (e.g. during
+    // local development), XCUIApplication.launch would reuse it and our
+    // launchEnvironment + applicationDidFinishLaunching: would never fire.
+    [self.app terminate];
     [self.app launch];
 }
 
