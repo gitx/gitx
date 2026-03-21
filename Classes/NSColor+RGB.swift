@@ -3,7 +3,6 @@
 //  GitX
 //
 //  Converted from NSColor+RGB.m
-//  Original by Rowan James.
 //
 
 import AppKit
