@@ -434,7 +434,7 @@
 
 - (void)keyDown:(NSEvent *)event
 {
-	if ([[event charactersIgnoringModifiers] isEqualToString:@"f"] && [event modifierFlags] & NSAlternateKeyMask && [event modifierFlags] & NSCommandKeyMask)
+	if ([[event charactersIgnoringModifiers] isEqualToString:@"f"] && [event modifierFlags] & NSEventModifierFlagOption && [event modifierFlags] & NSEventModifierFlagCommand)
 		[self.windowController.window makeFirstResponder:searchField];
 	else
 		[super keyDown:event];
