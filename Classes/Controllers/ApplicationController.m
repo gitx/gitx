@@ -117,8 +117,15 @@ static OpenRecentController *recentsDialog = nil;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
+#if !DEBUG
+	// Only enable Sparkle updates in Release builds
+	// In Debug builds, skip updater to avoid EdDSA key validation errors
+	NSLog(@"DEBUG: Initializing Sparkle updater (Release build)");
 	self.updaterController = [[SPUStandardUpdaterController alloc] initWithUpdaterDelegate:self userDriverDelegate:nil];
 	[self.updaterController.updater setSendsSystemProfile:YES];
+#else
+	NSLog(@"DEBUG: Skipping Sparkle updater initialization (Debug build)");
+#endif
 
 	// Make sure Git's SSH password requests get forwarded to our little UI tool:
 	setenv("SSH_ASKPASS", [[[NSBundle mainBundle] pathForResource:@"gitx_askpasswd" ofType:@""] UTF8String], 1);

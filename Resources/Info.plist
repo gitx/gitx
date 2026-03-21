@@ -103,7 +103,5 @@
 	<false/>
 	<key>SUFeedURL</key>
 	<string>https://gitx.github.io/gitx/appcast.xml</string>
-	<key>SUPublicDSAKeyFile</key>
-	<string>UpdateKey.pem</string>
 </dict>
 </plist>
