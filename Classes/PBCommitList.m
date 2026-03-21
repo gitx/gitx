@@ -32,14 +32,14 @@
 	NSString *character = [event charactersIgnoringModifiers];
 
 	// Pass on command-shift up/down to the responder. We want the splitview to capture this.
-	if ([event modifierFlags] & NSShiftKeyMask && [event modifierFlags] & NSCommandKeyMask && ([event keyCode] == 0x7E || [event keyCode] == 0x7D)) {
+	if ([event modifierFlags] & NSEventModifierFlagShift && [event modifierFlags] & NSEventModifierFlagCommand && ([event keyCode] == 0x7E || [event keyCode] == 0x7D)) {
 		[self.nextResponder keyDown:event];
 		return;
 	}
 
 	if ([character isEqualToString:@" "]) {
 		if (controller.selectedCommitDetailsIndex == 0) {
-			if ([event modifierFlags] & NSShiftKeyMask)
+			if ([event modifierFlags] & NSEventModifierFlagShift)
 				[webView scrollPageUp:self];
 			else
 				[webView scrollPageDown:self];
@@ -47,7 +47,7 @@
 			[controller toggleQLPreviewPanel:self];
 	} else if ([character rangeOfCharacterFromSet:[NSCharacterSet characterSetWithCharactersInString:@"jkcv"]].location == 0)
 		[webController sendKey:character];
-	else if (([character characterAtIndex:0] == NSDownArrowFunctionKey) && [event modifierFlags] & NSControlKeyMask) {
+	else if (([character characterAtIndex:0] == NSDownArrowFunctionKey) && [event modifierFlags] & NSEventModifierFlagControl) {
 		[controller selectParentCommit:self];
 	} else
 		[super keyDown:event];

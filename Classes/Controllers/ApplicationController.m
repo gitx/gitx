@@ -209,24 +209,28 @@ static OpenRecentController *recentsDialog = nil;
 	NSString *installationPath = @"/usr/local/bin/";
 	NSString *installationName = @"gitx";
 	NSString *toolPath = [[NSBundle mainBundle] pathForResource:@"gitx" ofType:@""];
-	if (toolPath) {
-		AuthorizationRef auth;
-		if (AuthorizationCreate(NULL, kAuthorizationEmptyEnvironment, kAuthorizationFlagDefaults, &auth) == errAuthorizationSuccess) {
-			char const *mkdir_arg[] = {"-p", [installationPath UTF8String], NULL};
-			char const *mkdir = "/bin/mkdir";
-			AuthorizationExecuteWithPrivileges(auth, mkdir, kAuthorizationFlagDefaults, (char **)mkdir_arg, NULL);
-			char const *arguments[] = {"-f", "-s", [toolPath UTF8String], [[installationPath stringByAppendingString:installationName] UTF8String], NULL};
-			char const *helperTool = "/bin/ln";
-			if (AuthorizationExecuteWithPrivileges(auth, helperTool, kAuthorizationFlagDefaults, (char **)arguments, NULL) == errAuthorizationSuccess) {
-				int status;
-				int pid = wait(&status);
-				if (pid != -1 && WIFEXITED(status) && WEXITSTATUS(status) == 0)
-					success = true;
-				else
-					errno = WEXITSTATUS(status);
-			}
 
-			AuthorizationFree(auth, kAuthorizationFlagDefaults);
+	if (toolPath) {
+		// Escape paths for shell script
+		NSString *escapedToolPath = [toolPath stringByReplacingOccurrencesOfString:@"'" withString:@"'\\''"];
+		NSString *escapedInstallPath = [installationPath stringByReplacingOccurrencesOfString:@"'" withString:@"'\\''"];
+		NSString *destinationPath = [installationPath stringByAppendingString:installationName];
+		NSString *escapedDestinationPath = [destinationPath stringByReplacingOccurrencesOfString:@"'" withString:@"'\\''"];
+
+		// Build shell script with proper error handling
+		NSString *script = [NSString stringWithFormat:
+			@"do shell script \"mkdir -p '%@' && ln -fs '%@' '%@'\" with administrator privileges",
+			escapedInstallPath, escapedToolPath, escapedDestinationPath];
+
+		// Execute AppleScript
+		NSAppleScript *appleScript = [[NSAppleScript alloc] initWithSource:script];
+		NSDictionary *errorDict = nil;
+		NSAppleEventDescriptor *result = [appleScript executeAndReturnError:&errorDict];
+
+		if (result && !errorDict) {
+			success = YES;
+		} else {
+			NSLog(@"Installation failed with error: %@", errorDict);
 		}
 	}
 
