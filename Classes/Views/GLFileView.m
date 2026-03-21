@@ -87,9 +87,8 @@
 		else if ([startFile isEqualToString:GROUP_ID_LOG])
 			fileTxt = [self htmlHistory:file];
 
-		id script = self.view.windowScriptObject;
 		NSString *filePath = [file fullPath];
-		[script callWebScriptMethod:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil]];
+		[self callJavaScriptFunction:@"showFile" withArguments:[NSArray arrayWithObjects:fileTxt, filePath, nil] completionHandler:nil];
 	}
 
 #if 0
@@ -152,7 +151,7 @@
 	NSString *path = [NSString stringWithFormat:@"html/views/%@", identifier];
 	NSString *html = [[NSBundle mainBundle] pathForResource:@"index" ofType:@"html" inDirectory:path];
 	NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL fileURLWithPath:html]];
-	[self.view.mainFrame loadRequest:request];
+	[self.view loadRequest:request];
 }
 
 - (NSView *)accessoryViewForScopeBar:(MGScopeBar *)scopeBar
