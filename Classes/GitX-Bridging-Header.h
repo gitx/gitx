@@ -26,3 +26,12 @@
 #import "GitXRelativeDateFormatter.h"
 
 // ── Add further headers below only when a Swift source file needs them ────────
+// PBCommitList.swift needs these:
+#import "PBMacros.h"
+#import "PBCommitList.h"
+#import "PBGitRevisionCell.h"
+#import "PBWebHistoryController.h"
+#import "PBHistorySearchController.h"
+#import "PBGitHistoryController.h"
+#import "PBGitCommit.h"
+#import "PBGitRef.h"

@@ -3,7 +3,6 @@
 //  GitX
 //
 //  Converted from NSAppearance+PBDarkMode.m
-//  Original by Etienne, 2018.
 //
 //  Note: NSAppearance+PBDarkMode.m is still compiled solely to provide the
 //  `extern NSString *const PBEffectiveAppearanceChanged` definition for ObjC
