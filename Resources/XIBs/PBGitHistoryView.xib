@@ -586,18 +586,17 @@
                                                             <rect key="frame" x="0.0" y="0.0" width="955" height="207"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
-                                                                <webView focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="21">
+                                                                <wkWebView focusRingType="none" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="21">
                                                                     <rect key="frame" x="-1" y="-1" width="957" height="209"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                                    <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
+                                                                    <wkPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                                                         <nil key="identifier"/>
-                                                                    </webPreferences>
+                                                                    </wkPreferences>
                                                                     <connections>
                                                                         <outlet property="UIDelegate" destination="40" id="85"/>
-                                                                        <outlet property="frameLoadDelegate" destination="40" id="84"/>
-                                                                        <outlet property="policyDelegate" destination="40" id="109"/>
-                                                                    </connections>
-                                                                </webView>
+                                                                        <outlet property="navigationDelegate" destination="40" id="84"/>
+                                                                        </connections>
+                                                                </wkWebView>
                                                             </subviews>
                                                         </view>
                                                         <color key="fillColor" name="windowBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -667,13 +666,13 @@
                                                                 <rect key="frame" x="234" y="0.0" width="721" height="214"/>
                                                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                 <subviews>
-                                                                    <webView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="450" userLabel="FileViewer">
+                                                                    <wkWebView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="450" userLabel="FileViewer">
                                                                         <rect key="frame" x="0.0" y="0.0" width="721" height="189"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                                                        <webPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
+                                                                        <wkPreferences key="preferences" defaultFontSize="12" defaultFixedFontSize="12">
                                                                             <nil key="identifier"/>
-                                                                        </webPreferences>
-                                                                    </webView>
+                                                                        </wkPreferences>
+                                                                    </wkWebView>
                                                                     <customView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="475" userLabel="TypeBar" customClass="MGScopeBar">
                                                                         <rect key="frame" x="0.0" y="190" width="721" height="24"/>
                                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>

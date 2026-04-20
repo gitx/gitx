@@ -73,6 +73,7 @@
 		4A5D76F014A9A9CC00DF6C68 /* PBWebChangesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D764514A9A9CC00DF6C68 /* PBWebChangesController.m */; };
 		4A5D76F114A9A9CC00DF6C68 /* PBWebController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D764714A9A9CC00DF6C68 /* PBWebController.m */; };
 		4A5D76F214A9A9CC00DF6C68 /* PBWebDiffController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D764914A9A9CC00DF6C68 /* PBWebDiffController.m */; };
+		1A20B6D5F6263F2E74B85987 /* PBGitXSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B4DEE896E3566D35ACBCE29E /* PBGitXSchemeHandler.m */; };
 		4A5D76F314A9A9CC00DF6C68 /* PBWebHistoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D764B14A9A9CC00DF6C68 /* PBWebHistoryController.m */; };
 		4A5D76F414A9A9CC00DF6C68 /* PBGitBinary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D764F14A9A9CC00DF6C68 /* PBGitBinary.m */; };
 		4A5D76F514A9A9CC00DF6C68 /* PBGitCommit.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765114A9A9CC00DF6C68 /* PBGitCommit.m */; };
@@ -508,6 +509,8 @@
 		4A5D764714A9A9CC00DF6C68 /* PBWebController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBWebController.m; sourceTree = "<group>"; };
 		4A5D764814A9A9CC00DF6C68 /* PBWebDiffController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBWebDiffController.h; sourceTree = "<group>"; };
 		4A5D764914A9A9CC00DF6C68 /* PBWebDiffController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBWebDiffController.m; sourceTree = "<group>"; };
+		57A516E0E33133C184084A80 /* PBGitXSchemeHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitXSchemeHandler.h; sourceTree = "<group>"; };
+		B4DEE896E3566D35ACBCE29E /* PBGitXSchemeHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitXSchemeHandler.m; sourceTree = "<group>"; };
 		4A5D764A14A9A9CC00DF6C68 /* PBWebHistoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PBWebHistoryController.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4A5D764B14A9A9CC00DF6C68 /* PBWebHistoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PBWebHistoryController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4A5D764E14A9A9CC00DF6C68 /* PBGitBinary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitBinary.h; sourceTree = "<group>"; };
@@ -1030,6 +1033,8 @@
 				4A5D764714A9A9CC00DF6C68 /* PBWebController.m */,
 				4A5D764814A9A9CC00DF6C68 /* PBWebDiffController.h */,
 				4A5D764914A9A9CC00DF6C68 /* PBWebDiffController.m */,
+				57A516E0E33133C184084A80 /* PBGitXSchemeHandler.h */,
+				B4DEE896E3566D35ACBCE29E /* PBGitXSchemeHandler.m */,
 				4A5D764A14A9A9CC00DF6C68 /* PBWebHistoryController.h */,
 				4A5D764B14A9A9CC00DF6C68 /* PBWebHistoryController.m */,
 				4D3FB3E5198AEAAF000B4A58 /* PBGitRepositoryDocument.h */,
@@ -1683,6 +1688,7 @@
 				4A5D76F014A9A9CC00DF6C68 /* PBWebChangesController.m in Sources */,
 				4A5D76F114A9A9CC00DF6C68 /* PBWebController.m in Sources */,
 				4A5D76F214A9A9CC00DF6C68 /* PBWebDiffController.m in Sources */,
+				1A20B6D5F6263F2E74B85987 /* PBGitXSchemeHandler.m in Sources */,
 				4A5D76F314A9A9CC00DF6C68 /* PBWebHistoryController.m in Sources */,
 				4A5D76F414A9A9CC00DF6C68 /* PBGitBinary.m in Sources */,
 				6C25810B1C2720E60080A89A /* GitXCommitCopier.m in Sources */,
