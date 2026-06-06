@@ -59,6 +59,10 @@ extern NSString *PBGitIndexOperationFailed;
 // Refresh the index
 - (void)refresh;
 
+// Update the stat cache (git update-index --refresh). Clears phantom "modified"
+// entries caused by stat mismatches. Call on app activation, not on every change.
+- (void)refreshStatCache;
+
 // Run the prepare-git-msg hook and return the result
 - (nullable NSString *)createPrepareCommitMessage;
 
