@@ -65,6 +65,7 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(indexChanged:) name:PBGitIndexIndexUpdated object:index];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(indexOperationFailed:) name:PBGitIndexOperationFailed object:index];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:theRepository];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:NSApplicationDidBecomeActiveNotification object:nil];
 
 	return self;
 }
@@ -119,6 +120,11 @@
 	// Copy the menu over so we have two discrete menu objects
 	// which allows us to tell them apart in our delegate methods
 	stagedTable.menu = [unstagedTable.menu copy];
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+	[self.repository.index refreshStatCache];
 }
 
 - (void)repositoryUpdatedNotification:(NSNotification *)notification
