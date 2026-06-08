@@ -15,6 +15,7 @@ body {
 
 .body--dark {
     -webkit-filter: invert(0.89) hue-rotate(180deg);
+    background: #1c1c1c;
 }
 
 .body--dark > * {
