@@ -114,7 +114,7 @@ jobs:
           name: Screenshots-${{ matrix.abi }}
           path: ./scripts/screenshots-${{ matrix.abi }}
       - name: Compare screenshots
-        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        if: ${{ github.event.repository.fork != true && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         env:
           CLASSIC_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
           SCREENSHOT_USER: ${{ secrets.SCREENSHOT_USER }}
