@@ -4,8 +4,11 @@
 }
 
 .diff .file .fileHeader {
-	margin: 5px;
+	padding: 5px;
 	font-weight: bold;
+	position: sticky;
+	top: 0;
+	background: #fff;
 }
 
 .diff .file .fileHeader a {

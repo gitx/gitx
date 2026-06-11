@@ -209,9 +209,7 @@ a {
 
 .top-link {
     text-align: right;
-    margin-top: -5px;
-    margin-right: 20px;
-    padding-bottom: 5px;
+    margin: 11px;
     font-size: 90%;
 }
 

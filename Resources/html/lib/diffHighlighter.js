@@ -6,19 +6,30 @@ if (typeof Controller == 'undefined') {
 	Controller.log_ = console.log;
 }
 
-var toggleDiff = function(id)
-{
-  var content = document.getElementById('content_' + id);
+// https://stackoverflow.com/a/22480938/96823
+const isScrolledIntoView = function(el) {
+  const rect = el.getBoundingClientRect();
+  return (rect.top >= 0) && (rect.bottom <= window.innerHeight);
+}
+
+const toggleDiff = function(id) {
+  const content = document.getElementById('content_' + id);
   if (content) {
-    var collapsed = (content.style.display == 'none');
-	  if (collapsed) {
-		  content.style.display = 'box';
-		  jQuery(content).slideDown(100);
-	  } else {
-          jQuery(content).slideUp(100, function () {content.style.display = 'none'});
-	  }
-	
-    var title = document.getElementById('title_' + id);
+    const title = document.getElementById('title_' + id);
+    const collapsed = (content.style.display == 'none');
+
+    if (collapsed) {
+      content.style.display = 'box';
+      jQuery(content).slideDown(100);
+    } else {
+      jQuery(content).slideUp(100, function () {
+        content.style.display = 'none';
+        if (title && !isScrolledIntoView(title)) {
+          title.scrollIntoView()
+        }
+      });
+    }
+
     if (title) {
       if (collapsed) {
         title.classList.remove('collapsed');
