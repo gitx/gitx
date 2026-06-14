@@ -169,7 +169,6 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	// Enter the group for ALL tasks upfront, before launching any of them.
 	// This prevents dispatch_group_notify from firing prematurely if an
 	// early task completes before later tasks have called group_enter.
-	dispatch_group_enter(_indexRefreshGroup); // update-index
 	BOOL isBare = [self.repository isBareRepository];
 	if (!isBare) {
 		dispatch_group_enter(_indexRefreshGroup); // ls-files
@@ -203,20 +202,6 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 
 		[self postIndexRefreshFinished];
 	});
-
-	// Ask Git to refresh the index
-	[PBTask launchTask:[PBGitBinary path]
-				arguments:@[ @"update-index", @"-q", @"--unmerged", @"--ignore-missing", @"--refresh" ]
-			  inDirectory:self.repository.workingDirectoryURL.path
-		completionHandler:^(NSData *readData, NSError *error) {
-			if (error) {
-				[self postIndexRefreshSuccess:NO message:@"update-index failed"];
-			} else {
-				[self postIndexRefreshSuccess:YES message:@"update-index success"];
-			}
-
-			dispatch_group_leave(self->_indexRefreshGroup);
-		}];
 
 	if (isBare) {
 		return;
@@ -290,6 +275,22 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 
 			dispatch_group_leave(self->_indexRefreshGroup);
 		}];
+}
+
+// Refreshes the stat cache in the index by running git update-index --refresh.
+// This clears phantom "modified" entries caused by stat mismatches (same content,
+// different mtime). Called on app activation rather than every FSEvents notification
+// to avoid holding index.lock constantly.
+- (void)refreshStatCache
+{
+	if ([self.repository isBareRepository]) return;
+
+	[PBTask launchTask:[PBGitBinary path]
+			 arguments:@[ @"update-index", @"-q", @"--unmerged", @"--ignore-missing", @"--refresh" ]
+		   inDirectory:self.repository.workingDirectoryURL.path
+	 completionHandler:^(NSData *readData, NSError *error) {
+		[self refresh];
+	}];
 }
 
 // Returns the tree to compare the index to, based
