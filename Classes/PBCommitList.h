@@ -7,14 +7,15 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <WebKit/WebView.h>
+#import <WebKit/WebKit.h>
 
 @class PBGitHistoryController;
 @class PBWebHistoryController;
 @class PBHistorySearchController;
+@class WKWebView;
 
 @interface PBCommitList : NSTableView {
-	__weak IBOutlet WebView *webView;
+	__weak IBOutlet WKWebView *webView;
 	__weak IBOutlet PBWebHistoryController *webController;
 	__weak IBOutlet PBGitHistoryController *controller;
 	__weak IBOutlet PBHistorySearchController *searchController;
