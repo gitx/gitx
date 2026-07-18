@@ -142,7 +142,12 @@ jobs:
       # end test
           
       - name: Build project
-        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}" PRODUCT_BUNDLE_IDENTIFIER=net.phere.GitX
+        # Do NOT pass PRODUCT_BUNDLE_IDENTIFIER on the command line: it would
+        # override every target in the workspace, including Sparkle's
+        # Updater.app, which then shares the app's bundle ID and breaks the
+        # gitx CLI (Scripting Bridge resolves the wrong bundle). The GitX
+        # target already sets its identifier in the project file.
+        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}"
       - name: Prepare artifact
         if: ${{ env.variableSet != '' }}
         env:
