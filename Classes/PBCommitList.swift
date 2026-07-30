@@ -12,7 +12,7 @@ import WebKit
 
     // MARK: - Properties
 
-    @IBOutlet weak var webView: WebView!
+    @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var webController: PBWebHistoryController!
     @IBOutlet weak var controller: PBGitHistoryController!
     @IBOutlet weak var searchController: PBHistorySearchController!
@@ -24,7 +24,7 @@ import WebKit
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        webView.drawsBackground = false
+        // WKWebView is transparent by default, no need to set drawsBackground
     }
 
     // MARK: - Drag and Drop
