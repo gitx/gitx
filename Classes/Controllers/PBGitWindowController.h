@@ -48,7 +48,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)openFiles:(id)sender;
 - (IBAction)revealInFinder:(id)sender;
 - (IBAction)openInTerminal:(id)sender;
-- (IBAction)refresh:(id)sender;
+- (IBAction)openInWebsite:(id)sender;
+- (IBAction) refresh:(id)sender;
 
 - (IBAction)checkout:(id)sender;
 - (IBAction)createBranch:(id)sender;
