@@ -198,8 +198,11 @@
 {
 	PBGitRepositoryWatcherEventType eventType = [(NSNumber *)[[notification userInfo] objectForKey:kPBGitRepositoryEventTypeUserInfoKey] unsignedIntValue];
 	if (eventType & PBGitRepositoryWatcherEventTypeGitDirectory) {
-		// refresh if the .git repository is modified
-		[self refresh:self];
+		// refresh if the .git repository is modified, coalescing bursts of
+		// git-directory events (e.g. a single `git switch -c` touching both a
+		// ref file and HEAD) into a single refresh
+		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(refresh:) object:self];
+		[self performSelector:@selector(refresh:) withObject:self afterDelay:0.2];
 	}
 }
 
@@ -599,6 +602,7 @@
 - (void)closeView
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(refresh:) object:self];
 
 	[webHistoryController closeView];
 	[fileView closeView];
