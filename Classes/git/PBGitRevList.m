@@ -31,6 +31,8 @@
 
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 
+@property (nonatomic, assign) NSUInteger loadGeneration;
+
 @end
 
 
@@ -62,6 +64,8 @@
 
 	self.resetCommits = YES;
 
+	NSUInteger generation = ++self.loadGeneration;
+
 	NSBlockOperation *parseOperation = [[NSBlockOperation alloc] init];
 
 	__weak typeof(self) weakSelf = self;
@@ -75,7 +79,7 @@
 		GTEnumerator *enu = [[GTEnumerator alloc] initWithRepository:repo error:&error];
 
 		[weakSelf setupEnumerator:enu forRevspec:weakSelf.currentRev];
-		[weakSelf addCommitsFromEnumerator:enu operation:weakParseOperation];
+		[weakSelf addCommitsFromEnumerator:enu operation:weakParseOperation generation:generation];
 	}];
 	[parseOperation setCompletionBlock:completionBlock];
 
@@ -94,9 +98,9 @@
 }
 
 
-- (void)updateCommits:(NSArray<PBGitCommit *> *)revisions operation:(NSOperation *)operation
+- (void)updateCommits:(NSArray<PBGitCommit *> *)revisions operation:(NSOperation *)operation generation:(NSUInteger)generation
 {
-	if (!revisions || [revisions count] == 0 || operation.cancelled)
+	if (!revisions || [revisions count] == 0 || operation.cancelled || generation != self.loadGeneration)
 		return;
 
 	if (self.resetCommits) {
@@ -193,7 +197,7 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName)
 	}
 }
 
-- (void)addCommitsFromEnumerator:(GTEnumerator *)enumerator operation:(NSOperation *)operation
+- (void)addCommitsFromEnumerator:(GTEnumerator *)enumerator operation:(NSOperation *)operation generation:(NSUInteger)generation
 {
 	PBGitGrapher *g = [[PBGitGrapher alloc] init];
 	__block NSDate *lastUpdate = [NSDate date];
@@ -248,7 +252,7 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName)
 				NSArray<PBGitCommit *> *updatedRevisions = [revisions copy];
 
 				dispatch_async(dispatch_get_main_queue(), ^{
-					[self updateCommits:updatedRevisions operation:operation];
+					[self updateCommits:updatedRevisions operation:operation generation:generation];
 				});
 
 				[revisions removeAllObjects];
@@ -266,7 +270,7 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName)
 	NSArray<PBGitCommit *> *updatedRevisions = [revisions copy];
 
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[self updateCommits:updatedRevisions operation:operation];
+		[self updateCommits:updatedRevisions operation:operation generation:generation];
 	});
 }
 
