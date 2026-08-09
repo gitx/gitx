@@ -113,6 +113,16 @@
 						  [observer.sourceView reloadItem:observer->stashes reloadChildren:YES];
 					  }];
 
+	[repository addObserver:self
+					keyPath:@"refs"
+					options:0
+					  block:^(MAKVONotification *notification) {
+						  PBGitSidebarController *observer = notification.observer;
+						  NSInteger row = observer.sourceView.selectedRow;
+						  [observer.sourceView reloadData];
+						  [observer.sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+					  }];
+
 	[sourceView setTarget:self];
 	[sourceView setDoubleAction:@selector(doubleClicked:)];
 
