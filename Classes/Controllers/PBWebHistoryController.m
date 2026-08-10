@@ -346,7 +346,9 @@ static NSDictionary *loadCommitSummary(GTRepository *repo, GTCommit *commit, BOO
 
 - (void)preferencesChanged
 {
-	[[self script] callWebScriptMethod:@"enableFeatures" withArguments:nil];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[[self script] callWebScriptMethod:@"enableFeatures" withArguments:nil];
+	});
 }
 
 @end
