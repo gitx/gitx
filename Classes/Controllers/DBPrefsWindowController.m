@@ -75,6 +75,7 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 	[contentSubview setAutoresizingMask:(NSViewMinYMargin | NSViewWidthSizable)];
 	[[[self window] contentView] addSubview:contentSubview];
 	[[self window] setShowsToolbarButton:NO];
+	[panel setAutorecalculatesKeyViewLoop:YES];
 }
 
 
@@ -180,6 +181,8 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 	[[self window] center];
 
 	[super showWindow:sender];
+
+	[[self window] makeFirstResponder:nil];
 }
 
 
