@@ -14,6 +14,7 @@
 #import "PBGitXMessageSheet.h"
 #import "PBGitSidebarController.h"
 #import "PBAddRemoteSheet.h"
+#import "PBGitPrefsWindowController.h"
 #import "PBCreateBranchSheet.h"
 #import "PBCreateTagSheet.h"
 #import "PBGitDefaults.h"
@@ -455,6 +456,11 @@
 		return (branchCommits.count == 1 ? branchCommits.firstObject : nil);
 	}
 	return nil;
+}
+
+- (IBAction)showGitPrefsWindow:(id)sender
+{
+	[PBGitPrefsWindowController showPrefsForRepository:self.repository];
 }
 
 - (IBAction)showAddRemoteSheet:(id)sender

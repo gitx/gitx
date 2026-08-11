@@ -28,6 +28,11 @@ typedef enum branchFilterTypes {
 	kGitXSelectedBranchFilter
 } PBGitXBranchFilterType;
 
+typedef NS_ENUM(NSInteger, PBGitConfigScope) {
+	PBGitConfigScopeLocal,   // this repository's effective config (system+global+local merged, as git itself sees it)
+	PBGitConfigScopeGlobal,  // ~/.gitconfig only
+};
+
 @class PBGitWindowController;
 @class PBGitCommit;
 @class PBGitIndex;
@@ -74,6 +79,9 @@ typedef enum branchFilterTypes {
 - (BOOL)createTag:(NSString *)tagName message:(NSString *)message atRefish:(id<PBGitRefish>)commitSHA error:(NSError **)error;
 - (BOOL)deleteRemote:(PBGitRef *)ref error:(NSError **)error;
 - (BOOL)deleteRef:(PBGitRef *)ref error:(NSError **)error;
+
+- (NSDictionary<NSString *, NSString *> *)gitConfigDictionaryForScope:(PBGitConfigScope)scope error:(NSError **)error;
+- (BOOL)setGitConfigValue:(NSString *)value forKey:(NSString *)key scope:(PBGitConfigScope)scope error:(NSError **)error;
 
 - (BOOL)stashPop:(PBGitStash *)stash error:(NSError **)error;
 - (BOOL)stashApply:(PBGitStash *)stash error:(NSError **)error;

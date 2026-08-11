@@ -690,6 +690,68 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return trackingBranchRef;
 }
 
+#pragma mark Git Configuration
+
+- (NSDictionary<NSString *, NSString *> *)gitConfigDictionaryForScope:(PBGitConfigScope)scope error:(NSError **)error
+{
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"config"];
+	if (scope == PBGitConfigScopeGlobal) {
+		[arguments addObject:@"--global"];
+	}
+	[arguments addObjectsFromArray:@[ @"--null", @"--list" ]];
+
+	NSError *taskError = nil;
+	NSString *output = [self outputOfTaskWithArguments:arguments error:&taskError];
+	if (output == nil) {
+		PBReturnError(error, NSLocalizedString(@"Reading git configuration failed", @""), taskError.localizedFailureReason ?: taskError.localizedDescription, taskError);
+		return nil;
+	}
+
+	NSMutableDictionary<NSString *, NSString *> *result = [NSMutableDictionary dictionary];
+	for (NSString *record in [output componentsSeparatedByString:@"\0"]) {
+		if (record.length == 0) continue;
+
+		NSRange newlineRange = [record rangeOfString:@"\n"];
+		if (newlineRange.location == NSNotFound) {
+			result[record] = @"";
+		} else {
+			NSString *key = [record substringToIndex:newlineRange.location];
+			NSString *value = [record substringFromIndex:(newlineRange.location + 1)];
+			result[key] = value;
+		}
+	}
+	return result;
+}
+
+- (BOOL)setGitConfigValue:(NSString *)value forKey:(NSString *)key scope:(PBGitConfigScope)scope error:(NSError **)error
+{
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"config"];
+	if (scope == PBGitConfigScopeGlobal) {
+		[arguments addObject:@"--global"];
+	}
+
+	if (value.length == 0) {
+		[arguments addObjectsFromArray:@[ @"--unset", key ]];
+	} else {
+		[arguments addObjectsFromArray:@[ key, value ]];
+	}
+
+	NSError *taskError = nil;
+	BOOL success = [self launchTaskWithArguments:arguments error:&taskError];
+	if (success) return YES;
+
+	// git config --unset exits 5 when the key was already unset; that's not a failure for us.
+	if (value.length == 0
+		&& [taskError.domain isEqualToString:PBTaskErrorDomain]
+		&& taskError.code == PBTaskNonZeroExitCodeError
+		&& [taskError.userInfo[PBTaskTerminationStatusKey] intValue] == 5) {
+		return YES;
+	}
+
+	PBReturnError(error, NSLocalizedString(@"Writing git configuration failed", @""), taskError.localizedFailureReason ?: taskError.localizedDescription, taskError);
+	return NO;
+}
+
 #pragma mark Repository commands
 
 - (BOOL)addRemote:(NSString *)remoteName withURL:(NSString *)URLString error:(NSError **)error
