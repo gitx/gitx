@@ -40,6 +40,7 @@
 - (PBSourceViewItem *)addRevSpec:(PBGitRevSpecifier *)revSpec;
 - (PBSourceViewItem *)itemForRev:(PBGitRevSpecifier *)rev;
 - (void)removeRevSpec:(PBGitRevSpecifier *)rev;
+- (void)reloadPreservingSelection;
 - (void)updateActionMenu;
 - (void)updateRemoteControls;
 @end
@@ -74,9 +75,7 @@
 					options:0
 					  block:^(MAKVONotification *notification) {
 						  PBGitSidebarController *observer = notification.observer;
-						  NSInteger row = observer.sourceView.selectedRow;
-						  [observer.sourceView reloadData];
-						  [observer.sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+						  [observer reloadPreservingSelection];
 						  [observer selectCurrentBranch];
 					  }];
 
@@ -118,9 +117,7 @@
 					options:0
 					  block:^(MAKVONotification *notification) {
 						  PBGitSidebarController *observer = notification.observer;
-						  NSInteger row = observer.sourceView.selectedRow;
-						  [observer.sourceView reloadData];
-						  [observer.sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+						  [observer reloadPreservingSelection];
 					  }];
 
 	[sourceView setTarget:self];
@@ -157,6 +154,19 @@
 	[sourceView selectRowIndexes:index byExtendingSelection:NO];
 }
 
+- (void)reloadPreservingSelection
+{
+	PBSourceViewItem *selectedItem = [sourceView itemAtRow:[sourceView selectedRow]];
+
+	[sourceView reloadData];
+
+	NSInteger row = [sourceView rowForItem:selectedItem];
+	if (row == -1)
+		return;
+
+	[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+}
+
 - (void)selectCurrentBranch
 {
 	PBGitRepository *repository = self.repository;
@@ -170,7 +180,7 @@
 	if (@available(macOS 10.12, *))
 		dispatch_assert_queue(dispatch_get_main_queue());
 
-	PBSourceViewItem *item = [self addRevSpec:rev];
+	PBSourceViewItem *item = [self itemForRev:rev];
 	if (item) {
 		[sourceView PBExpandItem:item expandParents:YES];
 		NSIndexSet *index = [NSIndexSet indexSetWithIndex:[sourceView rowForItem:item]];

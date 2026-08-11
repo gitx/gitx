@@ -255,9 +255,16 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		[oldBranches removeObject:revSpec];
 	}
 
+	BOOL prunedCurrentBranch = NO;
 	for (PBGitRevSpecifier *branch in oldBranches)
-		if ([branch isSimpleRef] && ![branch isEqual:[self headRef]])
+		if ([branch isSimpleRef] && ![branch isEqual:[self headRef]]) {
+			if ([branch isEqual:self.currentBranch])
+				prunedCurrentBranch = YES;
 			[self removeBranch:branch];
+		}
+
+	if (prunedCurrentBranch)
+		[self readCurrentBranch];
 
 
 	[self loadSubmodules];
@@ -757,6 +764,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 	dispatch_async(dispatch_get_main_queue(), ^{
 		[self reloadRefs];
+		[self readCurrentBranch];
 	});
 
 	return success;
