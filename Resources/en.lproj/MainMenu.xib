@@ -36,6 +36,11 @@
                                     <action selector="openPreferencesWindow:" target="-1" id="wRi-Ra-7Ua"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Git Preferences…" id="6C1-Gp-Prf">
+                                <connections>
+                                    <action selector="showGitPrefsWindow:" target="-1" id="6C1-Gp-Act"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Check for Updates…" id="919">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>

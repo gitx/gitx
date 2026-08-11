@@ -60,6 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)cherryPick:(id)sender;
 - (IBAction)resetSoft:(id)sender;
 
+- (IBAction)showGitPrefsWindow:(id)sender;
+
 - (IBAction)showAddRemoteSheet:(id)sender GITX_DEPRECATED;
 - (IBAction)addRemote:(id)sender;
 - (IBAction)fetchRemote:(id)sender;
