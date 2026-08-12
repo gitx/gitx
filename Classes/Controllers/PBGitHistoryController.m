@@ -1083,8 +1083,14 @@
 	BOOL isStash = [[ref ref] hasPrefix:@"refs/stash"];
 	BOOL isDeleteEnabled = !(isDetachedHead || isHead || isStash);
 	if (isDeleteEnabled) {
-		NSString *deleteFormat = ref.isRemote ? NSLocalizedString(@"Delete “%@”…", @"Contextual Menu Item to delete a local ref (e.g. branch)") : NSLocalizedString(@"Remove “%@”…", @"Contextual Menu Item to remove a remote");
-		NSString *deleteItemTitle = [NSString stringWithFormat:deleteFormat, refName];
+		NSString *deleteItemTitle = nil;
+		if (ref.isRemoteBranch) {
+			deleteItemTitle = [NSString stringWithFormat:NSLocalizedString(@"Delete “%@” on “%@”…", @"Contextual Menu Item to delete the selected branch on its remote"), ref.remoteBranchName, remoteName];
+		} else if (isRemote) {
+			deleteItemTitle = [NSString stringWithFormat:NSLocalizedString(@"Delete “%@”…", @"Contextual Menu Item to delete a remote"), refName];
+		} else {
+			deleteItemTitle = [NSString stringWithFormat:NSLocalizedString(@"Remove “%@”…", @"Contextual Menu Item to remove a local ref (e.g. branch)"), refName];
+		}
 		NSMenuItem *deleteItem = [NSMenuItem pb_itemWithTitle:deleteItemTitle action:@selector(deleteRef:) enabled:YES];
 		[items addObject:deleteItem];
 	}

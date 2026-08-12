@@ -388,6 +388,54 @@
 					}];
 }
 
+- (void)performDeleteForRemoteBranch:(PBGitRef *)ref
+{
+	if (![ref isRemoteBranch])
+		return;
+
+	NSString *branchName = [ref remoteBranchName];
+	NSString *remoteName = [ref remoteName];
+
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = [NSString stringWithFormat:NSLocalizedString(@"Delete branch “%@” from remote “%@”?", @"Delete remote branch alert - message"), branchName, remoteName];
+	alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"This deletes the branch on remote “%@” for everyone using it. GitX cannot undo this.", @"Delete remote branch alert - informative text"), remoteName];
+	[alert addButtonWithTitle:NSLocalizedString(@"Delete", @"Delete remote branch alert - confirm button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Delete remote branch alert - cancel and default button")];
+	[self makeCancelTheDefaultButtonForDestructiveAlert:alert];
+
+	// No suppression identifier: -confirmDialog:… skips the dialog entirely once an identifier has
+	// been suppressed, and a server side delete must never happen without an explicit confirmation.
+	[self confirmDialog:alert
+		suppressionIdentifier:nil
+					forAction:^{
+						NSString *description = [NSString stringWithFormat:@"Deleting branch '%@' from remote %@", branchName, remoteName];
+						PBRemoteProgressSheet *progressSheet = [PBRemoteProgressSheet progressSheetWithTitle:@"Deleting remote branch…"
+																								 description:description
+																							windowController:self];
+
+						[progressSheet
+							beginProgressSheetForBlock:^{
+								NSError *error = nil;
+								BOOL success = [self.repository deleteRemoteBranch:ref error:&error];
+								return (success ? nil : error);
+							}
+							completionHandler:^(NSError *error) {
+								if (error) {
+									[self showErrorSheet:error];
+								}
+							}];
+					}];
+}
+
+// -confirmDialog:… treats the first button as the confirming one, so the destructive button has to
+// stay first. Move the return key onto the cancel button so a stray Return does not delete.
+- (void)makeCancelTheDefaultButtonForDestructiveAlert:(NSAlert *)alert
+{
+	alert.buttons.firstObject.keyEquivalent = @"";
+	alert.buttons.firstObject.hasDestructiveAction = YES;
+	alert.buttons.lastObject.keyEquivalent = @"\r";
+}
+
 - (NSArray<NSURL *> *)selectedURLsFromSender:(id)sender
 {
 	NSArray *selectedFiles = [sender representedObject];
@@ -503,19 +551,25 @@
 
 - (IBAction)deleteRef:(id)sender
 {
-	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType, kGitXRemoteType, kGitXTagType ]];
+	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType, kGitXRemoteBranchType, kGitXRemoteType, kGitXTagType ]];
 	if (!refish || ![refish isKindOfClass:[PBGitRef class]])
 		return;
 
 	PBGitRef *ref = (PBGitRef *)refish;
+
+	if ([ref isRemoteBranch]) {
+		[self performDeleteForRemoteBranch:ref];
+		return;
+	}
 
 	NSString *ref_desc = [NSString stringWithFormat:@"%@ '%@'", [ref refishType], [ref shortName]];
 
 	NSAlert *alert = [[NSAlert alloc] init];
 	alert.messageText = [NSString stringWithFormat:@"Delete %@?", ref_desc];
 	alert.informativeText = [NSString stringWithFormat:@"Are you sure you want to remove the %@?", ref_desc];
-	[alert addButtonWithTitle:NSLocalizedString(@"Delete", @"Delete ref alert - default button")];
-	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Delete ref alert - cancel button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Delete", @"Delete ref alert - confirm button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Delete ref alert - cancel and default button")];
+	[self makeCancelTheDefaultButtonForDestructiveAlert:alert];
 
 	[self confirmDialog:alert
 		suppressionIdentifier:@"Delete Ref"
