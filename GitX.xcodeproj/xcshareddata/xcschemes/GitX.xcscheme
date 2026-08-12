@@ -28,7 +28,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BBCCDDA000000A00"
+               BlueprintIdentifier = "7C03B276503BCACA9475B148"
                BuildableName = "GitXTests.xctest"
                BlueprintName = "GitXTests"
                ReferencedContainer = "container:GitX.xcodeproj">
@@ -76,7 +76,7 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "BBCCDDA000000A00"
+               BlueprintIdentifier = "7C03B276503BCACA9475B148"
                BuildableName = "GitXTests.xctest"
                BlueprintName = "GitXTests"
                ReferencedContainer = "container:GitX.xcodeproj">
