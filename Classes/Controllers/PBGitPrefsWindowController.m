@@ -5,6 +5,8 @@
 
 #import "PBGitPrefsWindowController.h"
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import "PBGitRepository.h"
 
 typedef NS_ENUM(NSInteger, PBGitPrefsRowType) {
@@ -67,11 +69,22 @@ static NSMutableArray<PBGitPrefsWindowController *> *_openPrefsWindowControllers
 
 #pragma mark DBPrefsWindowController overrides
 
+static const NSUInteger kMaxProjectNameLength = 25;
+
 - (void)setupToolbar
 {
-	NSString *repoLabel = [NSString stringWithFormat:NSLocalizedString(@"%@ Repository", @"Git Preferences: repository-scoped pane label"), self.repository.projectName];
-	[self addView:self.repositoryPrefsView label:repoLabel image:[NSImage imageNamed:NSImageNameFolder]];
-	[self addView:self.globalPrefsView label:NSLocalizedString(@"Global (All Repositories)", @"Git Preferences: global pane label") image:[NSImage imageNamed:NSImageNameNetwork]];
+	NSString *projectName = self.repository.projectName;
+	if (projectName.length > kMaxProjectNameLength) {
+		// Expanded to whole composed characters so the cut never lands inside one.
+		NSRange range = [projectName rangeOfComposedCharacterSequencesForRange:NSMakeRange(0, kMaxProjectNameLength)];
+		projectName = [[projectName substringWithRange:range] stringByAppendingString:@"…"];
+	}
+
+	NSImage *icon = [[NSWorkspace sharedWorkspace] iconForContentType:UTTypePlainText];
+
+	NSString *repoLabel = [NSString stringWithFormat:NSLocalizedString(@"%@ Prefs.", @"Git Preferences: repository-scoped pane label"), projectName];
+	[self addView:self.repositoryPrefsView label:repoLabel image:icon];
+	[self addView:self.globalPrefsView label:NSLocalizedString(@"Global Prefs.", @"Git Preferences: global pane label") image:icon];
 }
 
 #pragma mark Row list
@@ -100,6 +113,7 @@ static NSMutableArray<PBGitPrefsWindowController *> *_openPrefsWindowControllers
 		makeRow(@"diff.tool", PBGitPrefsRowTypeString, self.localDiffToolField, self.globalDiffToolField),
 		makeRow(@"gui.diffopts", PBGitPrefsRowTypeString, self.localDiffOptsField, self.globalDiffOptsField),
 		makeRow(@"pull.rebase", PBGitPrefsRowTypeBool, self.localPullRebaseCheckbox, self.globalPullRebaseCheckbox),
+		makeRow(@"fetch.prune", PBGitPrefsRowTypeBool, self.localFetchPruneCheckbox, self.globalFetchPruneCheckbox),
 		makeRow(@"init.defaultBranch", PBGitPrefsRowTypeString, self.localDefaultBranchField, self.globalDefaultBranchField),
 		makeRow(@"commit.gpgsign", PBGitPrefsRowTypeBool, self.localGpgSignCheckbox, self.globalGpgSignCheckbox),
 		makeRow(@"user.signingkey", PBGitPrefsRowTypeString, self.localSigningKeyField, self.globalSigningKeyField),

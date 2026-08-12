@@ -780,7 +780,21 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		fetchArg = ref.remoteName;
 	}
 
-	PBTask *task = [self taskWithArguments:@[ @"fetch", fetchArg ]];
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"fetch"];
+	switch ([PBGitDefaults pruneOnFetch]) {
+		case PBPruneOnFetchAlways:
+			[arguments addObject:@"--prune"];
+			break;
+		case PBPruneOnFetchNever:
+			[arguments addObject:@"--no-prune"];
+			break;
+		case PBPruneOnFetchUseGitConfig:
+			// Leave it to git, so fetch.prune and remote.<name>.prune decide.
+			break;
+	}
+	[arguments addObject:fetchArg];
+
+	PBTask *task = [self taskWithArguments:arguments];
 	NSError *taskError = nil;
 	BOOL success = [task launchTask:&taskError];
 	if (!success) {
@@ -1098,6 +1112,33 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return YES;
 }
 
+- (BOOL)deleteRemoteBranch:(PBGitRef *)ref error:(NSError **)error
+{
+	if (!ref || ![ref isRemoteBranch]) {
+		NSString *desc = NSLocalizedString(@"Delete remote branch failed", @"PBGitRepository - delete remote branch error description");
+		NSString *reason = NSLocalizedString(@"The ref to delete is not a remote branch.", @"PBGitRepostory - delete remote branch error reason for a non remote branch ref");
+		return PBReturnError(error, desc, reason, nil);
+	}
+
+	NSString *remoteName = [ref remoteName];
+	NSString *branchName = [ref remoteBranchName];
+	PBTask *task = [self taskWithArguments:@[ @"push", remoteName, @"--delete", branchName ]];
+
+	NSError *taskError = nil;
+	BOOL success = [task launchTask:&taskError];
+	if (!success) {
+		NSString *desc = NSLocalizedString(@"Delete remote branch failed", @"PBGitRepository - delete remote branch error description");
+		NSString *reason = [NSString stringWithFormat:NSLocalizedString(@"An error occurred while deleting branch \"%@\" from remote \"%@\".", @"PBGitRepostory - delete remote branch error reason"), branchName, remoteName];
+		PBReturnError(error, desc, reason, taskError);
+	}
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self reloadRefs];
+	});
+
+	return success;
+}
+
 - (NSString *)performDiff:(PBGitCommit *)startCommit against:(PBGitCommit *)diffCommit forFiles:(NSArray *)filePaths
 {
 	NSParameterAssert(startCommit);
@@ -1133,6 +1174,9 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 {
 	if (!ref)
 		return NO;
+
+	if ([ref refishType] == kGitXRemoteBranchType)
+		return [self deleteRemoteBranch:ref error:error];
 
 	if ([ref refishType] == kGitXRemoteType)
 		return [self deleteRemote:ref error:error];

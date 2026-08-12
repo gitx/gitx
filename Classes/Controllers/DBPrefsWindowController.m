@@ -175,7 +175,6 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 	}
 
 	NSString *identifier = [self defaultViewIdentifier];
-	[[[self window] toolbar] setSelectedItemIdentifier:identifier];
 	[self displayViewForIdentifier:identifier animate:NO];
 
 	[[self window] center];
@@ -221,6 +220,12 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 
 - (void)displayViewForIdentifier:(NSString *)identifier animate:(BOOL)animate
 {
+	// Keep the toolbar's selection on the pane actually being shown. AppKit moves the selection
+	// itself when an item is clicked, but not when it is activated from the keyboard, which leaves
+	// the previously selected tab drawn as selected while a different pane is displayed. Setting it
+	// here covers every route into a pane, including the initial one from -showWindow:.
+	[[[self window] toolbar] setSelectedItemIdentifier:identifier];
+
 	// Find the view we want to display.
 	NSView *newView = [toolbarViews objectForKey:identifier];
 
@@ -247,7 +252,14 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 		frame.origin.y = NSHeight([contentSubview frame]) - NSHeight([newView bounds]);
 		[newView setFrame:frame];
 		[contentSubview addSubview:newView];
-		[[self window] setInitialFirstResponder:newView];
+
+		// A pane's container view never accepts focus itself, so pointing the window at it leaves
+		// Tab with no way into a freshly shown pane: the window stays first responder and the key
+		// view loop is never entered. Recalculate the loop now that the pane is in the hierarchy
+		// and start it at the first control that will actually take focus.
+		[[self window] recalculateKeyViewLoop];
+		NSView *firstKeyView = [newView nextValidKeyView];
+		[[self window] setInitialFirstResponder:(firstKeyView ?: newView)];
 
 		if (animate && [self crossFade])
 			[self crossFadeView:oldView withView:newView];

@@ -7,6 +7,13 @@
 //
 
 #define kDialogAcceptDroppedRef @"Accept Dropped Ref"
+
+typedef NS_ENUM(NSInteger, PBPruneOnFetchSetting) {
+	PBPruneOnFetchUseGitConfig = 0,
+	PBPruneOnFetchAlways = 1,
+	PBPruneOnFetchNever = 2,
+};
+
 @interface PBGitDefaults : NSObject {
 }
 
@@ -29,6 +36,7 @@
 + (NSInteger)historySearchMode;
 + (void)setHistorySearchMode:(NSInteger)mode;
 + (BOOL)useRepositoryWatcher;
++ (PBPruneOnFetchSetting)pruneOnFetch;
 + (NSString *)terminalHandler;
 
 

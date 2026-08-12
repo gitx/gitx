@@ -78,6 +78,7 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)createBranch:(NSString *)branchName atRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)createTag:(NSString *)tagName message:(NSString *)message atRefish:(id<PBGitRefish>)commitSHA error:(NSError **)error;
 - (BOOL)deleteRemote:(PBGitRef *)ref error:(NSError **)error;
+- (BOOL)deleteRemoteBranch:(PBGitRef *)ref error:(NSError **)error;
 - (BOOL)deleteRef:(PBGitRef *)ref error:(NSError **)error;
 
 - (NSDictionary<NSString *, NSString *> *)gitConfigDictionaryForScope:(PBGitConfigScope)scope error:(NSError **)error;
