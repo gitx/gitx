@@ -780,7 +780,21 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		fetchArg = ref.remoteName;
 	}
 
-	PBTask *task = [self taskWithArguments:@[ @"fetch", fetchArg ]];
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"fetch"];
+	switch ([PBGitDefaults pruneOnFetch]) {
+		case PBPruneOnFetchAlways:
+			[arguments addObject:@"--prune"];
+			break;
+		case PBPruneOnFetchNever:
+			[arguments addObject:@"--no-prune"];
+			break;
+		case PBPruneOnFetchUseGitConfig:
+			// Leave it to git, so fetch.prune and remote.<name>.prune decide.
+			break;
+	}
+	[arguments addObject:fetchArg];
+
+	PBTask *task = [self taskWithArguments:arguments];
 	NSError *taskError = nil;
 	BOOL success = [task launchTask:&taskError];
 	if (!success) {

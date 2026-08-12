@@ -42,6 +42,8 @@
 @property (readwrite, weak) IBOutlet NSTextField *globalDiffOptsField;
 @property (readwrite, weak) IBOutlet NSButton *localPullRebaseCheckbox;
 @property (readwrite, weak) IBOutlet NSButton *globalPullRebaseCheckbox;
+@property (readwrite, weak) IBOutlet NSButton *localFetchPruneCheckbox;
+@property (readwrite, weak) IBOutlet NSButton *globalFetchPruneCheckbox;
 @property (readwrite, weak) IBOutlet NSTextField *localDefaultBranchField;
 @property (readwrite, weak) IBOutlet NSTextField *globalDefaultBranchField;
 @property (readwrite, weak) IBOutlet NSButton *localGpgSignCheckbox;
