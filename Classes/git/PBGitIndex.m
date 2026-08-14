@@ -35,7 +35,11 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 @interface PBGitIndex (IndexRefreshMethods)
 
 - (NSMutableDictionary *)dictionaryForLines:(NSArray *)lines;
-- (void)addFilesFromDictionary:(NSMutableDictionary *)dictionary staged:(BOOL)staged tracked:(BOOL)tracked;
+- (void)reconcileIndexChanges;
++ (void)reconcileFiles:(NSMutableArray<PBChangedFile *> *)files
+				staged:(NSDictionary *)staged
+			  unstaged:(NSDictionary *)unstaged
+			 untracked:(NSDictionary *)untracked;
 
 - (NSArray *)linesFromData:(NSData *)data;
 
@@ -46,6 +50,9 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	dispatch_group_t _indexRefreshGroup;
 	BOOL _amend;
 	BOOL _refreshInProgress;
+	NSDictionary *_stagedChanges;
+	NSDictionary *_unstagedChanges;
+	NSDictionary *_untrackedChanges;
 }
 
 @property (retain) NSDictionary *amendEnvironment;
@@ -138,8 +145,6 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 															  userInfo:@{@"description" : message}];
 		}
 	});
-
-	[self postIndexUpdated];
 }
 
 - (void)postIndexUpdated
@@ -166,6 +171,10 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 		return;
 	}
 
+	_stagedChanges = nil;
+	_unstagedChanges = nil;
+	_untrackedChanges = nil;
+
 	// Enter the group for ALL tasks upfront, before launching any of them.
 	// This prevents dispatch_group_notify from firing prematurely if an
 	// early task completes before later tasks have called group_enter.
@@ -179,22 +188,14 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	// Register the notify block AFTER all group_enter calls.
 	// This block runs once all tasks have called group_leave.
 	dispatch_group_notify(_indexRefreshGroup, dispatch_get_main_queue(), ^{
-		// At this point, all index operations have finished.
-		// We need to find all files that don't have either
-		// staged or unstaged files, and delete them
+		// At this point all three git commands have finished, so the whole
+		// picture is available and the file list can be derived from it
 
-		NSMutableArray *deleteFiles = [NSMutableArray array];
-		for (PBChangedFile *file in self.files) {
-			if (!file.hasStagedChanges && !file.hasUnstagedChanges)
-				[deleteFiles addObject:file];
-		}
+		[self reconcileIndexChanges];
 
-		if ([deleteFiles count]) {
-			[self willChangeValueForKey:@"indexChanges"];
-			for (PBChangedFile *file in deleteFiles)
-				[self.files removeObject:file];
-			[self didChangeValueForKey:@"indexChanges"];
-		}
+		// Only now does the file list describe what git just reported, so
+		// this is the earliest an observer can be told the index changed
+		[self postIndexUpdated];
 
 		dispatch_async(self->_indexRefreshQueue, ^{
 			self->_refreshInProgress = NO;
@@ -212,7 +213,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 				arguments:@[ @"ls-files", @"--others", @"--exclude-standard", @"-z" ]
 			  inDirectory:self.repository.workingDirectoryURL.path
 		completionHandler:^(NSData *readData, NSError *error) {
-			// Serialize access to self.files via _indexRefreshQueue
+			// Serialize access to the collected output via _indexRefreshQueue
 			dispatch_sync(self->_indexRefreshQueue, ^{
 				if (error) {
 					[self postIndexRefreshSuccess:NO message:@"ls-files failed"];
@@ -228,7 +229,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 						[dictionary setObject:fileStatus forKey:path];
 					}
 
-					[self addFilesFromDictionary:dictionary staged:NO tracked:NO];
+					self->_untrackedChanges = dictionary;
 					[self postIndexRefreshSuccess:YES message:@"ls-files success"];
 				}
 			});
@@ -241,14 +242,13 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 				arguments:@[ @"diff-index", @"--cached", @"-z", [self parentTree] ]
 			  inDirectory:self.repository.workingDirectoryURL.path
 		completionHandler:^(NSData *readData, NSError *error) {
-			// Serialize access to self.files via _indexRefreshQueue
+			// Serialize access to the collected output via _indexRefreshQueue
 			dispatch_sync(self->_indexRefreshQueue, ^{
 				if (error) {
 					[self postIndexRefreshSuccess:NO message:@"diff-index failed"];
 				} else {
 					NSArray *lines = [self linesFromData:readData];
-					NSMutableDictionary *dic = [self dictionaryForLines:lines];
-					[self addFilesFromDictionary:dic staged:YES tracked:YES];
+					self->_stagedChanges = [self dictionaryForLines:lines];
 					[self postIndexRefreshSuccess:YES message:@"diff-index success"];
 				}
 			});
@@ -261,14 +261,13 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 				arguments:@[ @"diff-files", @"-z" ]
 			  inDirectory:self.repository.workingDirectoryURL.path
 		completionHandler:^(NSData *readData, NSError *error) {
-			// Serialize access to self.files via _indexRefreshQueue
+			// Serialize access to the collected output via _indexRefreshQueue
 			dispatch_sync(self->_indexRefreshQueue, ^{
 				if (error) {
 					[self postIndexRefreshSuccess:NO message:@"diff-files failed"];
 				} else {
 					NSArray *lines = [self linesFromData:readData];
-					NSMutableDictionary *dic = [self dictionaryForLines:lines];
-					[self addFilesFromDictionary:dic staged:NO tracked:YES];
+					self->_unstagedChanges = [self dictionaryForLines:lines];
 					[self postIndexRefreshSuccess:YES message:@"diff-files success"];
 				}
 			});
@@ -694,83 +693,112 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 
 @implementation PBGitIndex (IndexRefreshMethods)
 
-- (void)addFilesFromDictionary:(NSMutableDictionary *)dictionary staged:(BOOL)staged tracked:(BOOL)tracked
+- (void)reconcileIndexChanges
 {
-	// Iterate over all existing files
-	for (PBChangedFile *file in self.files) {
-		NSArray *fileStatus = [dictionary objectForKey:file.path];
-		// Object found, this is still a cached / uncached thing
-		if (fileStatus) {
-			if (tracked) {
-				NSString *mode = [[fileStatus objectAtIndex:0] substringFromIndex:1];
-				NSString *sha = [fileStatus objectAtIndex:2];
-				file.commitBlobSHA = sha;
-				file.commitBlobMode = mode;
-
-				if (staged)
-					file.hasStagedChanges = YES;
-				else
-					file.hasUnstagedChanges = YES;
-				if ([[fileStatus objectAtIndex:4] isEqualToString:@"D"])
-					file.status = DELETED;
-			} else {
-				// Untracked file, set status to NEW, only unstaged changes
-				file.hasStagedChanges = NO;
-				file.hasUnstagedChanges = YES;
-				file.status = NEW;
-			}
-
-			// We handled this file, remove it from the dictionary
-			[dictionary removeObjectForKey:file.path];
-		} else {
-			// Object not found in the dictionary, so let's reset its appropriate
-			// change (stage or untracked) if necessary.
-
-			// Staged dictionary, so file does not have staged changes
-			if (staged)
-				file.hasStagedChanges = NO;
-			// Tracked file does not have unstaged changes, file is not new,
-			// so we can set it to No. (If it would be new, it would not
-			// be in this dictionary, but in the "other dictionary").
-			else if (tracked && file.status != NEW)
-				file.hasUnstagedChanges = NO;
-			// Unstaged, untracked dictionary ("Other" files), and file
-			// is indicated as new (which would be untracked), so let's
-			// remove it
-			else if (!tracked && file.status == NEW && file.commitBlobSHA == nil)
-				file.hasUnstagedChanges = NO;
-		}
-	}
-
-	// Do new files only if necessary
-	if (![[dictionary allKeys] count])
+	// A command that failed left its dictionary nil, which is not the same as
+	// "nothing changed". Keep the previous state and let the next refresh
+	// settle it, rather than reading a failure as an empty working tree
+	if (!_stagedChanges || !_unstagedChanges || !_untrackedChanges)
 		return;
 
-	// All entries left in the dictionary haven't been accounted for
-	// above, so we need to add them to the "files" array
-	[self willChangeValueForKey:@"indexChanges"];
-	for (NSString *path in [dictionary allKeys]) {
-		NSArray *fileStatus = [dictionary objectForKey:path];
+	// The staged and unstaged tables bind to indexChanges, so only announce a
+	// change when the listed paths actually differ. Individual properties of a
+	// file are observed on the file itself
+	NSMutableSet *paths = [NSMutableSet setWithArray:[_stagedChanges allKeys]];
+	[paths addObjectsFromArray:[_unstagedChanges allKeys]];
+	[paths addObjectsFromArray:[_untrackedChanges allKeys]];
+	BOOL membershipChanged = ![paths isEqual:[NSSet setWithArray:[self.files valueForKey:@"path"]]];
 
-		PBChangedFile *file = [[PBChangedFile alloc] initWithPath:path];
-		if ([[fileStatus objectAtIndex:4] isEqualToString:@"D"])
-			file.status = DELETED;
-		else if ([[fileStatus objectAtIndex:0] isEqualToString:@":000000"])
-			file.status = NEW;
+	if (membershipChanged)
+		[self willChangeValueForKey:@"indexChanges"];
+
+	[[self class] reconcileFiles:self.files
+						  staged:_stagedChanges
+						unstaged:_unstagedChanges
+					   untracked:_untrackedChanges];
+
+	if (membershipChanged)
+		[self didChangeValueForKey:@"indexChanges"];
+
+	_stagedChanges = nil;
+	_unstagedChanges = nil;
+	_untrackedChanges = nil;
+}
+
++ (PBChangedFileStatus)statusForFileStatus:(NSArray *)fileStatus
+{
+	if ([[fileStatus objectAtIndex:4] isEqualToString:@"D"])
+		return DELETED;
+
+	if ([[fileStatus objectAtIndex:0] isEqualToString:@":000000"])
+		return NEW;
+
+	return MODIFIED;
+}
+
+// Derives the whole file list from the three git outputs of a single refresh.
+// Every property is assigned from the data rather than inferred from a file's
+// absence in one dictionary, so no entry can outlive the state it came from and
+// the result does not depend on the order the three commands finished in.
++ (void)reconcileFiles:(NSMutableArray<PBChangedFile *> *)files
+				staged:(NSDictionary *)staged
+			  unstaged:(NSDictionary *)unstaged
+			 untracked:(NSDictionary *)untracked
+{
+	NSMutableSet *paths = [NSMutableSet setWithArray:[staged allKeys]];
+	[paths addObjectsFromArray:[unstaged allKeys]];
+	[paths addObjectsFromArray:[untracked allKeys]];
+
+	NSMutableDictionary<NSString *, PBChangedFile *> *knownFiles = [NSMutableDictionary dictionaryWithCapacity:[files count]];
+	NSMutableArray *obsoleteFiles = [NSMutableArray array];
+	for (PBChangedFile *file in files) {
+		if ([paths containsObject:file.path])
+			[knownFiles setObject:file forKey:file.path];
 		else
-			file.status = MODIFIED;
+			[obsoleteFiles addObject:file];
+	}
 
-		if (tracked) {
+	[files removeObjectsInArray:obsoleteFiles];
+
+	for (NSString *path in paths) {
+		NSArray *stagedStatus = [staged objectForKey:path];
+		NSArray *unstagedStatus = [unstaged objectForKey:path];
+		BOOL isUntracked = [untracked objectForKey:path] != nil;
+
+		// Reuse the existing entry so that table selection survives a refresh
+		PBChangedFile *file = [knownFiles objectForKey:path];
+		if (!file) {
+			file = [[PBChangedFile alloc] initWithPath:path];
+			[files addObject:file];
+		}
+
+		file.hasStagedChanges = stagedStatus != nil;
+		file.hasUnstagedChanges = unstagedStatus != nil || isUntracked;
+
+		if (isUntracked) {
+			file.status = NEW;
+			file.commitBlobMode = nil;
+			file.commitBlobSHA = nil;
+			continue;
+		}
+
+		// The staged entry compares the index against HEAD, so it carries the
+		// blob that unstaging has to restore
+		NSArray *fileStatus = stagedStatus ? stagedStatus : unstagedStatus;
+
+		file.status = [self statusForFileStatus:fileStatus];
+
+		// A source mode of :000000 means the path is absent from the tree we
+		// compared against, so there is no blob to record. Leaving the all-zero
+		// SHA git reports here would read as a real blob everywhere else
+		if ([[fileStatus objectAtIndex:0] isEqualToString:@":000000"]) {
+			file.commitBlobMode = nil;
+			file.commitBlobSHA = nil;
+		} else {
 			file.commitBlobMode = [[fileStatus objectAtIndex:0] substringFromIndex:1];
 			file.commitBlobSHA = [fileStatus objectAtIndex:2];
 		}
-
-		file.hasStagedChanges = staged;
-		file.hasUnstagedChanges = !staged;
-
-		[self.files addObject:file];
 	}
-	[self didChangeValueForKey:@"indexChanges"];
 }
 
 #pragma mark Utility methods
