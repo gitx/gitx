@@ -589,6 +589,11 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 
 	[self postIndexUpdated];
 
+	// The flags above are what git was asked for, not what it recorded. Read
+	// the index back so that a path which has since moved or vanished cannot
+	// leave the view claiming something git disagrees with
+	[self refresh];
+
 	return YES;
 }
 
