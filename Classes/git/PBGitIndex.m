@@ -50,6 +50,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	dispatch_group_t _indexRefreshGroup;
 	BOOL _amend;
 	BOOL _refreshInProgress;
+	BOOL _refreshPending;
 	NSDictionary *_stagedChanges;
 	NSDictionary *_unstagedChanges;
 	NSDictionary *_untrackedChanges;
@@ -157,14 +158,18 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 - (void)refresh
 {
 	//
-	// Guard against concurrent refresh calls — skip if one is already running
+	// Guard against concurrent refresh calls — remember the request and re-run
+	// once the in-flight refresh finishes, so that the last event of a burst is
+	// never the one that gets dropped
 	__block BOOL shouldSkip = NO;
 	dispatch_sync(_indexRefreshQueue, ^{
 		if (self->_refreshInProgress) {
+			self->_refreshPending = YES;
 			shouldSkip = YES;
 			return;
 		}
 		self->_refreshInProgress = YES;
+		self->_refreshPending = NO;
 	});
 
 	if (shouldSkip) {
@@ -197,11 +202,17 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 		// this is the earliest an observer can be told the index changed
 		[self postIndexUpdated];
 
-		dispatch_async(self->_indexRefreshQueue, ^{
+		__block BOOL refreshAgain = NO;
+		dispatch_sync(self->_indexRefreshQueue, ^{
 			self->_refreshInProgress = NO;
+			refreshAgain = self->_refreshPending;
+			self->_refreshPending = NO;
 		});
 
 		[self postIndexRefreshFinished];
+
+		if (refreshAgain)
+			[self refresh];
 	});
 
 	if (isBare) {
