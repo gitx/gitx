@@ -96,6 +96,8 @@
 		return ![self.repository isBareRepository];
 	} else if (menuItem.action == @selector(fetchRemote:)) {
 		return [self validateMenuItem:menuItem remoteTitle:@"Fetch “%@”" plainTitle:@"Fetch"];
+	} else if (menuItem.action == @selector(fetchRemoteAndPrune:)) {
+		return [self validateMenuItem:menuItem remoteTitle:@"Fetch “%@” and Prune" plainTitle:@"Fetch and Prune"];
 	} else if (menuItem.action == @selector(pullRemote:)) {
 		return [self validateMenuItem:menuItem remoteTitle:@"Pull From “%@”" plainTitle:@"Pull"];
 	} else if (menuItem.action == @selector(pullRebaseRemote:)) {
@@ -282,6 +284,11 @@
 
 - (void)performFetchForRef:(PBGitRef *)ref
 {
+	[self performFetchForRef:ref forcePrune:NO];
+}
+
+- (void)performFetchForRef:(PBGitRef *)ref forcePrune:(BOOL)forcePrune
+{
 	NSString *desc = nil;
 	if (ref == nil) {
 		desc = [NSString stringWithFormat:@"Fetching all remotes"];
@@ -289,6 +296,9 @@
 		desc = [NSString stringWithFormat:@"Fetching branches from remote %@", ref.remoteName];
 	} else {
 		desc = [NSString stringWithFormat:@"Fetching tracking branch for %@", ref.shortName];
+	}
+	if (forcePrune) {
+		desc = [desc stringByAppendingString:@", pruning deleted branches"];
 	}
 
 	PBRemoteProgressSheet *progressSheet = [PBRemoteProgressSheet progressSheetWithTitle:@"Fetching remote…"
@@ -298,7 +308,7 @@
 	[progressSheet
 		beginProgressSheetForBlock:^{
 			NSError *error = nil;
-			BOOL success = [self.repository fetchRemoteForRef:ref error:&error];
+			BOOL success = [self.repository fetchRemoteForRef:ref forcePrune:forcePrune error:&error];
 			return (success ? nil : error);
 		}
 		completionHandler:^(NSError *error) {
@@ -592,9 +602,23 @@
 	[self performFetchForRef:refish];
 }
 
+- (IBAction)fetchRemoteAndPrune:(id)sender
+{
+	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType, kGitXRemoteBranchType, kGitXRemoteType ]];
+	if (!refish || ![refish isKindOfClass:[PBGitRef class]])
+		return;
+
+	[self performFetchForRef:refish forcePrune:YES];
+}
+
 - (IBAction)fetchAllRemotes:(id)sender
 {
 	[self performFetchForRef:nil];
+}
+
+- (IBAction)fetchAllRemotesAndPrune:(id)sender
+{
+	[self performFetchForRef:nil forcePrune:YES];
 }
 
 - (IBAction)pullRemote:(id)sender

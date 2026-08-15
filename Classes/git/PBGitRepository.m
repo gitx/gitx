@@ -767,7 +767,35 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return [task launchTask:error];
 }
 
++ (NSArray<NSString *> *)fetchArgumentsForTarget:(NSString *)fetchArg forcePrune:(BOOL)forcePrune
+{
+	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"fetch"];
+	if (forcePrune) {
+		[arguments addObject:@"--prune"];
+	} else {
+		switch ([PBGitDefaults pruneOnFetch]) {
+			case PBPruneOnFetchAlways:
+				[arguments addObject:@"--prune"];
+				break;
+			case PBPruneOnFetchNever:
+				[arguments addObject:@"--no-prune"];
+				break;
+			case PBPruneOnFetchUseGitConfig:
+				// Leave it to git, so fetch.prune and remote.<name>.prune decide.
+				break;
+		}
+	}
+	[arguments addObject:fetchArg];
+
+	return arguments;
+}
+
 - (BOOL)fetchRemoteForRef:(PBGitRef *)ref error:(NSError **)error
+{
+	return [self fetchRemoteForRef:ref forcePrune:NO error:error];
+}
+
+- (BOOL)fetchRemoteForRef:(PBGitRef *)ref forcePrune:(BOOL)forcePrune error:(NSError **)error
 {
 	NSString *fetchArg = nil;
 	if (ref == nil) {
@@ -780,19 +808,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		fetchArg = ref.remoteName;
 	}
 
-	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"fetch"];
-	switch ([PBGitDefaults pruneOnFetch]) {
-		case PBPruneOnFetchAlways:
-			[arguments addObject:@"--prune"];
-			break;
-		case PBPruneOnFetchNever:
-			[arguments addObject:@"--no-prune"];
-			break;
-		case PBPruneOnFetchUseGitConfig:
-			// Leave it to git, so fetch.prune and remote.<name>.prune decide.
-			break;
-	}
-	[arguments addObject:fetchArg];
+	NSArray *arguments = [[self class] fetchArgumentsForTarget:fetchArg forcePrune:forcePrune];
 
 	PBTask *task = [self taskWithArguments:arguments];
 	NSError *taskError = nil;
