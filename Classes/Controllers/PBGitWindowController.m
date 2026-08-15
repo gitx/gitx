@@ -585,7 +585,7 @@
 
 - (IBAction)fetchRemote:(id)sender
 {
-	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType, kGitXRemoteType ]];
+	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType, kGitXRemoteBranchType, kGitXRemoteType ]];
 	if (!refish || ![refish isKindOfClass:[PBGitRef class]])
 		return;
 
