@@ -299,6 +299,13 @@ jobs:
           cat gitx.rb.new
           cp gitx.rb.new gitx.rb
           rm gitx.rb.new
+      - name: Fetch Homebrew PR template
+        if: ${{ env.PRE_RELEASE == 'false' }}
+        run: |
+          TEMPLATE=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/homebrew-cask/main/.github/PULL_REQUEST_TEMPLATE.md)
+          echo "BREW_PR_TEMPLATE<<EOF" >> $GITHUB_ENV
+          echo "$TEMPLATE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       - name: Create Pull Request in brew https://github.com/Homebrew/homebrew-cask
         uses: peter-evans/create-pull-request@v8
         if: ${{ env.PRE_RELEASE == 'false' }}
@@ -309,27 +316,7 @@ jobs:
           body: |
             Bump gitx to ${{ steps.tagger.outputs.tag }}
 
-            <!-- Do not tick a checkbox if you haven't performed its action. Honesty is indispensable for a smooth review process. -->
-            <!-- Use [x] to mark item done before creation, or just click the checkboxes with device pointer after creation -->
-            <!-- In the following questions `<cask>` is the token of the cask you're editing. -->
-
-            After making any changes to a cask, existing or new, verify:
-
-            - [x] The submission is for [a stable version](https://docs.brew.sh/Acceptable-Casks#stable-versions) or [documented exception](https://docs.brew.sh/Acceptable-Casks#but-there-is-no-stable-version).
-            - [ ] `brew audit --cask --online <cask>` is error-free.
-            - [ ] `brew style --fix <cask>` reports no offenses.
-
-            Additionally, if adding a new cask:
-
-            - [ ] Named the cask according to the [token reference](https://docs.brew.sh/Cask-Cookbook#token-reference).
-            - [ ] Checked the cask was not [already refused](https://github.com/search?q=repo%3AHomebrew%2Fhomebrew-cask+is%3Aclosed+is%3Aunmerged+&type=pullrequests) (add your cask's name to the end of the search field).
-            - [ ] `brew audit --cask --new <cask>` worked successfully.
-            - [ ] `HOMEBREW_NO_INSTALL_FROM_API=1 brew install --cask <cask>` worked successfully.
-            - [ ] `brew uninstall --cask <cask>` worked successfully.
-
-            -----
-
-            - [x] I did not use AI/LLM to create this PR, or I disclosed the tool/model below and reviewed its output, including [`zap` stanza](https://docs.brew.sh/Cask-Cookbook#stanza-zap) paths; I did not attribute commits to AI and will answer maintainer questions and review comments myself without AI/LLM.
+            ${{ env.BREW_PR_TEMPLATE }}
           token: ${{ secrets.PERSONALACCESSTOKEN }}
           push-to-fork: hannesa2/homebrew-cask
           branch: bump-gitx-${{ steps.tagger.outputs.tag }}
