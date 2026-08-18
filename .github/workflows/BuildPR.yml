@@ -303,6 +303,7 @@ jobs:
         if: ${{ env.PRE_RELEASE == 'false' }}
         run: |
           TEMPLATE=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/homebrew-cask/main/.github/PULL_REQUEST_TEMPLATE.md)
+          TEMPLATE=$(echo "$TEMPLATE" | tac | sed '0,/- \[ \]/s/- \[ \]/- [x]/' | tac)
           echo "BREW_PR_TEMPLATE<<EOF" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
