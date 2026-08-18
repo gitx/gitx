@@ -65,7 +65,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)showAddRemoteSheet:(id)sender GITX_DEPRECATED;
 - (IBAction)addRemote:(id)sender;
 - (IBAction)fetchRemote:(id)sender;
+- (IBAction)fetchRemoteAndPrune:(id)sender;
 - (IBAction)fetchAllRemotes:(id)sender;
+- (IBAction)fetchAllRemotesAndPrune:(id)sender;
 
 - (IBAction)pullRemote:(id)sender;
 - (IBAction)pullRebaseRemote:(id)sender;
@@ -89,6 +91,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode;
 
 - (void)performFetchForRef:(nullable PBGitRef *)ref;
+- (void)performFetchForRef:(nullable PBGitRef *)ref forcePrune:(BOOL)forcePrune;
 - (void)performPullForBranch:(PBGitRef *)branchRef remote:(nullable PBGitRef *)remoteRef rebase:(BOOL)rebase;
 - (void)performPushForBranch:(nullable PBGitRef *)branchRef toRemote:(nullable PBGitRef *)remoteRef;
 

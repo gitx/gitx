@@ -402,10 +402,22 @@
                                     <action selector="fetchRemote:" target="-1" id="zxl-J9-UiW"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Fetch and Prune" id="Pr1-Fe-tch">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="fetchRemoteAndPrune:" target="-1" id="Pr2-Fe-tch"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Fetch All" id="OAK-L4-wE7">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="fetchAllRemotes:" target="-1" id="gQf-4H-0cg"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Fetch All and Prune" id="Pr3-Fe-tch">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="fetchAllRemotesAndPrune:" target="-1" id="Pr4-Fe-tch"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="CDX-1D-7tK"/>

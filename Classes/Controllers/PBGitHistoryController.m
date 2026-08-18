@@ -1041,6 +1041,10 @@
 	NSString *fetchTitle = hasRemote ? [NSString stringWithFormat:NSLocalizedString(@"Fetch “%@”", @"Contextual Menu Item to fetch the selected remote"), remoteName] : NSLocalizedString(@"Fetch", @"Inactive Contextual Menu Item for fetching");
 	[items addObject:[NSMenuItem pb_itemWithTitle:fetchTitle action:@selector(fetchRemote:) enabled:hasRemote]];
 
+	// fetch and prune
+	NSString *fetchPruneTitle = hasRemote ? [NSString stringWithFormat:NSLocalizedString(@"Fetch “%@” and Prune", @"Contextual Menu Item to fetch the selected remote and prune deleted remote branches"), remoteName] : NSLocalizedString(@"Fetch and Prune", @"Inactive Contextual Menu Item for fetching with prune");
+	[items addObject:[NSMenuItem pb_itemWithTitle:fetchPruneTitle action:@selector(fetchRemoteAndPrune:) enabled:hasRemote]];
+
 	// pull
 	NSString *pullTitle = hasRemote ? [NSString stringWithFormat:NSLocalizedString(@"Pull “%@” and Update “%@”", @"Contextual Menu Item to pull the remote and update the selected branch"), remoteName, headRefName] : NSLocalizedString(@"Pull", @"Inactive Contextual Menu Item for pulling");
 	[items addObject:[NSMenuItem pb_itemWithTitle:pullTitle action:@selector(pullRemote:) enabled:hasRemote]];

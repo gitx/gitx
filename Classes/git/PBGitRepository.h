@@ -66,6 +66,7 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 
 - (BOOL)addRemote:(NSString *)remoteName withURL:(NSString *)URLString error:(NSError **)error;
 - (BOOL)fetchRemoteForRef:(PBGitRef *)ref error:(NSError **)error;
+- (BOOL)fetchRemoteForRef:(PBGitRef *)ref forcePrune:(BOOL)forcePrune error:(NSError **)error;
 - (BOOL)pullBranch:(PBGitRef *)branchRef fromRemote:(PBGitRef *)remoteRef rebase:(BOOL)rebase error:(NSError **)error;
 - (BOOL)pushBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef error:(NSError **)error;
 
