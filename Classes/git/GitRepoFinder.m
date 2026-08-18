@@ -43,8 +43,8 @@
 
 	NSData *repoPathBuffer = nil;
 	if (path_buffer.ptr) {
-		repoPathBuffer = [NSData dataWithBytes:path_buffer.ptr length:path_buffer.asize];
-		git_buf_free(&path_buffer);
+		repoPathBuffer = [NSData dataWithBytes:path_buffer.ptr length:path_buffer.size];
+		git_buf_dispose(&path_buffer);
 	}
 
 	if (gitResult == GIT_OK && repoPathBuffer.length) {
