@@ -303,7 +303,7 @@ jobs:
         if: ${{ env.PRE_RELEASE == 'false' }}
         run: |
           TEMPLATE=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/homebrew-cask/main/.github/PULL_REQUEST_TEMPLATE.md)
-          TEMPLATE=$(echo "$TEMPLATE" | tac | sed '0,/- \[ \]/s/- \[ \]/- [x]/' | tac)
+          TEMPLATE=$(echo "$TEMPLATE" | awk 'BEGIN{found=0} /- \[ \]/{if(!found){lines[NR]=$0; found=NR; next}} {lines[NR]=$0} END{for(i=1;i<=NR;i++){if(i==found){sub(/- \[ \]/,"- [x]",lines[i])}; print lines[i]}}')
           echo "BREW_PR_TEMPLATE<<EOF" >> $GITHUB_ENV
           echo "$TEMPLATE" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
