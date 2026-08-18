@@ -299,6 +299,13 @@ jobs:
           cat gitx.rb.new
           cp gitx.rb.new gitx.rb
           rm gitx.rb.new
+      - name: Fetch Homebrew PR template
+        if: ${{ env.PRE_RELEASE == 'false' }}
+        run: |
+          TEMPLATE=$(curl -fsSL https://raw.githubusercontent.com/Homebrew/homebrew-cask/main/.github/PULL_REQUEST_TEMPLATE.md)
+          echo "BREW_PR_TEMPLATE<<EOF" >> $GITHUB_ENV
+          echo "$TEMPLATE" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
       - name: Create Pull Request in brew https://github.com/Homebrew/homebrew-cask
         uses: peter-evans/create-pull-request@v8
         if: ${{ env.PRE_RELEASE == 'false' }}
@@ -306,7 +313,10 @@ jobs:
           path: ${{ github.workspace }}/brew
           commit-message: Bump gitx ${{ steps.tagger.outputs.tag }}
           title: Bump gitx ${{ steps.tagger.outputs.tag }}
-          body: Bump gitx to ${{ steps.tagger.outputs.tag }}
+          body: |
+            Bump gitx to ${{ steps.tagger.outputs.tag }}
+
+            ${{ env.BREW_PR_TEMPLATE }}
           token: ${{ secrets.PERSONALACCESSTOKEN }}
           push-to-fork: hannesa2/homebrew-cask
           branch: bump-gitx-${{ steps.tagger.outputs.tag }}
