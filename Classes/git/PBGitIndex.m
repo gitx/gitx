@@ -155,26 +155,43 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	});
 }
 
-- (void)refresh
+// Guard against concurrent refresh calls — remember the request and re-run it
+// once the in-flight refresh finishes, so that the last event of a burst is
+// never the one that gets dropped
+- (BOOL)beginRefreshOrDeferIt
 {
-	//
-	// Guard against concurrent refresh calls — remember the request and re-run
-	// once the in-flight refresh finishes, so that the last event of a burst is
-	// never the one that gets dropped
-	__block BOOL shouldSkip = NO;
+	__block BOOL mayRefresh = NO;
 	dispatch_sync(_indexRefreshQueue, ^{
 		if (self->_refreshInProgress) {
 			self->_refreshPending = YES;
-			shouldSkip = YES;
 			return;
 		}
 		self->_refreshInProgress = YES;
 		self->_refreshPending = NO;
+		mayRefresh = YES;
 	});
 
-	if (shouldSkip) {
+	return mayRefresh;
+}
+
+// Read and clear the deferred request together with the in-progress flag, so a
+// request arriving as the refresh ends cannot be lost between the two
+- (BOOL)endRefreshTakingDeferred
+{
+	__block BOOL refreshAgain = NO;
+	dispatch_sync(_indexRefreshQueue, ^{
+		self->_refreshInProgress = NO;
+		refreshAgain = self->_refreshPending;
+		self->_refreshPending = NO;
+	});
+
+	return refreshAgain;
+}
+
+- (void)refresh
+{
+	if (![self beginRefreshOrDeferIt])
 		return;
-	}
 
 	_stagedChanges = nil;
 	_unstagedChanges = nil;
@@ -202,12 +219,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 		// this is the earliest an observer can be told the index changed
 		[self postIndexUpdated];
 
-		__block BOOL refreshAgain = NO;
-		dispatch_sync(self->_indexRefreshQueue, ^{
-			self->_refreshInProgress = NO;
-			refreshAgain = self->_refreshPending;
-			self->_refreshPending = NO;
-		});
+		BOOL refreshAgain = [self endRefreshTakingDeferred];
 
 		[self postIndexRefreshFinished];
 
