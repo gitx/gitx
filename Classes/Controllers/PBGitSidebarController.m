@@ -191,6 +191,25 @@
 	}
 }
 
+// Moving the outline selection is the only way to change which branch is
+// focused: writing to currentBranch from outside is undone by the
+// reloadPreservingSelection that the change itself triggers.
+- (void)selectBranchForRef:(PBGitRef *)ref
+{
+	PBSourceViewItem *item = [self itemForRev:[[PBGitRevSpecifier alloc] initWithRef:ref]];
+	if (!item)
+		return;
+
+	[sourceView PBExpandItem:item expandParents:YES];
+
+	NSInteger row = [sourceView rowForItem:item];
+	if (row == -1)
+		return;
+
+	[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+	[self.windowController.historyViewController selectCurrentBranchTip];
+}
+
 - (PBSourceViewItem *)itemForRev:(PBGitRevSpecifier *)rev
 {
 	PBSourceViewItem *foundItem = nil;

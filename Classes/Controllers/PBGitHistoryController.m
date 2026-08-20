@@ -27,6 +27,7 @@
 #import "PBGitRevisionRow.h"
 #import "PBGitRevisionCell.h"
 #import "PBGitStash.h"
+#import "PBGitSidebarController.h"
 
 #define kHistorySelectedDetailIndexKey @"PBHistorySelectedDetailIndex"
 #define kHistoryDetailViewIndex 0
@@ -187,6 +188,7 @@
 	[commitList registerForDraggedTypes:[NSArray arrayWithObject:@"PBGitRef"]];
 
 	commitList.target = self;
+	commitList.action = @selector(didClickCommitList:);
 	commitList.doubleAction = @selector(didDoubleClickCommitList:);
 
 	[upperToolbarView setTopShade:237/255.0f bottomShade:216/255.0f];
@@ -822,26 +824,46 @@
 	return YES;
 }
 
-- (void)didDoubleClickCommitList:(id)sender
+// The ref label under the last mouse-down in the history list, or nil when the
+// click landed anywhere else on the row
+- (PBGitRef *)clickedRefInCommitList
 {
 	NSPoint location = [commitList mouseDownPoint];
 	NSInteger row = [commitList rowAtPoint:location];
 	NSInteger column = [commitList columnAtPoint:location];
 
+	if (row == -1 || column == -1)
+		return nil;
+
 	PBGitRevisionCell *cell = (PBGitRevisionCell *)[commitList viewAtColumn:column row:row makeIfNecessary:NO];
+	if (![cell respondsToSelector:@selector(indexAtX:)])
+		return nil;
+
+	NSRect cellFrame = [commitList frameOfCellAtColumn:column row:row];
+	int index = [cell indexAtX:(location.x - cellFrame.origin.x)];
+	if (index == -1)
+		return nil;
+
 	PBGitCommit *commit = [[commitController arrangedObjects] objectAtIndex:row];
 
-	int index = -1;
-	if ([cell respondsToSelector:@selector(indexAtX:)]) {
-		NSRect cellFrame = [commitList frameOfCellAtColumn:column row:row];
-		CGFloat deltaX = location.x - cellFrame.origin.x;
-		index = [cell indexAtX:deltaX];
-	}
+	return [[commit refs] objectAtIndex:index];
+}
 
-	if (index == -1)
+// Clicking a branch label is a statement about which branch you are looking at,
+// so let the sidebar follow it. Clicking anywhere else on the row leaves the
+// sidebar alone.
+- (void)didClickCommitList:(id)sender
+{
+	PBGitRef *ref = [self clickedRefInCommitList];
+	if (!(ref.isBranch || ref.isRemoteBranch))
 		return;
 
-	PBGitRef *ref = [[commit refs] objectAtIndex:index];
+	[self.windowController.sidebarViewController selectBranchForRef:ref];
+}
+
+- (void)didDoubleClickCommitList:(id)sender
+{
+	PBGitRef *ref = [self clickedRefInCommitList];
 	if (!ref)
 		return;
 
