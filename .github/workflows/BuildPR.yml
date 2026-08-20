@@ -81,6 +81,19 @@ jobs:
         run: |
           brew unlink openssl@3
           
+      # The unit tests need no signing, no screenshot repo and no network, so
+      # unlike the screenshot pipeline below they can run on every build
+      - name: Run unit tests
+        if: ${{ matrix.abi == 'arm64' }}
+        run: |
+          xcodebuild test \
+            -workspace GitX.xcworkspace \
+            -scheme GitX \
+            -only-testing:GitXTests \
+            -destination "platform=macOS,arch=${{ matrix.abi }}" \
+            ARCHS="${{ matrix.abi }}" \
+            CODE_SIGN_IDENTITY="-"
+
       # Test (only on arm64 to avoid tripling CI time)
       - name: Prepare screenshot comparison
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
