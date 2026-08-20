@@ -121,6 +121,7 @@
 					  }];
 
 	[sourceView setTarget:self];
+	[sourceView setAction:@selector(clicked:)];
 	[sourceView setDoubleAction:@selector(doubleClicked:)];
 
 	[self menuNeedsUpdate:[actionButton menu]];
@@ -291,6 +292,15 @@
 
 	[self updateActionMenu];
 	[self updateRemoteControls];
+}
+
+- (void)clicked:(id)object
+{
+	PBSourceViewItem *item = [sourceView itemAtRow:[sourceView clickedRow]];
+	if (![item revSpecifier])
+		return;
+
+	[self.windowController.historyViewController selectCurrentBranchTip];
 }
 
 - (void)doubleClicked:(id)object

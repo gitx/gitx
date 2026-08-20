@@ -32,6 +32,7 @@
 		4A40159914067B7A00DB9C07 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A40159814067B7A00DB9C07 /* AppKit.framework */; };
 		4A467EEE1546D1CD00F8902B /* ObjectiveGit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A4EF0AF142CBAD5001B8CDF /* ObjectiveGit.framework */; };
 		4A4EF0BB142CBBC2001B8CDF /* ObjectiveGit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A4EF0AF142CBAD5001B8CDF /* ObjectiveGit.framework */; };
+		A3F71C46D2894B0E9C5A7F12 /* ObjectiveGit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A4EF0AF142CBAD5001B8CDF /* ObjectiveGit.framework */; };
 		4A5D75C114A9A90500DF6C68 /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 4A5D757D14A9A90500DF6C68 /* Credits.html */; };
 		4A5D75DE14A9A90500DF6C68 /* mainSplitterBar.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4A5D759B14A9A90500DF6C68 /* mainSplitterBar.tiff */; };
 		4A5D75DF14A9A90500DF6C68 /* mainSplitterDimple.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4A5D759C14A9A90500DF6C68 /* mainSplitterDimple.tiff */; };
@@ -155,6 +156,7 @@
 		7A1C4E2B90D3F5A6C1B80011 /* PBGitRepositoryFetchArgumentsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */; };
 		63E155858B2CC783EE10F1D8 /* PBGitIndexReconcileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 689D57B4A78CEF3B32EB0045 /* PBGitIndexReconcileTests.m */; };
 		63E155858B2CC783EE10F1D9 /* PBGitIndexRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 689D57B4A78CEF3B32EB0046 /* PBGitIndexRefreshTests.m */; };
+		7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */; };
 		1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */; };
 		643952771603EF9B00BB7AFF /* PBSourceViewGitSubmoduleItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 643952761603EF9B00BB7AFF /* PBSourceViewGitSubmoduleItem.m */; };
 		6C25810B1C2720E60080A89A /* GitXCommitCopier.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C25810A1C2720E60080A89A /* GitXCommitCopier.m */; };
@@ -690,6 +692,7 @@
 		7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryFetchArgumentsTests.m; path = GitXTests/PBGitRepositoryFetchArgumentsTests.m; sourceTree = "<group>"; };
 		689D57B4A78CEF3B32EB0045 /* PBGitIndexReconcileTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitIndexReconcileTests.m; path = GitXTests/PBGitIndexReconcileTests.m; sourceTree = "<group>"; };
 		689D57B4A78CEF3B32EB0046 /* PBGitIndexRefreshTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitIndexRefreshTests.m; path = GitXTests/PBGitIndexRefreshTests.m; sourceTree = "<group>"; };
+		5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistorySelectionTests.m; path = GitXTests/PBGitHistorySelectionTests.m; sourceTree = "<group>"; };
 		4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWindowWiringTests.m; path = GitXTests/PBGitWindowWiringTests.m; sourceTree = "<group>"; };
 		6C2581091C2720E60080A89A /* GitXCommitCopier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitXCommitCopier.h; sourceTree = "<group>"; };
 		6C25810A1C2720E60080A89A /* GitXCommitCopier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitXCommitCopier.m; sourceTree = "<group>"; };
@@ -760,6 +763,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A3F71C46D2894B0E9C5A7F12 /* ObjectiveGit.framework in Frameworks */,
 				9288179619F9AFBD9A6CBCC3 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -810,6 +814,7 @@
 				7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */,
 				689D57B4A78CEF3B32EB0045 /* PBGitIndexReconcileTests.m */,
 				689D57B4A78CEF3B32EB0046 /* PBGitIndexRefreshTests.m */,
+				5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */,
 				4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */,
 			);
 			name = GitXTests;
@@ -1746,6 +1751,7 @@
 				7A1C4E2B90D3F5A6C1B80011 /* PBGitRepositoryFetchArgumentsTests.m in Sources */,
 				63E155858B2CC783EE10F1D8 /* PBGitIndexReconcileTests.m in Sources */,
 				63E155858B2CC783EE10F1D9 /* PBGitIndexRefreshTests.m in Sources */,
+				7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */,
 				1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

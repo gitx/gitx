@@ -58,6 +58,8 @@
 	NSArray<PBGitCommit *> *selectedCommits;
 }
 
+@property (nonatomic, assign) BOOL awaitingBranchSelection;
+
 - (void)updateBranchFilterMatrix;
 - (void)restoreFileBrowserSelection;
 - (void)saveFileBrowserSelection;
@@ -128,6 +130,8 @@
 					options:0
 					  block:^(MAKVONotification *notification) {
 						  PBGitHistoryController *observer = notification.observer;
+						  observer.awaitingBranchSelection = YES;
+
 						  // Reset the sorting
 						  if ([[observer.commitController sortDescriptors] count]) {
 							  [observer.commitController setSortDescriptors:[NSArray array]];
@@ -155,6 +159,7 @@
 					  }];
 
 	forceSelectionUpdate = YES;
+	self.awaitingBranchSelection = YES;
 	NSSize cellSpacing = [commitList intercellSpacing];
 	cellSpacing.height = 0;
 	[commitList setIntercellSpacing:cellSpacing];
@@ -210,10 +215,36 @@
 {
 	[self updateStatus];
 
+	GTOID *commitOID = [self OIDToReselect];
+	if (!commitOID)
+		return;
+
+	if ([self selectCommit:commitOID])
+		self.awaitingBranchSelection = NO;
+}
+
+// Picking a branch in the sidebar is a request to look at that branch, so the
+// history list owes it its tip again - including when the same branch is
+// clicked a second time to get back to it.
+- (void)selectCurrentBranchTip
+{
+	self.awaitingBranchSelection = YES;
+	[self reselectCommitAfterUpdate];
+}
+
+// The commit the history list still owes the sidebar, or nil when the list
+// should keep whatever the user has selected. A branch tip stays owed until it
+// has actually been shown, which can take several updates while the list is
+// still being read in.
+- (GTOID *)OIDToReselect
+{
+	if (!self.awaitingBranchSelection)
+		return nil;
+
 	if ([self.repository.currentBranch isSimpleRef])
-		[self selectCommit:[self.repository OIDForRef:self.repository.currentBranch.ref]];
-	else
-		[self selectCommit:self.firstCommit.OID];
+		return [self.repository OIDForRef:self.repository.currentBranch.ref];
+
+	return self.firstCommit.OID;
 }
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
@@ -570,28 +601,31 @@
 - (NSArray *)selectedObjectsForOID:(GTOID *)commitOID
 {
 	NSPredicate *selection = [NSPredicate predicateWithFormat:@"OID == %@", commitOID];
-	NSArray *selectionCommits = [[commitController content] filteredArrayUsingPredicate:selection];
 
-	if ((selectionCommits.count == 0) && [self firstCommit] != nil) {
-		selectionCommits = @[ [self firstCommit] ];
-	}
-
-	return selectionCommits;
+	return [[commitController content] filteredArrayUsingPredicate:selection];
 }
 
-- (void)selectCommit:(GTOID *)commitOID
+- (BOOL)selectCommit:(GTOID *)commitOID
 {
 	if (!forceSelectionUpdate && [[[commitController.selectedObjects lastObject] OID] isEqual:commitOID]) {
-		return;
+		return YES;
 	}
 
 	NSArray *selectedObjects = [self selectedObjectsForOID:commitOID];
+	BOOL foundRequestedCommit = (selectedObjects.count > 0);
+
+	if (!foundRequestedCommit && [self firstCommit] != nil) {
+		selectedObjects = @[ [self firstCommit] ];
+	}
+
 	[commitController setSelectedObjects:selectedObjects];
 
 	NSInteger oldIndex = [[commitController selectionIndexes] firstIndex];
 	[self scrollSelectionToTopOfViewFrom:oldIndex];
 
 	forceSelectionUpdate = NO;
+
+	return foundRequestedCommit;
 }
 
 - (BOOL)hasNonlinearPath
