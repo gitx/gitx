@@ -13,7 +13,25 @@
 // move the selection, and the flag the sidebar raises to ask for a move.
 @interface PBGitHistoryController (SelectionTesting)
 @property (nonatomic, assign) BOOL awaitingBranchSelection;
+@property (nonatomic, strong) GTOID *lastSelectedOID;
 - (GTOID *)OIDToReselect;
+- (void)restoreSelectionAfterUpdate;
+@end
+
+// The restore only reads OIDs off the commits, so it needs nothing of the real
+// PBGitCommit, which cannot be built without a commit in a repository.
+@interface PBStubCommit : NSObject
+@property (nonatomic, strong) GTOID *OID;
+@end
+
+@implementation PBStubCommit
++ (instancetype)commitWithSHA:(NSString *)SHA
+{
+	PBStubCommit *commit = [PBStubCommit new];
+	commit.OID = [GTOID oidWithSHA:SHA];
+
+	return commit;
+}
 @end
 
 // The history list reaches for its table view once it actually moves the
@@ -100,6 +118,42 @@ static NSString *const kBranchTipSHA = @"8031ee6a0000000000000000000000000000bee
 	[self.historyController selectCurrentBranchTip];
 
 	XCTAssertTrue(self.historyController.awaitingBranchSelection);
+	XCTAssertEqualObjects([self.historyController OIDToReselect], [GTOID oidWithSHA:kBranchTipSHA]);
+}
+
+// Checking a branch out rewrites the list, and the array controller drops a
+// selection whose objects have been replaced. The commit is still there under
+// the same OID, so it has to come back rather than leaving the history list
+// with nothing selected and no focus.
+- (void)testASelectionDroppedByARebuildComesBack
+{
+	NSString *pickedSHA = @"c12df1e80000000000000000000000000000cafe";
+	NSArrayController *commits = [[NSArrayController alloc] init];
+	commits.avoidsEmptySelection = NO;
+	commits.content = @[ [PBStubCommit commitWithSHA:kBranchTipSHA], [PBStubCommit commitWithSHA:pickedSHA] ];
+	[commits setSelectedObjects:@[]];
+	[self.historyController setValue:commits forKey:@"commitController"];
+
+	self.historyController.lastSelectedOID = [GTOID oidWithSHA:pickedSHA];
+	self.historyController.awaitingBranchSelection = NO;
+
+	[self.historyController restoreSelectionAfterUpdate];
+
+	XCTAssertEqualObjects([commits.selectedObjects.firstObject OID], [GTOID oidWithSHA:pickedSHA]);
+}
+
+// A branch change outranks it: there the list is meant to move.
+- (void)testAnOutstandingBranchChangeIsNotOverriddenByTheRestore
+{
+	NSArrayController *commits = [[NSArrayController alloc] init];
+	commits.avoidsEmptySelection = NO;
+	commits.content = @[ [PBStubCommit commitWithSHA:kBranchTipSHA] ];
+	[commits setSelectedObjects:@[]];
+	[self.historyController setValue:commits forKey:@"commitController"];
+
+	[self selectBranchInSidebar:@"refs/heads/branch_B" atOID:[GTOID oidWithSHA:kBranchTipSHA]];
+	self.historyController.awaitingBranchSelection = YES;
+
 	XCTAssertEqualObjects([self.historyController OIDToReselect], [GTOID oidWithSHA:kBranchTipSHA]);
 }
 

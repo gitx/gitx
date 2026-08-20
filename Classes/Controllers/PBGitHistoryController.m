@@ -59,6 +59,7 @@
 }
 
 @property (nonatomic, assign) BOOL awaitingBranchSelection;
+@property (nonatomic, strong) GTOID *lastSelectedOID;
 
 - (void)updateBranchFilterMatrix;
 - (void)restoreFileBrowserSelection;
@@ -216,11 +217,29 @@
 	[self updateStatus];
 
 	GTOID *commitOID = [self OIDToReselect];
-	if (!commitOID)
+	if (!commitOID) {
+		[self restoreSelectionAfterUpdate];
 		return;
+	}
 
 	if ([self selectCommit:commitOID])
 		self.awaitingBranchSelection = NO;
+}
+
+// Reading the list in again replaces the commit objects, and the array
+// controller drops a selection whose objects are gone. The commit the user
+// picked is still in the list, so put it back rather than leaving the history
+// with nothing selected at all.
+- (void)restoreSelectionAfterUpdate
+{
+	if (!self.lastSelectedOID || commitController.selectedObjects.count)
+		return;
+
+	NSArray *commits = [self selectedObjectsForOID:self.lastSelectedOID];
+	if (!commits.count)
+		return;
+
+	[commitController setSelectedObjects:commits];
 }
 
 // Picking a branch in the sidebar is a request to look at that branch, so the
@@ -268,6 +287,9 @@
 	if (![self.selectedCommits isEqualToArray:newSelectedCommits]) {
 		self.selectedCommits = newSelectedCommits;
 	}
+
+	if (newSelectedCommits.count)
+		self.lastSelectedOID = newSelectedCommits.firstObject.OID;
 
 	PBGitCommit *firstSelectedCommit = self.selectedCommits.firstObject;
 
