@@ -27,6 +27,7 @@
 #import "PBGitRevisionRow.h"
 #import "PBGitRevisionCell.h"
 #import "PBGitStash.h"
+#import "PBGitSidebarController.h"
 
 #define kHistorySelectedDetailIndexKey @"PBHistorySelectedDetailIndex"
 #define kHistoryDetailViewIndex 0
@@ -57,6 +58,9 @@
 	NSArray<PBGitCommit *> *webCommits;
 	NSArray<PBGitCommit *> *selectedCommits;
 }
+
+@property (nonatomic, assign) BOOL awaitingBranchSelection;
+@property (nonatomic, strong) GTOID *lastSelectedOID;
 
 - (void)updateBranchFilterMatrix;
 - (void)restoreFileBrowserSelection;
@@ -128,6 +132,8 @@
 					options:0
 					  block:^(MAKVONotification *notification) {
 						  PBGitHistoryController *observer = notification.observer;
+						  observer.awaitingBranchSelection = YES;
+
 						  // Reset the sorting
 						  if ([[observer.commitController sortDescriptors] count]) {
 							  [observer.commitController setSortDescriptors:[NSArray array]];
@@ -155,6 +161,7 @@
 					  }];
 
 	forceSelectionUpdate = YES;
+	self.awaitingBranchSelection = YES;
 	NSSize cellSpacing = [commitList intercellSpacing];
 	cellSpacing.height = 0;
 	[commitList setIntercellSpacing:cellSpacing];
@@ -181,6 +188,7 @@
 	[commitList registerForDraggedTypes:[NSArray arrayWithObject:@"PBGitRef"]];
 
 	commitList.target = self;
+	commitList.action = @selector(didClickCommitList:);
 	commitList.doubleAction = @selector(didDoubleClickCommitList:);
 
 	[upperToolbarView setTopShade:237/255.0f bottomShade:216/255.0f];
@@ -210,10 +218,54 @@
 {
 	[self updateStatus];
 
+	GTOID *commitOID = [self OIDToReselect];
+	if (!commitOID) {
+		[self restoreSelectionAfterUpdate];
+		return;
+	}
+
+	if ([self selectCommit:commitOID])
+		self.awaitingBranchSelection = NO;
+}
+
+// Reading the list in again replaces the commit objects, and the array
+// controller drops a selection whose objects are gone. The commit the user
+// picked is still in the list, so put it back rather than leaving the history
+// with nothing selected at all.
+- (void)restoreSelectionAfterUpdate
+{
+	if (!self.lastSelectedOID || commitController.selectedObjects.count)
+		return;
+
+	NSArray *commits = [self selectedObjectsForOID:self.lastSelectedOID];
+	if (!commits.count)
+		return;
+
+	[commitController setSelectedObjects:commits];
+}
+
+// Picking a branch in the sidebar is a request to look at that branch, so the
+// history list owes it its tip again - including when the same branch is
+// clicked a second time to get back to it.
+- (void)selectCurrentBranchTip
+{
+	self.awaitingBranchSelection = YES;
+	[self reselectCommitAfterUpdate];
+}
+
+// The commit the history list still owes the sidebar, or nil when the list
+// should keep whatever the user has selected. A branch tip stays owed until it
+// has actually been shown, which can take several updates while the list is
+// still being read in.
+- (GTOID *)OIDToReselect
+{
+	if (!self.awaitingBranchSelection)
+		return nil;
+
 	if ([self.repository.currentBranch isSimpleRef])
-		[self selectCommit:[self.repository OIDForRef:self.repository.currentBranch.ref]];
-	else
-		[self selectCommit:self.firstCommit.OID];
+		return [self.repository OIDForRef:self.repository.currentBranch.ref];
+
+	return self.firstCommit.OID;
 }
 
 - (NSTableRowView *)tableView:(NSTableView *)tableView rowViewForRow:(NSInteger)row
@@ -237,6 +289,9 @@
 	if (![self.selectedCommits isEqualToArray:newSelectedCommits]) {
 		self.selectedCommits = newSelectedCommits;
 	}
+
+	if (newSelectedCommits.count)
+		self.lastSelectedOID = newSelectedCommits.firstObject.OID;
 
 	PBGitCommit *firstSelectedCommit = self.selectedCommits.firstObject;
 
@@ -570,28 +625,31 @@
 - (NSArray *)selectedObjectsForOID:(GTOID *)commitOID
 {
 	NSPredicate *selection = [NSPredicate predicateWithFormat:@"OID == %@", commitOID];
-	NSArray *selectionCommits = [[commitController content] filteredArrayUsingPredicate:selection];
 
-	if ((selectionCommits.count == 0) && [self firstCommit] != nil) {
-		selectionCommits = @[ [self firstCommit] ];
-	}
-
-	return selectionCommits;
+	return [[commitController content] filteredArrayUsingPredicate:selection];
 }
 
-- (void)selectCommit:(GTOID *)commitOID
+- (BOOL)selectCommit:(GTOID *)commitOID
 {
 	if (!forceSelectionUpdate && [[[commitController.selectedObjects lastObject] OID] isEqual:commitOID]) {
-		return;
+		return YES;
 	}
 
 	NSArray *selectedObjects = [self selectedObjectsForOID:commitOID];
+	BOOL foundRequestedCommit = (selectedObjects.count > 0);
+
+	if (!foundRequestedCommit && [self firstCommit] != nil) {
+		selectedObjects = @[ [self firstCommit] ];
+	}
+
 	[commitController setSelectedObjects:selectedObjects];
 
 	NSInteger oldIndex = [[commitController selectionIndexes] firstIndex];
 	[self scrollSelectionToTopOfViewFrom:oldIndex];
 
 	forceSelectionUpdate = NO;
+
+	return foundRequestedCommit;
 }
 
 - (BOOL)hasNonlinearPath
@@ -766,26 +824,46 @@
 	return YES;
 }
 
-- (void)didDoubleClickCommitList:(id)sender
+// The ref label under the last mouse-down in the history list, or nil when the
+// click landed anywhere else on the row
+- (PBGitRef *)clickedRefInCommitList
 {
 	NSPoint location = [commitList mouseDownPoint];
 	NSInteger row = [commitList rowAtPoint:location];
 	NSInteger column = [commitList columnAtPoint:location];
 
+	if (row == -1 || column == -1)
+		return nil;
+
 	PBGitRevisionCell *cell = (PBGitRevisionCell *)[commitList viewAtColumn:column row:row makeIfNecessary:NO];
+	if (![cell respondsToSelector:@selector(indexAtX:)])
+		return nil;
+
+	NSRect cellFrame = [commitList frameOfCellAtColumn:column row:row];
+	int index = [cell indexAtX:(location.x - cellFrame.origin.x)];
+	if (index == -1)
+		return nil;
+
 	PBGitCommit *commit = [[commitController arrangedObjects] objectAtIndex:row];
 
-	int index = -1;
-	if ([cell respondsToSelector:@selector(indexAtX:)]) {
-		NSRect cellFrame = [commitList frameOfCellAtColumn:column row:row];
-		CGFloat deltaX = location.x - cellFrame.origin.x;
-		index = [cell indexAtX:deltaX];
-	}
+	return [[commit refs] objectAtIndex:index];
+}
 
-	if (index == -1)
+// Clicking a branch label is a statement about which branch you are looking at,
+// so let the sidebar follow it. Clicking anywhere else on the row leaves the
+// sidebar alone.
+- (void)didClickCommitList:(id)sender
+{
+	PBGitRef *ref = [self clickedRefInCommitList];
+	if (!(ref.isBranch || ref.isRemoteBranch))
 		return;
 
-	PBGitRef *ref = [[commit refs] objectAtIndex:index];
+	[self.windowController.sidebarViewController selectBranchForRef:ref];
+}
+
+- (void)didDoubleClickCommitList:(id)sender
+{
+	PBGitRef *ref = [self clickedRefInCommitList];
 	if (!ref)
 		return;
 

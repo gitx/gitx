@@ -121,6 +121,7 @@
 					  }];
 
 	[sourceView setTarget:self];
+	[sourceView setAction:@selector(clicked:)];
 	[sourceView setDoubleAction:@selector(doubleClicked:)];
 
 	[self menuNeedsUpdate:[actionButton menu]];
@@ -188,6 +189,25 @@
 		[sourceView deselectAll:nil];
 		[sourceView selectRowIndexes:index byExtendingSelection:NO];
 	}
+}
+
+// Moving the outline selection is the only way to change which branch is
+// focused: writing to currentBranch from outside is undone by the
+// reloadPreservingSelection that the change itself triggers.
+- (void)selectBranchForRef:(PBGitRef *)ref
+{
+	PBSourceViewItem *item = [self itemForRev:[[PBGitRevSpecifier alloc] initWithRef:ref]];
+	if (!item)
+		return;
+
+	[sourceView PBExpandItem:item expandParents:YES];
+
+	NSInteger row = [sourceView rowForItem:item];
+	if (row == -1)
+		return;
+
+	[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+	[self.windowController.historyViewController selectCurrentBranchTip];
 }
 
 - (PBSourceViewItem *)itemForRev:(PBGitRevSpecifier *)rev
@@ -291,6 +311,15 @@
 
 	[self updateActionMenu];
 	[self updateRemoteControls];
+}
+
+- (void)clicked:(id)object
+{
+	PBSourceViewItem *item = [sourceView itemAtRow:[sourceView clickedRow]];
+	if (![item revSpecifier])
+		return;
+
+	[self.windowController.historyViewController selectCurrentBranchTip];
 }
 
 - (void)doubleClicked:(id)object

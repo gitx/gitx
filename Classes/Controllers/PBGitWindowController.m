@@ -32,7 +32,7 @@
 @interface PBGitWindowController () {
 	__weak PBViewController *contentController;
 
-	PBGitSidebarController *_sidebarController;
+	PBGitSidebarController *_sidebarViewController;
 	PBGitHistoryController *_historyViewController;
 	PBGitCommitController *_commitViewController;
 
@@ -134,13 +134,13 @@
 	[[self window] setFrameUsingName:@"GitX"];
 	[[self window] setRepresentedURL:self.repository.workingDirectoryURL];
 
-	_sidebarController = [[PBGitSidebarController alloc] initWithRepository:self.repository superController:self];
+	_sidebarViewController = [[PBGitSidebarController alloc] initWithRepository:self.repository superController:self];
 	_historyViewController = [[PBGitHistoryController alloc] initWithRepository:self.repository superController:self];
 	_commitViewController = [[PBGitCommitController alloc] initWithRepository:self.repository superController:self];
 
-	[[_sidebarController view] setFrame:[sourceSplitView bounds]];
-	[sourceSplitView addSubview:_sidebarController.view];
-	[sourceListControlsView addSubview:_sidebarController.sourceListControlsView];
+	[[_sidebarViewController view] setFrame:[sourceSplitView bounds]];
+	[sourceSplitView addSubview:_sidebarViewController.view];
+	[sourceListControlsView addSubview:_sidebarViewController.sourceListControlsView];
 
 	[[statusField cell] setBackgroundStyle:NSBackgroundStyleRaised];
 	[progressIndicator setUsesThreadedAnimation:YES];
@@ -181,12 +181,12 @@
 
 - (void)showCommitView:(id)sender
 {
-	[_sidebarController selectStage];
+	[_sidebarViewController selectStage];
 }
 
 - (void)showHistoryView:(id)sender
 {
-	[_sidebarController selectCurrentBranch];
+	[_sidebarViewController selectCurrentBranch];
 }
 
 - (void)showCommitHookFailedSheet:(NSString *)messageText infoText:(NSString *)infoText commitController:(PBGitCommitController *)controller

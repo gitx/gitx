@@ -39,7 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasNonlinearPath;
 - (NSMenu *)tableColumnMenu;
-- (void)selectCommit:(GTOID *)commit;
+- (BOOL)selectCommit:(GTOID *)commit;
+- (void)selectCurrentBranchTip;
 - (void)updateQuicklookForce:(BOOL)force;
 
 - (void)setHistorySearch:(NSString *)searchString mode:(PBHistorySearchMode)mode;

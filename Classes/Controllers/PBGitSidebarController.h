@@ -16,6 +16,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class PBGitRef;
+
 @interface PBGitSidebarController : PBViewController
 
 - (void)selectStage;
@@ -30,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) PBSourceViewItem *remotes;
 @property (readonly) NSOutlineView *sourceView;
 @property (readonly) NSView *sourceListControlsView;
+
+- (void)selectBranchForRef:(PBGitRef *)ref;
 
 @end
 
