@@ -29,7 +29,7 @@
 #import "PBGitStash.h"
 #import "PBGitCommit.h"
 
-@interface PBGitWindowController () {
+@interface PBGitWindowController () <NSMenuItemValidation> {
 	__weak PBViewController *contentController;
 
 	PBGitSidebarController *_sidebarViewController;

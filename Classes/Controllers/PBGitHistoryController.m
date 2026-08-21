@@ -33,7 +33,7 @@
 #define kHistoryDetailViewIndex 0
 #define kHistoryTreeViewIndex 1
 
-@interface PBGitHistoryController () <NSTableViewDelegate> {
+@interface PBGitHistoryController () <NSTableViewDelegate, NSMenuItemValidation> {
 	IBOutlet NSArrayController *commitController;
 	IBOutlet NSTreeController *treeController;
 	IBOutlet PBWebHistoryController *webHistoryController;
