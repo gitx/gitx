@@ -53,8 +53,12 @@ In the steps below, we assume the certificate name to be _"Apple Development"_ b
 10. Double-click on this certificate to view its details.
 11. Copy the **Organizational Unit** value. This is your development team ID.
 
-You can also build and run on the command line. Once you've created the config file,
-you may use [the script shared here](https://github.com/gitx/gitx/discussions/366#discussion-4897466).
+You can also build and run on the command line. The `Makefile` wraps the
+commands CI uses: `make build`, `make unit-test` and `make dmg` are the common
+ones, `make help` lists them all, and `ARCH=x86_64` selects an x86 build.
+
+Once you've created the config file, you may also use
+[the script shared here](https://github.com/gitx/gitx/discussions/366#discussion-4897466).
 For x86 builds, please replace `arm64` with `x86_64`.
 
 ### Apple Silicon
