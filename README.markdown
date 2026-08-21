@@ -38,6 +38,9 @@ ENABLE_HARDENED_RUNTIME = YES
 Replace `YOUR_TEAM_ID` with your development team ID and `YOUR_CERT_NAME` with the name of your certificate.
 If you don't know your ID or don't have a certificate yet, follow the steps below.
 
+Once a certificate is in your keychain, `make Dev.xcconfig` writes this file
+for you, reading both values off the certificate itself.
+
 The certificate name is usually something like _Apple Development, Mac Developer, iPhone Developer, Apple Developer,_ etc.
 In the steps below, we assume the certificate name to be _"Apple Development"_ but you should use the name you see in your keychain.
 

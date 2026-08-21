@@ -14,7 +14,8 @@
 # runtime rejects that, leaving the app unable to load its own frameworks. So
 # `dmg` builds with the hardened runtime off and stays runnable either way,
 # while `archive` and `dmg-signed` keep it and want a real identity, which the
-# README explains how to set up. The tests need no identity at all.
+# README explains how to set up; `make Dev.xcconfig` writes one for you. The
+# tests need no identity at all.
 #
 # Override the architecture on an Intel Mac or for a cross build:
 #   make build ARCH=x86_64
@@ -47,8 +48,13 @@ XCODEBUILD := xcodebuild -workspace $(WORKSPACE) -scheme $(SCHEME) ARCHS="$(ARCH
 	ui-test archive build-project app run dmg dmg-signed clean git-clean-dry-run
 
 help: ## Show this help
-	@grep -hE '^[a-z-]+:.*## ' $(MAKEFILE_LIST) \
+	@grep -hE '^[A-Za-z][A-Za-z.-]*:.*## ' $(MAKEFILE_LIST) \
 		| awk -F':.*## ' '{printf "  %-20s %s\n", $$1, $$2}'
+
+# A real file, not a phony target, so that make leaves an existing config
+# alone rather than writing over settings you may have edited by hand.
+Dev.xcconfig: ## Write the local signing settings from the keychain certificate
+	scripts/make-dev-xcconfig.sh $@
 
 git-submodule-sync: ## Check out the submodules at the revisions this tree wants
 	git submodule sync
