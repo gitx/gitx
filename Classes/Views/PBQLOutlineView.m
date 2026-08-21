@@ -60,7 +60,7 @@
 
 - (NSMenu *)menuForEvent:(NSEvent *)theEvent
 {
-	if ([theEvent type] == NSRightMouseDown) {
+	if ([theEvent type] == NSEventTypeRightMouseDown) {
 		// get the current selections for the outline view.
 		NSIndexSet *selectedRowIndexes = [self selectedRowIndexes];
 

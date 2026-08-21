@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle
 {
 	switch (backgroundStyle) {
-		case NSBackgroundStyleDark:
+		case NSBackgroundStyleEmphasized:
 			self.textField.textColor = NSColor.whiteColor;
 			break;
 		default:

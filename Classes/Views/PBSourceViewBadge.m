@@ -26,7 +26,7 @@
 
 + (NSColor *)badgeColorForCell:(NSTableCellView *)cell
 {
-	if ([cell backgroundStyle] == NSBackgroundStyleDark)
+	if ([cell backgroundStyle] == NSBackgroundStyleEmphasized)
 		return [NSColor whiteColor];
 
 	if ([[cell window] isMainWindow])
@@ -38,7 +38,7 @@
 
 + (NSColor *)badgeTextColorForCell:(NSTableCellView *)cell
 {
-	if ([cell backgroundStyle] != NSBackgroundStyleDark)
+	if ([cell backgroundStyle] != NSBackgroundStyleEmphasized)
 		return [NSColor whiteColor];
 
 	if (![[cell window] isKeyWindow]) {
@@ -58,7 +58,7 @@
 	NSMutableDictionary *badgeTextAttributes = nil;
 	if (!badgeTextAttributes) {
 		NSMutableParagraphStyle *centerStyle = [[NSMutableParagraphStyle alloc] init];
-		[centerStyle setAlignment:NSCenterTextAlignment];
+		[centerStyle setAlignment:NSTextAlignmentCenter];
 
 		badgeTextAttributes = [NSMutableDictionary dictionary];
 		[badgeTextAttributes setObject:[NSFont boldSystemFontOfSize:[NSFont systemFontSize] - 2] forKey:NSFontAttributeName];

@@ -955,7 +955,7 @@
 - (BOOL)previewPanel:(id)panel handleEvent:(NSEvent *)event
 {
 	// redirect all key down events to the table view
-	if ([event type] == NSKeyDown) {
+	if ([event type] == NSEventTypeKeyDown) {
 		[fileBrowser keyDown:event];
 		return YES;
 	}
