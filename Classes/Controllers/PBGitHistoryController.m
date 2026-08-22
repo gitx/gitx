@@ -738,7 +738,12 @@
 		if ([[[self.repository headRef] ref] isEqualToRef:ref])
 			return NO;
 
-		NSData *data = [NSKeyedArchiver archivedDataWithRootObject:[NSArray arrayWithObjects:[NSNumber numberWithInteger:row], [NSNumber numberWithInt:index], NULL]];
+		NSError *error = nil;
+		NSData *data = [NSKeyedArchiver archivedDataWithRootObject:[NSArray arrayWithObjects:[NSNumber numberWithInteger:row], [NSNumber numberWithInt:index], NULL] requiringSecureCoding:YES error:&error];
+		if (!data) {
+			PBLogError(error);
+			return NO;
+		}
 		[pboard declareTypes:[NSArray arrayWithObject:@"PBGitRef"] owner:self];
 		[pboard setData:data forType:@"PBGitRef"];
 	} else {
@@ -785,7 +790,12 @@
 	if (!data)
 		return NO;
 
-	NSArray *numbers = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+	NSError *error = nil;
+	NSArray *numbers = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSArray class], [NSNumber class], nil] fromData:data error:&error];
+	if (numbers.count < 2) {
+		PBLogError(error);
+		return NO;
+	}
 	int oldRow = [[numbers objectAtIndex:0] intValue];
 	if (oldRow == row)
 		return NO;
