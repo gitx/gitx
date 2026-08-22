@@ -12,6 +12,7 @@
 #import "PBGitBinary.h"
 
 #import <ObjectiveGit/GTRepository.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 @implementation PBRepositoryDocumentController
 // This method is overridden to configure the open panel to only allow
@@ -20,7 +21,7 @@
 {
 	[openPanel setCanChooseFiles:YES];
 	[openPanel setCanChooseDirectories:YES];
-	[openPanel setAllowedFileTypes:[NSArray arrayWithObject:@"git"]];
+	[openPanel setAllowedContentTypes:[NSArray arrayWithObject:[UTType typeWithFilenameExtension:@"git"]]];
 
 	NSModalResponse response = [openPanel runModal];
 

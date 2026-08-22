@@ -268,11 +268,9 @@
 		}
 	}
 
-	[[NSWorkspace sharedWorkspace] openURLs:nonSubmoduleURLs
-					withAppBundleIdentifier:nil
-									options:0
-			 additionalEventParamDescriptor:nil
-						  launchIdentifiers:NULL];
+	for (NSURL *fileURL in nonSubmoduleURLs) {
+		[[NSWorkspace sharedWorkspace] openURL:fileURL];
+	}
 }
 
 - (void)revealURLsInFinder:(NSArray<NSURL *> *)fileURLs
