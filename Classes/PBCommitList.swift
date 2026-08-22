@@ -165,16 +165,16 @@ import WebKit
 
         let column = self.column(withIdentifier: NSUserInterfaceItemIdentifier("SubjectColumn"))
         guard column != -1,
-              let cell = view(atColumn: column, row: index, makeIfNecessary: false) as? PBGitRevisionCell,
-              let commit = cell.objectValue as? PBGitCommit else {
+              let cell = view(atColumn: column, row: index, makeIfNecessary: false) as? PBGitRevisionCell else {
             return nil
         }
+        let commit = cell.objectValue
 
         let point = window?.contentView?.convert(event.locationInWindow, to: cell) ?? .zero
         let i = Int(cell.indexAt(x: point.x))
         let clickedRef: PBGitRef? = (i >= 0 && i < commit.refs.count) ? commit.refs[i] as? PBGitRef : nil
 
-        let selectedCommits = controller.selectedCommits as? [PBGitCommit] ?? []
+        let selectedCommits = controller.selectedCommits
         let items: [NSMenuItem]
 
         if let clickedRef = clickedRef {
