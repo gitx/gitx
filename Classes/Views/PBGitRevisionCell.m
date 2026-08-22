@@ -95,7 +95,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	} else {
 		NSBezierPath *path = [NSBezierPath bezierPath];
 		[path setLineWidth:2];
-		[path setLineCapStyle:NSRoundLineCapStyle];
+		[path setLineCapStyle:NSLineCapStyleRound];
 		[path moveToPoint:source];
 		[path lineToPoint:center];
 		[path stroke];
@@ -203,7 +203,7 @@ const BOOL SHUFFLE_COLORS = NO;
 	NSMutableDictionary *attributes = [[NSMutableDictionary alloc] initWithCapacity:2];
 	NSMutableParagraphStyle *style = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 
-	[style setAlignment:NSCenterTextAlignment];
+	[style setAlignment:NSTextAlignmentCenter];
 	[attributes setObject:style forKey:NSParagraphStyleAttributeName];
 
 	[attributes setObject:[NSFont systemFontOfSize:10] forKey:NSFontAttributeName];

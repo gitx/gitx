@@ -25,7 +25,7 @@
 
 #define FileChangesTableViewType @"GitFileChangedType"
 
-@interface PBGitCommitController () <NSTextViewDelegate, NSMenuDelegate> {
+@interface PBGitCommitController () <NSTextViewDelegate, NSMenuDelegate, NSMenuItemValidation> {
 	IBOutlet PBCommitMessageView *commitMessageView;
 
 	IBOutlet NSArrayController *unstagedFilesController;

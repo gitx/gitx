@@ -33,7 +33,7 @@
 #define kHistoryDetailViewIndex 0
 #define kHistoryTreeViewIndex 1
 
-@interface PBGitHistoryController () <NSTableViewDelegate> {
+@interface PBGitHistoryController () <NSTableViewDelegate, NSMenuItemValidation> {
 	IBOutlet NSArrayController *commitController;
 	IBOutlet NSTreeController *treeController;
 	IBOutlet PBWebHistoryController *webHistoryController;
@@ -955,7 +955,7 @@
 - (BOOL)previewPanel:(id)panel handleEvent:(NSEvent *)event
 {
 	// redirect all key down events to the table view
-	if ([event type] == NSKeyDown) {
+	if ([event type] == NSEventTypeKeyDown) {
 		[fileBrowser keyDown:event];
 		return YES;
 	}

@@ -496,11 +496,10 @@
 	panelRect.origin.y = windowFrame.origin.y + historyFrame.origin.y + ((historyFrame.size.height - kRewindPanelSize) / 2.0f);
 
 	NSPanel *panel = [[NSPanel alloc] initWithContentRect:panelRect
-												styleMask:NSBorderlessWindowMask
+												styleMask:NSWindowStyleMaskBorderless
 												  backing:NSBackingStoreBuffered
 													defer:YES];
 	[panel setIgnoresMouseEvents:YES];
-	[panel setOneShot:YES];
 	[panel setOpaque:NO];
 	[panel setBackgroundColor:[NSColor clearColor]];
 	[panel setHasShadow:NO];
@@ -550,7 +549,7 @@
 	NSImage *reversedRewindImage = [NSImage imageWithSize:rewindImage.size
 												  flipped:isReversed
 										   drawingHandler:^BOOL(NSRect destRect) {
-											   [rewindImage drawInRect:destRect fromRect:NSZeroRect operation:NSCompositeCopy fraction:1.0];
+											   [rewindImage drawInRect:destRect fromRect:NSZeroRect operation:NSCompositingOperationCopy fraction:1.0];
 											   return YES;
 										   }];
 	NSImageView *rewindImageView = [rewindPanel.contentView viewWithTag:kRewindPanelImageViewTag];

@@ -50,7 +50,7 @@ static NSString *gitPath = nil;
 	if (!version)
 		return NO;
 
-	int c = [version compare:@"" MIN_GIT_VERSION options:NSNumericSearch];
+	NSComparisonResult c = [version compare:@"" MIN_GIT_VERSION options:NSNumericSearch];
 	if (c == NSOrderedSame || c == NSOrderedDescending) {
 		gitPath = path;
 		return YES;
