@@ -507,7 +507,6 @@
 
 	NSBox *box = [[NSBox alloc] initWithFrame:[[panel contentView] frame]];
 	[box setBoxType:NSBoxCustom];
-	[box setBorderType:NSLineBorder];
 	[box setFillColor:[NSColor colorWithCalibratedWhite:0.0f alpha:0.5f]];
 	[box setBorderColor:[NSColor colorWithCalibratedWhite:0.5f alpha:0.5f]];
 	[box setCornerRadius:12.0f];

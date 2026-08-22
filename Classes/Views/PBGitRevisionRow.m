@@ -22,11 +22,11 @@ NS_ASSUME_NONNULL_BEGIN
 	if ([self isSelected]) {
 		if ([[self window] isKeyWindow]) {
 			if ([[self window] firstResponder] == (NSTableView *)self.controller.commitList) {
-				return [NSColor alternateSelectedControlColor];
+				return [NSColor selectedContentBackgroundColor];
 			}
 			return [NSColor selectedControlColor];
 		}
-		return [NSColor secondarySelectedControlColor];
+		return [NSColor unemphasizedSelectedContentBackgroundColor];
 	}
 
 	// light blue color highlighting search results
