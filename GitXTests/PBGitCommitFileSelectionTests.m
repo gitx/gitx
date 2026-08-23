@@ -31,11 +31,11 @@
 	// The controller holds its tables weakly, so the test owns them instead.
 	self.unstagedTable = [[NSTableView alloc] initWithFrame:NSZeroRect];
 	self.unstagedTable.tag = 0;
-	self.unstagedTable.menu = [[NSMenu alloc] initWithTitle:@"Unstaged"];
+	self.unstagedTable.menu = [[NSMenu alloc] initWithTitle:@""];
 
 	self.stagedTable = [[NSTableView alloc] initWithFrame:NSZeroRect];
 	self.stagedTable.tag = 1;
-	self.stagedTable.menu = [[NSMenu alloc] initWithTitle:@"Staged"];
+	self.stagedTable.menu = [[NSMenu alloc] initWithTitle:@""];
 
 	self.unstagedFile = [[PBChangedFile alloc] initWithPath:@"unstaged.txt"];
 	self.stagedFile = [[PBChangedFile alloc] initWithPath:@"staged.txt"];
@@ -66,7 +66,7 @@
 
 - (NSMenuItem *)itemInMenu:(NSMenu *)menu
 {
-	NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@"Open"
+	NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:@""
 												  action:@selector(openFiles:)
 										   keyEquivalent:@""];
 	[menu addItem:item];
