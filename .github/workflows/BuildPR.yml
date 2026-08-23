@@ -73,7 +73,7 @@ jobs:
           brew install openssl@3
           openssl version
       - name: pre build
-        run: cd External/objective-git && script/bootstrap && script/update_libgit2 && cd ../..
+        run: make deps
       - name: Show openssl version
         run: |
           openssl version
@@ -85,14 +85,7 @@ jobs:
       # unlike the screenshot pipeline below they can run on every build
       - name: Run unit tests
         if: ${{ matrix.abi == 'arm64' }}
-        run: |
-          xcodebuild test \
-            -workspace GitX.xcworkspace \
-            -scheme GitX \
-            -only-testing:GitXTests \
-            -destination "platform=macOS,arch=${{ matrix.abi }}" \
-            ARCHS="${{ matrix.abi }}" \
-            CODE_SIGN_IDENTITY="-"
+        run: make unit-test ARCH=${{ matrix.abi }}
 
       # Test (only on arm64 to avoid tripling CI time)
       - name: Prepare screenshot comparison
@@ -103,17 +96,17 @@ jobs:
         run: |
           git clone --no-checkout "$GITHUB_WORKSPACE" /tmp/gitx-screenshot-repo
           git -C /tmp/gitx-screenshot-repo checkout 52ff1051d0c8e5cf3ee5
+      # TODO Consider running `make ui-test` here rather than `make
+      # all-tests`. The scheme tests every target, so this repeats the
+      # GitXTests run of the "Run unit tests" step above; `ui-test` narrows
+      # it to GitXUITests, which is all the screenshots need.
       - name: Run tests
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
-          xcodebuild test \
-            -workspace GitX.xcworkspace \
-            -scheme GitX \
-            -destination "platform=macOS,arch=${{ matrix.abi }}" \
-            ARCHS="${{ matrix.abi }}" \
-            CODE_SIGN_IDENTITY="-" \
+          make all-tests \
+            ARCH=${{ matrix.abi }} \
             GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo \
-            -resultBundlePath TestResults-${{ matrix.abi }}.xcresult
+            RESULT_BUNDLE=TestResults-${{ matrix.abi }}.xcresult
       - name: Extract screenshots from test results
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
@@ -160,7 +153,7 @@ jobs:
         # Updater.app, which then shares the app's bundle ID and breaks the
         # gitx CLI (Scripting Bridge resolves the wrong bundle). The GitX
         # target already sets its identifier in the project file.
-        run: xcodebuild -workspace GitX.xcworkspace -scheme GitX -archivePath ./GitX archive ARCHS="${{ matrix.abi }}"
+        run: make archive ARCH=${{ matrix.abi }} ARCHIVE=GitX.xcarchive
       - name: Prepare artifact
         if: ${{ env.variableSet != '' }}
         env:
@@ -169,12 +162,14 @@ jobs:
           EXPORT_OPTIONS_PATH=$RUNNER_TEMP/ExportOptions.plist
           echo -n "$EXPORT_OPTIONS" > "$EXPORT_OPTIONS_PATH"
           echo "EXPORT_OPTIONS_PATH=$EXPORT_OPTIONS_PATH"
-          xcodebuild -exportArchive -archivePath GitX.xcarchive -exportPath . -exportOptionsPlist "$EXPORT_OPTIONS_PATH"
           echo "Create GitX-${{ matrix.abi }}.dmg"
-          mkdir dist && cp -R GitX.app dist/ && ln -s /Applications dist/
-          hdiutil create -fs HFS+ -srcfolder dist/ -volname GitX GitX-${{ matrix.abi }}.dmg
-          rm -rf dist
-          zip -r GitX-${{ matrix.abi }}.zip GitX.app
+          make package-signed \
+            ARCH=${{ matrix.abi }} \
+            ARCHIVE=GitX.xcarchive \
+            EXPORT_DIR=. \
+            EXPORT_OPTIONS="$EXPORT_OPTIONS_PATH" \
+            DMG=GitX-${{ matrix.abi }}.dmg \
+            ZIP=GitX-${{ matrix.abi }}.zip
       - name: Notarize App
         if: ${{ env.variableSet != '' }}
         env:
