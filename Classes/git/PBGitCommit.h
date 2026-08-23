@@ -35,7 +35,7 @@ extern NSString *const kGitXCommitType;
 @property (nonatomic, strong, readonly) NSString *committerEmail;
 @property (nonatomic, strong, readonly) NSString *committerDate;
 @property (nonatomic, strong, readonly) NSString *details;
-@property (nonatomic, strong, readonly) NSString *patch;
+@property (nonatomic, strong, readonly, nullable) NSString *patch;
 @property (nonatomic, strong, readonly) NSString *SHA;
 @property (nonatomic, strong, readonly, nullable) NSString *SVNRevision;
 

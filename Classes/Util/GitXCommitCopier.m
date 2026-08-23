@@ -58,12 +58,14 @@
 
 #pragma mark Helpers
 
-+ (NSArray<NSString *> *)transformCommits:(NSArray<PBGitCommit *> *)commits with:(NSString * (^)(PBGitCommit *commit))transformer
++ (NSArray<NSString *> *)transformCommits:(NSArray<PBGitCommit *> *)commits with:(NSString *_Nullable (^)(PBGitCommit *commit))transformer
 {
 	NSMutableArray *strings = [NSMutableArray arrayWithCapacity:commits.count];
 	[commits enumerateObjectsWithOptions:NSEnumerationReverse
 							  usingBlock:^(PBGitCommit *_Nonnull commit, NSUInteger idx, BOOL *_Nonnull stop) {
-								  [strings addObject:transformer(commit)];
+								  NSString *string = transformer(commit);
+								  if (string)
+									  [strings addObject:string];
 							  }];
 
 	return strings;

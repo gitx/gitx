@@ -160,6 +160,7 @@
 		1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */; };
 		7A1C3E5D2B8F49A0C6D14E82 /* PBRepositoryFinderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E9B0D4A18C7452FB3A0D95E /* PBRepositoryFinderTests.m */; };
 		4C7F2A9E5D1B48A3E602F7C1 /* PBGitCommitFileSelectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E1D6C0A9F42B7D51C8E30 /* PBGitCommitFileSelectionTests.m */; };
+		5D3A8C1F7E2B49D0A83C6F41 /* GitXCommitCopierTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F6B9E0D4C8A47135BE2D90A /* GitXCommitCopierTests.m */; };
 		643952771603EF9B00BB7AFF /* PBSourceViewGitSubmoduleItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 643952761603EF9B00BB7AFF /* PBSourceViewGitSubmoduleItem.m */; };
 		6C25810B1C2720E60080A89A /* GitXCommitCopier.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C25810A1C2720E60080A89A /* GitXCommitCopier.m */; };
 		6C4855C81D57DCFC0027A7B4 /* PBTerminalUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C4855C71D57DCFC0027A7B4 /* PBTerminalUtil.m */; };
@@ -698,6 +699,7 @@
 		4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWindowWiringTests.m; path = GitXTests/PBGitWindowWiringTests.m; sourceTree = "<group>"; };
 		6E9B0D4A18C7452FB3A0D95E /* PBRepositoryFinderTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBRepositoryFinderTests.m; path = GitXTests/PBRepositoryFinderTests.m; sourceTree = "<group>"; };
 		3B8E1D6C0A9F42B7D51C8E30 /* PBGitCommitFileSelectionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitCommitFileSelectionTests.m; path = GitXTests/PBGitCommitFileSelectionTests.m; sourceTree = "<group>"; };
+		2F6B9E0D4C8A47135BE2D90A /* GitXCommitCopierTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GitXCommitCopierTests.m; path = GitXTests/GitXCommitCopierTests.m; sourceTree = "<group>"; };
 		6C2581091C2720E60080A89A /* GitXCommitCopier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GitXCommitCopier.h; sourceTree = "<group>"; };
 		6C25810A1C2720E60080A89A /* GitXCommitCopier.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GitXCommitCopier.m; sourceTree = "<group>"; };
 		6C4855C61D57DCFC0027A7B4 /* PBTerminalUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBTerminalUtil.h; sourceTree = "<group>"; };
@@ -822,6 +824,7 @@
 				4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */,
 				6E9B0D4A18C7452FB3A0D95E /* PBRepositoryFinderTests.m */,
 				3B8E1D6C0A9F42B7D51C8E30 /* PBGitCommitFileSelectionTests.m */,
+				2F6B9E0D4C8A47135BE2D90A /* GitXCommitCopierTests.m */,
 			);
 			name = GitXTests;
 			sourceTree = "<group>";
@@ -1761,6 +1764,7 @@
 				1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */,
 				7A1C3E5D2B8F49A0C6D14E82 /* PBRepositoryFinderTests.m in Sources */,
 				4C7F2A9E5D1B48A3E602F7C1 /* PBGitCommitFileSelectionTests.m in Sources */,
+				5D3A8C1F7E2B49D0A83C6F41 /* GitXCommitCopierTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
