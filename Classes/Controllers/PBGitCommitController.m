@@ -297,7 +297,7 @@
 
 	if (![sender isKindOfClass:[NSMenuItem class]]) return nil;
 
-	NSTableView *table = (sender == stagedTable.menu ? stagedTable : unstagedTable);
+	NSTableView *table = (((NSMenuItem *)sender).menu == stagedTable.menu ? stagedTable : unstagedTable);
 	NSArrayController *controller = (table.tag == 0 ? unstagedFilesController : stagedFilesController);
 	return controller.selectedObjects;
 }
