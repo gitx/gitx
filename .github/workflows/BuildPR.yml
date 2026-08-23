@@ -190,7 +190,8 @@ jobs:
 
           ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
 
-          xcrun notarytool submit "$ZIP_PATH" --key-id $KEY_ID --apple-id $APPLE_ID --team-id $TEAM_ID --password $APPLE_PASSWORD --wait | tee "$NOTARY_LOG" echo "print log output"
+          xcrun notarytool submit "$ZIP_PATH" --key-id $KEY_ID --apple-id $APPLE_ID --team-id $TEAM_ID --password $APPLE_PASSWORD --wait | tee "$NOTARY_LOG"
+          echo "print log output"
           cat "$NOTARY_LOG"
 
           ID=$(cat "$NOTARY_LOG" | tail -3 | cut -d':' -f2 | head -n 1)
