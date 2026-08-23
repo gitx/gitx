@@ -440,7 +440,7 @@
 		return;
 	PBGitTree *tree = [selectedFiles objectAtIndex:0];
 	NSString *name = [tree tmpFileNameForContents];
-	[[NSWorkspace sharedWorkspace] openFile:name];
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL fileURLWithPath:name]];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
