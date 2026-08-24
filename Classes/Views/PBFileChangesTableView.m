@@ -25,8 +25,13 @@
 	return nil;
 }
 
+// Copying only once the drag leaves GitX: the files being dragged are the
+// working copy, and a move takes them out of the repository.
 - (NSDragOperation)draggingSession:(NSDraggingSession *)session sourceOperationMaskForDraggingContext:(NSDraggingContext)context
 {
+	if (context == NSDraggingContextOutsideApplication)
+		return NSDragOperationCopy;
+
 	return NSDragOperationEvery;
 }
 
