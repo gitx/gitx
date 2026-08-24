@@ -23,7 +23,7 @@
 #define kNotificationDictionaryDescriptionKey @"description"
 #define kNotificationDictionaryMessageKey @"message"
 
-#define FileChangesTableViewType @"GitFileChangedType"
+#define FileChangesTableViewType @"net.phere.GitX.changed-file"
 
 @interface PBGitCommitController () <NSTextViewDelegate, NSMenuDelegate, NSMenuItemValidation> {
 	IBOutlet PBCommitMessageView *commitMessageView;
@@ -686,32 +686,25 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 	}
 }
 
-- (BOOL)tableView:(NSTableView *)tv writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pboard
+- (id<NSPasteboardWriting>)tableView:(NSTableView *)tv pasteboardWriterForRow:(NSInteger)row
 {
-	// Copy the row numbers to the pasteboard.
-	[pboard declareTypes:[NSArray arrayWithObjects:FileChangesTableViewType, NSFilenamesPboardType, nil] owner:self];
+	NSArrayController *controller = [tv tag] == 0 ? unstagedFilesController : stagedFilesController;
+	NSArray *files = [controller arrangedObjects];
+	if (row < 0 || row >= (NSInteger)files.count)
+		return nil;
+
+	NSPasteboardItem *item = [[NSPasteboardItem alloc] init];
 
 	// Internal, for dragging from one tableview to the other
-	NSError *error = nil;
-	NSData *data = [NSKeyedArchiver archivedDataWithRootObject:rowIndexes requiringSecureCoding:YES error:&error];
-	if (!data) {
-		PBLogError(error);
-		return NO;
-	}
-	[pboard setData:data forType:FileChangesTableViewType];
+	[item setString:[@(row) stringValue] forType:FileChangesTableViewType];
 
 	// External, to drag them to for example XCode or Textmate
-	NSArrayController *controller = [tv tag] == 0 ? unstagedFilesController : stagedFilesController;
-	NSArray *files = [controller.arrangedObjects objectsAtIndexes:rowIndexes];
-	NSURL *workingDirectoryURL = self.repository.workingDirectoryURL;
+	PBChangedFile *file = [files objectAtIndex:row];
+	NSURL *fileURL = [self.repository.workingDirectoryURL URLByAppendingPathComponent:file.path];
+	if (fileURL)
+		[item setString:fileURL.absoluteString forType:NSPasteboardTypeFileURL];
 
-	NSMutableArray<NSString *> *paths = [NSMutableArray arrayWithCapacity:rowIndexes.count];
-	for (PBChangedFile *file in files) {
-		[paths addObject:[[workingDirectoryURL URLByAppendingPathComponent:file.path] path]];
-	}
-	[pboard setPropertyList:paths forType:NSFilenamesPboardType];
-
-	return YES;
+	return item;
 }
 
 - (NSDragOperation)tableView:(NSTableView *)tableView
@@ -732,13 +725,16 @@ BOOL shouldTrashInsteadOfDiscardAnyFileIn(NSArray<PBChangedFile *> *files)
 	dropOperation:(NSTableViewDropOperation)operation
 {
 	NSPasteboard *pboard = [info draggingPasteboard];
-	NSData *rowData = [pboard dataForType:FileChangesTableViewType];
-	NSError *error = nil;
-	NSIndexSet *rowIndexes = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSIndexSet class] fromData:rowData error:&error];
-	if (!rowIndexes) {
-		PBLogError(error);
-		return NO;
+
+	NSMutableIndexSet *rowIndexes = [NSMutableIndexSet indexSet];
+	for (NSPasteboardItem *item in pboard.pasteboardItems) {
+		NSString *draggedRow = [item stringForType:FileChangesTableViewType];
+		if (draggedRow)
+			[rowIndexes addIndex:draggedRow.integerValue];
 	}
+
+	if (!rowIndexes.count)
+		return NO;
 
 	NSArrayController *controller = [aTableView tag] == 0 ? stagedFilesController : unstagedFilesController;
 	NSArray *files = [[controller arrangedObjects] objectsAtIndexes:rowIndexes];
