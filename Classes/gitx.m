@@ -366,7 +366,9 @@ int main(int argc, const char **argv)
 		}
 
 		// gitx can be used to pipe diff output to be displayed in GitX
-		if (!isatty(STDIN_FILENO) && fdopen(STDIN_FILENO, "r"))
+		int stdinFlags = fcntl(STDIN_FILENO, F_GETFL);
+		BOOL stdinIsReadable = (stdinFlags != -1) && ((stdinFlags & O_ACCMODE) != O_WRONLY);
+		if (!isatty(STDIN_FILENO) && stdinIsReadable)
 			handleSTDINDiff();
 
 
