@@ -66,12 +66,18 @@
 {
 	NSPasteboard *pboard = [sender draggingPasteboard];
 
-	if ([[pboard types] containsObject:NSFilenamesPboardType]) {
-		NSArray *filenames = [pboard propertyListForType:NSFilenamesPboardType];
+	NSDictionary *options = @{NSPasteboardURLReadingFileURLsOnlyKey : @YES};
+	NSArray<NSURL *> *fileURLs = [pboard readObjectsForClasses:@[ [NSURL class] ] options:options];
+
+	if (fileURLs.count) {
 		NSString *baseDir = [self.repository.workingDirectory stringByAppendingString:@"/"];
 		if (baseDir) {
 			NSMutableArray *relativeNames = [NSMutableArray new];
-			for (NSString *filename in filenames) {
+			for (NSURL *fileURL in fileURLs) {
+				NSString *filename = fileURL.path;
+				if (!filename)
+					continue;
+
 				if ([filename hasPrefix:baseDir]) {
 					NSString *relativeName = [filename substringFromIndex:(baseDir.length)];
 					if (relativeName.length) {
