@@ -120,7 +120,7 @@
             <font key="font" metaFont="system"/>
             <menu key="menu" title="OtherViews" id="27">
                 <items>
-                    <menuItem title="(not set)" state="on" id="28"/>
+                    <menuItem title="(not set)" state="on" tag="-1" id="28"/>
                     <menuItem title="false" id="29"/>
                     <menuItem title="true" id="30"/>
                     <menuItem title="input" id="31"/>
@@ -435,7 +435,7 @@ Gw
             <font key="font" metaFont="system"/>
             <menu key="menu" title="OtherViews" id="97">
                 <items>
-                    <menuItem title="(not set)" state="on" id="98"/>
+                    <menuItem title="(not set)" state="on" tag="-1" id="98"/>
                     <menuItem title="false" id="99"/>
                     <menuItem title="true" id="100"/>
                     <menuItem title="input" id="101"/>

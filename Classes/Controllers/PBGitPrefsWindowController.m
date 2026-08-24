@@ -145,6 +145,11 @@ static const NSUInteger kMaxProjectNameLength = 25;
 	}
 }
 
+// The pop up rows other than this one are titled with the values git itself
+// accepts, and are read back as the setting. This one stands for no value at
+// all, so it is found by its tag and its title stays free to be translated.
+static const NSInteger PBGitPrefsAutocrlfUnsetTag = -1;
+
 - (void)setControl:(NSControl *)control toValue:(NSString *)value type:(PBGitPrefsRowType)type
 {
 	switch (type) {
@@ -164,9 +169,11 @@ static const NSUInteger kMaxProjectNameLength = 25;
 		}
 		case PBGitPrefsRowTypeAutocrlf: {
 			NSPopUpButton *popUp = (NSPopUpButton *)control;
-			NSString *title = value.length ? value : @"(not set)";
-			if (![popUp itemWithTitle:title]) title = @"(not set)";
-			[popUp selectItemWithTitle:title];
+			NSMenuItem *item = value.length ? [popUp itemWithTitle:value] : nil;
+			if (item)
+				[popUp selectItem:item];
+			else
+				[popUp selectItemWithTag:PBGitPrefsAutocrlfUnsetTag];
 			break;
 		}
 	}
@@ -241,8 +248,8 @@ static const NSUInteger kMaxProjectNameLength = 25;
 		}
 		case PBGitPrefsRowTypeAutocrlf: {
 			NSPopUpButton *popUp = (NSPopUpButton *)control;
-			NSString *title = popUp.selectedItem.title;
-			return [title isEqualToString:@"(not set)"] ? nil : title;
+			if (popUp.selectedTag == PBGitPrefsAutocrlfUnsetTag) return nil;
+			return popUp.selectedItem.title;
 		}
 	}
 	return nil;
