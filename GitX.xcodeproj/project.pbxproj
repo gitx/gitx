@@ -155,6 +155,7 @@
 		63E155858B2CC783EE10F1D7 /* PBGitRevListRaceConditionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 689D57B4A78CEF3B32EB0044 /* PBGitRevListRaceConditionTests.m */; };
 		7A1C4E2B90D3F5A6C1B80011 /* PBGitRepositoryFetchArgumentsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */; };
 		3D8A5F14C7E9420B96741C80 /* PBGitRepositoryIgnoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8A5F14C7E9420B96741C81 /* PBGitRepositoryIgnoreTests.m */; };
+		6B2E70F3A19C4D5E8A730C90 /* GLFileViewLayoutTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6B2E70F3A19C4D5E8A730C91 /* GLFileViewLayoutTests.m */; };
 		63E155858B2CC783EE10F1D8 /* PBGitIndexReconcileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 689D57B4A78CEF3B32EB0045 /* PBGitIndexReconcileTests.m */; };
 		63E155858B2CC783EE10F1D9 /* PBGitIndexRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 689D57B4A78CEF3B32EB0046 /* PBGitIndexRefreshTests.m */; };
 		9A3F7C21E48B450D9C2A1F60 /* PBGitIndexDiffCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A3F7C21E48B450D9C2A1F61 /* PBGitIndexDiffCacheTests.m */; };
@@ -699,6 +700,7 @@
 		689D57B4A78CEF3B32EB0044 /* PBGitRevListRaceConditionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRevListRaceConditionTests.m; path = GitXTests/PBGitRevListRaceConditionTests.m; sourceTree = "<group>"; };
 		7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryFetchArgumentsTests.m; path = GitXTests/PBGitRepositoryFetchArgumentsTests.m; sourceTree = "<group>"; };
 		3D8A5F14C7E9420B96741C81 /* PBGitRepositoryIgnoreTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryIgnoreTests.m; path = GitXTests/PBGitRepositoryIgnoreTests.m; sourceTree = "<group>"; };
+		6B2E70F3A19C4D5E8A730C91 /* GLFileViewLayoutTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GLFileViewLayoutTests.m; path = GitXTests/GLFileViewLayoutTests.m; sourceTree = "<group>"; };
 		689D57B4A78CEF3B32EB0045 /* PBGitIndexReconcileTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitIndexReconcileTests.m; path = GitXTests/PBGitIndexReconcileTests.m; sourceTree = "<group>"; };
 		689D57B4A78CEF3B32EB0046 /* PBGitIndexRefreshTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitIndexRefreshTests.m; path = GitXTests/PBGitIndexRefreshTests.m; sourceTree = "<group>"; };
 		9A3F7C21E48B450D9C2A1F61 /* PBGitIndexDiffCacheTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitIndexDiffCacheTests.m; path = GitXTests/PBGitIndexDiffCacheTests.m; sourceTree = "<group>"; };
@@ -829,6 +831,7 @@
 				689D57B4A78CEF3B32EB0044 /* PBGitRevListRaceConditionTests.m */,
 				7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */,
 				3D8A5F14C7E9420B96741C81 /* PBGitRepositoryIgnoreTests.m */,
+				6B2E70F3A19C4D5E8A730C91 /* GLFileViewLayoutTests.m */,
 				689D57B4A78CEF3B32EB0045 /* PBGitIndexReconcileTests.m */,
 				689D57B4A78CEF3B32EB0046 /* PBGitIndexRefreshTests.m */,
 				9A3F7C21E48B450D9C2A1F61 /* PBGitIndexDiffCacheTests.m */,
@@ -1774,6 +1777,7 @@
 				63E155858B2CC783EE10F1D7 /* PBGitRevListRaceConditionTests.m in Sources */,
 				7A1C4E2B90D3F5A6C1B80011 /* PBGitRepositoryFetchArgumentsTests.m in Sources */,
 				3D8A5F14C7E9420B96741C80 /* PBGitRepositoryIgnoreTests.m in Sources */,
+				6B2E70F3A19C4D5E8A730C90 /* GLFileViewLayoutTests.m in Sources */,
 				63E155858B2CC783EE10F1D8 /* PBGitIndexReconcileTests.m in Sources */,
 				63E155858B2CC783EE10F1D9 /* PBGitIndexRefreshTests.m in Sources */,
 				9A3F7C21E48B450D9C2A1F60 /* PBGitIndexDiffCacheTests.m in Sources */,

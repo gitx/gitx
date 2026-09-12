@@ -26,4 +26,6 @@
 
 - (WebScriptObject *)script;
 - (void)closeView;
+
+- (NSRect)frameForWebView;
 @end

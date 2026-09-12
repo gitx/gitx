@@ -244,7 +244,12 @@
 - (void)windowDidEndLiveResizeWithNotification:(NSNotification *)theNotification
 {
 	self.view.autoresizingMask = NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable | NSViewHeightSizable;
-	self.view.frame = self.view.superview.bounds;
+	self.view.frame = [self frameForWebView];
+}
+
+- (NSRect)frameForWebView
+{
+	return self.view.superview.bounds;
 }
 
 @end

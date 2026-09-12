@@ -73,6 +73,14 @@
 	[self performSelector:@selector(restoreSplitViewPositiion) withObject:nil afterDelay:0];
 }
 
+- (NSRect)frameForWebView
+{
+	NSRect frame = typeBar.superview.bounds;
+	frame.size.height = NSMinY(typeBar.frame);
+
+	return frame;
+}
+
 - (void)showFile
 {
 	NSArray *files = [historyController.treeController selectedObjects];
