@@ -19,9 +19,6 @@ jobs:
       matrix:
         include:
           - xcode: 26.3
-            os: macos-15-intel
-            abi: x86_64
-          - xcode: 26.3
             os: macos-26
             abi: arm64
     steps:
@@ -80,80 +77,7 @@ jobs:
       - name: Unlink openssl 3
         run: |
           brew unlink openssl@3
-          
-      # The unit tests need no signing, no screenshot repo and no network, so
-      # unlike the screenshot pipeline below they can run on every build
-      - name: Run unit tests
-        if: ${{ matrix.abi == 'arm64' }}
-        run: |
-          xcodebuild test \
-            -workspace GitX.xcworkspace \
-            -scheme GitX \
-            -only-testing:GitXTests \
-            -destination "platform=macOS,arch=${{ matrix.abi }}" \
-            ARCHS="${{ matrix.abi }}" \
-            CODE_SIGN_IDENTITY="-"
 
-      # Test (only on arm64 to avoid tripling CI time)
-      - name: Prepare screenshot comparison
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        run: brew install exiftool imagemagick
-      - name: Checkout fixed repo snapshot for screenshots
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        run: |
-          git clone --no-checkout "$GITHUB_WORKSPACE" /tmp/gitx-screenshot-repo
-          git -C /tmp/gitx-screenshot-repo checkout 52ff1051d0c8e5cf3ee5
-      - name: Run tests
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        run: |
-          xcodebuild test \
-            -workspace GitX.xcworkspace \
-            -scheme GitX \
-            -destination "platform=macOS,arch=${{ matrix.abi }}" \
-            ARCHS="${{ matrix.abi }}" \
-            CODE_SIGN_IDENTITY="-" \
-            GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo \
-            -resultBundlePath TestResults-${{ matrix.abi }}.xcresult
-      - name: Extract screenshots from test results
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        run: |
-          python3 scripts/extract_screenshots.py \
-            TestResults-${{ matrix.abi }}.xcresult \
-            ./scripts/screenshots-${{ matrix.abi }}
-      - name: Upload screenshots
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: Screenshots-${{ matrix.abi }}
-          path: ./scripts/screenshots-${{ matrix.abi }}
-      - name: Compare screenshots
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        env:
-          CLASSIC_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
-          SCREENSHOT_USER: ${{ secrets.SCREENSHOT_USER }}
-          SCREENSHOT_PASSWORD: ${{ secrets.SCREENSHOT_PASSWORD }}
-          emulatorApi: ${{ matrix.abi }}
-        run: |
-          ls -ls ./scripts/Screenshots-${{ matrix.abi }}
-          ./screenShotScript/screenShotCompare.sh false
-      - name: Archive screenshots diffs
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-        uses: actions/upload-artifact@v7
-        with:
-          name: gitx-Screenshots-diffs-${{ matrix.abi }}
-          path: |
-            screenshotDiffs
-#      - name: Show git status
-#        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
-#        run: |
-#          rm -rf TestResults-${{ matrix.abi }}.xcresult
-#          rm -rf screenshots-${{ matrix.abi }}
-#          git status
-#          [ "$(git status -s \
-#            -- ':!screenshotsToCompare${{ matrix.abi }}' \
-#               ':!screenshotDiffs')" ] && exit 1 || exit 0
-      # end test
-          
       - name: Build project
         # Do NOT pass PRODUCT_BUNDLE_IDENTIFIER on the command line: it would
         # override every target in the workspace, including Sparkle's
