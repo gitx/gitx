@@ -77,27 +77,36 @@
 - (IBAction)tableDoubleClick:(id)sender
 {
 	[self changeSelection:self];
-	if (selectedResult != nil) {
-		[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:selectedResult
-																			   display:YES
-																	 completionHandler:^(NSDocument *_Nullable document, BOOL documentWasAlreadyOpen, NSError *_Nullable error){
-
-																	 }];
-	}
+	[self openSelectedResult];
 	[self hide];
+}
+
+- (void)openSelectedResult
+{
+	if (selectedResult == nil)
+		return;
+
+	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:selectedResult
+																		   display:YES
+																 completionHandler:^(NSDocument *_Nullable document, BOOL documentWasAlreadyOpen, NSError *_Nullable error) {
+																	 if (document == nil)
+																		 [self reportFailureToOpen:error];
+																 }];
+}
+
+- (void)reportFailureToOpen:(NSError *)error
+{
+	if (error == nil)
+		return;
+
+	[[NSDocumentController sharedDocumentController] presentError:error];
 }
 
 - (BOOL)control:(NSControl *)control textView:(NSTextView *)textView doCommandBySelector:(SEL)commandSelector
 {
 	BOOL result = NO;
 	if (commandSelector == @selector(insertNewline:)) {
-		if (selectedResult != nil) {
-			[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:selectedResult
-																				   display:YES
-																		 completionHandler:^(NSDocument *_Nullable document, BOOL documentWasAlreadyOpen, NSError *_Nullable error){
-
-																		 }];
-		}
+		[self openSelectedResult];
 		[self hide];
 		//		[searchWindow makeKeyAndOrderFront: nil];
 		result = YES;
