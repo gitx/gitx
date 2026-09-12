@@ -338,6 +338,8 @@
 		BOOL success = [self.repository checkoutRefish:[branch ref] error:&error];
 		if (!success) {
 			[self.windowController showErrorSheet:error];
+		} else {
+			[self.windowController.historyViewController selectCurrentBranchTip];
 		}
 	}
 }
