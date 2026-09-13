@@ -557,24 +557,40 @@
 	[self selectCommit:parents[0]];
 }
 
+// The commit context menu sets each item's representedObject to the commit(s) it
+// was opened on, which may not be the selection; the Edit menu and key
+// equivalents carry none, so they act on the selection.
+- (NSArray<PBGitCommit *> *)commitsForSender:(id)sender
+{
+	if ([sender isKindOfClass:[NSMenuItem class]]) {
+		id representedObject = [(NSMenuItem *)sender representedObject];
+		if ([representedObject isKindOfClass:[PBGitCommit class]])
+			return @[ representedObject ];
+		if ([representedObject isKindOfClass:[NSArray class]])
+			return representedObject;
+	}
+
+	return commitController.selectedObjects;
+}
+
 - (IBAction)copy:(id)sender
 {
-	[GitXCommitCopier putStringToPasteboard:[GitXCommitCopier toSHAAndHeadingString:commitController.selectedObjects]];
+	[GitXCommitCopier putStringToPasteboard:[GitXCommitCopier toSHAAndHeadingString:[self commitsForSender:sender]]];
 }
 
 - (IBAction)copySHA:(id)sender
 {
-	[GitXCommitCopier putStringToPasteboard:[GitXCommitCopier toFullSHA:commitController.selectedObjects]];
+	[GitXCommitCopier putStringToPasteboard:[GitXCommitCopier toFullSHA:[self commitsForSender:sender]]];
 }
 
 - (IBAction)copyShortName:(id)sender
 {
-	[GitXCommitCopier putStringToPasteboard:[GitXCommitCopier toShortName:commitController.selectedObjects]];
+	[GitXCommitCopier putStringToPasteboard:[GitXCommitCopier toShortName:[self commitsForSender:sender]]];
 }
 
 - (IBAction)copyPatch:(id)sender
 {
-	[GitXCommitCopier putStringToPasteboard:[GitXCommitCopier toPatch:commitController.selectedObjects]];
+	[GitXCommitCopier putStringToPasteboard:[GitXCommitCopier toPatch:[self commitsForSender:sender]]];
 }
 
 - (IBAction)toggleQLPreviewPanel:(id)sender

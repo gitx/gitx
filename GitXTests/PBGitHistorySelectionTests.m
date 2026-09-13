@@ -8,6 +8,7 @@
 #import "PBGitRepository.h"
 #import "PBGitRevSpecifier.h"
 #import "PBGitRef.h"
+#import "PBGitCommit.h"
 
 // Exposes the rule that decides whether a history list update is allowed to
 // move the selection, and the flag the sidebar raises to ask for a move.
@@ -17,6 +18,7 @@
 - (GTOID *)OIDToReselect;
 - (void)restoreSelectionAfterUpdate;
 - (void)scrollToSelection;
+- (NSArray<PBGitCommit *> *)commitsForSender:(id)sender;
 @end
 
 // The restore only reads OIDs off the commits, so it needs nothing of the real
@@ -193,6 +195,59 @@ static NSString *const kBranchTipSHA = @"8031ee6a0000000000000000000000000000bee
 	self.historyController.awaitingBranchSelection = YES;
 
 	XCTAssertEqualObjects([self.historyController OIDToReselect], [GTOID oidWithSHA:kBranchTipSHA]);
+}
+
+// The bug (#406): right-clicking a commit other than the selected one showed the
+// menu for the clicked commit, but Copy SHA and friends copied the selection.
+- (NSArrayController *)commitsWithSelection:(NSArray *)selection
+{
+	NSArrayController *commits = [[NSArrayController alloc] init];
+	commits.avoidsEmptySelection = NO;
+	commits.content = selection;
+	[commits setSelectedObjects:selection];
+	[self.historyController setValue:commits forKey:@"commitController"];
+
+	return commits;
+}
+
+- (void)testAContextMenuItemCopiesTheClickedCommitNotTheSelection
+{
+	PBGitCommit *selected = [[PBGitCommit alloc] init];
+	PBGitCommit *clicked = [[PBGitCommit alloc] init];
+	[self commitsWithSelection:@[ selected ]];
+
+	NSMenuItem *item = [[NSMenuItem alloc] init];
+	item.representedObject = clicked;
+
+	XCTAssertEqualObjects([self.historyController commitsForSender:item], @[ clicked ]);
+}
+
+- (void)testAContextMenuItemForSeveralCommitsCopiesThemAll
+{
+	NSArray *clicked = @[ [[PBGitCommit alloc] init], [[PBGitCommit alloc] init] ];
+	[self commitsWithSelection:@[ [[PBGitCommit alloc] init] ]];
+
+	NSMenuItem *item = [[NSMenuItem alloc] init];
+	item.representedObject = clicked;
+
+	XCTAssertEqualObjects([self.historyController commitsForSender:item], clicked);
+}
+
+// The Edit menu's copy items carry no commit, so they still act on the selection.
+- (void)testTheEditMenuStillCopiesTheSelection
+{
+	NSArray *selection = @[ [[PBGitCommit alloc] init] ];
+	[self commitsWithSelection:selection];
+
+	XCTAssertEqualObjects([self.historyController commitsForSender:[[NSMenuItem alloc] init]], selection);
+}
+
+- (void)testAKeyboardCopyStillCopiesTheSelection
+{
+	NSArray *selection = @[ [[PBGitCommit alloc] init] ];
+	[self commitsWithSelection:selection];
+
+	XCTAssertEqualObjects([self.historyController commitsForSender:nil], selection);
 }
 
 @end
