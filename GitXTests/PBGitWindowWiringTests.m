@@ -15,7 +15,7 @@
 // -selectedRef is private to the window controller, so the test names it the
 // same way the other suites name the seams they drive.
 @interface PBGitWindowController (PBSelectedRefTests)
-- (PBGitRef *)selectedRef;
+- (PBGitRef *)selectedRefForResponder:(id)responder;
 @end
 
 // The window controller takes its repository from its document. A test has no
@@ -141,7 +141,10 @@
 	return -1;
 }
 
-- (void)focusSidebarOnRefNamed:(NSString *)refName
+// Which list is being asked is read off the first responder, and a test cannot
+// hold the keyboard focus: anything that takes it during the run hands it back
+// to the window. So the list is handed over rather than focused.
+- (NSResponder *)sidebarSelecting:(NSString *)refName
 {
 	NSOutlineView *sourceView = self.windowController.sidebarViewController.sourceView;
 
@@ -149,7 +152,7 @@
 	XCTAssertNotEqual(row, -1, @"%@ has to be on screen before it can be selected", refName);
 	[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 
-	XCTAssertTrue([self.windowController.window makeFirstResponder:sourceView]);
+	return sourceView;
 }
 
 // The commit is read straight out of the repository because the revision list
@@ -169,18 +172,18 @@
 // The array controller takes its content from the revision list, which would
 // refill it from disk on its own schedule. Detaching that binding first is what
 // lets the test decide which commit is on screen.
-- (void)focusHistoryListOnRefNamed:(NSString *)refName
+- (NSResponder *)historyListSelecting:(NSString *)refName
 {
 	PBGitHistoryController *history = self.windowController.historyViewController;
 	PBGitCommit *commit = [self commitForRefNamed:refName];
-
-	XCTAssertTrue([self.windowController.window makeFirstResponder:(NSResponder *)history.commitList]);
 
 	[history.commitController unbind:NSContentArrayBinding];
 	[history.commitController setContent:@[ commit ]];
 	[history.commitController setSelectedObjects:@[ commit ]];
 
 	XCTAssertTrue(history.singleCommitSelected);
+
+	return (NSResponder *)history.commitList;
 }
 
 // Every ref action asks -selectedRef which ref it should work on. With the
@@ -188,38 +191,38 @@
 // list, so a branch picked in the sidebar named nothing at all.
 - (void)testTheFocusedSidebarNamesTheBranchItHasSelected
 {
-	XCTAssertNil(self.windowController.selectedRef, @"with neither list focused nothing is named");
+	XCTAssertNil([self.windowController selectedRefForResponder:nil], @"with neither list focused nothing is named");
 
-	[self focusSidebarOnRefNamed:@"refs/heads/branch_two"];
+	NSResponder *sidebar = [self sidebarSelecting:@"refs/heads/branch_two"];
 
-	XCTAssertEqualObjects(self.windowController.selectedRef.ref, @"refs/heads/branch_two");
+	XCTAssertEqualObjects([self.windowController selectedRefForResponder:sidebar].ref, @"refs/heads/branch_two");
 }
 
 // A row directly under REMOTES stands for the whole remote rather than for any
 // one of its branches, and fetch and pull are offered on that.
 - (void)testTheFocusedSidebarNamesAWholeRemoteByItsOwnRef
 {
-	[self focusSidebarOnRefNamed:@"refs/remotes/origin"];
+	NSResponder *sidebar = [self sidebarSelecting:@"refs/remotes/origin"];
 
-	XCTAssertEqualObjects(self.windowController.selectedRef.ref, @"refs/remotes/origin");
+	XCTAssertEqualObjects([self.windowController selectedRefForResponder:sidebar].ref, @"refs/remotes/origin");
 }
 
 // The history list keeps answering as it always has: the branch label on the
 // selected commit, when there is exactly one.
 - (void)testTheFocusedHistoryListNamesTheBranchOnItsSelectedCommit
 {
-	[self focusHistoryListOnRefNamed:@"refs/heads/branch_one"];
+	NSResponder *historyList = [self historyListSelecting:@"refs/heads/branch_one"];
 
-	XCTAssertEqualObjects(self.windowController.selectedRef.ref, @"refs/heads/branch_one");
+	XCTAssertEqualObjects([self.windowController selectedRefForResponder:historyList].ref, @"refs/heads/branch_one");
 }
 
 // Two branches sit on the root commit, so the history list cannot say which one
 // an action was meant for and names neither.
 - (void)testACommitCarryingTwoBranchesNamesNeither
 {
-	[self focusHistoryListOnRefNamed:@"refs/heads/branch_two"];
+	NSResponder *historyList = [self historyListSelecting:@"refs/heads/branch_two"];
 
-	XCTAssertNil(self.windowController.selectedRef);
+	XCTAssertNil([self.windowController selectedRefForResponder:historyList]);
 }
 
 @end
