@@ -922,6 +922,16 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return success;
 }
 
+- (NSString *)failureReasonFromTaskError:(NSError *)taskError orFallback:(NSString *)fallback
+{
+	if (![taskError.domain isEqualToString:PBTaskErrorDomain])
+		return fallback;
+
+	NSString *output = [taskError.userInfo[PBTaskTerminationOutputKey] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+
+	return output.length ? output : fallback;
+}
+
 - (BOOL)checkoutRefish:(id<PBGitRefish>)ref error:(NSError **)error
 {
 	NSString *refName = nil;
@@ -935,7 +945,8 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	NSString *output = [self outputOfTaskWithArguments:arguments error:&gitError];
 	if (!output) {
 		NSString *title = @"Checkout failed";
-		NSString *message = [NSString stringWithFormat:@"There was an error checking out the %@ '%@'.\n\nPerhaps your working directory is not clean?", [ref refishType], [ref shortName]];
+		NSString *guess = [NSString stringWithFormat:@"There was an error checking out the %@ '%@'.\n\nPerhaps your working directory is not clean?", [ref refishType], [ref shortName]];
+		NSString *message = [self failureReasonFromTaskError:gitError orFallback:guess];
 
 		return PBReturnError(error, title, message, gitError);
 	}
@@ -963,7 +974,8 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	NSString *output = [self outputOfTaskWithArguments:arguments error:&gitError];
 	if (!output) {
 		NSString *title = @"Checkout failed";
-		NSString *message = [NSString stringWithFormat:@"There was an error checking out the file(s) from the %@ '%@'.\n\nPerhaps your working directory is not clean?", [ref refishType], [ref shortName]];
+		NSString *guess = [NSString stringWithFormat:@"There was an error checking out the file(s) from the %@ '%@'.\n\nPerhaps your working directory is not clean?", [ref refishType], [ref shortName]];
+		NSString *message = [self failureReasonFromTaskError:gitError orFallback:guess];
 
 		return PBReturnError(error, title, message, gitError);
 	}
@@ -1004,7 +1016,8 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	NSString *output = [self outputOfTaskWithArguments:arguments error:&gitError];
 	if (!output) {
 		NSString *title = @"Cherry pick failed!";
-		NSString *message = [NSString stringWithFormat:@"There was an error cherry picking the %@ '%@'.\n\nPerhaps your working directory is not clean?", [ref refishType], [ref shortName]];
+		NSString *guess = [NSString stringWithFormat:@"There was an error cherry picking the %@ '%@'.\n\nPerhaps your working directory is not clean?", [ref refishType], [ref shortName]];
+		NSString *message = [self failureReasonFromTaskError:gitError orFallback:guess];
 
 		return PBReturnError(error, title, message, gitError);
 	}
