@@ -463,16 +463,16 @@
 		[menuItem setState:(self.selectedCommitDetailsIndex == kHistoryTreeViewIndex) ? NSControlStateValueOn : NSControlStateValueOff];
 	}
 
+	if (action == @selector(copy:) || action == @selector(copySHA:) || action == @selector(copyShortName:) || action == @selector(copyPatch:)) {
+		return self.commitController.selectedObjects.count > 0;
+	}
+
 	if ([self respondsToSelector:action]) {
 		if (action == @selector(createBranch:) || action == @selector(createTag:)) {
 			return self.singleCommitSelected;
 		}
 
 		return YES;
-	}
-
-	if (action == @selector(copy:) || action == @selector(copySHA:) || action == @selector(copyShortName:) || action == @selector(copyPatch:)) {
-		return self.commitController.selectedObjects.count > 0;
 	}
 
 	return [[self nextResponder] validateMenuItem:menuItem];

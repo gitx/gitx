@@ -164,6 +164,7 @@
 		7C4D19A8E52B461AB3D80E70 /* GLFileViewContentCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */; };
 		5E1B93C7D04A47F2A8C61B30 /* PBGitCommitControllerRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */; };
 		7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */; };
+		53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */; };
 		1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */; };
 		7A1C3E5D2B8F49A0C6D14E82 /* PBRepositoryFinderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E9B0D4A18C7452FB3A0D95E /* PBRepositoryFinderTests.m */; };
 		4C7F2A9E5D1B48A3E602F7C1 /* PBGitCommitFileSelectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E1D6C0A9F42B7D51C8E30 /* PBGitCommitFileSelectionTests.m */; };
@@ -713,6 +714,7 @@
 		7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GLFileViewContentCacheTests.m; path = GitXTests/GLFileViewContentCacheTests.m; sourceTree = "<group>"; };
 		5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitCommitControllerRefreshTests.m; path = GitXTests/PBGitCommitControllerRefreshTests.m; sourceTree = "<group>"; };
 		5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistorySelectionTests.m; path = GitXTests/PBGitHistorySelectionTests.m; sourceTree = "<group>"; };
+		9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryMenuValidationTests.m; path = GitXTests/PBGitHistoryMenuValidationTests.m; sourceTree = "<group>"; };
 		4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWindowWiringTests.m; path = GitXTests/PBGitWindowWiringTests.m; sourceTree = "<group>"; };
 		6E9B0D4A18C7452FB3A0D95E /* PBRepositoryFinderTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBRepositoryFinderTests.m; path = GitXTests/PBRepositoryFinderTests.m; sourceTree = "<group>"; };
 		3B8E1D6C0A9F42B7D51C8E30 /* PBGitCommitFileSelectionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitCommitFileSelectionTests.m; path = GitXTests/PBGitCommitFileSelectionTests.m; sourceTree = "<group>"; };
@@ -848,6 +850,7 @@
 				7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */,
 				5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */,
 				5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */,
+				9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */,
 				4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */,
 				6E9B0D4A18C7452FB3A0D95E /* PBRepositoryFinderTests.m */,
 				3B8E1D6C0A9F42B7D51C8E30 /* PBGitCommitFileSelectionTests.m */,
@@ -1798,6 +1801,7 @@
 				7C4D19A8E52B461AB3D80E70 /* GLFileViewContentCacheTests.m in Sources */,
 				5E1B93C7D04A47F2A8C61B30 /* PBGitCommitControllerRefreshTests.m in Sources */,
 				7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */,
+				53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */,
 				1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */,
 				7A1C3E5D2B8F49A0C6D14E82 /* PBRepositoryFinderTests.m in Sources */,
 				4C7F2A9E5D1B48A3E602F7C1 /* PBGitCommitFileSelectionTests.m in Sources */,
