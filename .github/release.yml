@@ -23,6 +23,9 @@ changelog:
     - title: Dependencies
       labels:
         - dependencies
+    - title: Tests
+      labels:
+        - test
     - title: Other Changes
       labels:
         - "*"
