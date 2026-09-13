@@ -55,6 +55,19 @@
 
 @end
 
+// Setting amend asks the index to read itself back, which launches git. These
+// tests answer for git themselves, so the read-back stays out of them.
+@interface PBQuietIndex : PBGitIndex
+@end
+
+@implementation PBQuietIndex
+
+- (void)refresh
+{
+}
+
+@end
+
 @interface PBGitIndexDiffCacheTests : XCTestCase
 @property (nonatomic, strong) PBDiffStubRepository *repository;
 @property (nonatomic, strong) PBGitIndex *gitIndex;
@@ -80,7 +93,7 @@
 	self.repository = [[PBDiffStubRepository alloc] init];
 	self.repository.workingURL = self.directory;
 	self.repository.indexFileURL = [self.directory URLByAppendingPathComponent:@"index"];
-	self.gitIndex = [[PBGitIndex alloc] initWithRepository:self.repository];
+	self.gitIndex = [[PBQuietIndex alloc] initWithRepository:self.repository];
 }
 
 - (void)tearDown
