@@ -30,10 +30,20 @@
 	NSTask *task = [[NSTask alloc] init];
 	task.executableURL = [NSURL fileURLWithPath:@"/usr/bin/git"];
 	task.arguments = @[@"init", @"--quiet", self.workDir.path];
+	task.environment = @{@"PATH" : @"/usr/bin:/bin",
+						 @"GIT_CONFIG_GLOBAL" : @"/dev/null",
+						 @"GIT_CONFIG_SYSTEM" : @"/dev/null"};
 	task.standardOutput = NSFileHandle.fileHandleWithNullDevice;
 	task.standardError = NSFileHandle.fileHandleWithNullDevice;
-	[task launchAndReturnError:NULL];
+
+	NSError *error = nil;
+	if (![task launchAndReturnError:&error]) {
+		XCTFail(@"git init did not start: %@", error);
+		return;
+	}
+
 	[task waitUntilExit];
+	XCTAssertEqual(task.terminationStatus, 0, @"git init failed, so there is no repository to find");
 }
 
 - (void)tearDown

@@ -14,9 +14,19 @@
 @end
 
 @interface PBGitRepositoryFetchArgumentsTests : XCTestCase
+@property (nonatomic, strong) id settingToPutBack;
 @end
 
 @implementation PBGitRepositoryFetchArgumentsTests
+
+// The tests run in the application, so this preference is the one whoever runs
+// them has set in GitX. Put back what was there rather than clearing it.
+- (void)setUp
+{
+	[super setUp];
+
+	self.settingToPutBack = [[NSUserDefaults standardUserDefaults] objectForKey:@"PBPruneOnFetch"];
+}
 
 - (void)setPruneOnFetchSetting:(PBPruneOnFetchSetting)setting
 {
@@ -26,7 +36,11 @@
 
 - (void)tearDown
 {
-	[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"PBPruneOnFetch"];
+	if (self.settingToPutBack)
+		[[NSUserDefaults standardUserDefaults] setObject:self.settingToPutBack forKey:@"PBPruneOnFetch"];
+	else
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"PBPruneOnFetch"];
+
 	[super tearDown];
 }
 

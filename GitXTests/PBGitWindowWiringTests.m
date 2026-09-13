@@ -66,9 +66,18 @@
 		task.arguments = arguments;
 		task.environment = @{@"GIT_AUTHOR_NAME" : @"t", @"GIT_AUTHOR_EMAIL" : @"t@t",
 							 @"GIT_COMMITTER_NAME" : @"t", @"GIT_COMMITTER_EMAIL" : @"t@t",
-							 @"PATH" : @"/usr/bin:/bin"};
-		[task launchAndReturnError:NULL];
+							 @"PATH" : @"/usr/bin:/bin",
+							 @"GIT_CONFIG_GLOBAL" : @"/dev/null",
+							 @"GIT_CONFIG_SYSTEM" : @"/dev/null"};
+
+		NSError *error = nil;
+		if (![task launchAndReturnError:&error]) {
+			XCTFail(@"git %@ did not start: %@", arguments.firstObject, error);
+			break;
+		}
+
 		[task waitUntilExit];
+		XCTAssertEqual(task.terminationStatus, 0, @"git %@ failed, so the repository is not the one these tests describe", arguments.firstObject);
 	}
 
 	return URL;
