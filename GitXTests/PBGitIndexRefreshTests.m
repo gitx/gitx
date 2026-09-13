@@ -163,6 +163,13 @@ static NSString *const kHeadSHA = @"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
 // Each of the three commands reports on its own, long before the file list has
 // been rebuilt from all three of them. Announcing an index update from there
 // served observers the previous refresh's contents.
+//
+// The notification is posted via dispatch_async onto the main queue, so it
+// isn't necessarily delivered by the time -waitForExpectations first checks;
+// a shared/loaded CI runner can be slow enough to blow past a timeout of just
+// a second or two, so this leaves plenty of headroom. The inverted
+// expectation waits out the whole timeout regardless, so this only slows the
+// test down, not the assertion it is actually making.
 - (void)testACommandResultDoesNotAnnounceAnIndexUpdate
 {
 	XCTestExpectation *statusReported = [self expectationForNotification:PBGitIndexIndexRefreshStatus
@@ -175,7 +182,7 @@ static NSString *const kHeadSHA = @"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
 
 	[self.gitIndex postIndexRefreshSuccess:YES message:@"diff-index success"];
 
-	[self waitForExpectations:@[ statusReported, indexAnnounced ] timeout:1.0];
+	[self waitForExpectations:@[ statusReported, indexAnnounced ] timeout:5.0];
 }
 
 - (void)testAFailedCommandDoesNotAnnounceAnIndexUpdateEither
@@ -190,7 +197,7 @@ static NSString *const kHeadSHA = @"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
 
 	[self.gitIndex postIndexRefreshSuccess:NO message:@"diff-index failed"];
 
-	[self waitForExpectations:@[ failureReported, indexAnnounced ] timeout:1.0];
+	[self waitForExpectations:@[ failureReported, indexAnnounced ] timeout:5.0];
 }
 
 #pragma mark Overlapping refreshes coalesce
