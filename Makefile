@@ -147,6 +147,11 @@ all-tests: ## Run every test target in the scheme, screenshots included
 		$(TEST_SETTINGS) \
 		GITX_SCREENSHOT_REPO="$(GITX_SCREENSHOT_REPO)" $(RESULT_BUNDLE_ARG) test
 
+# Only for the goals that need the real identity: CI and `dmg` sign ad-hoc.
+ifneq (,$(filter smoke-test dmg-signed,$(MAKECMDGOALS)))
+archive: Dev.xcconfig
+endif
+
 archive: ## Build a release GitX.xcarchive, which the dmg targets export from
 	$(XCODEBUILD) -archivePath $(ARCHIVE) $(ARCHIVE_SETTINGS) archive
 
