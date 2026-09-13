@@ -20,6 +20,8 @@
 
 - (void)hide;
 - (void)show;
+- (void)openSelectedResult;
+- (void)reportFailureToOpen:(NSError *)error;
 
 - (IBAction)doSearch:(id)sender;
 - (IBAction)changeSelection:(id)sender;

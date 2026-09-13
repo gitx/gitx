@@ -121,6 +121,7 @@ static NSMutableArray *locations = nil;
 {
 	if (!locations) {
 		locations = [[NSMutableArray alloc] initWithObjects:
+												@"/opt/homebrew/bin/git",
 												@"/opt/local/bin/git",
 												@"/sw/bin/git",
 												@"/opt/git/bin/git",
