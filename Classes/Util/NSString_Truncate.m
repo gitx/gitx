@@ -21,6 +21,45 @@
 
 @implementation NSString (PBGitXTruncateExtensions)
 
+// Both cutting helpers below take an index into `self` that a naive fixed-width
+// truncation would cut at, and nudge it to the nearest composed-character-sequence
+// boundary so the cut can't split a surrogate pair (or other multi-UTF-16-unit
+// grapheme) in two. Splitting one produces a UTF-16 string half of a surrogate
+// pair, which can't be encoded as valid UTF-8 and shows up as a broken glyph
+// wherever the truncated string is displayed.
+
+// For a forthcoming -substringToIndex:cutIndex (i.e. the retained prefix ends
+// just before cutIndex): if the character at cutIndex belongs to a sequence
+// that started earlier, back cutIndex off to the start of that sequence, so
+// the whole sequence is dropped rather than half-kept.
+- (NSUInteger)pb_indexAtOrBeforeComposedCharacterBoundary:(NSUInteger)cutIndex
+{
+	if (cutIndex == 0 || cutIndex >= self.length)
+		return cutIndex;
+
+	NSRange sequence = [self rangeOfComposedCharacterSequenceAtIndex:cutIndex];
+	if (sequence.location < cutIndex)
+		return sequence.location;
+
+	return cutIndex;
+}
+
+// For a forthcoming -substringFromIndex:cutIndex (i.e. the retained suffix
+// starts at cutIndex): if the character at cutIndex belongs to a sequence
+// that started earlier, push cutIndex forward past the end of that sequence,
+// so the whole sequence is dropped rather than half-kept.
+- (NSUInteger)pb_indexAtOrAfterComposedCharacterBoundary:(NSUInteger)cutIndex
+{
+	if (cutIndex == 0 || cutIndex >= self.length)
+		return cutIndex;
+
+	NSRange sequence = [self rangeOfComposedCharacterSequenceAtIndex:cutIndex];
+	if (sequence.location < cutIndex)
+		return NSMaxRange(sequence);
+
+	return cutIndex;
+}
+
 - (NSString *)truncateToLength:(NSUInteger)targetLength mode:(PBNSStringTruncateMode)mode indicator:(NSString *)indicatorString
 {
 	NSString *res = nil;
@@ -40,17 +79,24 @@
 		return nil;
 	} else {
 		switch (mode) {
-			case PBNSStringTruncateModeCenter:
-				firstPart = [self substringToIndex:(targetLength / 2)];
-				lastPart = [self substringFromIndex:(stringLength - ((targetLength / 2)) + ilength)];
+			case PBNSStringTruncateModeCenter: {
+				NSUInteger firstCut = [self pb_indexAtOrBeforeComposedCharacterBoundary:(targetLength / 2)];
+				NSUInteger lastCut = [self pb_indexAtOrAfterComposedCharacterBoundary:(stringLength - ((targetLength / 2)) + ilength)];
+				firstPart = [self substringToIndex:firstCut];
+				lastPart = [self substringFromIndex:lastCut];
 				res = [NSString stringWithFormat:@"%@%@%@", firstPart, indicatorString, lastPart];
 				break;
-			case PBNSStringTruncateModeStart:
-				res = [NSString stringWithFormat:@"%@%@", indicatorString, [self substringFromIndex:((stringLength - targetLength) + ilength)]];
+			}
+			case PBNSStringTruncateModeStart: {
+				NSUInteger cut = [self pb_indexAtOrAfterComposedCharacterBoundary:((stringLength - targetLength) + ilength)];
+				res = [NSString stringWithFormat:@"%@%@", indicatorString, [self substringFromIndex:cut]];
 				break;
-			case PBNSStringTruncateModeEnd:
-				res = [NSString stringWithFormat:@"%@%@", [self substringToIndex:(targetLength - ilength)], indicatorString];
+			}
+			case PBNSStringTruncateModeEnd: {
+				NSUInteger cut = [self pb_indexAtOrBeforeComposedCharacterBoundary:(targetLength - ilength)];
+				res = [NSString stringWithFormat:@"%@%@", [self substringToIndex:cut], indicatorString];
 				break;
+			}
 			default:;
 				NSException *myException = [NSException exceptionWithName:NSInvalidArgumentException
 																   reason:[NSString stringWithFormat:
