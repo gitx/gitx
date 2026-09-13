@@ -136,6 +136,11 @@ var reload = function() {
 	showRefs();
 }
 
+var setRefColors = function(colors) {
+	for (var name in colors)
+		document.documentElement.style.setProperty("--ref-" + name, colors[name]);
+}
+
 var showRefs = function() {
 	var refs = $("refs");
 	if (commit.refs) {
@@ -145,7 +150,7 @@ var showRefs = function() {
 			var ref = commit.refs[i];
 			var span = document.createElement("span");
 			span.classList.add("refs", ref.type());
-			if (commit.currentRef == ref.ref) {
+			if (commit.currentRef == ref.ref()) {
 				span.classList.add("currentBranch");
 			}
 			span.textContent = ref.shortName();

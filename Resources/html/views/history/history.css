@@ -153,19 +153,19 @@ a {
 }
 
 .refs.head {
-	background-color: #7ad254;
+	background-color: var(--ref-head, #9ae284);
 }
 
 .refs.remote {
-	background-color: #82afef;
+	background-color: var(--ref-remote, #a2cfef);
 }
 
 .refs.tag {
-	background-color: #fced4f;
+	background-color: var(--ref-tag, #fced6f);
 }
 
 .refs.currentBranch {
-	background-color: #fca64f;
+	background-color: var(--ref-currentBranch, #fca64f);
 }
 #message_files {
 	margin: 0;

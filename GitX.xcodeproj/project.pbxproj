@@ -130,6 +130,7 @@
 		4A5D773A14A9A9F600DF6C68 /* gitx.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D768614A9A9CC00DF6C68 /* gitx.m */; };
 		4A5D773B14A9A9F900DF6C68 /* gitx_askpasswd_main.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D768714A9A9CC00DF6C68 /* gitx_askpasswd_main.m */; };
 		4A5D777414A9AEB000DF6C68 /* PBSourceViewBadge.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D776F14A9AEB000DF6C68 /* PBSourceViewBadge.m */; };
+		73BBA7CB2CFA4A539E50DC2D /* PBGitRefLabelColors.m in Sources */ = {isa = PBXBuildFile; fileRef = E9EC58BF6EAA4E6CB0E56CC2 /* PBGitRefLabelColors.m */; };
 		4A68AD7414A00541006DE321 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A68AD6714A0050F006DE321 /* Sparkle.framework */; };
 		4A774CC9142F482900E158CC /* ObjectiveGit.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4A4EF0AF142CBAD5001B8CDF /* ObjectiveGit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4A8F6B4B14A9B6C20002F4D7 /* MGScopeBar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4A8F6B4714A9B6110002F4D7 /* MGScopeBar.framework */; };
@@ -652,6 +653,8 @@
 		4A5D76DF14A9A9CC00DF6C68 /* PBSourceViewItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBSourceViewItem.m; sourceTree = "<group>"; };
 		4A5D776E14A9AEB000DF6C68 /* PBSourceViewBadge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewBadge.h; sourceTree = "<group>"; };
 		4A5D776F14A9AEB000DF6C68 /* PBSourceViewBadge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBSourceViewBadge.m; sourceTree = "<group>"; };
+		E9EC58BF6EAA4E6CB0E56CC2 /* PBGitRefLabelColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitRefLabelColors.m; sourceTree = "<group>"; };
+		94915ED480AD4D678289B5AD /* PBGitRefLabelColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRefLabelColors.h; sourceTree = "<group>"; };
 		4A5D777014A9AEB000DF6C68 /* PBSourceViewItems.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewItems.h; sourceTree = "<group>"; };
 		4A68AD5814A0050E006DE321 /* Sparkle.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Sparkle.xcodeproj; path = Sparkle/Sparkle.xcodeproj; sourceTree = "<group>"; };
 		4A8F6B3B14A9B6100002F4D7 /* MGScopeBar.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MGScopeBar.xcodeproj; path = MGScopeBar/MGScopeBar.xcodeproj; sourceTree = "<group>"; };
@@ -1274,6 +1277,8 @@
 				4A5D76DB14A9A9CC00DF6C68 /* PBRemoteProgressSheet.m */,
 				4A5D776E14A9AEB000DF6C68 /* PBSourceViewBadge.h */,
 				4A5D776F14A9AEB000DF6C68 /* PBSourceViewBadge.m */,
+				94915ED480AD4D678289B5AD /* PBGitRefLabelColors.h */,
+				E9EC58BF6EAA4E6CB0E56CC2 /* PBGitRefLabelColors.m */,
 				4A5D76DE14A9A9CC00DF6C68 /* PBSourceViewItem.h */,
 				4A5D76DF14A9A9CC00DF6C68 /* PBSourceViewItem.m */,
 				4A5D777014A9AEB000DF6C68 /* PBSourceViewItems.h */,
@@ -1924,6 +1929,7 @@
 				373F9A201EAF97A200A77B4C /* NSSplitView+GitX.m in Sources */,
 				4A5D773914A9A9CC00DF6C68 /* PBSourceViewItem.m in Sources */,
 				4A5D777414A9AEB000DF6C68 /* PBSourceViewBadge.m in Sources */,
+				73BBA7CB2CFA4A539E50DC2D /* PBGitRefLabelColors.m in Sources */,
 				BF42F1331E025403004769FF /* GitXTextView.m in Sources */,
 				4AB71FF814B7EDD400F1DFFC /* RJModalRepoSheet.m in Sources */,
 				643952771603EF9B00BB7AFF /* PBSourceViewGitSubmoduleItem.m in Sources */,

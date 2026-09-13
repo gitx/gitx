@@ -7,6 +7,7 @@
 //
 
 #import "PBWebHistoryController.h"
+#import "PBGitRefLabelColors.h"
 #import "PBGitDefaults.h"
 #import <ObjectiveGit/GTConfiguration.h>
 #import "PBGitRef.h"
@@ -44,6 +45,7 @@
 - (void)didLoad
 {
 	currentOID = nil;
+	[[self script] callWebScriptMethod:@"setRefColors" withArguments:@[ [PBGitRefLabelColors CSSColors] ]];
 	[self changeContentTo:historyController.webCommits];
 }
 
