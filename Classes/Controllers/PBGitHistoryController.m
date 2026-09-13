@@ -1235,7 +1235,8 @@
 	BOOL isHead = [firstCommit.OID isEqual:firstCommit.repository.headOID];
 
 	if (isSingleCommitSelection) {
-		NSString *truncatedSubject = [firstCommit.subject truncateToLength:13 mode:PBNSStringTruncateModeEnd indicator:@"..."];
+		NSString *subject = firstCommit.subject.length > 0 ? firstCommit.subject : NSLocalizedString(@"<empty message>", @"Placeholder shown in the Checkout Commit menu item for a commit with no subject");
+		NSString *truncatedSubject = [subject truncateToLength:43 mode:PBNSStringTruncateModeEnd indicator:@"..."];
 		NSString *checkoutCommitTitle = [NSString stringWithFormat:NSLocalizedString(@"Checkout Commit “%@”", @"Contextual Menu Item to check out the selected commit, %@ is the first part of its subject"), truncatedSubject];
 		[items addObject:[NSMenuItem pb_itemWithTitle:checkoutCommitTitle action:@selector(checkout:) enabled:YES]];
 		[items addObject:[NSMenuItem separatorItem]];
