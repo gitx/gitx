@@ -494,8 +494,12 @@
 
 - (PBGitRef *)selectedRef
 {
-	id firstResponder = self.window.firstResponder;
-	if (firstResponder == self.sidebarViewController.sourceView) {
+	return [self selectedRefForResponder:self.window.firstResponder];
+}
+
+- (PBGitRef *)selectedRefForResponder:(id)responder
+{
+	if (responder == self.sidebarViewController.sourceView) {
 		NSOutlineView *sourceView = self.sidebarViewController.sourceView;
 		PBSourceViewItem *item = [sourceView itemAtRow:sourceView.selectedRow];
 		PBGitRef *ref = item.ref;
@@ -503,7 +507,7 @@
 			ref = [PBGitRef refFromString:[kGitXRemoteRefPrefix stringByAppendingString:item.title]];
 		}
 		return ref;
-	} else if (firstResponder == _historyViewController.commitList && _historyViewController.singleCommitSelected) {
+	} else if (responder == _historyViewController.commitList && _historyViewController.singleCommitSelected) {
 		NSMutableArray *branchCommits = [NSMutableArray array];
 		for (PBGitRef *ref in _historyViewController.selectedCommits.firstObject.refs) {
 			if (!ref.isBranch) continue;
