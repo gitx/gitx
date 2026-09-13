@@ -95,7 +95,16 @@ jobs:
       # unlike the screenshot pipeline below they can run on every build
       - name: Run unit tests
         if: ${{ matrix.abi == 'arm64' }}
-        run: make unit-test ARCH=${{ matrix.abi }}
+        run: |
+          make unit-test \
+            ARCH=${{ matrix.abi }} \
+            RESULT_BUNDLE=UnitTestResults-${{ matrix.abi }}.xcresult
+      - name: Upload unit test results
+        if: ${{ always() && matrix.abi == 'arm64' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: UnitTestResults-${{ matrix.abi }}.xcresult
+          path: UnitTestResults-${{ matrix.abi }}.xcresult
 
       # Test (only on arm64 to avoid tripling CI time)
       - name: Prepare screenshot comparison

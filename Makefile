@@ -131,7 +131,7 @@ build: ## Build the app for local use
 
 unit-test: ## Run the unit tests, needing no signing, repo or network
 	$(XCODEBUILD) -destination "$(DESTINATION)" \
-		-only-testing:GitXTests $(TEST_SETTINGS) test
+		-only-testing:GitXTests $(TEST_SETTINGS) $(RESULT_BUNDLE_ARG) test
 
 test: unit-test ## (alias)
 
