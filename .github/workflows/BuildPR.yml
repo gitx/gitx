@@ -248,7 +248,7 @@ jobs:
           submodules: recursive
       - name: Find Tag
         id: tagger
-        uses: jimschubert/query-tag-action@v2
+        uses: jimschubert/query-tag-action@v2.3
         with:
           skip-unshallow: 'true'
           abbrev: false
