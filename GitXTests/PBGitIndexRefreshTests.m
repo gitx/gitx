@@ -25,6 +25,7 @@
 @property (nonatomic, assign) BOOL gitAcceptsTheChange;
 @property (nonatomic, strong) NSMutableArray<NSArray<NSString *> *> *launchedArguments;
 @property (nonatomic, strong) NSMutableArray<NSString *> *launchedInput;
+@property (nonatomic, strong) NSURL *indexFileURL;
 @end
 
 @implementation PBStubRepository
@@ -39,6 +40,11 @@
 	_launchedInput = [NSMutableArray array];
 
 	return self;
+}
+
+- (NSURL *)getIndexURL
+{
+	return self.indexFileURL;
 }
 
 - (BOOL)launchTaskWithArguments:(nullable NSArray *)arguments input:(nullable NSString *)inputString error:(NSError **)error
@@ -219,6 +225,48 @@ static NSString *const kHeadSHA = @"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391";
 	XCTAssertFalse([self.gitIndex endRefreshTakingDeferred]);
 
 	XCTAssertTrue([self.gitIndex beginRefreshOrDeferIt], @"the guard has to be clear once a refresh has ended");
+}
+
+#pragma mark Telling GitX's own index writes apart from everyone else's
+
+- (void)writeIndexContents:(NSString *)contents
+{
+	if (!self.repository.indexFileURL) {
+		NSURL *directory = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:[[NSUUID UUID] UUIDString]]];
+		[[NSFileManager defaultManager] createDirectoryAtURL:directory
+								withIntermediateDirectories:YES
+												 attributes:nil
+													  error:NULL];
+		self.repository.indexFileURL = [directory URLByAppendingPathComponent:@"index"];
+	}
+
+	[contents writeToURL:self.repository.indexFileURL atomically:YES encoding:NSUTF8StringEncoding error:NULL];
+}
+
+- (void)testAnIndexAlreadyReadIsNotReportedAsChanged
+{
+	[self writeIndexContents:@"staged"];
+
+	XCTAssertTrue([self.gitIndex beginRefreshOrDeferIt]);
+
+	XCTAssertFalse([self.gitIndex indexChangedSinceLastRefresh], @"the refresh that just started read this very index");
+}
+
+- (void)testAnIndexWrittenAfterARefreshIsReportedAsChanged
+{
+	[self writeIndexContents:@"staged"];
+	XCTAssertTrue([self.gitIndex beginRefreshOrDeferIt]);
+
+	[self writeIndexContents:@"staged and then some"];
+
+	XCTAssertTrue([self.gitIndex indexChangedSinceLastRefresh], @"a write nobody has read yet is worth a refresh");
+}
+
+- (void)testAnIndexThatCannotBeStattedIsReportedAsChanged
+{
+	XCTAssertTrue([self.gitIndex beginRefreshOrDeferIt]);
+
+	XCTAssertTrue([self.gitIndex indexChangedSinceLastRefresh], @"an index that cannot be read is no reason to skip a refresh");
 }
 
 @end

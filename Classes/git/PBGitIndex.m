@@ -58,6 +58,7 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	NSDictionary *_untrackedChanges;
 	NSString *_diffCacheKey;
 	NSString *_diffCacheOutput;
+	NSString *_refreshedIndexFingerprint;
 }
 
 @property (retain) NSDictionary *amendEnvironment;
@@ -175,7 +176,19 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 		mayRefresh = YES;
 	});
 
+	if (mayRefresh)
+		_refreshedIndexFingerprint = [self fingerprintOfFileAtURL:self.repository.indexURL];
+
 	return mayRefresh;
+}
+
+- (BOOL)indexChangedSinceLastRefresh
+{
+	NSString *fingerprint = [self fingerprintOfFileAtURL:self.repository.indexURL];
+	if ([fingerprint isEqualToString:@"absent"])
+		return YES;
+
+	return ![fingerprint isEqualToString:_refreshedIndexFingerprint];
 }
 
 // Read and clear the deferred request together with the in-progress flag, so a

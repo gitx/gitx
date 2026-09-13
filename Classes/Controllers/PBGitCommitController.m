@@ -130,10 +130,14 @@
 - (void)repositoryUpdatedNotification:(NSNotification *)notification
 {
 	PBGitRepositoryWatcherEventType eventType = [(NSNumber *)[[notification userInfo] objectForKey:kPBGitRepositoryEventTypeUserInfoKey] unsignedIntValue];
-	if (eventType & (PBGitRepositoryWatcherEventTypeWorkingDirectory | PBGitRepositoryWatcherEventTypeIndex)) {
-		// refresh if the working directory or index is modified
+	if (eventType & PBGitRepositoryWatcherEventTypeWorkingDirectory) {
+		// refresh if the working directory is modified
 		[self refresh:self];
+		return;
 	}
+
+	if ((eventType & PBGitRepositoryWatcherEventTypeIndex) && [self.repository.index indexChangedSinceLastRefresh])
+		[self refresh:self];
 }
 
 - (void)updateView
