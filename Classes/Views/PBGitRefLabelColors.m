@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 		@"head" : @"#9ae284",
 		@"remote" : @"#a2cfef",
 		@"tag" : @"#fced6f",
+		@"worktree" : @"#8fe0d5",
 		@"currentBranch" : @"#fca64f",
 	};
 }
@@ -42,6 +43,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSColor *)currentBranchColor
 {
 	return [self colorNamed:@"currentBranch"];
+}
+
++ (NSColor *)worktreeBranchColor
+{
+	return [self colorNamed:@"worktree"];
 }
 
 @end

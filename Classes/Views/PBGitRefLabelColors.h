@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSColor *)colorForRefType:(nullable NSString *)type;
 + (NSColor *)currentBranchColor;
++ (NSColor *)worktreeBranchColor;
 
 + (NSDictionary<NSString *, NSString *> *)CSSColors;
 

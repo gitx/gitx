@@ -167,6 +167,8 @@
 		7C4D19A8E52B461AB3D80E70 /* GLFileViewContentCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */; };
 		5E1B93C7D04A47F2A8C61B30 /* PBGitCommitControllerRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */; };
 		7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */; };
+		09EB95E6AD3341A38EFA5B2F /* PBGitHistoryWorktreeMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */; };
+		D95DB968C64F4AC7B93EA89A /* PBGitRepositoryWorktreeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60E5F191BB343B19F63AFE9 /* PBGitRepositoryWorktreeTests.m */; };
 		53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */; };
 		9120A847CBE34BD0AEEA32CD /* PBGitRepositoryCheckoutErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */; };
 		1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */; };
@@ -190,6 +192,7 @@
 		978357A6189C05B100ADC689 /* FolderClosedTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 978357A4189C05B100ADC689 /* FolderClosedTemplate.pdf */; };
 		978357A7189C05B100ADC689 /* FolderTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 978357A5189C05B100ADC689 /* FolderTemplate.pdf */; };
 		978357AD189C074500ADC689 /* BranchTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 978357A8189C074500ADC689 /* BranchTemplate.pdf */; };
+		7E1C4A0C2C3D4E5F60718294 /* WorktreeBranchTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 7E1C4A0B2C3D4E5F60718293 /* WorktreeBranchTemplate.pdf */; };
 		978357AE189C074500ADC689 /* RemoteBranchTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 978357A9189C074500ADC689 /* RemoteBranchTemplate.pdf */; };
 		978357AF189C074500ADC689 /* RemoteTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 978357AA189C074500ADC689 /* RemoteTemplate.pdf */; };
 		978357B0189C074500ADC689 /* StageTemplate.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 978357AB189C074500ADC689 /* StageTemplate.pdf */; };
@@ -722,6 +725,8 @@
 		7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GLFileViewContentCacheTests.m; path = GitXTests/GLFileViewContentCacheTests.m; sourceTree = "<group>"; };
 		5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitCommitControllerRefreshTests.m; path = GitXTests/PBGitCommitControllerRefreshTests.m; sourceTree = "<group>"; };
 		5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistorySelectionTests.m; path = GitXTests/PBGitHistorySelectionTests.m; sourceTree = "<group>"; };
+		68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryWorktreeMenuTests.m; path = GitXTests/PBGitHistoryWorktreeMenuTests.m; sourceTree = "<group>"; };
+		C60E5F191BB343B19F63AFE9 /* PBGitRepositoryWorktreeTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryWorktreeTests.m; path = GitXTests/PBGitRepositoryWorktreeTests.m; sourceTree = "<group>"; };
 		9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryMenuValidationTests.m; path = GitXTests/PBGitHistoryMenuValidationTests.m; sourceTree = "<group>"; };
 		751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryCheckoutErrorTests.m; path = GitXTests/PBGitRepositoryCheckoutErrorTests.m; sourceTree = "<group>"; };
 		4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWindowWiringTests.m; path = GitXTests/PBGitWindowWiringTests.m; sourceTree = "<group>"; };
@@ -747,6 +752,7 @@
 		978357A4189C05B100ADC689 /* FolderClosedTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = FolderClosedTemplate.pdf; sourceTree = "<group>"; };
 		978357A5189C05B100ADC689 /* FolderTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = FolderTemplate.pdf; sourceTree = "<group>"; };
 		978357A8189C074500ADC689 /* BranchTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = BranchTemplate.pdf; sourceTree = "<group>"; };
+		7E1C4A0B2C3D4E5F60718293 /* WorktreeBranchTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = WorktreeBranchTemplate.pdf; sourceTree = "<group>"; };
 		978357A9189C074500ADC689 /* RemoteBranchTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = RemoteBranchTemplate.pdf; sourceTree = "<group>"; };
 		978357AA189C074500ADC689 /* RemoteTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = RemoteTemplate.pdf; sourceTree = "<group>"; };
 		978357AB189C074500ADC689 /* StageTemplate.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = StageTemplate.pdf; sourceTree = "<group>"; };
@@ -861,6 +867,8 @@
 				7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */,
 				5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */,
 				5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */,
+				68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */,
+				C60E5F191BB343B19F63AFE9 /* PBGitRepositoryWorktreeTests.m */,
 				9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */,
 				751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */,
 				4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */,
@@ -990,6 +998,7 @@
 				978357B3189C19A000ADC689 /* AddLabelTemplate.pdf */,
 				978357B4189C19A000ADC689 /* AddRemoteTemplate.pdf */,
 				978357A8189C074500ADC689 /* BranchTemplate.pdf */,
+				7E1C4A0B2C3D4E5F60718293 /* WorktreeBranchTemplate.pdf */,
 				978357BE189C1F5700ADC689 /* CherryPickTemplate.pdf */,
 				978357C4189C238300ADC689 /* DetailViewTemplate.pdf */,
 				978357B5189C19A000ADC689 /* FetchTemplate.pdf */,
@@ -1715,6 +1724,7 @@
 				4A5D75FB14A9A90500DF6C68 /* OpenRecentPopup.xib in Resources */,
 				4A5D75FC14A9A90500DF6C68 /* PBCommitHookFailedSheet.xib in Resources */,
 				978357AD189C074500ADC689 /* BranchTemplate.pdf in Resources */,
+				7E1C4A0C2C3D4E5F60718294 /* WorktreeBranchTemplate.pdf in Resources */,
 				4A5D75FD14A9A90500DF6C68 /* PBDiffWindow.xib in Resources */,
 				4A5D75FE14A9A90500DF6C68 /* PBGitCommitView.xib in Resources */,
 				4A5D75FF14A9A90500DF6C68 /* PBGitHistoryView.xib in Resources */,
@@ -1817,6 +1827,8 @@
 				7C4D19A8E52B461AB3D80E70 /* GLFileViewContentCacheTests.m in Sources */,
 				5E1B93C7D04A47F2A8C61B30 /* PBGitCommitControllerRefreshTests.m in Sources */,
 				7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */,
+				09EB95E6AD3341A38EFA5B2F /* PBGitHistoryWorktreeMenuTests.m in Sources */,
+				D95DB968C64F4AC7B93EA89A /* PBGitRepositoryWorktreeTests.m in Sources */,
 				53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */,
 				9120A847CBE34BD0AEEA32CD /* PBGitRepositoryCheckoutErrorTests.m in Sources */,
 				1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */,

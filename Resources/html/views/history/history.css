@@ -164,6 +164,10 @@ a {
 	background-color: var(--ref-tag, #fced6f);
 }
 
+.refs.worktree {
+	background-color: var(--ref-worktree, #8fe0d5);
+}
+
 .refs.currentBranch {
 	background-color: var(--ref-currentBranch, #fca64f);
 }

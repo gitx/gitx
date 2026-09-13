@@ -41,6 +41,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 }
 
 @property (nonatomic, strong) NSNumber *hasSVNRepoConfig;
+@property (nonatomic, strong) NSDictionary<NSString *, NSString *> *worktreePathsByRefName;
 
 @end
 
@@ -222,6 +223,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	// clear out ref caches
 	_headRef = nil;
 	_headOID = nil;
+	self.worktreePathsByRefName = nil;
 	self->refs = [NSMutableDictionary dictionary];
 
 	NSError *error = nil;
@@ -273,6 +275,61 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	[self willChangeValueForKey:@"stashes"];
 	[self didChangeValueForKey:@"refs"];
 	[self didChangeValueForKey:@"stashes"];
+}
+
++ (NSDictionary<NSString *, NSString *> *)worktreePathsFromPorcelain:(NSString *)output excludingRef:(NSString *)ourRef
+{
+	NSMutableDictionary *paths = [NSMutableDictionary dictionary];
+	NSString *worktreePath = nil;
+
+	for (NSString *line in [output componentsSeparatedByString:@"\n"]) {
+		if ([line hasPrefix:@"worktree "])
+			worktreePath = [line substringFromIndex:[@"worktree " length]];
+		else if ([line hasPrefix:@"branch "] && worktreePath)
+			paths[[line substringFromIndex:[@"branch " length]]] = worktreePath;
+		else if (line.length == 0)
+			worktreePath = nil;
+	}
+
+	if (ourRef)
+		[paths removeObjectForKey:ourRef];
+
+	return paths;
+}
+
+- (NSDictionary<NSString *, NSString *> *)worktreePathsByRefName
+{
+	if (_worktreePathsByRefName)
+		return _worktreePathsByRefName;
+
+	if (![PBGitBinary path].length)
+		return @{};
+
+	NSString *output = [self outputOfTaskWithArguments:@[ @"worktree", @"list", @"--porcelain" ] error:NULL];
+	if (!output)
+		return @{};
+
+	_worktreePathsByRefName = [PBGitRepository worktreePathsFromPorcelain:output excludingRef:[[self headRef] simpleRef]];
+
+	return _worktreePathsByRefName;
+}
+
+- (NSString *)pathOfWorktreeHoldingRef:(PBGitRef *)ref
+{
+	if (!ref)
+		return nil;
+
+	return self.worktreePathsByRefName[ref.ref];
+}
+
+- (BOOL)isRefHeldByAnotherWorktree:(PBGitRef *)ref
+{
+	return [self pathOfWorktreeHoldingRef:ref] != nil;
+}
+
+- (NSArray<NSString *> *)refNamesHeldByOtherWorktrees
+{
+	return self.worktreePathsByRefName.allKeys;
 }
 
 - (void)lazyReload
@@ -1227,6 +1284,14 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 	if ([ref refishType] == kGitXRemoteType)
 		return [self deleteRemote:ref error:error];
+
+	NSString *worktreePath = [self pathOfWorktreeHoldingRef:ref];
+	if (worktreePath) {
+		NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Cannot remove “%@”", @"Delete refused because a worktree holds the ref - title"), ref.shortName];
+		NSString *message = [NSString stringWithFormat:NSLocalizedString(@"It is checked out in the worktree at %@, which would be left on a branch that no longer exists.", @"Delete refused because a worktree holds the ref - message"), worktreePath];
+
+		return PBReturnError(error, title, message, nil);
+	}
 
 	NSError *gitError = nil;
 	NSArray *arguments = @[ @"update-ref", @"-d", ref.ref ];

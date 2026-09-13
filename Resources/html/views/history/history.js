@@ -130,8 +130,10 @@ var selectCommit = function(a) {
 };
 
 // Relead only refs
-var reload = function() {
+var reload = function(worktreeRefs) {
 	$("notification").classList.add("hidden");
+	if (worktreeRefs)
+		commit.worktreeRefs = worktreeRefs;
 	commit.reloadRefs();
 	showRefs();
 }
@@ -150,6 +152,9 @@ var showRefs = function() {
 			var ref = commit.refs[i];
 			var span = document.createElement("span");
 			span.classList.add("refs", ref.type());
+			if (commit.worktreeRefs && commit.worktreeRefs.indexOf(ref.ref()) != -1) {
+				span.classList.add("worktree");
+			}
 			if (commit.currentRef == ref.ref()) {
 				span.classList.add("currentBranch");
 			}
@@ -160,7 +165,7 @@ var showRefs = function() {
 		refs.classList.add("hidden");
 }
 
-var loadCommit = function(commitObject, currentRef) {
+var loadCommit = function(commitObject, currentRef, worktreeRefs) {
 	// These are only the things we can do instantly.
 	// Other information will be loaded later by loadCommitSummary
 	// and loadCommitFullDiff, which will be called from the
@@ -171,6 +176,7 @@ var loadCommit = function(commitObject, currentRef) {
 
 	commit = new Commit(commitObject);
 	commit.currentRef = currentRef;
+	commit.worktreeRefs = worktreeRefs;
 
 	$("commitID").textContent = commit.sha;
 	$("subjectID").textContent = commit.subject;

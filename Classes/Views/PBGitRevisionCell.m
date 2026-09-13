@@ -219,6 +219,9 @@ const BOOL SHUFFLE_COLORS = NO;
 	if (isHEAD)
 		return [PBGitRefLabelColors currentBranchColor];
 
+	if ([[controller repository] isRefHeldByAnotherWorktree:ref])
+		return [PBGitRefLabelColors worktreeBranchColor];
+
 	return [PBGitRefLabelColors colorForRefType:[ref type]];
 }
 

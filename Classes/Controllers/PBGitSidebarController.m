@@ -359,9 +359,13 @@
 {
 	PBSidebarTableViewCell *cell = [outlineView makeViewWithIdentifier:PBSidebarCellIdentifier owner:outlineView];
 
+	BOOL isCheckedOut = [item.revSpecifier isEqual:[self.repository headRef]];
+	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:item.ref];
+
 	cell.textField.stringValue = [[item title] copy];
-	cell.imageView.image = item.icon;
-	cell.isCheckedOut = [item.revSpecifier isEqual:[self.repository headRef]];
+	cell.imageView.image = worktreePath.length ? [PBSourceViewItem iconNamed:@"WorktreeBranchTemplate"] : item.icon;
+	cell.isCheckedOut = isCheckedOut;
+	cell.worktreePath = worktreePath;
 
 	return cell;
 }
