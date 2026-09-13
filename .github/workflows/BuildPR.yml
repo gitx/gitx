@@ -67,12 +67,19 @@ jobs:
       - name: Show openssl version
         run: |
           openssl version
-          # Remove any leftover config dirs first so `brew uninstall` finds
-          # nothing left behind and doesn't print its "have not been
-          # removed!" notices to the CI log.
+          # Fully remove any pre-existing openssl kegs/config first so the
+          # reinstall below has a clean slate. Otherwise `brew install`
+          # finds leftover files at the link destination (etc config,
+          # opt symlink, Cellar keg) and prints noisy
+          # "have not been removed!" / "overwritten during the `brew link`
+          # step" warnings.
+          brew uninstall --ignore-dependencies --force openssl@1.1 openssl@3 openssl || true
           rm -rf /usr/local/etc/openssl@1.1 /usr/local/etc/openssl@3
+          rm -rf /usr/local/opt/openssl@1.1 /usr/local/opt/openssl@3
+          rm -rf /usr/local/Cellar/openssl@1.1 /usr/local/Cellar/openssl@3
           rm -rf /opt/homebrew/etc/openssl@1.1 /opt/homebrew/etc/openssl@3
-          brew uninstall --ignore-dependencies openssl
+          rm -rf /opt/homebrew/opt/openssl@1.1 /opt/homebrew/opt/openssl@3
+          rm -rf /opt/homebrew/Cellar/openssl@1.1 /opt/homebrew/Cellar/openssl@3
           brew install openssl@3
           openssl version
       - name: pre build
@@ -241,7 +248,7 @@ jobs:
           submodules: recursive
       - name: Find Tag
         id: tagger
-        uses: jimschubert/query-tag-action@v2
+        uses: jimschubert/query-tag-action@v2.3
         with:
           skip-unshallow: 'true'
           abbrev: false
