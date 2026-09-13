@@ -8,6 +8,10 @@ on:
       - '*'
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   build-gitx:
     name: build
@@ -105,6 +109,7 @@ jobs:
         with:
           name: UnitTestResults-${{ matrix.abi }}.xcresult
           path: UnitTestResults-${{ matrix.abi }}.xcresult
+          retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
 
       # Test (only on arm64 to avoid tripling CI time)
       - name: Prepare screenshot comparison
@@ -138,6 +143,7 @@ jobs:
         with:
           name: Screenshots-${{ matrix.abi }}
           path: ./scripts/screenshots-${{ matrix.abi }}
+          retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
       - name: Compare screenshots
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         env:
@@ -155,6 +161,7 @@ jobs:
           name: gitx-Screenshots-diffs-${{ matrix.abi }}
           path: |
             screenshotDiffs
+          retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
 #      - name: Show git status
 #        if: ${{ always() && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
 #        run: |
@@ -234,11 +241,13 @@ jobs:
           name: GitX-${{ matrix.abi }}.dmg
           path: GitX-${{ matrix.abi }}.dmg
           overwrite: true
+          retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
       - name: Upload zip
         uses: actions/upload-artifact@v7
         with:
           name: GitX-${{ matrix.abi }}.zip
           path: GitX-${{ matrix.abi }}.zip
+          retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
       - name: Clean up keychain and provisioning profile
         if: ${{ env.variableSet != '' }}
         run: |
