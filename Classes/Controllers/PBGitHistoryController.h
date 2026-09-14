@@ -8,9 +8,11 @@
 
 #import <Cocoa/Cocoa.h>
 #import "PBViewController.h"
+#import "PBHistorySearchMode.h"
 
 @class PBGitCommit;
 @class PBGitTree;
+@class PBGitRef;
 
 @class PBGitSidebarController;
 @class PBWebHistoryController;

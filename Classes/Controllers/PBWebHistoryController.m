@@ -8,6 +8,7 @@
 
 #import "PBWebHistoryController.h"
 #import "PBGitRefLabelColors.h"
+#import "PBGitRepository.h"
 #import "PBGitDefaults.h"
 #import <ObjectiveGit/GTConfiguration.h>
 #import "PBGitRef.h"

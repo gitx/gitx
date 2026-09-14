@@ -7,6 +7,7 @@
 //
 
 #import "PBViewController.h"
+#import "PBGitRepository.h"
 
 @interface PBViewController () {
 	BOOL _hasViewLoaded;

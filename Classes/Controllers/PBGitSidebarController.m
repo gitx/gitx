@@ -7,6 +7,8 @@
 //
 
 #import "PBGitSidebarController.h"
+#import "PBGitRepository.h"
+#import "PBGitWindowController.h"
 #import "PBSourceViewItems.h"
 #import "PBGitHistoryController.h"
 #import "PBGitCommitController.h"

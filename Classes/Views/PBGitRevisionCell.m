@@ -11,6 +11,7 @@
 #import "PBGitRef.h"
 #import "PBGitCommit.h"
 #import "PBGitRevSpecifier.h"
+#import "PBGitRepository.h"
 
 #import "NSColor+RGB.h"
 

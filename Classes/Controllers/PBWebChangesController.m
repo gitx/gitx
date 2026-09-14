@@ -7,6 +7,7 @@
 //
 
 #import "PBWebChangesController.h"
+#import "PBGitWindowController.h"
 #import "PBGitIndex.h"
 
 static void *const UnstagedFileSelectedContext = @"UnstagedFileSelectedContext";
