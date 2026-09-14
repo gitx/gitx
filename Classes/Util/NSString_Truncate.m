@@ -78,6 +78,12 @@
 	} else if (stringLength <= 0 || (!self)) {
 		return nil;
 	} else {
+		// A targetLength shorter than the indicator itself would underflow the
+		// NSUInteger subtraction below (e.g. targetLength - ilength in End mode),
+		// producing a huge index and crashing substringToIndex:/substringFromIndex:.
+		if (targetLength < ilength) {
+			targetLength = ilength;
+		}
 		switch (mode) {
 			case PBNSStringTruncateModeCenter: {
 				NSUInteger firstCut = [self pb_indexAtOrBeforeComposedCharacterBoundary:(targetLength / 2)];
