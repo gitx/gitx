@@ -121,7 +121,8 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file)
 	PBGitRepository *repository = [historyController repository];
 
 	if ([currentOID isEqual:commit.OID]) {
-		[[self script] callWebScriptMethod:@"reload" withArguments:@[ [repository refNamesHeldByOtherWorktrees] ]];
+		NSArray *refreshed = @[ [[repository headRef] simpleRef] ?: @"", [repository refNamesHeldByOtherWorktrees] ];
+		[[self script] callWebScriptMethod:@"reload" withArguments:refreshed];
 		return;
 	}
 

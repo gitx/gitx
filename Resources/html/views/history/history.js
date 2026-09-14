@@ -130,9 +130,11 @@ var selectCommit = function(a) {
 };
 
 // Relead only refs
-var reload = function(worktreeRefs) {
+var reload = function(currentRef, worktreeRefs) {
 	$("notification").classList.add("hidden");
-	if (worktreeRefs)
+	if (currentRef !== undefined)
+		commit.currentRef = currentRef;
+	if (worktreeRefs !== undefined)
 		commit.worktreeRefs = worktreeRefs;
 	commit.reloadRefs();
 	showRefs();

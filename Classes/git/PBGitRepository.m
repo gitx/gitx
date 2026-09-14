@@ -277,22 +277,30 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	[self didChangeValueForKey:@"stashes"];
 }
 
-+ (NSDictionary<NSString *, NSString *> *)worktreePathsFromPorcelain:(NSString *)output excludingRef:(NSString *)ourRef
++ (BOOL)worktreeAtPath:(NSString *)path isTheOneAt:(NSString *)ourPath
+{
+	if (!path || !ourPath)
+		return NO;
+
+	return [path.stringByStandardizingPath isEqualToString:ourPath.stringByStandardizingPath];
+}
+
++ (NSDictionary<NSString *, NSString *> *)worktreePathsFromPorcelain:(NSString *)output excludingWorktreeAtPath:(NSString *)ourPath
 {
 	NSMutableDictionary *paths = [NSMutableDictionary dictionary];
 	NSString *worktreePath = nil;
 
 	for (NSString *line in [output componentsSeparatedByString:@"\n"]) {
-		if ([line hasPrefix:@"worktree "])
+		if ([line hasPrefix:@"worktree "]) {
 			worktreePath = [line substringFromIndex:[@"worktree " length]];
-		else if ([line hasPrefix:@"branch "] && worktreePath)
-			paths[[line substringFromIndex:[@"branch " length]]] = worktreePath;
-		else if (line.length == 0)
+		} else if ([line hasPrefix:@"branch "] && worktreePath) {
+			NSString *ref = [line substringFromIndex:[@"branch " length]];
+			if (![self worktreeAtPath:worktreePath isTheOneAt:ourPath] && !paths[ref])
+				paths[ref] = worktreePath;
+		} else if (line.length == 0) {
 			worktreePath = nil;
+		}
 	}
-
-	if (ourRef)
-		[paths removeObjectForKey:ourRef];
 
 	return paths;
 }
@@ -309,7 +317,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	if (!output)
 		return @{};
 
-	_worktreePathsByRefName = [PBGitRepository worktreePathsFromPorcelain:output excludingRef:[[self headRef] simpleRef]];
+	_worktreePathsByRefName = [PBGitRepository worktreePathsFromPorcelain:output excludingWorktreeAtPath:self.workingDirectory];
 
 	return _worktreePathsByRefName;
 }
