@@ -1,7 +1,6 @@
 body {
 	padding: 0px;
 	margin: 0px;
-	margin-top: 30px;
 }
 
 #title {
@@ -12,10 +11,9 @@ body {
 	font-weight: 500;
 	background-color: #ECF3FD;
 	font-size: 100%;
-	position: fixed;
+	position: sticky;
 	z-index: 2;
 	top: 0px;
-	width: 100%;
 }
 
 #state {
