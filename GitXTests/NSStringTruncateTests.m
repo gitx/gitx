@@ -80,4 +80,45 @@
 	}
 }
 
+#pragma mark A target length too small for the indicator degrades instead of crashing
+
+// The indicator always costs ilength characters, so a target length at or below
+// that leaves nothing for the string itself, and the cut arithmetic used to run
+// off both ends: End underflowed targetLength - ilength into a huge index, and
+// Center pushed its tail cut past the end of the string.
+- (void)testNoModeCrashesOnATargetLengthTooSmallForTheIndicator
+{
+	NSString *subject = @"Fix the git that Homebrew installed";
+	PBNSStringTruncateMode modes[] = {PBNSStringTruncateModeCenter, PBNSStringTruncateModeStart, PBNSStringTruncateModeEnd};
+
+	for (NSUInteger modeIndex = 0; modeIndex < 3; modeIndex++) {
+		for (NSUInteger targetLength = 0; targetLength <= 10; targetLength++) {
+			XCTAssertNoThrow([subject truncateToLength:targetLength mode:modes[modeIndex] indicator:@"..."],
+							 @"mode %lu truncating to %lu threw", (unsigned long)modeIndex, (unsigned long)targetLength);
+		}
+	}
+}
+
+- (void)testCenterModeKeepsNoTailOnceTheIndicatorFillsHalfTheBudget
+{
+	NSString *result = [@"Fix the git that Homebrew installed" truncateToLength:4 mode:PBNSStringTruncateModeCenter indicator:@"..."];
+
+	XCTAssertEqualObjects(result, @"Fi...");
+}
+
+- (void)testATargetLengthWithNoRoomLeavesJustTheIndicator
+{
+	NSString *subject = @"Fix the git that Homebrew installed";
+
+	XCTAssertEqualObjects([subject truncateToLength:0 mode:PBNSStringTruncateModeEnd indicator:@"..."], @"...");
+	XCTAssertEqualObjects([subject truncateToLength:0 mode:PBNSStringTruncateModeStart indicator:@"..."], @"...");
+}
+
+- (void)testAnIndicatorLongerThanTheWholeStringDoesNotCutPastItsEnd
+{
+	NSString *result = [@"a" truncateToLength:0 mode:PBNSStringTruncateModeCenter indicator:@"-----"];
+
+	XCTAssertEqualObjects(result, @"a-----");
+}
+
 @end

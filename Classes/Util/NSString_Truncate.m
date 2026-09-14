@@ -78,16 +78,23 @@
 	} else if (stringLength <= 0 || (!self)) {
 		return nil;
 	} else {
-		// A targetLength shorter than the indicator itself would underflow the
-		// NSUInteger subtraction below (e.g. targetLength - ilength in End mode),
-		// producing a huge index and crashing substringToIndex:/substringFromIndex:.
+		// A targetLength shorter than the indicator itself leaves no room for any
+		// of the string: without this the subtraction in End mode (targetLength -
+		// ilength) underflows NSUInteger into a huge index, and substringToIndex:
+		// raises NSRangeException.
 		if (targetLength < ilength) {
 			targetLength = ilength;
 		}
 		switch (mode) {
 			case PBNSStringTruncateModeCenter: {
-				NSUInteger firstCut = [self pb_indexAtOrBeforeComposedCharacterBoundary:(targetLength / 2)];
-				NSUInteger lastCut = [self pb_indexAtOrAfterComposedCharacterBoundary:(stringLength - ((targetLength / 2)) + ilength)];
+				// Center spends half the budget on each end, so the tail it keeps is
+				// (targetLength / 2) - ilength characters long: once the indicator
+				// alone fills that half, the tail goes negative and pushes lastCut
+				// past the end of the string. Keep no tail at all in that case.
+				NSUInteger headLength = MIN(targetLength / 2, stringLength);
+				NSUInteger tailLength = (targetLength / 2) > ilength ? (targetLength / 2) - ilength : 0;
+				NSUInteger firstCut = [self pb_indexAtOrBeforeComposedCharacterBoundary:headLength];
+				NSUInteger lastCut = [self pb_indexAtOrAfterComposedCharacterBoundary:(stringLength - tailLength)];
 				firstPart = [self substringToIndex:firstCut];
 				lastPart = [self substringFromIndex:lastCut];
 				res = [NSString stringWithFormat:@"%@%@%@", firstPart, indicatorString, lastPart];
