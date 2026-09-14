@@ -12,9 +12,6 @@
 // ── System ───────────────────────────────────────────────────────────────────
 #import <Cocoa/Cocoa.h>
 
-// ── External frameworks (framework imports only — no bare filenames) ──────────
-#import <ObjectiveGit/ObjectiveGit.h>
-
 // ── Converted files: headers kept so ObjC callers continue to compile ────────
 // NSAppearance+PBDarkMode.swift owns the implementations; .m only defines the constant.
 #import "NSAppearance+PBDarkMode.h"

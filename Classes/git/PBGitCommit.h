@@ -13,6 +13,8 @@
 @class PBGitTree;
 @class PBGitRef;
 @class PBGraphCellInfo;
+@class GTCommit;
+@class GTOID;
 
 NS_ASSUME_NONNULL_BEGIN
 

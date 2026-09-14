@@ -1092,7 +1092,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return YES;
 }
 
-- (BOOL)resetRefish:(GTRepositoryResetType)mode to:(id<PBGitRefish>)ref error:(NSError **)error
+- (BOOL)resetRefish:(NSInteger)mode to:(id<PBGitRefish>)ref error:(NSError **)error
 {
 	if (!ref)
 		return NO;
