@@ -11,6 +11,7 @@
 // test names both rather than launching git for them.
 @interface PBGitRepository (WorktreeTesting)
 + (NSDictionary<NSString *, NSString *> *)worktreePathsFromPorcelain:(NSString *)output excludingWorktreeAtPath:(NSString *)ourPath;
+- (void)takeWorktreePaths:(NSDictionary<NSString *, NSString *> *)paths;
 @end
 
 // What `git worktree list --porcelain` prints for a repository whose own
@@ -33,6 +34,21 @@ static NSString *const kPorcelain =
 	@"HEAD 0000000000000000000000000000000000000004\n"
 	@"branch refs/heads/locked_work\n"
 	@"locked\n";
+
+// Counts what the history and sidebar controllers would act on: both observe
+// "refs", and answer by rearranging the history or reloading the sidebar.
+@interface PBRefsChangeCounter : NSObject
+@property (nonatomic, assign) NSUInteger count;
+@end
+
+@implementation PBRefsChangeCounter
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	self.count++;
+}
+
+@end
 
 @interface PBGitRepositoryWorktreeTests : XCTestCase
 @property (nonatomic, strong) PBGitRepository *repository;
@@ -162,6 +178,52 @@ static NSString *const kPorcelain =
 	XCTAssertFalse([self.repository deleteRef:[PBGitRef refFromString:@"refs/heads/feature"] error:&error]);
 	XCTAssertNotNil(error);
 	XCTAssertTrue([error.localizedFailureReason containsString:@"/repos/gitx-feature"], @"%@", error.localizedFailureReason);
+}
+
+
+#pragma mark The snapshot is read while drawing and refreshed away from it
+
+// -drawLabelAtIndex: and the sidebar's cell read this while drawing, and
+// -refNamesHeldByOtherWorktrees feeds an array literal, where a nil would
+// raise rather than draw nothing.
+- (void)testARepositoryThatHasReadNoWorktreesYetStillAnswers
+{
+	PBGitRepository *repository = [[PBGitRepository alloc] init];
+
+	XCTAssertNotNil([repository valueForKey:@"worktreePathsByRefName"]);
+	XCTAssertNotNil([repository refNamesHeldByOtherWorktrees]);
+	XCTAssertFalse([repository isRefHeldByAnotherWorktree:[PBGitRef refFromString:@"refs/heads/feature"]]);
+}
+
+- (NSUInteger)refsChangesTaking:(NSDictionary *)paths after:(NSDictionary *)previous
+{
+	[self.repository takeWorktreePaths:previous];
+
+	PBRefsChangeCounter *counter = [[PBRefsChangeCounter alloc] init];
+	[self.repository addObserver:counter forKeyPath:@"refs" options:0 context:NULL];
+	[self.repository takeWorktreePaths:paths];
+	[self.repository removeObserver:counter forKeyPath:@"refs"];
+
+	return counter.count;
+}
+
+// The refs observers rearrange the history and reload the sidebar, so a reload
+// that found the same worktrees as last time has to stay quiet: otherwise
+// moving the lookup off the drawing path would cost two reloads per refresh
+// in place of the 9ms it saves.
+- (void)testFindingTheSameWorktreesAgainAnnouncesNothing
+{
+	NSDictionary *paths = @{@"refs/heads/feature" : @"/repos/gitx-feature"};
+
+	XCTAssertEqual([self refsChangesTaking:[paths copy] after:paths], 0u,
+				   @"an unchanged snapshot must not trigger a reload");
+}
+
+- (void)testFindingDifferentWorktreesAnnouncesTheChange
+{
+	XCTAssertEqual([self refsChangesTaking:@{@"refs/heads/other" : @"/repos/gitx-other"}
+									 after:@{@"refs/heads/feature" : @"/repos/gitx-feature"}],
+				   1u, @"a snapshot that changed has to reach the labels");
 }
 
 @end

@@ -42,6 +42,10 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 @property (nonatomic, strong) NSNumber *hasSVNRepoConfig;
 @property (nonatomic, strong) NSDictionary<NSString *, NSString *> *worktreePathsByRefName;
+@property (nonatomic, assign) NSUInteger worktreeLookupGeneration;
+
+- (void)reloadWorktreePaths;
+- (void)takeWorktreePaths:(NSDictionary<NSString *, NSString *> *)paths;
 
 @end
 
@@ -223,7 +227,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	// clear out ref caches
 	_headRef = nil;
 	_headOID = nil;
-	self.worktreePathsByRefName = nil;
+	[self reloadWorktreePaths];
 	self->refs = [NSMutableDictionary dictionary];
 
 	NSError *error = nil;
@@ -305,21 +309,54 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return paths;
 }
 
+// Read by -drawLabelAtIndex: and by the sidebar's cell, so it answers from the
+// snapshot alone. Never nil: -refNamesHeldByOtherWorktrees feeds an array
+// literal.
 - (NSDictionary<NSString *, NSString *> *)worktreePathsByRefName
 {
-	if (_worktreePathsByRefName)
-		return _worktreePathsByRefName;
+	return _worktreePathsByRefName ?: @{};
+}
 
-	if (![PBGitBinary path].length)
-		return @{};
+- (void)reloadWorktreePaths
+{
+	if (![PBGitBinary path].length) {
+		[self takeWorktreePaths:@{}];
+		return;
+	}
 
-	NSString *output = [self outputOfTaskWithArguments:@[ @"worktree", @"list", @"--porcelain" ] error:NULL];
-	if (!output)
-		return @{};
+	NSUInteger generation = ++self.worktreeLookupGeneration;
+	NSString *ourPath = self.workingDirectory;
+	__weak typeof(self) weakSelf = self;
 
-	_worktreePathsByRefName = [PBGitRepository worktreePathsFromPorcelain:output excludingWorktreeAtPath:self.workingDirectory];
+	dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+		PBGitRepository *repository = weakSelf;
+		if (!repository)
+			return;
 
-	return _worktreePathsByRefName;
+		NSString *output = [repository outputOfTaskWithArguments:@[ @"worktree", @"list", @"--porcelain" ] error:NULL];
+		NSDictionary *paths = output ? [PBGitRepository worktreePathsFromPorcelain:output excludingWorktreeAtPath:ourPath] : @{};
+
+		dispatch_async(dispatch_get_main_queue(), ^{
+			PBGitRepository *mainRepository = weakSelf;
+			if (!mainRepository || generation != mainRepository.worktreeLookupGeneration)
+				return;
+
+			[mainRepository takeWorktreePaths:paths];
+		});
+	});
+}
+
+// The refs observers rearrange the history and reload the sidebar, so a reload
+// that found the same worktrees as last time says nothing.
+- (void)takeWorktreePaths:(NSDictionary<NSString *, NSString *> *)paths
+{
+	if ([self.worktreePathsByRefName isEqualToDictionary:paths])
+		return;
+
+	self.worktreePathsByRefName = paths;
+
+	[self willChangeValueForKey:@"refs"];
+	[self didChangeValueForKey:@"refs"];
 }
 
 - (NSString *)pathOfWorktreeHoldingRef:(PBGitRef *)ref
