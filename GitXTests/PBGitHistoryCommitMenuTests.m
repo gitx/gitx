@@ -108,14 +108,31 @@
 	XCTAssertEqualObjects(item.title, @"Checkout Commit “Find the git that Homebrew installed for...”");
 }
 
-- (void)testASubjectOfExactly40CharactersIsNotTruncated
+// The 40-character figure quoted to the user is the number of subject
+// characters guaranteed to be kept; the actual untruncated/truncated boundary
+// in -truncateToLength:mode:indicator: is 43 vs. 44, since the call passes
+// 40 + "...".length as the target length and truncateToLength: only kicks in
+// once the string is strictly longer than that target.
+- (void)testASubjectOfExactly43CharactersIsNotTruncated
 {
-	NSString *subject = [@"x" stringByPaddingToLength:40 withString:@"x" startingAtIndex:0];
+	NSString *subject = [@"x" stringByPaddingToLength:43 withString:@"x" startingAtIndex:0];
 	PBMenuTestCommit *commit = [self commitWithSubject:subject];
 
 	NSMenuItem *item = [self checkoutCommitItemForCommits:@[ commit ]];
 
 	NSString *expected = [NSString stringWithFormat:@"Checkout Commit “%@”", subject];
+	XCTAssertEqualObjects(item.title, expected);
+}
+
+- (void)testASubjectOfExactly44CharactersIsTruncated
+{
+	NSString *subject = [@"x" stringByPaddingToLength:44 withString:@"x" startingAtIndex:0];
+	PBMenuTestCommit *commit = [self commitWithSubject:subject];
+
+	NSMenuItem *item = [self checkoutCommitItemForCommits:@[ commit ]];
+
+	NSString *expectedPrefix = [subject substringToIndex:40];
+	NSString *expected = [NSString stringWithFormat:@"Checkout Commit “%@...”", expectedPrefix];
 	XCTAssertEqualObjects(item.title, expected);
 }
 
