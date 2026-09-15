@@ -78,7 +78,7 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)checkoutFiles:(NSArray *)files fromRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)mergeWithRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)cherryPickRefish:(id<PBGitRefish>)ref error:(NSError **)error;
-- (BOOL)resetRefish:(GTRepositoryResetType)mode to:(id<PBGitRefish>)ref error:(NSError **)error;
+- (BOOL)resetRefish:(NSInteger)mode to:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)rebaseBranch:(id<PBGitRefish>)branch onRefish:(id<PBGitRefish>)upstream error:(NSError **)error;
 - (BOOL)createBranch:(NSString *)branchName atRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)createTag:(NSString *)tagName message:(NSString *)message atRefish:(id<PBGitRefish>)commitSHA error:(NSError **)error;

@@ -7,7 +7,7 @@
 //
 
 #import "PBGitRepository_PBGitBinarySupport.h"
-
+#import "PBGitRepository.h"
 #import "PBGitBinary.h"
 #import "PBTask.h"
 

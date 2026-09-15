@@ -8,6 +8,7 @@
 
 #import "PBRepositoryDocumentController.h"
 #import "PBGitRepositoryDocument.h"
+#import "PBGitRepository.h"
 #import "PBGitRevList.h"
 #import "PBGitBinary.h"
 

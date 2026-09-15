@@ -10,6 +10,7 @@
 
 #import "PBHistorySearchController.h"
 #import "PBGitHistoryController.h"
+#import "PBGitWindowController.h"
 #import "PBGitRepository.h"
 #import "PBGitRepository_PBGitBinarySupport.h"
 #import "PBGitDefaults.h"

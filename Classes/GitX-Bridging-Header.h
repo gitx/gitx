@@ -12,9 +12,6 @@
 // ── System ───────────────────────────────────────────────────────────────────
 #import <Cocoa/Cocoa.h>
 
-// ── External frameworks (framework imports only — no bare filenames) ──────────
-#import <ObjectiveGit/ObjectiveGit.h>
-
 // ── Converted files: headers kept so ObjC callers continue to compile ────────
 // Note: these Swift twins are NOT compiled (absent from the Xcode target);
 // the .m/.h implementations remain authoritative.
