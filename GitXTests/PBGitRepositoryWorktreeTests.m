@@ -12,6 +12,8 @@
 @interface PBGitRepository (WorktreeTesting)
 + (NSDictionary<NSString *, NSString *> *)worktreePathsFromPorcelain:(NSString *)output excludingWorktreeAtPath:(NSString *)ourPath;
 - (void)takeWorktreePaths:(NSDictionary<NSString *, NSString *> *)paths;
+- (void)reloadWorktreePaths;
+- (NSDictionary<NSString *, NSString *> *)readWorktreePathsExcluding:(NSString *)ourPath;
 @end
 
 // What `git worktree list --porcelain` prints for a repository whose own
@@ -46,6 +48,37 @@ static NSString *const kPorcelain =
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	self.count++;
+}
+
+@end
+
+// Stands in for the git process: counts how many times the lookup actually
+// runs, and holds the first one open so a burst of reloads lands while it is
+// still in flight.
+@interface PBCountingWorktreeRepository : PBGitRepository
+@property (nonatomic, assign) NSUInteger reads;
+@property (nonatomic, strong) dispatch_semaphore_t held;
+@end
+
+@implementation PBCountingWorktreeRepository
+
+- (NSDictionary<NSString *, NSString *> *)readWorktreePathsExcluding:(NSString *)ourPath
+{
+	@synchronized(self) {
+		self.reads++;
+	}
+
+	if (self.held)
+		dispatch_semaphore_wait(self.held, DISPATCH_TIME_FOREVER);
+
+	return @{};
+}
+
+- (NSUInteger)readsSoFar
+{
+	@synchronized(self) {
+		return _reads;
+	}
 }
 
 @end
@@ -224,6 +257,35 @@ static NSString *const kPorcelain =
 	XCTAssertEqual([self refsChangesTaking:@{@"refs/heads/other" : @"/repos/gitx-other"}
 									 after:@{@"refs/heads/feature" : @"/repos/gitx-feature"}],
 				   1u, @"a snapshot that changed has to reach the labels");
+}
+
+
+// -reloadRefs runs on a polling path (-haveRefsBeenModified), so a burst of
+// reloads must not each start their own git process. One runs, and at most one
+// more is queued behind it however many times the poll fires.
+- (void)testABurstOfReloadsRunsTheLookupOnce
+{
+	PBCountingWorktreeRepository *repository = [[PBCountingWorktreeRepository alloc] init];
+	repository.held = dispatch_semaphore_create(0);
+
+	for (NSUInteger reload = 0; reload < 5; reload++)
+		[repository reloadWorktreePaths];
+
+	NSDate *limit = [NSDate dateWithTimeIntervalSinceNow:2];
+	while ([repository readsSoFar] == 0 && [limit timeIntervalSinceNow] > 0)
+		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+
+	XCTAssertEqual([repository readsSoFar], 1u, @"five reloads must not start five git processes");
+
+	dispatch_semaphore_signal(repository.held);
+
+	limit = [NSDate dateWithTimeIntervalSinceNow:2];
+	while ([repository readsSoFar] < 2 && [limit timeIntervalSinceNow] > 0)
+		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+
+	XCTAssertEqual([repository readsSoFar], 2u, @"the reloads that arrived mid-flight collapse into one more run");
+
+	dispatch_semaphore_signal(repository.held);
 }
 
 @end

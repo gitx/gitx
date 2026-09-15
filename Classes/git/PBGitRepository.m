@@ -42,9 +42,12 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 @property (nonatomic, strong) NSNumber *hasSVNRepoConfig;
 @property (nonatomic, strong) NSDictionary<NSString *, NSString *> *worktreePathsByRefName;
-@property (nonatomic, assign) NSUInteger worktreeLookupGeneration;
+@property (nonatomic, assign) BOOL worktreeLookupInFlight;
+@property (nonatomic, assign) BOOL worktreePathsNeedRefresh;
 
 - (void)reloadWorktreePaths;
+- (void)startWorktreeLookupIfIdle;
+- (NSDictionary<NSString *, NSString *> *)readWorktreePathsExcluding:(NSString *)ourPath;
 - (void)takeWorktreePaths:(NSDictionary<NSString *, NSString *> *)paths;
 
 @end
@@ -317,14 +320,40 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return _worktreePathsByRefName ?: @{};
 }
 
+// -reloadRefs is called from -haveRefsBeenModified, which the history list
+// polls, so this only marks the snapshot stale. Starting a git process per call
+// would spawn one per poll.
 - (void)reloadWorktreePaths
 {
+	// -reloadRefs runs on the history list's operation, so the flags below are
+	// only ever touched on the main queue.
+	if (![NSThread isMainThread]) {
+		__weak typeof(self) weakSelf = self;
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[weakSelf reloadWorktreePaths];
+		});
+		return;
+	}
+
+	self.worktreePathsNeedRefresh = YES;
+
+	[self startWorktreeLookupIfIdle];
+}
+
+- (void)startWorktreeLookupIfIdle
+{
+	if (self.worktreeLookupInFlight || !self.worktreePathsNeedRefresh)
+		return;
+
 	if (![PBGitBinary path].length) {
+		self.worktreePathsNeedRefresh = NO;
 		[self takeWorktreePaths:@{}];
 		return;
 	}
 
-	NSUInteger generation = ++self.worktreeLookupGeneration;
+	self.worktreeLookupInFlight = YES;
+	self.worktreePathsNeedRefresh = NO;
+
 	NSString *ourPath = self.workingDirectory;
 	__weak typeof(self) weakSelf = self;
 
@@ -333,17 +362,27 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		if (!repository)
 			return;
 
-		NSString *output = [repository outputOfTaskWithArguments:@[ @"worktree", @"list", @"--porcelain" ] error:NULL];
-		NSDictionary *paths = output ? [PBGitRepository worktreePathsFromPorcelain:output excludingWorktreeAtPath:ourPath] : @{};
+		NSDictionary *paths = [repository readWorktreePathsExcluding:ourPath];
 
 		dispatch_async(dispatch_get_main_queue(), ^{
 			PBGitRepository *mainRepository = weakSelf;
-			if (!mainRepository || generation != mainRepository.worktreeLookupGeneration)
+			if (!mainRepository)
 				return;
 
+			mainRepository.worktreeLookupInFlight = NO;
 			[mainRepository takeWorktreePaths:paths];
+			[mainRepository startWorktreeLookupIfIdle];
 		});
 	});
+}
+
+- (NSDictionary<NSString *, NSString *> *)readWorktreePathsExcluding:(NSString *)ourPath
+{
+	NSString *output = [self outputOfTaskWithArguments:@[ @"worktree", @"list", @"--porcelain" ] error:NULL];
+	if (!output)
+		return @{};
+
+	return [PBGitRepository worktreePathsFromPorcelain:output excludingWorktreeAtPath:ourPath];
 }
 
 // The refs observers rearrange the history and reload the sidebar, so a reload
