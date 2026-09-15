@@ -15,6 +15,9 @@
 	IBOutlet NSView *integrationPrefsView;
 	IBOutlet NSView *updatesPrefsView;
 
+	/* Variables for the Integration View */
+	IBOutlet NSPopUpButton *terminalHandlerPopup;
+
 	/* Variables for the Updates View */
 	IBOutlet NSPathControl *gitPathController;
 	IBOutlet NSImageView *badGitPathIcon;
@@ -27,5 +30,6 @@
 - (IBAction)showHideAllFiles:sender;
 - (IBAction)resetGitPath:sender;
 - (IBAction)resetAllDialogWarnings:(id)sender;
+- (IBAction)changeTerminalHandler:(id)sender;
 
 @end

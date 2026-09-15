@@ -12,6 +12,7 @@
                 <outlet property="gitPathController" destination="45" id="59"/>
                 <outlet property="gitPathOpenAccessory" destination="62" id="65"/>
                 <outlet property="integrationPrefsView" destination="87" id="92"/>
+                <outlet property="terminalHandlerPopup" destination="182" id="187"/>
                 <outlet property="updatesPrefsView" destination="4" id="7"/>
             </connections>
         </customObject>
@@ -333,9 +334,34 @@ or drag it from the Finder.</string>
         <customObject id="26" customClass="SUUpdater"/>
         <userDefaultsController representsSharedInstance="YES" id="28"/>
         <customView id="87" userLabel="Integration">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="116"/>
+            <rect key="frame" x="0.0" y="0.0" width="500" height="155"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
+                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="180">
+                    <rect key="frame" x="103" y="118" width="110" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Open in Terminal:" id="181">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="182">
+                    <rect key="frame" x="217" y="113" width="195" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <popUpButtonCell key="cell" type="push" title="Terminal" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="185" id="183">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" title="OtherViews" id="184">
+                            <items>
+                                <menuItem title="Terminal" state="on" id="185"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
+                    <connections>
+                        <action selector="changeTerminalHandler:" target="-2" id="186"/>
+                    </connections>
+                </popUpButton>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="108">
                     <rect key="frame" x="168" y="38" width="179" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>

@@ -38,6 +38,7 @@ typedef NS_ENUM(NSInteger, PBPruneOnFetchSetting) {
 + (BOOL)useRepositoryWatcher;
 + (PBPruneOnFetchSetting)pruneOnFetch;
 + (NSString *)terminalHandler;
++ (void)setTerminalHandler:(NSString *)bundleIdentifier;
 
 
 // Suppressed Dialog Warnings

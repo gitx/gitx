@@ -9,12 +9,20 @@
 #import "PBPrefsWindowController.h"
 #import "PBGitRepository.h"
 #import "PBGitDefaults.h"
+#import "PBTerminalUtil.h"
 
 #define kPreferenceViewIdentifier @"PBGitXPreferenceViewIdentifier"
 
 @implementation PBPrefsWindowController
 
 #pragma mark DBPrefsWindowController overrides
+
+- (void)windowDidLoad
+{
+	[super windowDidLoad];
+
+	[self populateTerminalHandlers];
+}
 
 - (void)setupToolbar
 {
@@ -72,6 +80,45 @@
 - (IBAction)resetAllDialogWarnings:(id)sender
 {
 	[PBGitDefaults resetAllDialogWarnings];
+}
+
+#pragma mark -
+#pragma mark Terminal application
+
+- (void)populateTerminalHandlers
+{
+	terminalHandlerPopup.menu.autoenablesItems = NO;
+	[terminalHandlerPopup removeAllItems];
+
+	for (NSString *handler in [PBTerminalUtil supportedHandlers]) {
+		NSMenuItem *item = [[NSMenuItem alloc] initWithTitle:[PBTerminalUtil nameForHandler:handler]
+													  action:NULL
+											   keyEquivalent:@""];
+		item.representedObject = handler;
+
+		if (![PBTerminalUtil isHandlerInstalled:handler]) {
+			item.enabled = NO;
+			item.toolTip = [NSString stringWithFormat:@"%@ is not installed", item.title];
+		}
+
+		[terminalHandlerPopup.menu addItem:item];
+	}
+
+	NSString *handler = [PBTerminalUtil handlerForPreference:[PBGitDefaults terminalHandler]];
+	NSInteger index = [terminalHandlerPopup indexOfItemWithRepresentedObject:handler];
+	if (index != -1) {
+		[terminalHandlerPopup selectItemAtIndex:index];
+	}
+}
+
+- (IBAction)changeTerminalHandler:(id)sender
+{
+	NSString *handler = [[sender selectedItem] representedObject];
+	if (!handler) {
+		return;
+	}
+
+	[PBGitDefaults setTerminalHandler:handler];
 }
 
 #pragma mark -
