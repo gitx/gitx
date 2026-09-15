@@ -77,6 +77,7 @@ TEST_SETTINGS := CODE_SIGN_IDENTITY="-" ENABLE_HARDENED_RUNTIME=NO
 
 .PHONY: help git-submodule-sync deps pre-build bootstrap build unit-test test \
 	ui-test all-tests archive build-project app smoke-test run dmg map \
+	export-signed \
 	package-signed \
 	dmg-signed clean git-clean-dry-run
 
@@ -201,13 +202,19 @@ dmg: app ## Package build/GitX.app into an unsigned disk image that runs locally
 
 # Clears the exported app rather than the directory holding it, since CI
 # exports into the checkout itself and that is not ours to delete.
-package-signed: ## Package an archive that already exists (needs ExportOptions.plist)
+export-signed: ## Export the signed app from an archive that already exists
 	@test -f $(EXPORT_OPTIONS) \
 		|| { echo "No $(EXPORT_OPTIONS); see EXPORT_OPTIONS in the Makefile"; exit 1; }
 	rm -rf $(EXPORT_DIR)/GitX.app $(BUILD_DIR)/dist $(DMG) $(ZIP)
 	mkdir -p $(EXPORT_DIR)
 	xcodebuild -exportArchive -archivePath $(ARCHIVE) \
 		-exportPath $(EXPORT_DIR) -exportOptionsPlist $(EXPORT_OPTIONS)
+
+# Kept apart from the export so that notarization can staple the exported app
+# before it is sealed into anything: a dmg or zip made ahead of the stapler
+# carries no ticket, whatever is done to the app afterwards.
+package-signed: ## Package the exported app (run export-signed first)
+	rm -rf $(BUILD_DIR)/dist $(DMG) $(ZIP)
 	mkdir -p $(BUILD_DIR)/dist
 	cp -R $(EXPORT_DIR)/GitX.app $(BUILD_DIR)/dist/
 	ln -s /Applications $(BUILD_DIR)/dist/
@@ -220,6 +227,7 @@ package-signed: ## Package an archive that already exists (needs ExportOptions.p
 # Packaging runs as its own make so that it cannot start before the archive
 # has finished. CI archives in a step of its own and calls package-signed.
 dmg-signed: archive ## Build and package a signed disk image and zip
+	$(MAKE) export-signed
 	$(MAKE) package-signed
 
 clean: ## Remove the build directory and Xcode's build products

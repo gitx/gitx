@@ -188,8 +188,8 @@ jobs:
           EXPORT_OPTIONS_PATH=$RUNNER_TEMP/ExportOptions.plist
           echo -n "$EXPORT_OPTIONS" > "$EXPORT_OPTIONS_PATH"
           echo "EXPORT_OPTIONS_PATH=$EXPORT_OPTIONS_PATH"
-          echo "Create GitX-${{ matrix.abi }}.dmg"
-          make package-signed \
+          echo "Export GitX.app"
+          make export-signed \
             ARCH=${{ matrix.abi }} \
             ARCHIVE=GitX.xcarchive \
             EXPORT_DIR=. \
@@ -234,6 +234,16 @@ jobs:
       - name: Check Notarization
         if: ${{ env.variableSet != '' }}
         run: spctl -a -vv GitX.app
+      - name: Package the stapled app
+        if: ${{ env.variableSet != '' }}
+        run: |
+          echo "Create GitX-${{ matrix.abi }}.dmg and .zip from the stapled app"
+          make package-signed \
+            ARCH=${{ matrix.abi }} \
+            EXPORT_DIR=. \
+            DMG=GitX-${{ matrix.abi }}.dmg \
+            ZIP=GitX-${{ matrix.abi }}.zip
+          xcrun stapler validate GitX.app
       - name: Upload dmg
         uses: actions/upload-artifact@v7
         if: ${{ success() }}
