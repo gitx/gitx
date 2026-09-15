@@ -115,18 +115,23 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file)
 	return size;
 }
 
++ (NSString *)nameOfCurrentRefIn:(PBGitRepository *)repository
+{
+	return [[repository headRef] simpleRef] ?: @"";
+}
+
 - (void)changeContentToCommit:(PBGitCommit *)commit
 {
 	// The sha is the same, but refs may have changed. reload it lazy
 	PBGitRepository *repository = [historyController repository];
 
 	if ([currentOID isEqual:commit.OID]) {
-		NSArray *refreshed = @[ [[repository headRef] simpleRef] ?: @"", [repository refNamesHeldByOtherWorktrees] ];
+		NSArray *refreshed = @[ [PBWebHistoryController nameOfCurrentRefIn:repository], [repository refNamesHeldByOtherWorktrees] ];
 		[[self script] callWebScriptMethod:@"reload" withArguments:refreshed];
 		return;
 	}
 
-	NSArray *arguments = @[ commit, [[repository headRef] simpleRef], [repository refNamesHeldByOtherWorktrees] ];
+	NSArray *arguments = @[ commit, [PBWebHistoryController nameOfCurrentRefIn:repository], [repository refNamesHeldByOtherWorktrees] ];
 	id scriptResult = [[self script] callWebScriptMethod:@"loadCommit" withArguments:arguments];
 	if (!scriptResult) {
 		// the web view is not really ready for scripting???
