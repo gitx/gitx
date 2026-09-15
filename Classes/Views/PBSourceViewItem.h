@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable PBGitRef *)ref;
 
++ (NSImage *)iconNamed:(NSString *)name;
+
 @property (readonly) NSString *title;
 @property (readonly) NSArray *sortedChildren;
 @property (getter=isGroupItem) BOOL groupItem;

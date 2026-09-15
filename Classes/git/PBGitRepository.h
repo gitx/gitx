@@ -70,6 +70,10 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)pullBranch:(PBGitRef *)branchRef fromRemote:(PBGitRef *)remoteRef rebase:(BOOL)rebase error:(NSError **)error;
 - (BOOL)pushBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef error:(NSError **)error;
 
+- (nullable NSString *)pathOfWorktreeHoldingRef:(nullable PBGitRef *)ref;
+- (BOOL)isRefHeldByAnotherWorktree:(nullable PBGitRef *)ref;
+- (NSArray<NSString *> *)refNamesHeldByOtherWorktrees;
+
 - (BOOL)checkoutRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)checkoutFiles:(NSArray *)files fromRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)mergeWithRefish:(id<PBGitRefish>)ref error:(NSError **)error;

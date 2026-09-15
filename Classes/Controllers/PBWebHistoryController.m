@@ -7,6 +7,7 @@
 //
 
 #import "PBWebHistoryController.h"
+#import "PBGitRefLabelColors.h"
 #import "PBGitDefaults.h"
 #import <ObjectiveGit/GTConfiguration.h>
 #import "PBGitRef.h"
@@ -44,6 +45,7 @@
 - (void)didLoad
 {
 	currentOID = nil;
+	[[self script] callWebScriptMethod:@"setRefColors" withArguments:@[ [PBGitRefLabelColors CSSColors] ]];
 	[self changeContentTo:historyController.webCommits];
 }
 
@@ -116,12 +118,15 @@ static NSUInteger reallyGetFileSize(GTRepository *repo, GTDiffFile *file)
 - (void)changeContentToCommit:(PBGitCommit *)commit
 {
 	// The sha is the same, but refs may have changed. reload it lazy
+	PBGitRepository *repository = [historyController repository];
+
 	if ([currentOID isEqual:commit.OID]) {
-		[[self script] callWebScriptMethod:@"reload" withArguments:nil];
+		NSArray *refreshed = @[ [[repository headRef] simpleRef] ?: @"", [repository refNamesHeldByOtherWorktrees] ];
+		[[self script] callWebScriptMethod:@"reload" withArguments:refreshed];
 		return;
 	}
 
-	NSArray *arguments = @[ commit, [[[historyController repository] headRef] simpleRef] ];
+	NSArray *arguments = @[ commit, [[repository headRef] simpleRef], [repository refNamesHeldByOtherWorktrees] ];
 	id scriptResult = [[self script] callWebScriptMethod:@"loadCommit" withArguments:arguments];
 	if (!scriptResult) {
 		// the web view is not really ready for scripting???

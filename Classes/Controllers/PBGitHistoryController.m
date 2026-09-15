@@ -1111,11 +1111,20 @@
 	BOOL hasRemote = (remoteName ? YES : NO);
 	BOOL isRemote = (ref.isRemote && !ref.isRemoteBranch);
 
+	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:ref];
+
 	NSMutableArray *items = [NSMutableArray array];
 	if (!isRemote) {
-		// checkout ref
-		NSString *checkoutTitle = [NSString stringWithFormat:NSLocalizedString(@"Checkout “%@”", @"Contextual Menu Item to check out the selected ref"), refName];
-		[items addObject:[NSMenuItem pb_itemWithTitle:checkoutTitle action:@selector(checkout:) enabled:!isHead]];
+		if (worktreePath) {
+			NSString *openWorktreeTitle = [NSString stringWithFormat:NSLocalizedString(@"Open Worktree of Branch “%@”", @"Contextual Menu Item to open the worktree holding the selected branch"), refName];
+			NSMenuItem *openWorktreeItem = [NSMenuItem pb_itemWithTitle:openWorktreeTitle action:@selector(openWorktree:) enabled:YES];
+			openWorktreeItem.toolTip = worktreePath;
+			[items addObject:openWorktreeItem];
+		} else {
+			// checkout ref
+			NSString *checkoutTitle = [NSString stringWithFormat:NSLocalizedString(@"Checkout “%@”", @"Contextual Menu Item to check out the selected ref"), refName];
+			[items addObject:[NSMenuItem pb_itemWithTitle:checkoutTitle action:@selector(checkout:) enabled:!isHead]];
+		}
 		[items addObject:[NSMenuItem separatorItem]];
 
 		// create branch
@@ -1210,7 +1219,8 @@
 		} else {
 			deleteItemTitle = [NSString stringWithFormat:NSLocalizedString(@"Remove “%@”…", @"Contextual Menu Item to remove a local ref (e.g. branch)"), refName];
 		}
-		NSMenuItem *deleteItem = [NSMenuItem pb_itemWithTitle:deleteItemTitle action:@selector(deleteRef:) enabled:YES];
+		NSMenuItem *deleteItem = [NSMenuItem pb_itemWithTitle:deleteItemTitle action:@selector(deleteRef:) enabled:!worktreePath];
+		deleteItem.toolTip = worktreePath ? [NSString stringWithFormat:NSLocalizedString(@"Checked out in the worktree at %@", @"Contextual Menu Item tooltip for a branch that cannot be removed because a worktree holds it"), worktreePath] : nil;
 		[items addObject:deleteItem];
 	}
 

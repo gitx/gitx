@@ -257,10 +257,10 @@
 
 - (void)openSubmoduleFromMenuItem:(NSMenuItem *)menuItem
 {
-	[self openSubmoduleAtURL:[menuItem representedObject]];
+	[self openRepositoryAtURL:[menuItem representedObject]];
 }
 
-- (void)openSubmoduleAtURL:(NSURL *)submoduleURL
+- (void)openRepositoryAtURL:(NSURL *)submoduleURL
 {
   NSWindow *currentWindow = [[NSApplication sharedApplication] keyWindow];
   NSEvent *theEvent = [[NSApplication sharedApplication] currentEvent];
@@ -330,9 +330,15 @@
 	if ([item isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
 		PBSourceViewGitSubmoduleItem *subModule = item;
 
-		[self openSubmoduleAtURL:[subModule path]];
+		[self openRepositoryAtURL:[subModule path]];
 	} else if ([item isKindOfClass:[PBSourceViewGitBranchItem class]]) {
 		PBSourceViewGitBranchItem *branch = item;
+		NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:[branch ref]];
+
+		if (worktreePath) {
+			[self openRepositoryAtURL:[NSURL fileURLWithPath:worktreePath]];
+			return;
+		}
 
 		NSError *error = nil;
 		BOOL success = [self.repository checkoutRefish:[branch ref] error:&error];
@@ -359,9 +365,13 @@
 {
 	PBSidebarTableViewCell *cell = [outlineView makeViewWithIdentifier:PBSidebarCellIdentifier owner:outlineView];
 
+	BOOL isCheckedOut = [item.revSpecifier isEqual:[self.repository headRef]];
+	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:item.ref];
+
 	cell.textField.stringValue = [[item title] copy];
-	cell.imageView.image = item.icon;
-	cell.isCheckedOut = [item.revSpecifier isEqual:[self.repository headRef]];
+	cell.imageView.image = worktreePath.length ? [PBSourceViewItem iconNamed:@"WorktreeBranchTemplate"] : item.icon;
+	cell.isCheckedOut = isCheckedOut;
+	cell.worktreePath = worktreePath;
 
 	return cell;
 }

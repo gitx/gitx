@@ -708,6 +708,21 @@
 	}
 }
 
+- (IBAction)openWorktree:(id)sender
+{
+	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType ]];
+	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:(PBGitRef *)refish];
+	if (!worktreePath) return;
+
+	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:[NSURL fileURLWithPath:worktreePath]
+																		  display:YES
+																completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
+																	if (error) {
+																		[self showErrorSheet:error];
+																	}
+																}];
+}
+
 - (IBAction)merge:(id)sender
 {
 	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType, kGitXRemoteBranchType, kGitXCommitType, kGitXTagType ]];

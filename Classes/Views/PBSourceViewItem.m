@@ -141,12 +141,17 @@
 	return nil;
 }
 
-- (NSImage *)icon
++ (NSImage *)iconNamed:(NSString *)name
 {
-	NSImage *iconImage = [NSImage imageNamed:self.iconName];
+	NSImage *iconImage = [NSImage imageNamed:name];
 	[iconImage setSize:NSMakeSize(16, 16)];
 	[iconImage setCacheMode:NSImageCacheAlways];
 	return iconImage;
+}
+
+- (NSImage *)icon
+{
+	return [PBSourceViewItem iconNamed:self.iconName];
 }
 
 - (NSString *)title
