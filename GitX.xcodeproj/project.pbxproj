@@ -163,6 +163,7 @@
 		63E155858B2CC783EE10F1D8 /* PBGitIndexReconcileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 689D57B4A78CEF3B32EB0045 /* PBGitIndexReconcileTests.m */; };
 		63E155858B2CC783EE10F1D9 /* PBGitIndexRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 689D57B4A78CEF3B32EB0046 /* PBGitIndexRefreshTests.m */; };
 		9A3F7C21E48B450D9C2A1F60 /* PBGitIndexDiffCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9A3F7C21E48B450D9C2A1F61 /* PBGitIndexDiffCacheTests.m */; };
+		6C2A9E14B7D3402F81A5C931 /* PBWebHistoryControllerCurrentRefTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6C2A9E14B7D3402F81A5C930 /* PBWebHistoryControllerCurrentRefTests.m */; };
 		764739E2E065426C828C6A8D /* NSStringTruncateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 69760FA8A15F4EA2AD3D034A /* NSStringTruncateTests.m */; };
 		7C837A4B980A48D1B91EDF98 /* PBGitHistoryCommitMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 661EC20D32B74C04B2DA75E4 /* PBGitHistoryCommitMenuTests.m */; };
 		7C4D19A8E52B461AB3D80E70 /* GLFileViewContentCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */; };
@@ -724,6 +725,7 @@
 		689D57B4A78CEF3B32EB0045 /* PBGitIndexReconcileTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitIndexReconcileTests.m; path = GitXTests/PBGitIndexReconcileTests.m; sourceTree = "<group>"; };
 		689D57B4A78CEF3B32EB0046 /* PBGitIndexRefreshTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitIndexRefreshTests.m; path = GitXTests/PBGitIndexRefreshTests.m; sourceTree = "<group>"; };
 		9A3F7C21E48B450D9C2A1F61 /* PBGitIndexDiffCacheTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitIndexDiffCacheTests.m; path = GitXTests/PBGitIndexDiffCacheTests.m; sourceTree = "<group>"; };
+		6C2A9E14B7D3402F81A5C930 /* PBWebHistoryControllerCurrentRefTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBWebHistoryControllerCurrentRefTests.m; path = GitXTests/PBWebHistoryControllerCurrentRefTests.m; sourceTree = "<group>"; };
 		69760FA8A15F4EA2AD3D034A /* NSStringTruncateTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = NSStringTruncateTests.m; path = GitXTests/NSStringTruncateTests.m; sourceTree = "<group>"; };
 		661EC20D32B74C04B2DA75E4 /* PBGitHistoryCommitMenuTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryCommitMenuTests.m; path = GitXTests/PBGitHistoryCommitMenuTests.m; sourceTree = "<group>"; };
 		7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GLFileViewContentCacheTests.m; path = GitXTests/GLFileViewContentCacheTests.m; sourceTree = "<group>"; };
@@ -869,6 +871,7 @@
 				689D57B4A78CEF3B32EB0045 /* PBGitIndexReconcileTests.m */,
 				689D57B4A78CEF3B32EB0046 /* PBGitIndexRefreshTests.m */,
 				9A3F7C21E48B450D9C2A1F61 /* PBGitIndexDiffCacheTests.m */,
+				6C2A9E14B7D3402F81A5C930 /* PBWebHistoryControllerCurrentRefTests.m */,
 				69760FA8A15F4EA2AD3D034A /* NSStringTruncateTests.m */,
 				661EC20D32B74C04B2DA75E4 /* PBGitHistoryCommitMenuTests.m */,
 				7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */,
@@ -1831,6 +1834,7 @@
 				63E155858B2CC783EE10F1D8 /* PBGitIndexReconcileTests.m in Sources */,
 				63E155858B2CC783EE10F1D9 /* PBGitIndexRefreshTests.m in Sources */,
 				9A3F7C21E48B450D9C2A1F60 /* PBGitIndexDiffCacheTests.m in Sources */,
+				6C2A9E14B7D3402F81A5C931 /* PBWebHistoryControllerCurrentRefTests.m in Sources */,
 				764739E2E065426C828C6A8D /* NSStringTruncateTests.m in Sources */,
 				7C837A4B980A48D1B91EDF98 /* PBGitHistoryCommitMenuTests.m in Sources */,
 				7C4D19A8E52B461AB3D80E70 /* GLFileViewContentCacheTests.m in Sources */,
