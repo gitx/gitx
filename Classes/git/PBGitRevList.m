@@ -261,7 +261,9 @@ static BOOL hasParameter(NSMutableArray *parameters, NSString *paramName)
 		});
 	}
 
-	NSAssert(!enumError, @"Error enumerating commits");
+	if (enumError) {
+		NSLog(@"Failed to enumerate commits: %@", enumError);
+	}
 
 	dispatch_group_wait(loadGroup, DISPATCH_TIME_FOREVER);
 	dispatch_group_wait(decorateGroup, DISPATCH_TIME_FOREVER);
