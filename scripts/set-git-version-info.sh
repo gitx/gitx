@@ -31,7 +31,7 @@ fi
 
 # Use the latest tag for short version (expected tag format "vn[.n[.n]]")
 # or if there are no tags, we make up version 0.0.<commit count>
-LATEST_TAG=$("$GIT" describe --tags --abbrev=0 2>/dev/null)
+LATEST_TAG=$("$GIT" describe --tags --abbrev=0 2>/dev/null || printf '0.0.%s' "$("$GIT" rev-list --count HEAD)")
 LATEST_TAG=${LATEST_TAG##v} # Remove the "v" from the front of the tag
 ARCHITECTURE=$(uname -p)
 SHORT_VERSION="$LATEST_TAG"
