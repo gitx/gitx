@@ -16,13 +16,11 @@
 #import <ObjectiveGit/ObjectiveGit.h>
 
 // ── Converted files: headers kept so ObjC callers continue to compile ────────
-// NSAppearance+PBDarkMode.swift owns the implementations; .m only defines the constant.
+// Note: these Swift twins are NOT compiled (absent from the Xcode target);
+// the .m/.h implementations remain authoritative.
 #import "NSAppearance+PBDarkMode.h"
-// NSColor+RGB.swift owns the implementation.
 #import "NSColor+RGB.h"
-// NSSplitView+GitX.swift owns the implementation.
 #import "NSSplitView+GitX.h"
-// GitXRelativeDateFormatter.swift owns the implementation.
 #import "GitXRelativeDateFormatter.h"
 
 // ── Add further headers below only when a Swift source file needs them ────────

@@ -2,11 +2,9 @@
 //  NSAppearance+PBDarkMode.swift
 //  GitX
 //
-//  Converted from NSAppearance+PBDarkMode.m
-//
-//  Note: NSAppearance+PBDarkMode.m is still compiled solely to provide the
-//  `extern NSString *const PBEffectiveAppearanceChanged` definition for ObjC
-//  callers.  The category implementations live here.
+//  Legacy Swift twin of NSAppearance+PBDarkMode.m. This file is NOT part of
+//  the Xcode target and is never compiled; keep it in sync with the .m or
+//  delete it.
 //
 
 import AppKit
