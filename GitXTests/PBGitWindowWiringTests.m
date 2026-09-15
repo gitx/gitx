@@ -8,6 +8,7 @@
 #import "PBGitRepository.h"
 #import "PBGitSidebarController.h"
 #import "PBGitHistoryController.h"
+#import "PBGitHistoryList.h"
 #import "PBGitCommit.h"
 #import "PBGitRef.h"
 #import "PBSourceViewItem.h"
@@ -99,10 +100,28 @@
 	// Asking for the window loads the nib, which is what runs -windowDidLoad
 	// and builds the three view controllers
 	XCTAssertNotNil(self.windowController.window);
+
+	[self waitForTheRevisionListToSettle];
+}
+
+// Deleting the repository under a walk that is still running makes it fail,
+// and -addCommitsFromEnumerator: asserts on that.
+- (void)waitForTheRevisionListToSettle
+{
+	PBGitHistoryList *revisionList = self.windowController.repository.revisionList;
+	NSDate *limit = [NSDate dateWithTimeIntervalSinceNow:30];
+
+	while (revisionList.isUpdating && [limit timeIntervalSinceNow] > 0)
+		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+
+	XCTAssertFalse(revisionList.isUpdating, @"the revision list is still walking the repository");
 }
 
 - (void)tearDown
 {
+	[self.windowController.repository.revisionList cleanup];
+	[self waitForTheRevisionListToSettle];
+
 	[self.windowController close];
 	self.windowController = nil;
 	[[NSFileManager defaultManager] removeItemAtURL:self.repositoryURL error:NULL];
