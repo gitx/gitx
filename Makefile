@@ -55,6 +55,10 @@ ARCHIVE_SETTINGS ?=
 EXPORT_DIR ?= $(BUILD_DIR)/export
 ZIP ?= $(BUILD_DIR)/GitX-$(ARCH).zip
 
+# Set to anything to have the packaging commands name every file they pack.
+VERBOSE ?=
+ZIP_QUIET := $(if $(VERBOSE),,-q)
+
 # Set to a path to have xcodebuild write an .xcresult bundle, which is where CI
 # reads the screenshots back out of a test run.
 RESULT_BUNDLE ?=
@@ -209,7 +213,9 @@ package-signed: ## Package an archive that already exists (needs ExportOptions.p
 	ln -s /Applications $(BUILD_DIR)/dist/
 	hdiutil create -fs HFS+ -srcfolder $(BUILD_DIR)/dist -volname GitX $(DMG)
 	rm -rf $(BUILD_DIR)/dist
-	cd $(EXPORT_DIR) && zip -r $(abspath $(ZIP)) GitX.app
+	# -y stores the symlinks rather than following them, which is what keeps
+	# the frameworks' Versions/Current a link and the signature verifiable.
+	cd $(EXPORT_DIR) && zip -r -y $(ZIP_QUIET) $(abspath $(ZIP)) GitX.app
 
 # Packaging runs as its own make so that it cannot start before the archive
 # has finished. CI archives in a step of its own and calls package-signed.
