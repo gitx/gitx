@@ -13,13 +13,8 @@ concurrency:
   cancel-in-progress: ${{ !contains(github.event.pull_request.labels.*.name, 'keep-runs') }}
 
 env:
-  # Commit the screenshot UI tests check out as the repo they browse, so the
-  # history view/status bar stay stable across runs.
+  # Commit the screenshot UI tests check out as the repo they browse.
   FIXTURE_COMMIT: 52ff1051d0c8e5cf3ee5
-  # Release tag the screenshots are compared against. Bump this after each
-  # release; a stale tag just means the comparison misses recent intentional
-  # UI changes, it won't break anything.
-  BASELINE_TAG: '1.5.8'
 
 jobs:
   build-gitx:
@@ -127,38 +122,73 @@ jobs:
       - name: Checkout fixed repo snapshot for screenshots
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
-          git clone --no-checkout "$GITHUB_WORKSPACE" /tmp/gitx-screenshot-repo
-          git -C /tmp/gitx-screenshot-repo checkout ${{ env.FIXTURE_COMMIT }}
-      # The baseline is built fresh from a pinned release tag (env.BASELINE_TAG)
-      # rather than compared against PNGs committed to this repo: a committed
-      # baseline only matches the tag it was captured from and drifts on every
-      # unrelated merge to master, so PRs went red for changes they didn't make.
-      # Building it from a tag against the same fixture commit as the PR build
-      # keeps the comparison meaningful, and the cache below means this only
-      # costs a real build once per (tag, fixture, arch) combination, not once
-      # per PR.
+          git clone --no-checkout --no-tags "$GITHUB_WORKSPACE" /tmp/gitx-screenshot-repo
+          cd /tmp/gitx-screenshot-repo
+          git checkout -B screenshot-fixture ${{ env.FIXTURE_COMMIT }}
+          # The history view runs with the All filter and the status bar counts
+          # every commit reachable from any ref, so what the screenshots show
+          # depends on which refs this clone carries and not just on
+          # FIXTURE_COMMIT. The clone inherits the workspace's refs, which
+          # include the PR merge commit and therefore all of master, so it
+          # changes on every merge. Drop everything but the fixture branch to
+          # make the fixture a pure function of the pinned commit, which is
+          # what lets a baseline built against it stay valid in the cache.
+          git for-each-ref --format='%(refname)' refs/heads refs/remotes refs/tags \
+            | grep -vx refs/heads/screenshot-fixture \
+            | while read -r ref; do git update-ref -d "$ref"; done
+      # The baseline is built fresh from the PR's base commit rather than
+      # compared against PNGs committed to this repo: a committed baseline only
+      # matches the commit it was captured from and drifts on every unrelated
+      # merge to master, so PRs went red for changes they didn't make. Building
+      # it from the base commit against the same fixture as the PR build makes
+      # the comparison answer "did this PR change the UI", and the cache below
+      # means this costs a real build once per (base commit, fixture, arch),
+      # shared by every PR sitting on that base.
+      # About half of recent merges touch neither Classes/ nor Resources/ - CI
+      # config, Makefile, test wiring, submodule bumps - and for those the
+      # comparison can only ever report "no change". Skip the baseline build
+      # for them rather than spending a second full build to prove a negative.
+      - name: Check whether this PR can affect the UI
+        id: ui-paths
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        run: |
+          changed=$(git diff --name-only \
+            ${{ github.event.pull_request.base.sha }}...HEAD \
+            -- Classes Resources GitXUITests GitX.xcodeproj GitX.xcconfig External)
+          if [ -n "$changed" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "UI-relevant paths changed:"
+            echo "$changed"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No UI-relevant paths changed; skipping the screenshot baseline."
+          fi
       - name: Cache baseline screenshots
         id: baseline-cache
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' }}
         uses: actions/cache@v4
         with:
           path: scripts/baseline-screenshots-${{ matrix.abi }}
-          key: baseline-screenshots-${{ env.BASELINE_TAG }}-${{ env.FIXTURE_COMMIT }}-${{ matrix.abi }}
-      - name: Checkout baseline tag
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.baseline-cache.outputs.cache-hit != 'true' }}
+          key: baseline-screenshots-${{ github.event.pull_request.base.sha }}-${{ env.FIXTURE_COMMIT }}-${{ matrix.abi }}
+      - name: Checkout baseline commit
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' && steps.baseline-cache.outputs.cache-hit != 'true' }}
         run: |
           # .gitmodules pins submodules via git@github.com: SSH URLs, which the
           # runner has no key for. All of them are public repos, so rewrite to
           # HTTPS (anonymous, no auth needed) before recursing into them.
           git config --global url."https://github.com/".insteadOf "git@github.com:"
-          git clone --recursive --depth 1 --branch "${{ env.BASELINE_TAG }}" "$GITHUB_WORKSPACE" /tmp/gitx-baseline
+          # A SHA cannot be cloned with --branch, and the submodule revisions
+          # have to follow the checkout rather than the clone's default HEAD.
+          git clone --no-checkout "$GITHUB_WORKSPACE" /tmp/gitx-baseline
+          git -C /tmp/gitx-baseline checkout --detach ${{ github.event.pull_request.base.sha }}
+          git -C /tmp/gitx-baseline submodule update --init --recursive
       - name: Build baseline and run its UI tests
         id: baseline-tests
-        # A baseline build failure (e.g. the pinned tag no longer builds on a
+        # A baseline build failure (e.g. the base commit no longer builds on a
         # newer Xcode) should skip the comparison, not fail every PR for an
         # unrelated reason.
         continue-on-error: true
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.baseline-cache.outputs.cache-hit != 'true' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' && steps.baseline-cache.outputs.cache-hit != 'true' }}
         working-directory: /tmp/gitx-baseline
         run: |
           make deps
@@ -168,7 +198,7 @@ jobs:
             GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo \
             RESULT_BUNDLE=BaselineTestResults-${{ matrix.abi }}.xcresult
       - name: Extract baseline screenshots
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.baseline-cache.outputs.cache-hit != 'true' && steps.baseline-tests.outcome == 'success' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' && steps.baseline-cache.outputs.cache-hit != 'true' && steps.baseline-tests.outcome == 'success' }}
         run: |
           python3 /tmp/gitx-baseline/scripts/extract_screenshots.py \
             /tmp/gitx-baseline/BaselineTestResults-${{ matrix.abi }}.xcresult \
@@ -176,17 +206,19 @@ jobs:
       # screenShotScript/screenShotCompare.sh (unmodified, vendored from the
       # separate hannesa2/screenShotScript repo) diffs the working tree
       # against git HEAD via git-diff-image, so the freshly-built baseline is
-      # committed here as HEAD instead of leaving the old rotting PNGs from
-      # this repo's history in place. This commit is local-only, throwaway
-      # and never pushed - the runner's checkout is discarded after the job.
-      # scripts/Screenshots-<arch> (capital S, committed baseline path) and
+      # committed here as HEAD. Nothing is committed to this repo any more,
+      # which is the point: the baseline exists only for the length of the
+      # job. This commit is local-only, throwaway and never pushed - the
+      # runner's checkout is discarded afterwards.
+      # scripts/Screenshots-<arch> (capital S, staged baseline) and
       # scripts/screenshots-<arch> (lowercase, PR extraction path below) are
       # the same directory on the case-insensitive runner filesystem, so
       # extracting the PR's screenshots afterwards overwrites these files in
-      # the working tree, leaving them modified relative to this commit.
+      # the working tree, leaving them modified relative to this commit. The
+      # "Check the screenshot paths still collide" step below guards that.
       - name: Stage fresh baseline for screenshot diff
         id: stage-baseline
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && hashFiles(format('scripts/baseline-screenshots-{0}/*.png', matrix.abi)) != '' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' && hashFiles(format('scripts/baseline-screenshots-{0}/*.png', matrix.abi)) != '' }}
         run: |
           rm -rf "./scripts/Screenshots-${{ matrix.abi }}"
           mkdir -p "./scripts/Screenshots-${{ matrix.abi }}"
@@ -218,6 +250,26 @@ jobs:
           name: Screenshots-${{ matrix.abi }}
           path: ./scripts/screenshots-${{ matrix.abi }}
           retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
+      # The comparison only works because scripts/Screenshots-<arch> (the
+      # staged baseline, committed above) and scripts/screenshots-<arch> (the
+      # PR's extraction target) are one directory on the case-insensitive
+      # runner filesystem, so the PR's screenshots overwrite the baseline and
+      # git-diff-image sees modified files. If that ever stops holding, git
+      # would see no modification, screenShotCompare.sh would report no
+      # differences, and the check would pass without comparing anything.
+      # Probe the assumption directly rather than inferring it from the diff,
+      # which cannot tell "nothing changed" from "nothing was compared".
+      - name: Check the screenshot paths still collide
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.stage-baseline.outcome == 'success' }}
+        run: |
+          probe="./scripts/screenshots-${{ matrix.abi }}/.collision-probe"
+          touch "$probe"
+          if [ ! -e "./scripts/Screenshots-${{ matrix.abi }}/.collision-probe" ]; then
+            echo "::error::scripts/Screenshots-${{ matrix.abi }} and scripts/screenshots-${{ matrix.abi }} are no longer the same directory; the screenshot comparison would silently pass without comparing anything."
+            rm -f "$probe"
+            exit 1
+          fi
+          rm -f "$probe"
       - name: Compare screenshots
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.stage-baseline.outcome == 'success' }}
         env:
