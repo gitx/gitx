@@ -144,6 +144,19 @@ jobs:
       # the comparison answer "did this PR change the UI", and the cache below
       # means this costs a real build once per (base commit, fixture, arch),
       # shared by every PR sitting on that base.
+      # github.event.pull_request.base.sha is master as GitHub recorded it when
+      # the pull request last changed base, not the base branch's current head,
+      # so it can sit several merges behind. The checkout is refs/pull/N/merge,
+      # whose first parent is the commit the merge was actually computed
+      # against, which is what the comparison has to be against.
+      - name: Resolve the baseline commit
+        id: baseline-ref
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        run: |
+          sha=$(git rev-parse HEAD^1)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "baseline commit: $sha"
+          echo "payload base.sha: ${{ github.event.pull_request.base.sha }}"
       # About half of recent merges touch neither Classes/ nor Resources/ - CI
       # config, Makefile, test wiring, submodule bumps - and for those the
       # comparison can only ever report "no change". Skip the baseline build
@@ -153,7 +166,7 @@ jobs:
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
           changed=$(git diff --name-only \
-            ${{ github.event.pull_request.base.sha }}...HEAD \
+            ${{ steps.baseline-ref.outputs.sha }}...HEAD \
             -- Classes Resources GitXUITests GitX.xcodeproj GitX.xcconfig External)
           if [ -n "$changed" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -169,7 +182,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: scripts/baseline-screenshots-${{ matrix.abi }}
-          key: baseline-screenshots-${{ github.event.pull_request.base.sha }}-${{ env.FIXTURE_COMMIT }}-${{ matrix.abi }}
+          key: baseline-screenshots-${{ steps.baseline-ref.outputs.sha }}-${{ env.FIXTURE_COMMIT }}-${{ matrix.abi }}
       - name: Checkout baseline commit
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' && steps.baseline-cache.outputs.cache-hit != 'true' }}
         run: |
@@ -180,7 +193,7 @@ jobs:
           # A SHA cannot be cloned with --branch, and the submodule revisions
           # have to follow the checkout rather than the clone's default HEAD.
           git clone --no-checkout "$GITHUB_WORKSPACE" /tmp/gitx-baseline
-          git -C /tmp/gitx-baseline checkout --detach ${{ github.event.pull_request.base.sha }}
+          git -C /tmp/gitx-baseline checkout --detach ${{ steps.baseline-ref.outputs.sha }}
           git -C /tmp/gitx-baseline submodule update --init --recursive
       - name: Build baseline and run its UI tests
         id: baseline-tests
@@ -228,7 +241,7 @@ jobs:
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' && hashFiles(format('scripts/baseline-screenshots-{0}/*.png', matrix.abi)) != '' }}
         run: |
           echo "baseline-cache hit: ${{ steps.baseline-cache.outputs.cache-hit }}"
-          echo "baseline built from: ${{ github.event.pull_request.base.sha }}"
+          echo "baseline built from: ${{ steps.baseline-ref.outputs.sha }}"
           shasum -a 256 "./scripts/baseline-screenshots-${{ matrix.abi }}"/*.png
       - name: Stage fresh baseline for screenshot diff
         id: stage-baseline
