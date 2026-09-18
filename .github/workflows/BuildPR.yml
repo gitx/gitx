@@ -166,7 +166,7 @@ jobs:
       - name: Cache baseline screenshots
         id: baseline-cache
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' }}
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: scripts/baseline-screenshots-${{ matrix.abi }}
           key: baseline-screenshots-${{ github.event.pull_request.base.sha }}-${{ env.FIXTURE_COMMIT }}-${{ matrix.abi }}
