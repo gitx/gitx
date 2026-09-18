@@ -216,6 +216,20 @@ jobs:
       # extracting the PR's screenshots afterwards overwrites these files in
       # the working tree, leaving them modified relative to this commit. The
       # "Check the screenshot paths still collide" step below guards that.
+      # Two cache entries have turned up under one key with a two-byte size
+      # difference, which would mean the baseline is not byte-stable between
+      # builds of the same commit. If that is so, every cache miss reports
+      # differences the pull request did not cause. Compare these hashes
+      # across a cached run and a rebuilt one to tell. Note the gate makes
+      # this the only way to see it: a pull request that changes no UI skips
+      # the comparison entirely, so there is no "should be identical" run to
+      # observe.
+      - name: Hash the baseline screenshots
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' && hashFiles(format('scripts/baseline-screenshots-{0}/*.png', matrix.abi)) != '' }}
+        run: |
+          echo "baseline-cache hit: ${{ steps.baseline-cache.outputs.cache-hit }}"
+          echo "baseline built from: ${{ github.event.pull_request.base.sha }}"
+          shasum -a 256 "./scripts/baseline-screenshots-${{ matrix.abi }}"/*.png
       - name: Stage fresh baseline for screenshot diff
         id: stage-baseline
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' && hashFiles(format('scripts/baseline-screenshots-{0}/*.png', matrix.abi)) != '' }}
