@@ -75,14 +75,20 @@ MAP_WIDTH := 24
 # turns it on, and it refuses to map an ad-hoc signed framework into the host.
 TEST_SETTINGS := CODE_SIGN_IDENTITY="-" ENABLE_HARDENED_RUNTIME=NO
 
-.PHONY: help git-submodule-sync deps pre-build bootstrap build unit-test test \
+# xcodebuild's output runs to tens of thousands of lines, so a warning from
+# before the build has long scrolled past by the time anything reads it. Report
+# it again at the end, keeping the status the build itself returned.
+CHECK_AGAIN = status=$$?; $(MAKE) --no-print-directory git-submodule-check; exit $$status
+
+.PHONY: help git-submodule-sync git-submodule-check deps pre-build bootstrap \
+	build unit-test test \
 	ui-test all-tests archive build-project app smoke-test run dmg map \
 	export-signed \
 	package-signed \
 	dmg-signed clean git-clean-dry-run
 
 help: ## Show this help
-	@grep -hE '^[A-Za-z][A-Za-z.-]*:.*## ' $(MAKEFILE_LIST) \
+	@grep -hE '^[A-Za-z][A-Za-z0-9_.-]*:.*## ' $(MAKEFILE_LIST) \
 		| awk -F':.*## ' '{printf "  %-20s %s\n", $$1, $$2}'
 
 # Reads the edges out of make's own rule database, so a target that gains a
@@ -122,6 +128,31 @@ git-submodule-sync: ## Check out the submodules at the revisions this tree wants
 	git submodule sync
 	git submodule update --init --recursive
 
+# Locally this warns and carries on: parking a submodule on a commit of your
+# own is a normal thing to be doing, and the build that follows may well be
+# testing exactly that. On CI it is a defect rather than a choice, since the
+# checkout step is the only thing that puts submodules in place, so there it
+# fails the build rather than whispering into a log nobody reads. Recursive,
+# since libgit2 sits under objective-git and its pin is the one that leaves a
+# stale framework behind in a build directory.
+#
+# GitHub reads its annotations from stdout, and %0A is how one carries a
+# newline.
+git-submodule-check: ## Report a submodule that is not at the revision this tree wants
+	@drifted=$$(git submodule status --recursive 2>/dev/null | sed -n 's/^[+-]//p'); \
+	test -n "$$drifted" || exit 0; \
+	list=$$(echo "$$drifted" | awk '{ print $$2 " is at " substr($$1, 1, 8) }'); \
+	if [ -n "$$GITHUB_ACTIONS" ]; then \
+		summary="the checkout left submodules that are not at the recorded revisions"; \
+		echo "::error title=Submodule drift::$$(printf '%s\n%s\n' "$$summary" "$$list" \
+			| awk '{ printf "%s%s", separator, $$0; separator = "%0A" }')"; \
+		{ echo "error: $$summary:"; echo "$$list" | sed 's/^/  /'; } >&2; \
+		exit 1; \
+	fi; \
+	{ echo "warning: submodules are not at the revisions this tree wants:"; \
+	  echo "$$list" | sed 's/^/  /'; \
+	  echo 'run `make git-submodule-sync` to check them out'; } >&2
+
 deps: ## Build the objective-git and libgit2 dependencies
 	cd External/objective-git && script/bootstrap && script/update_libgit2
 
@@ -131,34 +162,37 @@ pre-build: git-submodule-sync deps ## Check out the submodules, then build the d
 
 bootstrap: pre-build ## (alias)
 
-build: ## Build the app for local use
-	$(XCODEBUILD) -destination "$(DESTINATION)" build
+build: git-submodule-check ## Build the app for local use
+	$(XCODEBUILD) -destination "$(DESTINATION)" build; $(CHECK_AGAIN)
 
-unit-test: ## Run the unit tests, needing no signing, repo or network
+unit-test: git-submodule-check ## Run the unit tests, needing no signing, repo or network
 	$(XCODEBUILD) -destination "$(DESTINATION)" \
-		-only-testing:GitXTests $(TEST_SETTINGS) $(RESULT_BUNDLE_ARG) test
+		-only-testing:GitXTests $(TEST_SETTINGS) $(RESULT_BUNDLE_ARG) test; \
+		$(CHECK_AGAIN)
 
 test: unit-test ## (alias)
 
-ui-test: ## Run the UI tests that drive the app and take the screenshots
+ui-test: git-submodule-check ## Run the UI tests that drive the app and take the screenshots
 	$(XCODEBUILD) -destination "$(DESTINATION)" \
 		-only-testing:GitXUITests $(TEST_SETTINGS) \
-		GITX_SCREENSHOT_REPO="$(GITX_SCREENSHOT_REPO)" $(RESULT_BUNDLE_ARG) test
+		GITX_SCREENSHOT_REPO="$(GITX_SCREENSHOT_REPO)" $(RESULT_BUNDLE_ARG) test; \
+		$(CHECK_AGAIN)
 
 # Runs the unit tests a second time, since the scheme tests every target. That
 # is what CI's "Run tests" step does today, and this target exists to match it.
-all-tests: ## Run every test target in the scheme, screenshots included
+all-tests: git-submodule-check ## Run every test target in the scheme, screenshots included
 	$(XCODEBUILD) -destination "$(DESTINATION)" \
 		$(TEST_SETTINGS) \
-		GITX_SCREENSHOT_REPO="$(GITX_SCREENSHOT_REPO)" $(RESULT_BUNDLE_ARG) test
+		GITX_SCREENSHOT_REPO="$(GITX_SCREENSHOT_REPO)" $(RESULT_BUNDLE_ARG) test; \
+		$(CHECK_AGAIN)
 
 # Only for the goals that need the real identity: CI and `dmg` sign ad-hoc.
 ifneq (,$(filter smoke-test dmg-signed,$(MAKECMDGOALS)))
 archive: Dev.xcconfig
 endif
 
-archive: ## Build a release GitX.xcarchive, which the dmg targets export from
-	$(XCODEBUILD) -archivePath $(ARCHIVE) $(ARCHIVE_SETTINGS) archive
+archive: git-submodule-check ## Build a release GitX.xcarchive, which the dmg targets export from
+	$(XCODEBUILD) -archivePath $(ARCHIVE) $(ARCHIVE_SETTINGS) archive; $(CHECK_AGAIN)
 
 build-project: archive ## (alias)
 
