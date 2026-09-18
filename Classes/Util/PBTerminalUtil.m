@@ -10,6 +10,11 @@
 #import "iTerm2GeneratedScriptingBridge.h"
 #import "PBGitDefaults.h"
 
+#import <AppKit/AppKit.h>
+
+NSString *const PBTerminalHandlerTerminal = @"com.apple.Terminal";
+NSString *const PBTerminalHandleriTerm2 = @"com.googlecode.iterm2";
+
 @interface PBTerminalUtil () <SBApplicationDelegate>
 @end
 
@@ -30,19 +35,56 @@
 	return term;
 }
 
++ (NSArray<NSString *> *)supportedHandlers
+{
+	return @[ PBTerminalHandlerTerminal, PBTerminalHandleriTerm2 ];
+}
+
++ (NSString *)nameForHandler:(NSString *)bundleIdentifier
+{
+	if ([bundleIdentifier isEqualToString:PBTerminalHandlerTerminal]) {
+		return @"Terminal";
+	}
+	if ([bundleIdentifier isEqualToString:PBTerminalHandleriTerm2]) {
+		return @"iTerm2";
+	}
+	return nil;
+}
+
++ (BOOL)isHandlerInstalled:(NSString *)bundleIdentifier
+{
+	if (!bundleIdentifier) {
+		return NO;
+	}
+	return [[NSWorkspace sharedWorkspace] URLForApplicationWithBundleIdentifier:bundleIdentifier] != nil;
+}
+
++ (NSString *)handlerForPreference:(NSString *)bundleIdentifier
+{
+	if (bundleIdentifier.length == 0) {
+		return PBTerminalHandlerTerminal;
+	}
+
+	if ([[self supportedHandlers] containsObject:bundleIdentifier]) {
+		return bundleIdentifier;
+	}
+
+	NSLog(@"Unexpected terminal handler %@, using Terminal", bundleIdentifier);
+
+	return PBTerminalHandlerTerminal;
+}
+
 - (void)runCommand:(NSString *)command inDirectory:(NSURL *)directory
 {
-	NSString *terminalHandler = [PBGitDefaults terminalHandler];
+	NSString *terminalHandler = [PBTerminalUtil handlerForPreference:[PBGitDefaults terminalHandler]];
 	BOOL ran = NO;
 
-	if ([terminalHandler isEqualToString:@"com.googlecode.iterm2"]) {
+	if ([terminalHandler isEqualToString:PBTerminalHandleriTerm2]) {
 		ran = [self runiTerm2Command:command inDirectory:directory];
 	}
 
 	// Fall back to Apple Terminal.
 	if (!ran) {
-		if (![terminalHandler isEqualToString:@"com.apple.Terminal"])
-			NSLog(@"Unexpected terminal handler %@, using Terminal.app", terminalHandler);
 		ran = [self runTerminalCommand:command inDirectory:directory];
 	}
 
@@ -61,7 +103,7 @@
 {
 	NSString *fullCommand = [NSString stringWithFormat:@"cd \"%@\"; clear; echo '# Opened by GitX'; %@", directory.path, command];
 
-	TerminalApplication *term = [SBApplication applicationWithBundleIdentifier:@"com.apple.Terminal"];
+	TerminalApplication *term = [SBApplication applicationWithBundleIdentifier:PBTerminalHandlerTerminal];
 	if (!term)
 		return NO;
 	term.delegate = self;
@@ -79,7 +121,7 @@
 {
 	NSString *fullCommand = [NSString stringWithFormat:@"cd \"%@\"; clear; echo '# Opened by GitX'; %@", directory.path, command];
 
-	iTerm2Application *term = [SBApplication applicationWithBundleIdentifier:@"com.googlecode.iterm2"];
+	iTerm2Application *term = [SBApplication applicationWithBundleIdentifier:PBTerminalHandleriTerm2];
 	if (!term)
 		return NO;
 	term.delegate = self;

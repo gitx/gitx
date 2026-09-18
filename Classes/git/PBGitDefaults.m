@@ -241,4 +241,9 @@
 	return [[NSUserDefaults standardUserDefaults] stringForKey:kTerminalHandler];
 }
 
++ (void)setTerminalHandler:(NSString *)bundleIdentifier
+{
+	[[NSUserDefaults standardUserDefaults] setObject:bundleIdentifier forKey:kTerminalHandler];
+}
+
 @end
