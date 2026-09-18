@@ -96,7 +96,7 @@
 
 	NSMenuItem *item = [self checkoutCommitItemForCommits:@[ commit ]];
 
-	XCTAssertEqualObjects(item.title, @"Checkout Commit “Fix the crash”");
+	XCTAssertEqualObjects(item.title, @"Checkout TEST “Fix the crash”");
 }
 
 - (void)testASubjectLongerThan40CharactersIsTruncatedWithAnIndicator
@@ -105,7 +105,7 @@
 
 	NSMenuItem *item = [self checkoutCommitItemForCommits:@[ commit ]];
 
-	XCTAssertEqualObjects(item.title, @"Checkout Commit “Find the git that Homebrew installed for...”");
+	XCTAssertEqualObjects(item.title, @"Checkout TEST “Find the git that Homebrew installed for...”");
 }
 
 // The 40-character figure quoted to the user is the number of subject
@@ -120,7 +120,7 @@
 
 	NSMenuItem *item = [self checkoutCommitItemForCommits:@[ commit ]];
 
-	NSString *expected = [NSString stringWithFormat:@"Checkout Commit “%@”", subject];
+	NSString *expected = [NSString stringWithFormat:@"Checkout TEST “%@”", subject];
 	XCTAssertEqualObjects(item.title, expected);
 }
 
@@ -132,7 +132,7 @@
 	NSMenuItem *item = [self checkoutCommitItemForCommits:@[ commit ]];
 
 	NSString *expectedPrefix = [subject substringToIndex:40];
-	NSString *expected = [NSString stringWithFormat:@"Checkout Commit “%@...”", expectedPrefix];
+	NSString *expected = [NSString stringWithFormat:@"Checkout TEST “%@...”", expectedPrefix];
 	XCTAssertEqualObjects(item.title, expected);
 }
 
@@ -142,7 +142,7 @@
 
 	NSMenuItem *item = [self checkoutCommitItemForCommits:@[ commit ]];
 
-	XCTAssertEqualObjects(item.title, @"Checkout Commit “<empty message>”");
+	XCTAssertEqualObjects(item.title, @"Checkout TEST “<empty message>”");
 	XCTAssertFalse([item.title containsString:@"(null)"]);
 }
 
