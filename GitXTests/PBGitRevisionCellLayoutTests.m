@@ -17,6 +17,8 @@
 // about where a label sits in a row.
 @interface PBGitRevisionCell (LayoutTests)
 - (NSArray<NSValue *> *)rectsForRefsinRect:(NSRect)rect;
+- (NSMutableDictionary *)attributesForRefLabel;
+- (NSRect)rectForRefLabelText:(NSString *)name inRect:(NSRect)rect;
 @end
 
 // -[PBGitCommit refs] reads through to the repository's table, so a commit
@@ -111,6 +113,42 @@ static const CGFloat kTextHeight = 14;
 		XCTAssertEqualWithAccuracy(NSMidY(value.rectValue), NSMidY(cell.bounds), 0.5,
 								   @"a ref label is not on the row's centre line");
 	}
+}
+
+- (void)testARefLabelCapsuleStaysTheSizeOfItsText
+{
+	PBGitRevisionCell *cell = [self cellWithRefs:@[ @"refs/heads/master" ] graphLine:YES];
+
+	NSRect capsule = [cell rectsForRefsinRect:cell.bounds].firstObject.rectValue;
+	NSSize text = [@"master" sizeWithAttributes:[cell attributesForRefLabel]];
+
+	XCTAssertEqualWithAccuracy(capsule.size.height, text.height, 0.01,
+							   @"growing the capsule keeps the air above the glyphs and only adds more");
+}
+
+- (void)testARefLabelsTextIsLiftedInsideItsCapsule
+{
+	PBGitRevisionCell *cell = [self cellWithRefs:@[ @"refs/heads/master" ] graphLine:YES];
+
+	NSRect capsule = [cell rectsForRefsinRect:cell.bounds].firstObject.rectValue;
+	NSRect text = [cell rectForRefLabelText:@"master" inRect:capsule];
+
+	XCTAssertEqualWithAccuracy(text.size.height,
+							   [@"master" sizeWithAttributes:[cell attributesForRefLabel]].height, 0.01,
+							   @"the text is not drawn into its own line box");
+	XCTAssertLessThan(NSMinY(text), NSMinY(capsule),
+					  @"the text was not lifted, so a name in lowercase still reads low in its capsule");
+}
+
+- (void)testARefLabelLeavesRoomBelowADescender
+{
+	PBGitRevisionCell *cell = [self cellWithRefs:@[ @"refs/remotes/origin/master" ] graphLine:YES];
+
+	NSRect capsule = [cell rectsForRefsinRect:cell.bounds].firstObject.rectValue;
+	NSRect text = [cell rectForRefLabelText:@"origin/master" inRect:capsule];
+
+	XCTAssertGreaterThan(NSMaxY(capsule), NSMaxY(text),
+						 @"a descender still reaches the capsule's border with nothing under it");
 }
 
 @end
