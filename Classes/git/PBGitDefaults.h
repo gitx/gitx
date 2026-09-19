@@ -14,6 +14,13 @@ typedef NS_ENUM(NSInteger, PBPruneOnFetchSetting) {
 	PBPruneOnFetchNever = 2,
 };
 
+typedef NS_ENUM(NSInteger, PBCommitDateFormatSetting) {
+	PBCommitDateFormatShort = 0,
+	PBCommitDateFormatMedium = 1,
+	PBCommitDateFormatLong = 2,
+	PBCommitDateFormatCustom = 3,
+};
+
 @interface PBGitDefaults : NSObject {
 }
 
@@ -39,6 +46,8 @@ typedef NS_ENUM(NSInteger, PBPruneOnFetchSetting) {
 + (PBPruneOnFetchSetting)pruneOnFetch;
 + (NSString *)terminalHandler;
 + (void)setTerminalHandler:(NSString *)bundleIdentifier;
++ (PBCommitDateFormatSetting)commitDateFormat;
++ (NSString *)commitDateCustomFormat;
 
 
 // Suppressed Dialog Warnings

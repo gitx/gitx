@@ -31,6 +31,7 @@
 #import "PBGitStash.h"
 #import "PBGitSidebarController.h"
 #import "NSString_Truncate.h"
+#import "PBGitCommitDateFormatter.h"
 
 #define kHistorySelectedDetailIndexKey @"PBHistorySelectedDetailIndex"
 #define kHistoryDetailViewIndex 0
@@ -68,6 +69,7 @@
 - (void)updateBranchFilterMatrix;
 - (void)restoreFileBrowserSelection;
 - (void)saveFileBrowserSelection;
+- (void)resizeDateColumn:(NSTableColumn *)column toFitDate:(NSString *)date inFont:(NSFont *)font;
 
 @end
 
@@ -201,8 +203,53 @@
 
 	// listen for updates
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:repository];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_commitDateFormatChangedNotification:) name:PBGitCommitDateFormatDidChangeNotification object:nil];
 
 	[super awakeFromNib];
+}
+
+// A text field asks its formatter for a string as it draws, so a row that is
+// not marked for redraw goes on showing the format it was drawn with. The dates
+// themselves do not change, so nothing else marks them.
+- (void)_commitDateFormatChangedNotification:(NSNotification *)notification
+{
+	NSInteger dateColumn = [commitList columnWithIdentifier:@"DateColumn"];
+	if (dateColumn == -1)
+		return;
+
+	__block NSFont *font = nil;
+
+	PBCommitList *list = commitList;
+	[list enumerateAvailableRowViewsUsingBlock:^(NSTableRowView *rowView, NSInteger row) {
+		NSTextField *field = ((NSTableCellView *)[list viewAtColumn:dateColumn row:row makeIfNecessary:NO]).textField;
+		if (!field)
+			return;
+
+		[field setNeedsDisplay:YES];
+		font = field.font;
+	}];
+
+	[self resizeDateColumn:list.tableColumns[dateColumn] toFitDate:[PBGitCommitDateFormatter sizingDateString] inFont:font];
+}
+
+// The column is sized from a date that needs about as much room as any the
+// format produces, rather than from the ones on screen, so that scrolling into a
+// longer month does not meet a clipped column. It is an estimate the user can
+// drag afterwards. The date is drawn two points in from each edge of its cell,
+// and a twentieth of its width is left over as breathing room. The header is a
+// floor, since a pattern can render shorter than the word "Date".
+static const CGFloat PBDateColumnInset = 4;
+static const CGFloat PBDateColumnSlack = 1.05;
+
+- (void)resizeDateColumn:(NSTableColumn *)column toFitDate:(NSString *)date inFont:(NSFont *)font
+{
+	if (!date.length || !font)
+		return;
+
+	CGFloat widest = [date sizeWithAttributes:@{NSFontAttributeName : font}].width;
+	CGFloat width = MAX(ceil(widest * PBDateColumnSlack) + PBDateColumnInset, column.headerCell.cellSize.width);
+
+	column.width = MIN(MAX(width, column.minWidth), column.maxWidth);
 }
 
 - (void)_repositoryUpdatedNotification:(NSNotification *)notification
