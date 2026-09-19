@@ -163,7 +163,12 @@ pre-build: git-submodule-sync deps ## Check out the submodules, then build the d
 bootstrap: pre-build ## (alias)
 
 build: git-submodule-check ## Build the app for local use
-	$(XCODEBUILD) -destination "$(DESTINATION)" build; $(CHECK_AGAIN)
+	@start_time=$$(date +%s); \
+	$(XCODEBUILD) -destination "$(DESTINATION)" build; status=$$?; \
+	$(MAKE) --no-print-directory git-submodule-check; \
+	elapsed=$$(($$(date +%s) - start_time)); \
+	printf '\n⏱  make build finished in %dm %02ds (exit %d)\n' $$((elapsed/60)) $$((elapsed%60)) $$status; \
+	exit $$status
 
 unit-test: git-submodule-check ## Run the unit tests, needing no signing, repo or network
 	$(XCODEBUILD) -destination "$(DESTINATION)" \
