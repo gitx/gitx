@@ -111,12 +111,32 @@ jobs:
           path: UnitTestResults-${{ matrix.abi }}.xcresult
           retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
 
+      # About half of recent merges touch neither Classes/ nor Resources/ - CI
+      # config, Makefile, test wiring, submodule bumps - and for those the
+      # comparison can only ever report "no change". Skip the baseline build
+      # for them rather than spending a second full build to prove a negative.
+      - name: Check whether this PR can affect the UI
+        id: ui-paths
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        run: |
+          changed=$(git diff --name-only \
+            ${{ steps.baseline-ref.outputs.sha }}...HEAD \
+            -- Classes Resources GitXUITests GitX.xcodeproj GitX.xcconfig External)
+          if [ -n "$changed" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "UI-relevant paths changed:"
+            echo "$changed"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No UI-relevant paths changed; skipping the screenshot baseline."
+          fi
+
       # Test (only on arm64 to avoid tripling CI time)
       - name: Prepare screenshot comparison
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true'}}
         run: brew install exiftool imagemagick
       - name: Checkout fixed repo snapshot for screenshots
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' }}
         run: |
           git clone --no-checkout "$GITHUB_WORKSPACE" /tmp/gitx-screenshot-repo
           git -C /tmp/gitx-screenshot-repo checkout 52ff1051d0c8e5cf3ee5
@@ -132,20 +152,20 @@ jobs:
             GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo \
             RESULT_BUNDLE=TestResults-${{ matrix.abi }}.xcresult
       - name: Extract screenshots from test results
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true'}}
         run: |
           python3 scripts/extract_screenshots.py \
             TestResults-${{ matrix.abi }}.xcresult \
             ./scripts/screenshots-${{ matrix.abi }}
       - name: Upload screenshots
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' }}
         uses: actions/upload-artifact@v7
         with:
           name: Screenshots-${{ matrix.abi }}
           path: ./scripts/screenshots-${{ matrix.abi }}
           retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
       - name: Compare screenshots
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true'}}
         env:
           CLASSIC_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
           SCREENSHOT_USER: ${{ secrets.SCREENSHOT_USER }}
@@ -155,7 +175,7 @@ jobs:
           ls -ls ./scripts/Screenshots-${{ matrix.abi }}
           ./screenShotScript/screenShotCompare.sh false
       - name: Archive screenshots diffs
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
+        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.ui-paths.outputs.changed == 'true' }}
         uses: actions/upload-artifact@v7
         with:
           name: gitx-Screenshots-diffs-${{ matrix.abi }}
