@@ -412,10 +412,10 @@
 	stage = [PBSourceViewStageItem stageItem];
 	[project addChild:stage];
 
-	branches = [PBSourceViewItem groupItemWithTitle:@"Branches"];
-	remotes = [PBSourceViewItem groupItemWithTitle:@"Remotes"];
-	tags = [PBSourceViewItem groupItemWithTitle:@"Tags"];
-	stashes = [PBSourceViewItem groupItemWithTitle:@"Stashes"];
+	branches = [PBSourceViewItem groupItemWithTitle:@"Branches Test"];
+	remotes = [PBSourceViewItem groupItemWithTitle:@"Remotes Test"];
+	tags = [PBSourceViewItem groupItemWithTitle:@"Tag Tests"];
+	stashes = [PBSourceViewItem groupItemWithTitle:@"Stashes Test"];
 	submodules = [PBSourceViewItem groupItemWithTitle:@"Submodules"];
 	others = [PBSourceViewItem groupItemWithTitle:@"Other"];
 
