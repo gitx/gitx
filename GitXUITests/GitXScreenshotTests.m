@@ -159,5 +159,111 @@
     [window typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
 }
 
+- (void)testTreeViewScreenshot {
+    // Reuses the same navigation as the Source/Blame/History tab tests so
+    // the Tree View pane is guaranteed to have a commit and file selected.
+    if (![self navigateToTreeViewAndSelectFile]) { return; }
+    [self saveWindowScreenshotNamed:@"tree-view"];
+}
+
+// Navigates to the Tree View, selects a commit and a file within it, so the
+// Source/Blame/History scope bar (GLFileView, MGScopeBar) is visible and
+// populated. Returns YES on success.
+- (BOOL)navigateToTreeViewAndSelectFile {
+    if (![self waitForWindow]) { return NO; }
+
+    XCUIElement *window = self.app.windows.firstMatch;
+    XCUIElement *table = window.tables.firstMatch;
+    if (![table waitForExistenceWithTimeout:10]) {
+        NSLog(@"[GitXScreenshotTests] Commit table not found");
+        return NO;
+    }
+
+    // Let the history list fully load, then select a commit so the tree view
+    // has content to render.
+    [NSThread sleepForTimeInterval:1.0];
+    XCUIElement *firstRow = [table.tableRows elementBoundByIndex:0];
+    if (firstRow.exists) {
+        [firstRow click];
+        [NSThread sleepForTimeInterval:0.3];
+    } else {
+        NSLog(@"[GitXScreenshotTests] No commit rows found");
+        return NO;
+    }
+
+    // Switch from Detailed View to Tree View (second segment of the
+    // image-only segmented control — see testTreeViewScreenshot for why we
+    // must address it positionally).
+    XCUIElement *viewSwitcher = self.app.segmentedControls.firstMatch;
+    if (![viewSwitcher waitForExistenceWithTimeout:15]) {
+        NSLog(@"[GitXScreenshotTests] Detail/Tree view switcher not found");
+        [self saveWindowScreenshotNamed:@"debug-no-view-switcher"];
+        return NO;
+    }
+    XCUIElement *treeViewSegment = [viewSwitcher.buttons elementBoundByIndex:1];
+    if (!treeViewSegment.exists) {
+        NSLog(@"[GitXScreenshotTests] Tree View segment not found");
+        return NO;
+    }
+    [treeViewSegment click];
+    [NSThread sleepForTimeInterval:0.5];
+
+    // The file browser is an NSOutlineView (id "15"/PBQLOutlineView in
+    // PBGitHistoryView.xib) listing the tree of the selected commit. Select
+    // a file row (not just a folder) so GLFileView has text/blame/history to
+    // show. Walk the rows looking for the first one that isn't a group/
+    // disclosure-only row by just picking the last row, which for a typical
+    // small repo tree is a file rather than the root folder.
+    XCUIElement *outline = window.outlines.firstMatch;
+    if (![outline waitForExistenceWithTimeout:15]) {
+        NSLog(@"[GitXScreenshotTests] File tree outline not found");
+        return NO;
+    }
+    NSUInteger rowCount = outline.outlineRows.count;
+    if (rowCount == 0) {
+        NSLog(@"[GitXScreenshotTests] File tree outline is empty");
+        return NO;
+    }
+    XCUIElement *fileRow = [outline.outlineRows elementBoundByIndex:rowCount - 1];
+    if (!fileRow.exists) {
+        NSLog(@"[GitXScreenshotTests] Could not resolve a file row in the tree");
+        return NO;
+    }
+    [fileRow click];
+    [NSThread sleepForTimeInterval:0.5];
+
+    return YES;
+}
+
+// Clicks the scope bar button with the given title ("Source", "Blame", or
+// "History" — see GLFileView.m's MGScopeBar item setup) and saves a
+// screenshot. Unlike the Detailed/Tree View segmented control, MGScopeBar
+// items are titled buttons, so they can be addressed by label directly.
+- (void)selectFileViewScopeBarItemNamed:(NSString *)title andSaveScreenshotNamed:(NSString *)screenshotName {
+    XCUIElement *scopeBarButton = self.app.buttons[title];
+    if (![scopeBarButton waitForExistenceWithTimeout:15]) {
+        NSLog(@"[GitXScreenshotTests] Scope bar button '%@' not found", title);
+        return;
+    }
+    [scopeBarButton click];
+    [NSThread sleepForTimeInterval:0.5];
+    [self saveWindowScreenshotNamed:screenshotName];
+}
+
+- (void)testTreeViewSourceTabScreenshot {
+    if (![self navigateToTreeViewAndSelectFile]) { return; }
+    [self selectFileViewScopeBarItemNamed:@"Source" andSaveScreenshotNamed:@"tree-view-source"];
+}
+
+- (void)testTreeViewBlameTabScreenshot {
+    if (![self navigateToTreeViewAndSelectFile]) { return; }
+    [self selectFileViewScopeBarItemNamed:@"Blame" andSaveScreenshotNamed:@"tree-view-blame"];
+}
+
+- (void)testTreeViewHistoryTabScreenshot {
+    if (![self navigateToTreeViewAndSelectFile]) { return; }
+    [self selectFileViewScopeBarItemNamed:@"History" andSaveScreenshotNamed:@"tree-view-history"];
+}
+
 @end
 
