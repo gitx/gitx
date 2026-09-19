@@ -224,7 +224,7 @@
                                                                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" translatesAutoresizingMaskIntoConstraints="NO" id="iGP-qz-VRM">
                                                                         <rect key="frame" x="0.0" y="2" width="62" height="18"/>
                                                                         <textFieldCell key="cell" lineBreakMode="truncatingTail" sendsActionOnEndEditing="YES" title="Table View Cell" id="7tX-ih-QOV">
-                                                                            <font key="font" size="12" name="Menlo-Regular"/>
+                                                                            <font key="font" size="12" name="Monaco"/>
                                                                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                                                             <connections>
@@ -234,7 +234,7 @@
                                                                     </textField>
                                                                 </subviews>
                                                                 <constraints>
-                                                                    <constraint firstItem="iGP-qz-VRM" firstAttribute="centerY" secondItem="S5L-Nf-A1w" secondAttribute="centerY" constant="-1" id="GDg-jl-ava"/>
+                                                                    <constraint firstItem="iGP-qz-VRM" firstAttribute="centerY" secondItem="S5L-Nf-A1w" secondAttribute="centerY" constant="0" id="GDg-jl-ava"/>
                                                                     <constraint firstAttribute="trailing" secondItem="iGP-qz-VRM" secondAttribute="trailing" constant="2" id="iqZ-uT-qp5"/>
                                                                     <constraint firstItem="iGP-qz-VRM" firstAttribute="leading" secondItem="S5L-Nf-A1w" secondAttribute="leading" constant="2" id="rmh-9O-2Zn"/>
                                                                 </constraints>

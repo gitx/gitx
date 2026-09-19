@@ -329,34 +329,36 @@ const BOOL SHUFFLE_COLORS = NO;
 	NSRect rect = self.bounds;
 	cellInfo = [self.objectValue lineInfo];
 
-	if (cellInfo) {
-		float pathWidth = 0;
+	float pathWidth = 0;
 
-		if (!controller.hasNonlinearPath) {
-			pathWidth = 10 + COLUMN_WIDTH * cellInfo.numColumns;
-		}
-
-		NSRect ownRect;
-		NSDivideRect(rect, &ownRect, &rect, pathWidth, NSMinXEdge);
-
-		NSArray<NSValue *> *rectValues = [self rectsForRefsinRect:rect];
-
-		if (rectValues.count > 0) {
-			const CGFloat PADDING = 4;
-			NSRect lastRect = rectValues.lastObject.rectValue;
-
-			rect.size.width -= lastRect.origin.x - rect.origin.x + lastRect.size.width - PADDING;
-			rect.origin.x = lastRect.origin.x + lastRect.size.width + PADDING;
-		}
-
-		NSRect frame = self.textField.frame;
-
-		frame.origin.x = floor(rect.origin.x);
-		frame.origin.y = floor((self.bounds.size.height - frame.size.height) / 2) - 1;
-		frame.size.width = floor(self.bounds.size.width - frame.origin.x);
-
-		self.textField.frame = frame;
+	if (cellInfo && !controller.hasNonlinearPath) {
+		pathWidth = 10 + COLUMN_WIDTH * cellInfo.numColumns;
 	}
+
+	NSRect ownRect;
+	NSDivideRect(rect, &ownRect, &rect, pathWidth, NSMinXEdge);
+
+	NSArray<NSValue *> *rectValues = [self rectsForRefsinRect:rect];
+
+	if (rectValues.count > 0) {
+		const CGFloat PADDING = 4;
+		NSRect lastRect = rectValues.lastObject.rectValue;
+
+		rect.size.width -= lastRect.origin.x - rect.origin.x + lastRect.size.width - PADDING;
+		rect.origin.x = lastRect.origin.x + lastRect.size.width + PADDING;
+	}
+
+	NSRect frame = self.textField.frame;
+
+	frame.origin.x = rect.origin.x;
+	frame.origin.y = NSMidY(self.bounds) - frame.size.height / 2;
+	frame.size.width = self.bounds.size.width - frame.origin.x;
+
+	// Centring lands on a half point whenever the row and the text differ by an
+	// odd amount, and text drawn off the pixel grid renders blurred on a 1x
+	// display. Snap to whatever the grid is rather than rounding by hand, so
+	// this holds on Retina too.
+	self.textField.frame = [self backingAlignedRect:frame options:NSAlignAllEdgesNearest];
 }
 
 - (PBGitCommit *)objectValue
