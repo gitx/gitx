@@ -308,7 +308,7 @@ jobs:
           ls -ls ./scripts/Screenshots-${{ matrix.abi }}
           ./screenShotScript/screenShotCompare.sh false
       - name: Archive screenshots diffs
-        if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.stage-baseline.outcome == 'success' }}
+        if: ${{ always() && env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.stage-baseline.outcome == 'success' }}
         uses: actions/upload-artifact@v7
         with:
           name: gitx-Screenshots-diffs-${{ matrix.abi }}
