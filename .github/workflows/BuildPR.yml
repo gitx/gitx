@@ -10,7 +10,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: ${{ !contains(github.event.pull_request.labels.*.name, 'keep-runs') }}
+  cancel-in-progress: ${{ !contains(github.event.pull_request.labels.*.name, 'pipeline') }}
 
 jobs:
   build-gitx:
