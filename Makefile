@@ -75,12 +75,22 @@ MAP_WIDTH := 24
 # turns it on, and it refuses to map an ad-hoc signed framework into the host.
 TEST_SETTINGS := CODE_SIGN_IDENTITY="-" ENABLE_HARDENED_RUNTIME=NO
 
+# Asked of xcodebuild: DerivedData holds a GitX-* directory per checkout path.
+BUILD_PRODUCTS_ROOT = $(XCODEBUILD) -showBuildSettings 2>/dev/null \
+	| awk -F' = ' '/ BUILD_DIR /{ print $$2; exit }'
+
+FRAMEWORK_GIT2_VERSION := ObjectiveGit.framework/Headers/git2/version.h
+LIBGIT2_VERSION_HEADER := External/objective-git/External/libgit2/include/git2/version.h
+
 # xcodebuild's output runs to tens of thousands of lines, so a warning from
 # before the build has long scrolled past by the time anything reads it. Report
 # it again at the end, keeping the status the build itself returned.
-CHECK_AGAIN = status=$$?; $(MAKE) --no-print-directory git-submodule-check; exit $$status
+CHECK_AGAIN = status=$$?; \
+	$(MAKE) --no-print-directory git-submodule-check framework-check; \
+	exit $$status
 
-.PHONY: help git-submodule-sync git-submodule-check deps pre-build bootstrap \
+.PHONY: help git-submodule-sync git-submodule-check framework-check \
+	framework-clean deps pre-build bootstrap \
 	build unit-test test \
 	ui-test all-tests archive build-project app smoke-test run dmg map \
 	export-signed \
@@ -153,6 +163,27 @@ git-submodule-check: ## Report a submodule that is not at the revision this tree
 	  echo "$$list" | sed 's/^/  /'; \
 	  echo 'run `make git-submodule-sync` to check them out'; } >&2
 
+# The compile meets both sets of git2 headers and dies before the phase that
+# refreshes the copy runs, so a build directory in this state cannot recover.
+framework-check: ## Report a built framework whose libgit2 headers the tree has moved past
+	@test -f $(LIBGIT2_VERSION_HEADER) || exit 0; \
+	level=warning; test -z "$$GITHUB_ACTIONS" || level=error; \
+	for built in $$($(BUILD_PRODUCTS_ROOT))/*/$(FRAMEWORK_GIT2_VERSION); do \
+		test -f "$$built" && ! cmp -s "$$built" $(LIBGIT2_VERSION_HEADER) || continue; \
+		echo "$$level: stale libgit2 headers in $$built" >&2; \
+		stale=1; \
+	done; \
+	test -n "$$stale" || exit 0; \
+	echo 'run `make framework-clean` before building' >&2; \
+	test -z "$$GITHUB_ACTIONS" || { echo "::error::stale libgit2 headers"; exit 1; }
+
+framework-clean: ## Drop built ObjectiveGit.frameworks so the next build recopies their headers
+	@for framework in $$($(BUILD_PRODUCTS_ROOT))/*/ObjectiveGit.framework; do \
+		test -d "$$framework" || continue; \
+		echo "Removing $$framework"; \
+		rm -rf "$$framework"; \
+	done
+
 deps: ## Build the objective-git and libgit2 dependencies
 	cd External/objective-git && script/bootstrap && script/update_libgit2
 
@@ -162,22 +193,22 @@ pre-build: git-submodule-sync deps ## Check out the submodules, then build the d
 
 bootstrap: pre-build ## (alias)
 
-build: git-submodule-check ## Build the app for local use
+build: git-submodule-check framework-check ## Build the app for local use
 	@start_time=$$(date +%s); \
 	$(XCODEBUILD) -destination "$(DESTINATION)" build; status=$$?; \
-	$(MAKE) --no-print-directory git-submodule-check; \
+	$(MAKE) --no-print-directory git-submodule-check framework-check; \
 	elapsed=$$(($$(date +%s) - start_time)); \
 	printf '\n⏱  make build finished in %dm %02ds (exit %d)\n' $$((elapsed/60)) $$((elapsed%60)) $$status; \
 	exit $$status
 
-unit-test: git-submodule-check ## Run the unit tests, needing no signing, repo or network
+unit-test: git-submodule-check framework-check ## Run the unit tests, needing no signing, repo or network
 	$(XCODEBUILD) -destination "$(DESTINATION)" \
 		-only-testing:GitXTests $(TEST_SETTINGS) $(RESULT_BUNDLE_ARG) test; \
 		$(CHECK_AGAIN)
 
 test: unit-test ## (alias)
 
-ui-test: git-submodule-check ## Run the UI tests that drive the app and take the screenshots
+ui-test: git-submodule-check framework-check ## Run the UI tests that drive the app and take the screenshots
 	$(XCODEBUILD) -destination "$(DESTINATION)" \
 		-only-testing:GitXUITests $(TEST_SETTINGS) \
 		GITX_SCREENSHOT_REPO="$(GITX_SCREENSHOT_REPO)" $(RESULT_BUNDLE_ARG) test; \
@@ -185,7 +216,7 @@ ui-test: git-submodule-check ## Run the UI tests that drive the app and take the
 
 # Runs the unit tests a second time, since the scheme tests every target. That
 # is what CI's "Run tests" step does today, and this target exists to match it.
-all-tests: git-submodule-check ## Run every test target in the scheme, screenshots included
+all-tests: git-submodule-check framework-check ## Run every test target in the scheme, screenshots included
 	$(XCODEBUILD) -destination "$(DESTINATION)" \
 		$(TEST_SETTINGS) \
 		GITX_SCREENSHOT_REPO="$(GITX_SCREENSHOT_REPO)" $(RESULT_BUNDLE_ARG) test; \
@@ -196,7 +227,7 @@ ifneq (,$(filter smoke-test dmg-signed,$(MAKECMDGOALS)))
 archive: Dev.xcconfig
 endif
 
-archive: git-submodule-check ## Build a release GitX.xcarchive, which the dmg targets export from
+archive: git-submodule-check framework-check ## Build a release GitX.xcarchive, which the dmg targets export from
 	$(XCODEBUILD) -archivePath $(ARCHIVE) $(ARCHIVE_SETTINGS) archive; $(CHECK_AGAIN)
 
 build-project: archive ## (alias)
