@@ -31,6 +31,7 @@
 #import "PBGitStash.h"
 #import "PBGitSidebarController.h"
 #import "NSString_Truncate.h"
+#import "PBGitCommitDateFormatter.h"
 
 #define kHistorySelectedDetailIndexKey @"PBHistorySelectedDetailIndex"
 #define kHistoryDetailViewIndex 0
@@ -201,8 +202,25 @@
 
 	// listen for updates
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:repository];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_commitDateFormatChangedNotification:) name:PBGitCommitDateFormatDidChangeNotification object:nil];
 
 	[super awakeFromNib];
+}
+
+// A text field asks its formatter for a string as it draws, so a row that is
+// not marked for redraw goes on showing the format it was drawn with. The dates
+// themselves do not change, so nothing else marks them.
+- (void)_commitDateFormatChangedNotification:(NSNotification *)notification
+{
+	NSInteger dateColumn = [commitList columnWithIdentifier:@"DateColumn"];
+	if (dateColumn == -1)
+		return;
+
+	PBCommitList *list = commitList;
+	[list enumerateAvailableRowViewsUsingBlock:^(NSTableRowView *rowView, NSInteger row) {
+		NSTableCellView *cell = (NSTableCellView *)[list viewAtColumn:dateColumn row:row makeIfNecessary:NO];
+		[cell.textField setNeedsDisplay:YES];
+	}];
 }
 
 - (void)_repositoryUpdatedNotification:(NSNotification *)notification
