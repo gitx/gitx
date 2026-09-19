@@ -64,6 +64,27 @@
     return [self.app.windows.firstMatch waitForExistenceWithTimeout:10];
 }
 
+- (BOOL)selectViewMenuItem:(NSString *)title {
+    XCUIElement *viewMenu = self.app.menuBars.menuBarItems[@"View"];
+    if (![viewMenu waitForExistenceWithTimeout:10]) {
+        NSLog(@"[GitXScreenshotTests] The View menu never appeared");
+        return NO;
+    }
+    [viewMenu click];
+
+    XCUIElement *item = viewMenu.menus.menuItems[title];
+    if (![item waitForExistenceWithTimeout:5]) {
+        NSLog(@"[GitXScreenshotTests] View > %@ was not offered", title);
+        [self.app typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+        return NO;
+    }
+
+    NSLog(@"[GitXScreenshotTests] Switching to View > %@", title);
+    [item click];
+    [NSThread sleepForTimeInterval:0.5];
+    return YES;
+}
+
 - (void)saveScreenshotNamed:(NSString *)name {
     XCUIScreenshot *screenshot = [[XCUIScreen mainScreen] screenshot];
     XCTAttachment *attachment = [XCTAttachment attachmentWithScreenshot:screenshot];
@@ -90,28 +111,28 @@
 - (void)testMainWindowExists {
     XCTAssertTrue([self waitForWindow],
                   @"Main window should appear within 30 seconds");
-    [self saveWindowScreenshotNamed:@"main-window"];
 }
 
 - (void)testHistoryTabScreenshot {
-    if (![self waitForWindow]) { return; }
+    XCTAssertTrue([self waitForWindow], @"Main window should appear");
+    XCTAssertTrue([self selectViewMenuItem:@"History"],
+                  @"View > History should be reachable");
+
+    XCUIElement *table = self.app.windows.firstMatch.tables.firstMatch;
+    XCTAssertTrue([table waitForExistenceWithTimeout:10],
+                  @"The history view should show its commit list");
+
     [self saveWindowScreenshotNamed:@"history-view"];
 }
 
 - (void)testStagingTabScreenshot {
-    if (![self waitForWindow]) { return; }
+    XCTAssertTrue([self waitForWindow], @"Main window should appear");
+    XCTAssertTrue([self selectViewMenuItem:@"Commit"],
+                  @"View > Commit should be reachable");
 
-    // Click the Stage tab / toolbar button if present
-    XCUIElement *stageButton = self.app.toolbars.buttons[@"Stage"];
-    if (!stageButton.exists) {
-        // Try as a tab or segmented control
-        stageButton = [self.app.windows.firstMatch.buttons elementMatchingType:XCUIElementTypeButton
-                                                                    identifier:@"Stage"];
-    }
-    if (stageButton.exists) {
-        [stageButton click];
-        [NSThread sleepForTimeInterval:0.5];
-    }
+    XCUIElement *commitButton = self.app.windows.firstMatch.buttons[@"Commit"];
+    XCTAssertTrue([commitButton waitForExistenceWithTimeout:10],
+                  @"The staging view should show its Commit button");
 
     [self saveWindowScreenshotNamed:@"staging-view"];
 }
@@ -123,7 +144,9 @@
 // }
 
 - (void)testCommitContextMenuScreenshot {
-    if (![self waitForWindow]) { return; }
+    XCTAssertTrue([self waitForWindow], @"Main window should appear");
+    XCTAssertTrue([self selectViewMenuItem:@"History"],
+                  @"View > History should be reachable");
 
     // The commit list is a table — find the first (most recent) commit row
     XCUIElement *window = self.app.windows.firstMatch;

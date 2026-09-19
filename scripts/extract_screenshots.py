@@ -13,6 +13,18 @@ def run(cmd):
     return subprocess.run(cmd, capture_output=True)
 
 
+def destination_for(out_dir, name, taken):
+    """Name the file after the attachment, disambiguating repeated names."""
+    safe = ''.join(c if c.isalnum() or c in '-_' else '_' for c in name)
+    candidate = safe
+    n = 1
+    while candidate in taken:
+        candidate = f'{safe}-{n}'
+        n += 1
+    taken.add(candidate)
+    return os.path.join(out_dir, f'{candidate}.png')
+
+
 def get_object(bundle, ref_id=None):
     """Fetch a JSON object from the bundle, optionally by ref ID."""
     cmd = ['xcrun', 'xcresulttool', 'get', 'object', '--legacy',
@@ -73,9 +85,9 @@ def export_via_xcresulttool(bundle, out_dir):
 
     print("Used: xcresulttool get object --legacy (recursive)")
     count = 0
-    for i, (ref, name) in enumerate(find_attachments_recursive(bundle, root)):
-        safe = ''.join(c if c.isalnum() or c in '-_' else '_' for c in name)
-        dest = os.path.join(out_dir, f'{i:02d}-{safe}.png')
+    taken = set()
+    for ref, name in find_attachments_recursive(bundle, root):
+        dest = destination_for(out_dir, name, taken)
         r = run(['xcrun', 'xcresulttool', 'export', 'object', '--legacy',
                  '--path', bundle, '--id', ref,
                  '--output-path', dest, '--type', 'file'])
@@ -100,9 +112,9 @@ def export_via_get_legacy(bundle, out_dir):
     print("Used: xcresulttool get --legacy")
     data = json.loads(result.stdout)
     count = 0
-    for i, (ref, name) in enumerate(find_attachments_recursive(bundle, data)):
-        safe = ''.join(c if c.isalnum() or c in '-_' else '_' for c in name)
-        dest = os.path.join(out_dir, f'{i:02d}-{safe}.png')
+    taken = set()
+    for ref, name in find_attachments_recursive(bundle, data):
+        dest = destination_for(out_dir, name, taken)
         r = run(['xcrun', 'xcresulttool', 'get', '--legacy',
                  '--path', bundle, '--id', ref, '--format', 'raw'])
         if r.returncode != 0:
