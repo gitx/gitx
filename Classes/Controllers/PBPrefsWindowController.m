@@ -10,6 +10,7 @@
 #import "PBGitRepository.h"
 #import "PBGitDefaults.h"
 #import "PBTerminalUtil.h"
+#import "PBGitCommitDateFormatter.h"
 
 #define kPreferenceViewIdentifier @"PBGitXPreferenceViewIdentifier"
 
@@ -22,6 +23,7 @@
 	[super windowDidLoad];
 
 	[self populateTerminalHandlers];
+	[self updateCommitDateSample];
 }
 
 - (void)setupToolbar
@@ -119,6 +121,37 @@
 	}
 
 	[PBGitDefaults setTerminalHandler:handler];
+}
+
+#pragma mark -
+#pragma mark Commit date format
+
+// The popup and the field are read rather than the preferences they write, so
+// the sample shows what was just picked whichever of them the change came from.
+- (void)updateCommitDateSample
+{
+	PBCommitDateFormatSetting setting = commitDateFormatPopup.selectedTag;
+	NSString *customFormat = commitDateCustomFormatField.stringValue;
+
+	commitDateCustomFormatField.enabled = (setting == PBCommitDateFormatCustom);
+
+	NSDateFormatter *formatter = [PBGitCommitDateFormatter dateFormatterForSetting:setting customFormat:customFormat];
+	NSString *sample = [formatter stringFromDate:[NSDate date]];
+
+	// A pattern can be well formed and still render to nothing, so the sample
+	// says the column would be empty instead of going blank itself.
+	commitDateSampleField.stringValue = sample.length ? sample : NSLocalizedString(@"(nothing)", @"Preferences: what an empty commit date pattern shows");
+}
+
+- (IBAction)changeCommitDateFormat:(id)sender
+{
+	[self updateCommitDateSample];
+}
+
+- (void)controlTextDidChange:(NSNotification *)notification
+{
+	if (notification.object == commitDateCustomFormatField)
+		[self updateCommitDateSample];
 }
 
 #pragma mark -

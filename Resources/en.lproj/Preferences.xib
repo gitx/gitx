@@ -8,6 +8,9 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PBPrefsWindowController">
             <connections>
+                <outlet property="commitDateCustomFormatField" destination="213" id="219"/>
+                <outlet property="commitDateFormatPopup" destination="202" id="220"/>
+                <outlet property="commitDateSampleField" destination="217" id="221"/>
                 <outlet property="generalPrefsView" destination="1" id="8"/>
                 <outlet property="gitPathController" destination="45" id="59"/>
                 <outlet property="gitPathOpenAccessory" destination="62" id="65"/>
@@ -19,11 +22,11 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="1" userLabel="General">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="323"/>
+            <rect key="frame" x="0.0" y="0.0" width="500" height="334"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="164">
-                    <rect key="frame" x="91" y="143" width="110" height="17"/>
+                    <rect key="frame" x="91" y="154" width="110" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Prune on fetch:" id="165">
                         <font key="font" metaFont="system"/>
@@ -32,7 +35,7 @@
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="166">
-                    <rect key="frame" x="205" y="139" width="215" height="25"/>
+                    <rect key="frame" x="205" y="150" width="215" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="Use git config (fetch.prune)" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="169" id="167">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -50,7 +53,7 @@
                     </connections>
                 </popUpButton>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="114">
-                    <rect key="frame" x="91" y="245" width="273" height="18"/>
+                    <rect key="frame" x="91" y="256" width="273" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Show whitespace differences" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="115">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -61,7 +64,7 @@
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="153">
-                    <rect key="frame" x="91" y="267" width="273" height="18"/>
+                    <rect key="frame" x="91" y="278" width="273" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Watch for changes in repositories" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="154">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -71,65 +74,74 @@
                         <binding destination="28" name="value" keyPath="values.PBUseRepositoryWatcher" id="163"/>
                     </connections>
                 </button>
-                <button toolTip="Reset to 'No executable set'" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="77">
-                    <rect key="frame" x="424" y="113" width="16" height="16"/>
+                <textField toolTip="Date format of History-list" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="200">
+                    <rect key="frame" x="91" y="124" width="90" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSStopProgressFreestandingTemplate" imagePosition="left" alignment="left" alternateImage="NSStopProgressFreestandingTemplate" state="on" imageScaling="proportionallyDown" inset="2" id="78">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Date format:" id="201">
                         <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="resetGitPath:" target="-2" id="79"/>
-                        <binding destination="28" name="hidden" keyPath="values.gitExecutable" id="83">
-                            <dictionary key="options">
-                                <string key="NSValueTransformerName">NSIsNil</string>
-                            </dictionary>
-                        </binding>
-                    </connections>
-                </button>
-                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="47">
-                    <rect key="frame" x="112" y="74" width="270" height="28"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="48">
-                        <font key="font" metaFont="smallSystem"/>
-                        <string key="title">Select the git executable you wish to use
-or drag it from the Finder.</string>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <pathControl focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="45">
-                    <rect key="frame" x="205" y="109" width="215" height="25"/>
+                <popUpButton toolTip="Date format of History-list" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="202">
+                    <rect key="frame" x="205" y="120" width="215" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <pathCell key="cell" selectable="YES" editable="YES" focusRingType="none" alignment="left" pathStyle="popUp" id="46">
-                        <font key="font" metaFont="system"/>
-                        <connections>
-                            <outlet property="delegate" destination="-2" id="61"/>
-                        </connections>
-                    </pathCell>
+                    <popUpButtonCell key="cell" type="push" title="Long" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="207" id="203">
+                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="menu"/>
+                        <menu key="menu" title="OtherViews" id="204">
+                            <items>
+                                <menuItem title="Short" tag="0" id="205"/>
+                                <menuItem title="Medium" tag="1" id="206"/>
+                                <menuItem title="Long" state="on" tag="2" id="207"/>
+                                <menuItem title="Custom" tag="3" id="208"/>
+                            </items>
+                        </menu>
+                    </popUpButtonCell>
                     <connections>
-                        <action selector="checkGitValidity:" target="-2" id="58"/>
-                        <binding destination="28" name="value" keyPath="values.gitExecutable" id="86">
-                            <dictionary key="options">
-                                <integer key="NSAllowsEditingMultipleValuesSelection" value="0"/>
-                                <string key="NSNullPlaceholder">No executable set</string>
-                                <string key="NSValueTransformerName">PBNSURLPathUserDefaultsTransfomer</string>
-                            </dictionary>
-                        </binding>
-                        <outlet property="delegate" destination="-2" id="54"/>
+                        <action selector="changeCommitDateFormat:" target="-2" id="209"/>
+                        <binding destination="28" name="selectedTag" keyPath="values.PBCommitDateFormat" id="210"/>
                     </connections>
-                </pathControl>
-                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="43">
-                    <rect key="frame" x="91" y="113" width="99" height="17"/>
+                </popUpButton>
+                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="211">
+                    <rect key="frame" x="112" y="95" width="60" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Git Executable:" id="44">
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Pattern:" id="212">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField toolTip="A date pattern in Unicode TR 35 notation, such as yyyy-MM-dd HH:mm" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="213">
+                    <rect key="frame" x="205" y="92" width="215" height="22"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" placeholderString="yyyy-MM-dd HH:mm" drawsBackground="YES" id="214">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        <connections>
+                            <binding destination="28" name="value" keyPath="values.PBCommitDateCustomFormat" id="215">
+                                <dictionary key="options">
+                                    <bool key="NSContinuouslyUpdatesValue" value="YES"/>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </textFieldCell>
+                    <connections>
+                        <outlet property="delegate" destination="-2" id="216"/>
+                    </connections>
+                </textField>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="217">
+                    <rect key="frame" x="205" y="74" width="265" height="14"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" title="19 September 2026 at 14:05" id="218">
+                        <font key="font" metaFont="smallSystem"/>
+                        <color key="textColor" name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="126">
-                    <rect key="frame" x="91" y="223" width="279" height="18"/>
+                    <rect key="frame" x="91" y="234" width="279" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Show column guides in commit message" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="127">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -140,7 +152,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </button>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="128">
-                    <rect key="frame" x="112" y="199" width="196" height="17"/>
+                    <rect key="frame" x="112" y="210" width="196" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Display body guide at column:" id="129">
                         <font key="font" metaFont="system"/>
@@ -149,7 +161,7 @@ or drag it from the Finder.</string>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="130">
-                    <rect key="frame" x="325" y="196" width="41" height="22"/>
+                    <rect key="frame" x="325" y="207" width="41" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="131">
                         <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" formatWidth="-1" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="Sk0-yU-eAV"/>
@@ -166,7 +178,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </textField>
                 <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="oHn-U1-E1H">
-                    <rect key="frame" x="364" y="193" width="19" height="28"/>
+                    <rect key="frame" x="364" y="204" width="19" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <stepperCell key="cell" continuous="YES" alignment="left" maxValue="200" id="7mM-Lr-k9g"/>
                     <connections>
@@ -174,7 +186,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </stepper>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="145">
-                    <rect key="frame" x="112" y="173" width="211" height="17"/>
+                    <rect key="frame" x="112" y="184" width="211" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Display subject guide at column:" id="148">
                         <font key="font" metaFont="system"/>
@@ -183,7 +195,7 @@ or drag it from the Finder.</string>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="146">
-                    <rect key="frame" x="325" y="170" width="41" height="22"/>
+                    <rect key="frame" x="325" y="181" width="41" height="22"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="147">
                         <numberFormatter key="formatter" formatterBehavior="default10_4" numberStyle="decimal" formatWidth="-1" minimumIntegerDigits="1" maximumIntegerDigits="2000000000" maximumFractionDigits="3" id="Rih-TW-mKW"/>
@@ -200,7 +212,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </textField>
                 <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8S8-EY-tZ9">
-                    <rect key="frame" x="364" y="167" width="19" height="28"/>
+                    <rect key="frame" x="364" y="178" width="19" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <stepperCell key="cell" continuous="YES" alignment="left" maxValue="200" id="MFg-eF-42q"/>
                     <connections>
@@ -334,9 +346,66 @@ or drag it from the Finder.</string>
         <customObject id="26" customClass="SUUpdater"/>
         <userDefaultsController representsSharedInstance="YES" id="28"/>
         <customView id="87" userLabel="Integration">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="220"/>
+            <rect key="frame" x="0.0" y="0.0" width="500" height="306"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
+                <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="43">
+                    <rect key="frame" x="91" y="247" width="99" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Git Executable:" id="44">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <pathControl focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="45">
+                    <rect key="frame" x="205" y="243" width="195" height="25"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <pathCell key="cell" selectable="YES" editable="YES" focusRingType="none" alignment="left" pathStyle="popUp" id="46">
+                        <font key="font" metaFont="system"/>
+                        <connections>
+                            <outlet property="delegate" destination="-2" id="61"/>
+                        </connections>
+                    </pathCell>
+                    <connections>
+                        <action selector="checkGitValidity:" target="-2" id="58"/>
+                        <binding destination="28" name="value" keyPath="values.gitExecutable" id="86">
+                            <dictionary key="options">
+                                <integer key="NSAllowsEditingMultipleValuesSelection" value="0"/>
+                                <string key="NSNullPlaceholder">No executable set</string>
+                                <string key="NSValueTransformerName">PBNSURLPathUserDefaultsTransfomer</string>
+                            </dictionary>
+                        </binding>
+                        <outlet property="delegate" destination="-2" id="54"/>
+                    </connections>
+                </pathControl>
+                <button toolTip="Reset to 'No executable set'" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="77">
+                    <rect key="frame" x="404" y="247" width="16" height="16"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSStopProgressFreestandingTemplate" imagePosition="left" alignment="left" alternateImage="NSStopProgressFreestandingTemplate" state="on" imageScaling="proportionallyDown" inset="2" id="78">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="resetGitPath:" target="-2" id="79"/>
+                        <binding destination="28" name="hidden" keyPath="values.gitExecutable" id="83">
+                            <dictionary key="options">
+                                <string key="NSValueTransformerName">NSIsNil</string>
+                            </dictionary>
+                        </binding>
+                    </connections>
+                </button>
+                <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="47">
+                    <rect key="frame" x="112" y="208" width="270" height="28"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="48">
+                        <font key="font" metaFont="smallSystem"/>
+                        <string key="title">Select the git executable you wish to use
+or drag it from the Finder.</string>
+                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="180">
                     <rect key="frame" x="91" y="162" width="110" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
