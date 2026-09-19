@@ -256,6 +256,19 @@ const BOOL SHUFFLE_COLORS = NO;
 	return array;
 }
 
+- (NSRect)rectForRefLabelText:(NSString *)name inRect:(NSRect)rect
+{
+	static const CGFloat ref_label_lift = 1;
+
+	NSSize textSize = [name sizeWithAttributes:[self attributesForRefLabel]];
+	NSRect textRect = rect;
+
+	textRect.origin.y += (rect.size.height - textSize.height) / 2 - ref_label_lift;
+	textRect.size.height = textSize.height;
+
+	return textRect;
+}
+
 - (void)drawLabelAtIndex:(int)index inRect:(NSRect)rect
 {
 	NSArray *refs = self.objectValue.refs;
@@ -269,7 +282,8 @@ const BOOL SHUFFLE_COLORS = NO;
 
 	//	[[NSColor blackColor] set];
 	//	[border stroke];
-	[[ref shortName] drawInRect:rect withAttributes:attributes];
+	[[ref shortName] drawInRect:[self rectForRefLabelText:[ref shortName] inRect:rect]
+				 withAttributes:attributes];
 }
 
 - (void)drawRefsInRect:(NSRect)refRect
