@@ -90,6 +90,7 @@
 		currentRevList = nil;
 	}
 	[graphQueue cancelAllOperations];
+	self.isUpdating = NO;
 }
 
 
