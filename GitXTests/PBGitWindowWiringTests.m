@@ -218,16 +218,21 @@
 // rather than inferred from one another.
 - (NSString *)wiringStateOf:(PBGitHistoryController *)history
 {
+	// Read each one once into a local: commitList is a weak outlet, and asking
+	// for it twice in one format call can answer differently.
+	NSArrayController *controller = history.commitController;
+	NSTableView *list = (NSTableView *)history.commitList;
+	NSView *view = history.view;
+
 	return [NSString stringWithFormat:@"history: %@, commitController: %@, commitList: %@, view: %@, window: %@, columns: %lu, sortDescriptors: %lu",
 									  history ? @"set" : @"nil",
-									  history.commitController ? @"set" : @"nil",
-									  history.commitList ? @"set" : @"nil",
-									  history.view ? @"set" : @"nil",
-									  history.view.window ? @"set" : @"nil",
-									  (unsigned long)((NSTableView *)history.commitList).tableColumns.count,
-									  (unsigned long)history.commitController.sortDescriptors.count];
+									  controller ? @"set" : @"nil",
+									  list ? @"set" : @"nil",
+									  view ? @"set" : @"nil",
+									  view.window ? @"set" : @"nil",
+									  (unsigned long)list.tableColumns.count,
+									  (unsigned long)controller.sortDescriptors.count];
 }
-
 // A GitX that ran before these tests leaves its autosaved table and window
 // state in the same defaults domain the test host reads, so what is already
 // there is part of the state under test.

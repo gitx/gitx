@@ -266,6 +266,15 @@ jobs:
           # state that launch left behind apart from the UI target sharing this
           # invocation. A failure here means the former, a pass the latter.
           set +e
+          # The only leftover the failing run reports is the app's autosaved
+          # window frame, so wipe the domain the baseline app wrote to and run
+          # the same tests again. A pass here says the defaults carry it.
+          defaults delete net.phere.GitX 2>/dev/null
+          killall cfprefsd 2>/dev/null
+          make unit-test \
+            ARCH=${{ matrix.abi }} \
+            RESULT_BUNDLE=CleanDefaultsUnitTests-${{ matrix.abi }}.xcresult
+          echo "BISECT isolated GitXTests with the defaults domain wiped: exit=$?"
           make unit-test \
             ARCH=${{ matrix.abi }} \
             RESULT_BUNDLE=AfterBaselineUnitTests-${{ matrix.abi }}.xcresult
