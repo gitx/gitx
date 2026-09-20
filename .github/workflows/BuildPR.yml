@@ -277,12 +277,16 @@ jobs:
             ARCH=${{ matrix.abi }} \
             RESULT_BUNDLE=AsLeftUnitTests-${{ matrix.abi }}.xcresult
           echo "BISECT isolated GitXTests as the baseline app left the domain: exit=$?"
-          defaults delete net.phere.GitX "NSWindow Frame GitX" 2>/dev/null
+          # The sidebar opens on the stage view when this is set, and only the
+          # shown controller's nib is loaded, so the history outlets would stay
+          # nil. It is the one key that differs between a passing and a failing
+          # domain, so turn just it off.
+          defaults write net.phere.GitX PBShowStageView -bool NO
           killall cfprefsd 2>/dev/null
           make unit-test \
             ARCH=${{ matrix.abi }} \
-            RESULT_BUNDLE=NoWindowFrameUnitTests-${{ matrix.abi }}.xcresult
-          echo "BISECT isolated GitXTests with only the window frame removed: exit=$?"
+            RESULT_BUNDLE=NoStageViewUnitTests-${{ matrix.abi }}.xcresult
+          echo "BISECT isolated GitXTests with PBShowStageView off: exit=$?"
           set -e
           make all-tests \
             ARCH=${{ matrix.abi }} \
