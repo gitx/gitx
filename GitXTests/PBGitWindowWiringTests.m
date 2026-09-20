@@ -200,9 +200,34 @@
 	[history.commitController setContent:@[ commit ]];
 	[history.commitController setSelectedObjects:@[ commit ]];
 
-	XCTAssertTrue(history.singleCommitSelected);
+	NSString *immediately = [self selectionStateOf:history];
+
+	NSDate *limit = [NSDate dateWithTimeIntervalSinceNow:5];
+	while (!history.singleCommitSelected && [limit timeIntervalSinceNow] > 0)
+		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+
+	XCTAssertTrue(history.singleCommitSelected, @"the history list never took the selection.\n  straight after asking: %@\n  after waiting:         %@",
+				  immediately, [self selectionStateOf:history]);
 
 	return (NSResponder *)history.commitList;
+}
+
+// -singleCommitSelected reads -selectedCommits, which only -updateKeys writes,
+// and that runs from the observer on the array controller's selection. So a
+// failure can mean the controller refused the selection or that the hop has not
+// happened, and the two are told apart by what the controller itself holds.
+- (NSString *)selectionStateOf:(PBGitHistoryController *)history
+{
+	NSArrayController *controller = history.commitController;
+	PBGitCommit *wanted = [[controller content] firstObject];
+
+	return [NSString stringWithFormat:@"content: %lu, arranged: %lu, wanted commit is arranged: %@, selectionIndexes: %@, selectedObjects: %lu, selectedCommits: %lu",
+									  (unsigned long)[[controller content] count],
+									  (unsigned long)[[controller arrangedObjects] count],
+									  [[controller arrangedObjects] containsObject:wanted] ? @"yes" : @"no",
+									  [controller selectionIndexes],
+									  (unsigned long)[[controller selectedObjects] count],
+									  (unsigned long)history.selectedCommits.count];
 }
 
 // Every ref action asks -selectedRef which ref it should work on. With the
