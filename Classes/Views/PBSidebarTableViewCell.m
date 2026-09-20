@@ -33,6 +33,38 @@ NS_ASSUME_NONNULL_BEGIN
 	[self updateCheckmarkImage];
 }
 
+- (void)viewDidMoveToWindow
+{
+	[super viewDidMoveToWindow];
+
+	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+	[center removeObserver:self name:NSWindowDidBecomeMainNotification object:nil];
+	[center removeObserver:self name:NSWindowDidResignMainNotification object:nil];
+
+	if (self.window) {
+		[center addObserver:self
+				   selector:@selector(windowMainStateDidChange:)
+					   name:NSWindowDidBecomeMainNotification
+					 object:self.window];
+		[center addObserver:self
+				   selector:@selector(windowMainStateDidChange:)
+					   name:NSWindowDidResignMainNotification
+					 object:self.window];
+	}
+
+	[self updateCheckmarkImage];
+}
+
+- (void)windowMainStateDidChange:(NSNotification *)notification
+{
+	[self updateCheckmarkImage];
+}
+
+- (void)dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)updateCheckmarkImage
 {
 	if (_isCheckedOut) {
