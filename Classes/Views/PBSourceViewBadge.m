@@ -41,13 +41,8 @@
 	if ([cell backgroundStyle] != NSBackgroundStyleEmphasized)
 		return [NSColor whiteColor];
 
-	if (![[cell window] isKeyWindow]) {
-		if ([[cell window] isMainWindow]) {
-			return [self badgeHighlightColor];
-		} else {
-			return [self badgeBackgroundColor];
-		}
-	}
+	if ([[cell window] isMainWindow])
+		return [self badgeHighlightColor];
 
 	return [self badgeBackgroundColor];
 }
