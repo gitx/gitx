@@ -77,6 +77,7 @@
 		4A5D76F414A9A9CC00DF6C68 /* PBGitBinary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D764F14A9A9CC00DF6C68 /* PBGitBinary.m */; };
 		4A5D76F514A9A9CC00DF6C68 /* PBGitCommit.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765114A9A9CC00DF6C68 /* PBGitCommit.m */; };
 		4A5D76F714A9A9CC00DF6C68 /* PBGitDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765514A9A9CC00DF6C68 /* PBGitDefaults.m */; };
+		B1C0DE03A000000300000000 /* PBGitCommitDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = B1C0DE02A000000200000000 /* PBGitCommitDateFormatter.m */; };
 		4A5D76F814A9A9CC00DF6C68 /* PBGitGrapher.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765714A9A9CC00DF6C68 /* PBGitGrapher.mm */; };
 		4A5D76F914A9A9CC00DF6C68 /* PBGitGraphLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765914A9A9CC00DF6C68 /* PBGitGraphLine.m */; };
 		4A5D76FA14A9A9CC00DF6C68 /* PBGitHistoryGrapher.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765B14A9A9CC00DF6C68 /* PBGitHistoryGrapher.m */; };
@@ -557,6 +558,8 @@
 		4A5D765014A9A9CC00DF6C68 /* PBGitCommit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PBGitCommit.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4A5D765114A9A9CC00DF6C68 /* PBGitCommit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PBGitCommit.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4A5D765414A9A9CC00DF6C68 /* PBGitDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitDefaults.h; sourceTree = "<group>"; };
+		B1C0DE01A000000100000000 /* PBGitCommitDateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitCommitDateFormatter.h; sourceTree = "<group>"; };
+		B1C0DE02A000000200000000 /* PBGitCommitDateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitCommitDateFormatter.m; sourceTree = "<group>"; };
 		4A5D765514A9A9CC00DF6C68 /* PBGitDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitDefaults.m; sourceTree = "<group>"; };
 		4A5D765614A9A9CC00DF6C68 /* PBGitGrapher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitGrapher.h; sourceTree = "<group>"; };
 		4A5D765714A9A9CC00DF6C68 /* PBGitGrapher.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = PBGitGrapher.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1096,6 +1099,8 @@
 				4A5D769014A9A9CC00DF6C68 /* PBCommitList.h */,
 				4A5D769114A9A9CC00DF6C68 /* PBCommitList.m */,
 				A1CE3C5CEB7C423189591B5A /* PBCommitList.swift */,
+				B1C0DE01A000000100000000 /* PBGitCommitDateFormatter.h */,
+				B1C0DE02A000000200000000 /* PBGitCommitDateFormatter.m */,
 				50660A531FD6F48A004342B0 /* PBSidebarList.h */,
 				50660A541FD6F48A004342B0 /* PBSidebarList.m */,
 				4A5D769214A9A9CC00DF6C68 /* PBGraphCellInfo.h */,
@@ -1902,6 +1907,7 @@
 				4A5D76F514A9A9CC00DF6C68 /* PBGitCommit.m in Sources */,
 				6C4855DA1D57E4FA0027A7B4 /* PBOpenShallowRepositoryErrorRecoveryAttempter.m in Sources */,
 				4A5D76F714A9A9CC00DF6C68 /* PBGitDefaults.m in Sources */,
+				B1C0DE03A000000300000000 /* PBGitCommitDateFormatter.m in Sources */,
 				4A5D76F814A9A9CC00DF6C68 /* PBGitGrapher.mm in Sources */,
 				4A5D76F914A9A9CC00DF6C68 /* PBGitGraphLine.m in Sources */,
 				50DCC65A20111E4000999D3D /* PBGitRevisionRow.m in Sources */,

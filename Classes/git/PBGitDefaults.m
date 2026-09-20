@@ -32,6 +32,9 @@
 #define kUseRepositoryWatcher @"PBUseRepositoryWatcher"
 #define kPruneOnFetch @"PBPruneOnFetch"
 #define kTerminalHandler @"PBTerminalHandler"
+#define kCommitDateFormat @"PBCommitDateFormat"
+#define kCommitDateCustomFormat @"PBCommitDateCustomFormat"
+#define kDefaultCommitDateCustomFormat @"yyyy-MM-dd HH:mm"
 
 @implementation PBGitDefaults
 
@@ -70,6 +73,10 @@
 					  forKey:kPruneOnFetch];
 	[defaultValues setObject:@"com.apple.Terminal"
 					  forKey:kTerminalHandler];
+	[defaultValues setObject:[NSNumber numberWithInteger:PBCommitDateFormatLong]
+					  forKey:kCommitDateFormat];
+	[defaultValues setObject:kDefaultCommitDateCustomFormat
+					  forKey:kCommitDateCustomFormat];
 	[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
 }
 
@@ -244,6 +251,16 @@
 + (void)setTerminalHandler:(NSString *)bundleIdentifier
 {
 	[[NSUserDefaults standardUserDefaults] setObject:bundleIdentifier forKey:kTerminalHandler];
+}
+
++ (PBCommitDateFormatSetting)commitDateFormat
+{
+	return [[NSUserDefaults standardUserDefaults] integerForKey:kCommitDateFormat];
+}
+
++ (NSString *)commitDateCustomFormat
+{
+	return [[NSUserDefaults standardUserDefaults] stringForKey:kCommitDateCustomFormat];
 }
 
 @end
