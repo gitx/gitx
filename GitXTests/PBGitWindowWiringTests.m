@@ -206,10 +206,40 @@
 	while (!history.singleCommitSelected && [limit timeIntervalSinceNow] > 0)
 		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
 
-	XCTAssertTrue(history.singleCommitSelected, @"the history list never took the selection.\n  straight after asking: %@\n  after waiting:         %@",
-				  immediately, [self selectionStateOf:history]);
+	XCTAssertTrue(history.singleCommitSelected, @"the history list never took the selection.\n  straight after asking: %@\n  after waiting:         %@\n  wiring:                %@\n  host state:            %@",
+				  immediately, [self selectionStateOf:history], [self wiringStateOf:history], [self hostState]);
 
 	return (NSResponder *)history.commitList;
+}
+
+// An array controller answers an empty index set when nothing is selected, so
+// a selectionIndexes of (null) means the outlet itself never got connected. The
+// nib builds the controller and the list alike, and both are reported here
+// rather than inferred from one another.
+- (NSString *)wiringStateOf:(PBGitHistoryController *)history
+{
+	return [NSString stringWithFormat:@"history: %@, commitController: %@, commitList: %@, view: %@, window: %@, columns: %lu, sortDescriptors: %lu",
+									  history ? @"set" : @"nil",
+									  history.commitController ? @"set" : @"nil",
+									  history.commitList ? @"set" : @"nil",
+									  history.view ? @"set" : @"nil",
+									  history.view.window ? @"set" : @"nil",
+									  (unsigned long)((NSTableView *)history.commitList).tableColumns.count,
+									  (unsigned long)history.commitController.sortDescriptors.count];
+}
+
+// A GitX that ran before these tests leaves its autosaved table and window
+// state in the same defaults domain the test host reads, so what is already
+// there is part of the state under test.
+- (NSString *)hostState
+{
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+
+	return [NSString stringWithFormat:@"saved columns: %@, saved sort: %@, saved window: %@, PBCommitDateFormat: %@",
+									  [defaults objectForKey:@"NSTableView Columns v3 CommitView"] ? @"yes" : @"no",
+									  [defaults objectForKey:@"NSTableView Sort Ordering v2 CommitView"] ? @"yes" : @"no",
+									  [defaults objectForKey:@"NSWindow Frame GitX"] ? @"yes" : @"no",
+									  [defaults objectForKey:@"PBCommitDateFormat"]];
 }
 
 // -singleCommitSelected reads -selectedCommits, which only -updateKeys writes,
