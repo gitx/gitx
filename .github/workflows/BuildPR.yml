@@ -260,6 +260,17 @@ jobs:
       - name: Run tests
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
+          # Bisect only: GitXTests passed in isolation in the "Run unit tests"
+          # step, before the baseline app was launched, and fails here. Run it
+          # in isolation once more, now that the baseline app has run, to tell
+          # state that launch left behind apart from the UI target sharing this
+          # invocation. A failure here means the former, a pass the latter.
+          set +e
+          make unit-test \
+            ARCH=${{ matrix.abi }} \
+            RESULT_BUNDLE=AfterBaselineUnitTests-${{ matrix.abi }}.xcresult
+          echo "BISECT isolated GitXTests after the baseline app ran: exit=$?"
+          set -e
           make all-tests \
             ARCH=${{ matrix.abi }} \
             GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo \
