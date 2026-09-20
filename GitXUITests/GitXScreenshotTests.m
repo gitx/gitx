@@ -47,6 +47,10 @@
 }
 
 - (void)tearDown {
+    if (self.app.windows.firstMatch.exists) {
+        NSLog(@"[GitXScreenshotTests] Leaving the app on the history view");
+        [self selectHistoryView];
+    }
     [self.app terminate];
     [super tearDown];
 }
