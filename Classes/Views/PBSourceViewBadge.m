@@ -20,7 +20,7 @@
 
 + (NSColor *)badgeBackgroundColor
 {
-	return [NSColor colorWithCalibratedWhite:0.6 alpha:1.00];
+	return [NSColor colorWithCalibratedWhite:0.52 alpha:1.00];
 }
 
 
@@ -41,15 +41,19 @@
 	if ([cell backgroundStyle] != NSBackgroundStyleEmphasized)
 		return [NSColor whiteColor];
 
-	if (![[cell window] isKeyWindow]) {
-		if ([[cell window] isMainWindow]) {
-			return [self badgeHighlightColor];
-		} else {
-			return [self badgeBackgroundColor];
-		}
-	}
+	if ([[cell window] isMainWindow])
+		return [self badgeHighlightColor];
 
 	return [self badgeBackgroundColor];
+}
+
+
++ (BOOL)badgeTextIsKnockedOutForCell:(NSTableCellView *)cell
+{
+	if ([cell backgroundStyle] == NSBackgroundStyleEmphasized)
+		return NO;
+
+	return ![[cell window] isMainWindow];
 }
 
 
@@ -97,6 +101,9 @@
 
 	[badgeColor set];
 	[badgePath fill];
+
+	if ([self badgeTextIsKnockedOutForCell:cell])
+		[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositingOperationDestinationOut];
 
 	[badgeString drawInRect:badgeRect];
 
