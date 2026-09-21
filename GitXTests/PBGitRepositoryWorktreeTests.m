@@ -6,14 +6,15 @@
 #import <XCTest/XCTest.h>
 #import "PBGitRepository.h"
 #import "PBGitRef.h"
+#import "PBGitWorktree.h"
 
 // Reading the worktrees and answering for one ref are separate steps, so the
 // test names both rather than launching git for them.
 @interface PBGitRepository (WorktreeTesting)
-+ (NSDictionary<NSString *, NSString *> *)worktreePathsFromPorcelain:(NSString *)output excludingWorktreeAtPath:(NSString *)ourPath;
-- (void)takeWorktreePaths:(NSDictionary<NSString *, NSString *> *)paths;
++ (NSDictionary<NSString *, NSString *> *)pathsByRefNameFromWorktrees:(NSArray<PBGitWorktree *> *)worktrees;
+- (void)takeWorktrees:(NSArray<PBGitWorktree *> *)worktrees;
 - (void)reloadWorktreePaths;
-- (NSDictionary<NSString *, NSString *> *)readWorktreePathsExcluding:(NSString *)ourPath;
+- (NSString *)readWorktreePorcelain;
 @end
 
 // What `git worktree list --porcelain` prints for a repository whose own
@@ -62,7 +63,7 @@ static NSString *const kPorcelain =
 
 @implementation PBCountingWorktreeRepository
 
-- (NSDictionary<NSString *, NSString *> *)readWorktreePathsExcluding:(NSString *)ourPath
+- (NSString *)readWorktreePorcelain
 {
 	@synchronized(self) {
 		self.reads++;
@@ -71,7 +72,7 @@ static NSString *const kPorcelain =
 	if (self.held)
 		dispatch_semaphore_wait(self.held, DISPATCH_TIME_FOREVER);
 
-	return @{};
+	return @"";
 }
 
 - (NSUInteger)readsSoFar
@@ -89,6 +90,13 @@ static NSString *const kPorcelain =
 
 @implementation PBGitRepositoryWorktreeTests
 
+// What the lookup does between running git and storing the result: read the
+// porcelain into worktrees, then derive the dictionary the drawing path asks.
+- (NSDictionary<NSString *, NSString *> *)pathsFromPorcelain:(NSString *)porcelain excluding:(NSString *)ourPath
+{
+	return [PBGitRepository pathsByRefNameFromWorktrees:[PBGitWorktree worktreesFromPorcelain:porcelain currentWorktreeAtPath:ourPath]];
+}
+
 - (void)setUp
 {
 	[super setUp];
@@ -105,7 +113,7 @@ static NSString *const kPorcelain =
 
 - (void)testEveryBranchInAWorktreeIsRead
 {
-	NSDictionary *paths = [PBGitRepository worktreePathsFromPorcelain:kPorcelain excludingWorktreeAtPath:nil];
+	NSDictionary *paths = [self pathsFromPorcelain:kPorcelain excluding:nil];
 
 	XCTAssertEqualObjects(paths[@"refs/heads/master"], @"/repos/gitx");
 	XCTAssertEqualObjects(paths[@"refs/heads/feature"], @"/repos/gitx-feature");
@@ -114,7 +122,7 @@ static NSString *const kPorcelain =
 
 - (void)testAWorktreeOnADetachedHeadHoldsNoBranch
 {
-	NSDictionary *paths = [PBGitRepository worktreePathsFromPorcelain:kPorcelain excludingWorktreeAtPath:nil];
+	NSDictionary *paths = [self pathsFromPorcelain:kPorcelain excluding:nil];
 
 	XCTAssertEqual(paths.count, 3u, @"%@", paths);
 	XCTAssertFalse([[paths allValues] containsObject:@"/repos/gitx-detached"]);
@@ -124,19 +132,19 @@ static NSString *const kPorcelain =
 {
 	NSString *porcelain = @"worktree /repos/gitx.git\nbare\n";
 
-	XCTAssertEqualObjects([PBGitRepository worktreePathsFromPorcelain:porcelain excludingWorktreeAtPath:nil], @{});
+	XCTAssertEqualObjects([self pathsFromPorcelain:porcelain excluding:nil], @{});
 }
 
 - (void)testNothingIsReadFromEmptyOutput
 {
-	XCTAssertEqualObjects([PBGitRepository worktreePathsFromPorcelain:@"" excludingWorktreeAtPath:nil], @{});
+	XCTAssertEqualObjects([self pathsFromPorcelain:@"" excluding:nil], @{});
 }
 
 // The main working tree is a worktree too, so the branch this window has
 // checked out would answer for itself without this.
 - (void)testTheBranchWeHaveCheckedOutOurselvesIsNotHeldElsewhere
 {
-	NSDictionary *paths = [PBGitRepository worktreePathsFromPorcelain:kPorcelain excludingWorktreeAtPath:@"/repos/gitx"];
+	NSDictionary *paths = [self pathsFromPorcelain:kPorcelain excluding:@"/repos/gitx"];
 
 	XCTAssertNil(paths[@"refs/heads/master"]);
 	XCTAssertEqualObjects(paths[@"refs/heads/feature"], @"/repos/gitx-feature");
@@ -155,7 +163,7 @@ static NSString *const kPorcelain =
 		@"HEAD 0000000000000000000000000000000000000001\n"
 		@"branch refs/heads/shared\n";
 
-	NSDictionary *paths = [PBGitRepository worktreePathsFromPorcelain:porcelain excludingWorktreeAtPath:@"/repos/gitx"];
+	NSDictionary *paths = [self pathsFromPorcelain:porcelain excluding:@"/repos/gitx"];
 
 	XCTAssertEqualObjects(paths[@"refs/heads/shared"], @"/repos/gitx-second");
 }
@@ -163,7 +171,7 @@ static NSString *const kPorcelain =
 // Our own entry is the one to drop wherever it appears in the listing.
 - (void)testOurOwnWorktreeIsDroppedEvenWhenItIsNotListedFirst
 {
-	NSDictionary *paths = [PBGitRepository worktreePathsFromPorcelain:kPorcelain excludingWorktreeAtPath:@"/repos/gitx-feature"];
+	NSDictionary *paths = [self pathsFromPorcelain:kPorcelain excluding:@"/repos/gitx-feature"];
 
 	XCTAssertNil(paths[@"refs/heads/feature"]);
 	XCTAssertEqualObjects(paths[@"refs/heads/master"], @"/repos/gitx");
@@ -172,7 +180,7 @@ static NSString *const kPorcelain =
 // git prints the resolved path, which need not match the spelling we hold.
 - (void)testOurOwnWorktreeIsRecognisedThroughAnUntidyPath
 {
-	NSDictionary *paths = [PBGitRepository worktreePathsFromPorcelain:kPorcelain excludingWorktreeAtPath:@"/repos/./gitx"];
+	NSDictionary *paths = [self pathsFromPorcelain:kPorcelain excluding:@"/repos/./gitx"];
 
 	XCTAssertNil(paths[@"refs/heads/master"]);
 }
@@ -228,13 +236,13 @@ static NSString *const kPorcelain =
 	XCTAssertFalse([repository isRefHeldByAnotherWorktree:[PBGitRef refFromString:@"refs/heads/feature"]]);
 }
 
-- (NSUInteger)refsChangesTaking:(NSDictionary *)paths after:(NSDictionary *)previous
+- (NSUInteger)refsChangesTaking:(NSString *)porcelain after:(NSString *)previous
 {
-	[self.repository takeWorktreePaths:previous];
+	[self.repository takeWorktrees:[PBGitWorktree worktreesFromPorcelain:previous currentWorktreeAtPath:nil]];
 
 	PBRefsChangeCounter *counter = [[PBRefsChangeCounter alloc] init];
 	[self.repository addObserver:counter forKeyPath:@"refs" options:0 context:NULL];
-	[self.repository takeWorktreePaths:paths];
+	[self.repository takeWorktrees:[PBGitWorktree worktreesFromPorcelain:porcelain currentWorktreeAtPath:nil]];
 	[self.repository removeObserver:counter forKeyPath:@"refs"];
 
 	return counter.count;
@@ -246,16 +254,16 @@ static NSString *const kPorcelain =
 // in place of the 9ms it saves.
 - (void)testFindingTheSameWorktreesAgainAnnouncesNothing
 {
-	NSDictionary *paths = @{@"refs/heads/feature" : @"/repos/gitx-feature"};
+	NSString *porcelain = @"worktree /repos/gitx-feature\nHEAD 0000000000000000000000000000000000000002\nbranch refs/heads/feature\n";
 
-	XCTAssertEqual([self refsChangesTaking:[paths copy] after:paths], 0u,
+	XCTAssertEqual([self refsChangesTaking:[porcelain copy] after:porcelain], 0u,
 				   @"an unchanged snapshot must not trigger a reload");
 }
 
 - (void)testFindingDifferentWorktreesAnnouncesTheChange
 {
-	XCTAssertEqual([self refsChangesTaking:@{@"refs/heads/other" : @"/repos/gitx-other"}
-									 after:@{@"refs/heads/feature" : @"/repos/gitx-feature"}],
+	XCTAssertEqual([self refsChangesTaking:@"worktree /repos/gitx-other\nHEAD 0000000000000000000000000000000000000003\nbranch refs/heads/other\n"
+									 after:@"worktree /repos/gitx-feature\nHEAD 0000000000000000000000000000000000000002\nbranch refs/heads/feature\n"],
 				   1u, @"a snapshot that changed has to reach the labels");
 }
 
