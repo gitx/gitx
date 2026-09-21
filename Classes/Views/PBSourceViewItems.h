@@ -18,3 +18,4 @@
 #import "PBSourceViewOtherRevItem.h"
 #import "PBSourceViewFolderItem.h"
 #import "PBSourceViewGitSubmoduleItem.h"
+#import "PBSourceViewGitWorktreeItem.h"
