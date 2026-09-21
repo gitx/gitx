@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (IBAction)checkout:(id)sender;
 - (IBAction)openWorktree:(id)sender;
+- (void)openWorktreeHoldingRef:(PBGitRef *)ref;
 - (IBAction)createBranch:(id)sender;
 - (IBAction)createTag:(id)sender;
 - (IBAction)merge:(id)sender;
