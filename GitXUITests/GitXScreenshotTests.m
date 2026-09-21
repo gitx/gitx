@@ -125,9 +125,23 @@
     XCTAssertTrue([self waitForWindow], @"Main window should appear");
     [self selectCommitView];
 
-    XCUIElement *commitButton = self.app.windows.firstMatch.buttons[@"Commit"];
+    XCUIElement *window = self.app.windows.firstMatch;
+    XCUIElement *commitButton = window.buttons[@"Commit"];
     XCTAssertTrue([commitButton waitForExistenceWithTimeout:10],
                   @"The staging view should show its Commit button");
+
+    // The staging view opens with the keyboard focus in the commit message
+    // field, whose insertion point blinks, so whether the caret lands in the
+    // picture comes down to when the capture is taken, and the comparison
+    // reports a difference no pull request made. Move the focus to the diff
+    // pane, which reads "No file selected" at this point and so takes it
+    // without selecting or changing anything.
+    NSLog(@"[GitXScreenshotTests] Moving the focus out of the commit message field");
+    XCUIElement *diffPane = window.webViews.firstMatch;
+    XCTAssertTrue([diffPane waitForExistenceWithTimeout:10],
+                  @"The staging view should show its diff pane");
+    [diffPane click];
+    [NSThread sleepForTimeInterval:0.5];
 
     [self saveWindowScreenshotNamed:@"staging-view"];
 }
