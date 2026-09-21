@@ -111,6 +111,18 @@
 	if (index != -1) {
 		[terminalHandlerPopup selectItemAtIndex:index];
 	}
+
+	[self updateTerminalOpenAsTab];
+}
+
+// Only iTerm2 can be told to open a tab, so the checkbox is offered for it
+// alone rather than being left on and doing nothing.
+- (void)updateTerminalOpenAsTab
+{
+	NSString *handler = [[terminalHandlerPopup selectedItem] representedObject];
+
+	terminalOpenAsTabCheckbox.enabled = [PBTerminalUtil handlerSupportsTabs:handler];
+	terminalOpenAsTabCheckbox.state = [PBGitDefaults terminalOpenAsTab] ? NSControlStateValueOn : NSControlStateValueOff;
 }
 
 - (IBAction)changeTerminalHandler:(id)sender
@@ -121,6 +133,13 @@
 	}
 
 	[PBGitDefaults setTerminalHandler:handler];
+
+	[self updateTerminalOpenAsTab];
+}
+
+- (IBAction)changeTerminalOpenAsTab:(id)sender
+{
+	[PBGitDefaults setTerminalOpenAsTab:([sender state] == NSControlStateValueOn)];
 }
 
 #pragma mark -
