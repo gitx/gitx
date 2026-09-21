@@ -47,6 +47,10 @@
 }
 
 - (void)tearDown {
+    if (self.app.windows.firstMatch.exists) {
+        NSLog(@"[GitXScreenshotTests] Leaving the app on the history view");
+        [self selectHistoryView];
+    }
     [self.app terminate];
     [super tearDown];
 }
@@ -64,25 +68,16 @@
     return [self.app.windows.firstMatch waitForExistenceWithTimeout:10];
 }
 
-- (BOOL)selectViewMenuItem:(NSString *)title {
-    XCUIElement *viewMenu = self.app.menuBars.menuBarItems[@"View"];
-    if (![viewMenu waitForExistenceWithTimeout:10]) {
-        NSLog(@"[GitXScreenshotTests] The View menu never appeared");
-        return NO;
-    }
-    [viewMenu click];
-
-    XCUIElement *item = viewMenu.menus.menuItems[title];
-    if (![item waitForExistenceWithTimeout:5]) {
-        NSLog(@"[GitXScreenshotTests] View > %@ was not offered", title);
-        [self.app typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
-        return NO;
-    }
-
-    NSLog(@"[GitXScreenshotTests] Switching to View > %@", title);
-    [item click];
+- (void)selectHistoryView {
+    NSLog(@"[GitXScreenshotTests] Switching to the history view with Command-1");
+    [self.app typeKey:@"1" modifierFlags:XCUIKeyModifierCommand];
     [NSThread sleepForTimeInterval:0.5];
-    return YES;
+}
+
+- (void)selectCommitView {
+    NSLog(@"[GitXScreenshotTests] Switching to the commit view with Command-2");
+    [self.app typeKey:@"2" modifierFlags:XCUIKeyModifierCommand];
+    [NSThread sleepForTimeInterval:0.5];
 }
 
 - (void)saveScreenshotNamed:(NSString *)name {
@@ -115,20 +110,20 @@
 
 - (void)testHistoryTabScreenshot {
     XCTAssertTrue([self waitForWindow], @"Main window should appear");
-    XCTAssertTrue([self selectViewMenuItem:@"History"],
-                  @"View > History should be reachable");
+    [self selectHistoryView];
 
-    XCUIElement *table = self.app.windows.firstMatch.tables.firstMatch;
-    XCTAssertTrue([table waitForExistenceWithTimeout:10],
+    XCUIElement *window = self.app.windows.firstMatch;
+    XCTAssertTrue([window.tables.firstMatch waitForExistenceWithTimeout:10],
                   @"The history view should show its commit list");
+    XCTAssertFalse(window.buttons[@"Commit"].exists,
+                   @"The history view should not be showing the commit view");
 
     [self saveWindowScreenshotNamed:@"history-view"];
 }
 
 - (void)testStagingTabScreenshot {
     XCTAssertTrue([self waitForWindow], @"Main window should appear");
-    XCTAssertTrue([self selectViewMenuItem:@"Commit"],
-                  @"View > Commit should be reachable");
+    [self selectCommitView];
 
     XCUIElement *commitButton = self.app.windows.firstMatch.buttons[@"Commit"];
     XCTAssertTrue([commitButton waitForExistenceWithTimeout:10],
@@ -145,8 +140,7 @@
 
 - (void)testCommitContextMenuScreenshot {
     XCTAssertTrue([self waitForWindow], @"Main window should appear");
-    XCTAssertTrue([self selectViewMenuItem:@"History"],
-                  @"View > History should be reachable");
+    [self selectHistoryView];
 
     // The commit list is a table — find the first (most recent) commit row
     XCUIElement *window = self.app.windows.firstMatch;
