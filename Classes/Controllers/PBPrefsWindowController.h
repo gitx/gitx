@@ -15,10 +15,13 @@
 	IBOutlet NSView *integrationPrefsView;
 	IBOutlet NSView *updatesPrefsView;
 
+	/* Variables for the General View */
+	IBOutlet NSPopUpButton *commitDateFormatPopup;
+	IBOutlet NSTextField *commitDateCustomFormatField;
+	IBOutlet NSTextField *commitDateSampleField;
+
 	/* Variables for the Integration View */
 	IBOutlet NSPopUpButton *terminalHandlerPopup;
-
-	/* Variables for the Updates View */
 	IBOutlet NSPathControl *gitPathController;
 	IBOutlet NSImageView *badGitPathIcon;
 	IBOutlet NSView *gitPathOpenAccessory;
@@ -31,5 +34,6 @@
 - (IBAction)resetGitPath:sender;
 - (IBAction)resetAllDialogWarnings:(id)sender;
 - (IBAction)changeTerminalHandler:(id)sender;
+- (IBAction)changeCommitDateFormat:(id)sender;
 
 @end

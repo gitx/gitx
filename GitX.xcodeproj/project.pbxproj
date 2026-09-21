@@ -77,6 +77,9 @@
 		4A5D76F414A9A9CC00DF6C68 /* PBGitBinary.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D764F14A9A9CC00DF6C68 /* PBGitBinary.m */; };
 		4A5D76F514A9A9CC00DF6C68 /* PBGitCommit.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765114A9A9CC00DF6C68 /* PBGitCommit.m */; };
 		4A5D76F714A9A9CC00DF6C68 /* PBGitDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765514A9A9CC00DF6C68 /* PBGitDefaults.m */; };
+		B1C0DE03A000000300000000 /* PBGitCommitDateFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = B1C0DE02A000000200000000 /* PBGitCommitDateFormatter.m */; };
+		B1C0DE05A000000500000000 /* PBGitCommitDateFormatterTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B1C0DE04A000000400000000 /* PBGitCommitDateFormatterTests.m */; };
+		B1C0DE07A000000700000000 /* PBGitHistoryDateRedrawTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B1C0DE06A000000600000000 /* PBGitHistoryDateRedrawTests.m */; };
 		4A5D76F814A9A9CC00DF6C68 /* PBGitGrapher.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765714A9A9CC00DF6C68 /* PBGitGrapher.mm */; };
 		4A5D76F914A9A9CC00DF6C68 /* PBGitGraphLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765914A9A9CC00DF6C68 /* PBGitGraphLine.m */; };
 		4A5D76FA14A9A9CC00DF6C68 /* PBGitHistoryGrapher.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765B14A9A9CC00DF6C68 /* PBGitHistoryGrapher.m */; };
@@ -558,6 +561,8 @@
 		4A5D765014A9A9CC00DF6C68 /* PBGitCommit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PBGitCommit.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4A5D765114A9A9CC00DF6C68 /* PBGitCommit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PBGitCommit.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		4A5D765414A9A9CC00DF6C68 /* PBGitDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitDefaults.h; sourceTree = "<group>"; };
+		B1C0DE01A000000100000000 /* PBGitCommitDateFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitCommitDateFormatter.h; sourceTree = "<group>"; };
+		B1C0DE02A000000200000000 /* PBGitCommitDateFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitCommitDateFormatter.m; sourceTree = "<group>"; };
 		4A5D765514A9A9CC00DF6C68 /* PBGitDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitDefaults.m; sourceTree = "<group>"; };
 		4A5D765614A9A9CC00DF6C68 /* PBGitGrapher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitGrapher.h; sourceTree = "<group>"; };
 		4A5D765714A9A9CC00DF6C68 /* PBGitGrapher.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; lineEnding = 0; path = PBGitGrapher.mm; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -743,6 +748,8 @@
 		9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryMenuValidationTests.m; path = GitXTests/PBGitHistoryMenuValidationTests.m; sourceTree = "<group>"; };
 		751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryCheckoutErrorTests.m; path = GitXTests/PBGitRepositoryCheckoutErrorTests.m; sourceTree = "<group>"; };
 		4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWindowWiringTests.m; path = GitXTests/PBGitWindowWiringTests.m; sourceTree = "<group>"; };
+		B1C0DE04A000000400000000 /* PBGitCommitDateFormatterTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitCommitDateFormatterTests.m; path = GitXTests/PBGitCommitDateFormatterTests.m; sourceTree = "<group>"; };
+		B1C0DE06A000000600000000 /* PBGitHistoryDateRedrawTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryDateRedrawTests.m; path = GitXTests/PBGitHistoryDateRedrawTests.m; sourceTree = "<group>"; };
 		6E9B0D4A18C7452FB3A0D95E /* PBRepositoryFinderTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBRepositoryFinderTests.m; path = GitXTests/PBRepositoryFinderTests.m; sourceTree = "<group>"; };
 		3B8E1D6C0A9F42B7D51C8E30 /* PBGitCommitFileSelectionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitCommitFileSelectionTests.m; path = GitXTests/PBGitCommitFileSelectionTests.m; sourceTree = "<group>"; };
 		2F6B9E0D4C8A47135BE2D90A /* GitXCommitCopierTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GitXCommitCopierTests.m; path = GitXTests/GitXCommitCopierTests.m; sourceTree = "<group>"; };
@@ -892,6 +899,8 @@
 				9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */,
 				751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */,
 				4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */,
+				B1C0DE04A000000400000000 /* PBGitCommitDateFormatterTests.m */,
+				B1C0DE06A000000600000000 /* PBGitHistoryDateRedrawTests.m */,
 				6E9B0D4A18C7452FB3A0D95E /* PBRepositoryFinderTests.m */,
 				3B8E1D6C0A9F42B7D51C8E30 /* PBGitCommitFileSelectionTests.m */,
 				2F6B9E0D4C8A47135BE2D90A /* GitXCommitCopierTests.m */,
@@ -1099,6 +1108,8 @@
 				4A5D769014A9A9CC00DF6C68 /* PBCommitList.h */,
 				4A5D769114A9A9CC00DF6C68 /* PBCommitList.m */,
 				A1CE3C5CEB7C423189591B5A /* PBCommitList.swift */,
+				B1C0DE01A000000100000000 /* PBGitCommitDateFormatter.h */,
+				B1C0DE02A000000200000000 /* PBGitCommitDateFormatter.m */,
 				50660A531FD6F48A004342B0 /* PBSidebarList.h */,
 				50660A541FD6F48A004342B0 /* PBSidebarList.m */,
 				4A5D769214A9A9CC00DF6C68 /* PBGraphCellInfo.h */,
@@ -1858,6 +1869,8 @@
 				53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */,
 				9120A847CBE34BD0AEEA32CD /* PBGitRepositoryCheckoutErrorTests.m in Sources */,
 				1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */,
+				B1C0DE05A000000500000000 /* PBGitCommitDateFormatterTests.m in Sources */,
+				B1C0DE07A000000700000000 /* PBGitHistoryDateRedrawTests.m in Sources */,
 				7A1C3E5D2B8F49A0C6D14E82 /* PBRepositoryFinderTests.m in Sources */,
 				4C7F2A9E5D1B48A3E602F7C1 /* PBGitCommitFileSelectionTests.m in Sources */,
 				5D3A8C1F7E2B49D0A83C6F41 /* GitXCommitCopierTests.m in Sources */,
@@ -1906,6 +1919,7 @@
 				4A5D76F514A9A9CC00DF6C68 /* PBGitCommit.m in Sources */,
 				6C4855DA1D57E4FA0027A7B4 /* PBOpenShallowRepositoryErrorRecoveryAttempter.m in Sources */,
 				4A5D76F714A9A9CC00DF6C68 /* PBGitDefaults.m in Sources */,
+				B1C0DE03A000000300000000 /* PBGitCommitDateFormatter.m in Sources */,
 				4A5D76F814A9A9CC00DF6C68 /* PBGitGrapher.mm in Sources */,
 				4A5D76F914A9A9CC00DF6C68 /* PBGitGraphLine.m in Sources */,
 				50DCC65A20111E4000999D3D /* PBGitRevisionRow.m in Sources */,
