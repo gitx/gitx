@@ -20,6 +20,7 @@
 #import "PBSourceViewGitStashItem.h"
 #import "PBSidebarTableViewCell.h"
 #import "PBGitRef.h"
+#import "PBGitWorktree.h"
 
 #define PBSidebarCellIdentifier @"PBSidebarCellIdentifier"
 
@@ -35,7 +36,7 @@
 	/* Specific things */
 	PBSourceViewItem *stage;
 
-	PBSourceViewItem *branches, *remotes, *tags, *others, *submodules, *stashes;
+	PBSourceViewItem *branches, *remotes, *tags, *others, *submodules, *stashes, *worktrees;
 }
 
 - (void)populateList;
@@ -112,6 +113,14 @@
 
 						  [observer.sourceView expandItem:observer->stashes];
 						  [observer.sourceView reloadItem:observer->stashes reloadChildren:YES];
+					  }];
+
+	[repository addObserver:self
+					keyPath:@"worktrees"
+					options:0
+					  block:^(MAKVONotification *notification) {
+						  PBGitSidebarController *observer = notification.observer;
+						  [observer rebuildWorktreeItems];
 					  }];
 
 	[repository addObserver:self
@@ -367,13 +376,19 @@
 {
 	PBSidebarTableViewCell *cell = [outlineView makeViewWithIdentifier:PBSidebarCellIdentifier owner:outlineView];
 
-	BOOL isCheckedOut = [item.revSpecifier isEqual:[self.repository headRef]];
+	PBSourceViewGitWorktreeItem *worktreeItem = [item isKindOfClass:[PBSourceViewGitWorktreeItem class]] ? (PBSourceViewGitWorktreeItem *)item : nil;
+	BOOL isCheckedOut = !worktreeItem && [item.revSpecifier isEqual:[self.repository headRef]];
 	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:item.ref];
 
 	cell.textField.stringValue = [[item title] copy];
 	cell.imageView.image = worktreePath.length ? [PBSourceViewItem iconNamed:@"WorktreeBranchTemplate"] : item.icon;
 	cell.isCheckedOut = isCheckedOut;
 	cell.worktreePath = worktreePath;
+
+	// -setWorktreePath: writes the tooltip for a branch held elsewhere, so the
+	// worktree's own state goes on after it.
+	if (worktreeItem)
+		cell.toolTip = worktreeItem.statusDescription;
 
 	return cell;
 }
@@ -413,6 +428,7 @@
 	[project addChild:stage];
 
 	branches = [PBSourceViewItem groupItemWithTitle:@"Branches"];
+	worktrees = [PBSourceViewItem groupItemWithTitle:@"Worktrees"];
 	remotes = [PBSourceViewItem groupItemWithTitle:@"Remotes"];
 	tags = [PBSourceViewItem groupItemWithTitle:@"Tags"];
 	stashes = [PBSourceViewItem groupItemWithTitle:@"Stashes"];
@@ -430,8 +446,16 @@
 		[submodules addChild:[PBSourceViewGitSubmoduleItem itemWithSubmodule:sub]];
 	}
 
+	for (PBGitWorktree *worktree in repository.worktrees) {
+		if (worktree.isCurrent)
+			continue;
+
+		[worktrees addChild:[PBSourceViewGitWorktreeItem itemWithWorktree:worktree]];
+	}
+
 	[items addObject:project];
 	[items addObject:branches];
+	[items addObject:worktrees];
 	[items addObject:remotes];
 	[items addObject:tags];
 	[items addObject:stashes];
@@ -441,11 +465,32 @@
 	[sourceView reloadData];
 	[sourceView expandItem:project];
 	[sourceView expandItem:branches expandChildren:YES];
+	[sourceView expandItem:worktrees];
 	[sourceView expandItem:remotes];
 	[sourceView expandItem:stashes];
 	[sourceView expandItem:submodules];
 
 	[sourceView reloadItem:nil reloadChildren:YES];
+}
+
+// The lookup runs off the drawing path and lands after -populateList has been
+// and gone, so the group is filled again whenever a new snapshot arrives. The
+// worktree this window has open is left out: the sidebar already marks where we
+// are on the branch it has checked out.
+- (void)rebuildWorktreeItems
+{
+	for (PBSourceViewItem *item in [worktrees.sortedChildren copy])
+		[worktrees removeChild:item];
+
+	for (PBGitWorktree *worktree in self.repository.worktrees) {
+		if (worktree.isCurrent)
+			continue;
+
+		[worktrees addChild:[PBSourceViewGitWorktreeItem itemWithWorktree:worktree]];
+	}
+
+	[sourceView reloadItem:worktrees reloadChildren:YES];
+	[sourceView expandItem:worktrees];
 }
 
 - (void)expandCollapseItem:(NSNotification *)aNotification
