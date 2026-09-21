@@ -253,14 +253,12 @@ jobs:
           git add -f "./scripts/Screenshots-${{ matrix.abi }}"
           git -c user.email="ci@gitx.local" -c user.name="GitX CI" \
             commit -m "Baseline screenshots for comparison (ephemeral, not pushed)" --quiet
-      # TODO Consider running `make ui-test` here rather than `make
-      # all-tests`. The scheme tests every target, so this repeats the
-      # GitXTests run of the "Run unit tests" step above; `ui-test` narrows
-      # it to GitXUITests, which is all the screenshots need.
+      # Only the UI tests: the unit tests have already run in their own step
+      # above, and testing the whole scheme here would repeat them
       - name: Run tests
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' }}
         run: |
-          make all-tests \
+          make ui-test \
             ARCH=${{ matrix.abi }} \
             GITX_SCREENSHOT_REPO=/tmp/gitx-screenshot-repo \
             RESULT_BUNDLE=TestResults-${{ matrix.abi }}.xcresult

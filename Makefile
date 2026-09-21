@@ -6,17 +6,16 @@
 #
 #   deps           "pre build"
 #   unit-test      "Run unit tests"
-#   all-tests      "Run tests"
+#   ui-test        "Run tests"
 #   archive        "Build project"
 #   package-signed "Prepare artifact"
 #
 # `pre-build` is `deps` plus the submodule checkout that CI gets from its own
 # checkout step, so a fresh local clone wants pre-build and CI wants deps.
 #
-# `ui-test` runs the UI tests on their own. CI's "Run tests" runs the whole
-# scheme, repeating the unit tests it has already run in its own step, so
-# `all-tests` is the one that matches CI today and `ui-test` is the narrower
-# target to reach for otherwise.
+# `all-tests` matches no CI step: it tests the whole scheme, which repeats the
+# unit tests CI has already run in its own step. It is there for a local run of
+# everything in one command.
 #
 # Signing: without a Dev.xcconfig the build is signed ad-hoc, and the hardened
 # runtime rejects that, leaving the app unable to load its own frameworks. So
@@ -214,8 +213,8 @@ ui-test: git-submodule-check framework-check ## Run the UI tests that drive the 
 		GITX_SCREENSHOT_REPO="$(GITX_SCREENSHOT_REPO)" $(RESULT_BUNDLE_ARG) test; \
 		$(CHECK_AGAIN)
 
-# Runs the unit tests a second time, since the scheme tests every target. That
-# is what CI's "Run tests" step does today, and this target exists to match it.
+# Runs the unit tests a second time, since the scheme tests every target, so
+# `unit-test` and `ui-test` cover the same ground for less.
 all-tests: git-submodule-check framework-check ## Run every test target in the scheme, screenshots included
 	$(XCODEBUILD) -destination "$(DESTINATION)" \
 		$(TEST_SETTINGS) \
