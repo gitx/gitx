@@ -709,6 +709,16 @@
 	}
 }
 
+- (IBAction)copyRefName:(id)sender
+{
+	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:nil];
+	if (!refish) return;
+
+	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+	[pasteboard clearContents];
+	[pasteboard setString:[refish shortName] forType:NSPasteboardTypeString];
+}
+
 - (IBAction)openWorktree:(id)sender
 {
 	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType ]];

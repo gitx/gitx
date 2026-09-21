@@ -1174,6 +1174,10 @@ static const CGFloat PBDateColumnSlack = 1.05;
 
 	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:ref];
 
+	// copy ref name
+	NSString *copyTitle = [NSString stringWithFormat:NSLocalizedString(@"Copy name “%@”", @"Contextual Menu Item to copy the selected ref's name to the clipboard"), refName];
+	NSMenuItem *copyItem = [NSMenuItem pb_itemWithTitle:copyTitle action:@selector(copyRefName:) enabled:YES];
+
 	NSMutableArray *items = [NSMutableArray array];
 	if (!isRemote) {
 		if (worktreePath) {
@@ -1186,6 +1190,7 @@ static const CGFloat PBDateColumnSlack = 1.05;
 			NSString *checkoutTitle = [NSString stringWithFormat:NSLocalizedString(@"Checkout “%@”", @"Contextual Menu Item to check out the selected ref"), refName];
 			[items addObject:[NSMenuItem pb_itemWithTitle:checkoutTitle action:@selector(checkout:) enabled:!isHead]];
 		}
+		[items addObject:copyItem];
 		[items addObject:[NSMenuItem separatorItem]];
 
 		// create branch
@@ -1219,6 +1224,9 @@ static const CGFloat PBDateColumnSlack = 1.05;
 		NSString *resetTitle = [NSString stringWithFormat:NSLocalizedString(@"Reset to “%@”", @"Contextual Menu Item to reset to the selected ref"), refName];
 		[items addObject:[NSMenuItem pb_itemWithTitle:resetTitle action:@selector(resetSoft:) enabled:!isHead]];
 
+		[items addObject:[NSMenuItem separatorItem]];
+	} else {
+		[items addObject:copyItem];
 		[items addObject:[NSMenuItem separatorItem]];
 	}
 
