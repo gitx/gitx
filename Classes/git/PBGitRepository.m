@@ -18,6 +18,7 @@
 #import "NSFileHandleExt.h"
 #import "PBTask.h"
 #import "PBGitRef.h"
+#import "PBGitWorktree.h"
 #import "PBGitRevSpecifier.h"
 #import "PBRemoteProgressSheet.h"
 #import "PBGitRevList.h"
@@ -42,6 +43,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 @property (nonatomic, strong) NSNumber *hasSVNRepoConfig;
 @property (nonatomic, strong) NSDictionary<NSString *, NSString *> *worktreePathsByRefName;
+@property (nonatomic, strong) NSArray<PBGitWorktree *> *worktrees;
 @property (nonatomic, assign) BOOL worktreeLookupInFlight;
 @property (nonatomic, assign) BOOL worktreePathsNeedRefresh;
 
@@ -284,29 +286,19 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	[self didChangeValueForKey:@"stashes"];
 }
 
-+ (BOOL)worktreeAtPath:(NSString *)path isTheOneAt:(NSString *)ourPath
-{
-	if (!path || !ourPath)
-		return NO;
-
-	return [path.stringByStandardizingPath isEqualToString:ourPath.stringByStandardizingPath];
-}
-
-+ (NSDictionary<NSString *, NSString *> *)worktreePathsFromPorcelain:(NSString *)output excludingWorktreeAtPath:(NSString *)ourPath
+// The drawing path asks this dictionary per label, so the snapshot keeps it as
+// a dictionary; it is built once per reload from the worktrees just read.
++ (NSDictionary<NSString *, NSString *> *)pathsByRefNameFromWorktrees:(NSArray<PBGitWorktree *> *)worktrees
 {
 	NSMutableDictionary *paths = [NSMutableDictionary dictionary];
-	NSString *worktreePath = nil;
 
-	for (NSString *line in [output componentsSeparatedByString:@"\n"]) {
-		if ([line hasPrefix:@"worktree "]) {
-			worktreePath = [line substringFromIndex:[@"worktree " length]];
-		} else if ([line hasPrefix:@"branch "] && worktreePath) {
-			NSString *ref = [line substringFromIndex:[@"branch " length]];
-			if (![self worktreeAtPath:worktreePath isTheOneAt:ourPath] && !paths[ref])
-				paths[ref] = worktreePath;
-		} else if (line.length == 0) {
-			worktreePath = nil;
-		}
+	for (PBGitWorktree *worktree in worktrees) {
+		NSString *ref = worktree.branchRefName;
+
+		if (worktree.isCurrent || !ref || paths[ref])
+			continue;
+
+		paths[ref] = worktree.path;
 	}
 
 	return paths;
@@ -318,6 +310,11 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 - (NSDictionary<NSString *, NSString *> *)worktreePathsByRefName
 {
 	return _worktreePathsByRefName ?: @{};
+}
+
+- (NSArray<PBGitWorktree *> *)worktrees
+{
+	return _worktrees ?: @[];
 }
 
 // -reloadRefs is called from -haveRefsBeenModified, which the history list
@@ -362,7 +359,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		if (!repository)
 			return;
 
-		NSDictionary *paths = [repository readWorktreePathsExcluding:ourPath];
+		NSArray<PBGitWorktree *> *worktrees = [PBGitWorktree worktreesFromPorcelain:[repository readWorktreePorcelain] ?: @"" currentWorktreeAtPath:ourPath];
 
 		dispatch_async(dispatch_get_main_queue(), ^{
 			PBGitRepository *mainRepository = weakSelf;
@@ -370,29 +367,32 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 				return;
 
 			mainRepository.worktreeLookupInFlight = NO;
-			[mainRepository takeWorktreePaths:paths];
+			[mainRepository takeWorktrees:worktrees];
 			[mainRepository startWorktreeLookupIfIdle];
 		});
 	});
 }
 
-- (NSDictionary<NSString *, NSString *> *)readWorktreePathsExcluding:(NSString *)ourPath
+// The only step that reaches outside this process, which is what a test stands
+// in for; reading what it returned is a pure function of the text.
+- (NSString *)readWorktreePorcelain
 {
-	NSString *output = [self outputOfTaskWithArguments:@[ @"worktree", @"list", @"--porcelain" ] error:NULL];
-	if (!output)
-		return @{};
-
-	return [PBGitRepository worktreePathsFromPorcelain:output excludingWorktreeAtPath:ourPath];
+	return [self outputOfTaskWithArguments:@[ @"worktree", @"list", @"--porcelain" ] error:NULL];
 }
 
 // The refs observers rearrange the history and reload the sidebar, so a reload
 // that found the same worktrees as last time says nothing.
-- (void)takeWorktreePaths:(NSDictionary<NSString *, NSString *> *)paths
+- (void)takeWorktrees:(NSArray<PBGitWorktree *> *)worktrees
 {
-	if ([self.worktreePathsByRefName isEqualToDictionary:paths])
+	NSDictionary<NSString *, NSString *> *paths = [PBGitRepository pathsByRefNameFromWorktrees:worktrees];
+
+	if ([self.worktrees isEqualToArray:worktrees] && [self.worktreePathsByRefName isEqualToDictionary:paths])
 		return;
 
+	// The dictionary is derived from the array, and an observer of the array reads
+	// it, so it has to be in place before the array announces itself.
 	self.worktreePathsByRefName = paths;
+	self.worktrees = worktrees;
 
 	[self willChangeValueForKey:@"refs"];
 	[self didChangeValueForKey:@"refs"];

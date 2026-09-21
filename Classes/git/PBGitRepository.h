@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 @class PBGitHistoryList;
+@class PBGitWorktree;
 @class PBGitRevSpecifier;
 @protocol PBGitRefish;
 @class PBGitRef;
@@ -69,6 +70,9 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)fetchRemoteForRef:(PBGitRef *)ref forcePrune:(BOOL)forcePrune error:(NSError **)error;
 - (BOOL)pullBranch:(PBGitRef *)branchRef fromRemote:(PBGitRef *)remoteRef rebase:(BOOL)rebase error:(NSError **)error;
 - (BOOL)pushBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef error:(NSError **)error;
+
+// Every worktree git reports, this one included and marked as current.
+@property (nonatomic, readonly) NSArray<PBGitWorktree *> *worktrees;
 
 - (nullable NSString *)pathOfWorktreeHoldingRef:(nullable PBGitRef *)ref;
 - (BOOL)isRefHeldByAnotherWorktree:(nullable PBGitRef *)ref;
