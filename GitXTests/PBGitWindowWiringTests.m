@@ -7,6 +7,7 @@
 #import "PBGitWindowController.h"
 #import "PBGitRepository.h"
 #import "PBGitSidebarController.h"
+#import "PBGitDefaults.h"
 #import "PBGitHistoryController.h"
 #import "PBGitHistoryList.h"
 #import "PBGitCommit.h"
@@ -38,6 +39,7 @@
 @interface PBGitWindowWiringTests : XCTestCase
 @property (nonatomic, strong) PBStubWindowController *windowController;
 @property (nonatomic, strong) NSURL *repositoryURL;
+@property (nonatomic, strong) id settingToPutBack;
 @end
 
 @implementation PBGitWindowWiringTests
@@ -88,6 +90,14 @@
 {
 	[super setUp];
 
+	// The sidebar opens whichever view this preference names, and the window
+	// loads a nib only for the controller it shows, so a GitX left on the stage
+	// view would leave the history list and its array controller nil here. The
+	// tests run in the application, so put back what was there afterwards.
+	self.settingToPutBack = [[NSUserDefaults standardUserDefaults] objectForKey:@"PBShowStageView"];
+	[[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"PBShowStageView"];
+	XCTAssertFalse([PBGitDefaults showStageView], @"the preference this suite turns off is read under some other name now, so it is no longer being turned off");
+
 	self.repositoryURL = [self makeRepository];
 
 	NSError *error = nil;
@@ -125,6 +135,11 @@
 	[self.windowController close];
 	self.windowController = nil;
 	[[NSFileManager defaultManager] removeItemAtURL:self.repositoryURL error:NULL];
+
+	if (self.settingToPutBack)
+		[[NSUserDefaults standardUserDefaults] setObject:self.settingToPutBack forKey:@"PBShowStageView"];
+	else
+		[[NSUserDefaults standardUserDefaults] removeObjectForKey:@"PBShowStageView"];
 
 	[super tearDown];
 }
