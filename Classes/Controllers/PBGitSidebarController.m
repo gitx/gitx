@@ -349,12 +349,6 @@
 		[self openRepositoryAtURL:[subModule path]];
 	} else if ([item isKindOfClass:[PBSourceViewGitBranchItem class]]) {
 		PBSourceViewGitBranchItem *branch = item;
-		NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:[branch ref]];
-
-		if (worktreePath) {
-			[self openRepositoryAtURL:[NSURL fileURLWithPath:worktreePath]];
-			return;
-		}
 
 		NSError *error = nil;
 		BOOL success = [self.repository checkoutRefish:[branch ref] error:&error];
@@ -382,20 +376,11 @@
 	PBSidebarTableViewCell *cell = [outlineView makeViewWithIdentifier:PBSidebarCellIdentifier owner:outlineView];
 
 	PBSourceViewGitWorktreeItem *worktreeItem = [item isKindOfClass:[PBSourceViewGitWorktreeItem class]] ? (PBSourceViewGitWorktreeItem *)item : nil;
-	BOOL isCheckedOut = !worktreeItem && [item.revSpecifier isEqual:[self.repository headRef]];
-	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:item.ref];
 
 	cell.textField.stringValue = [[item title] copy];
-	cell.imageView.image = worktreePath.length ? [PBSourceViewItem iconNamed:@"WorktreeBranchTemplate"] : item.icon;
-	cell.isCheckedOut = isCheckedOut;
-	cell.worktreePath = worktreePath;
-
-	// -setWorktreePath: writes the tooltip for a branch held elsewhere, so the
-	// worktree's own state goes on after it.
-	if (worktreeItem)
-		cell.toolTip = worktreeItem.statusDescription;
-	else if (!worktreePath.length)
-		cell.toolTip = item.ref.shortName ?: item.title;
+	cell.imageView.image = item.icon;
+	cell.isCheckedOut = !worktreeItem && [item.revSpecifier isEqual:[self.repository headRef]];
+	cell.toolTip = worktreeItem ? worktreeItem.statusDescription : (item.ref.shortName ?: item.title);
 
 	return cell;
 }
