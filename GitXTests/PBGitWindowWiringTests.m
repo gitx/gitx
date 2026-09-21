@@ -10,6 +10,7 @@
 #import "PBGitDefaults.h"
 #import "PBGitHistoryController.h"
 #import "PBGitHistoryList.h"
+#import "PBGitRevList.h"
 #import "PBGitCommit.h"
 #import "PBGitRef.h"
 #import "PBSourceViewItem.h"
@@ -124,7 +125,21 @@
 	while (revisionList.isUpdating && [limit timeIntervalSinceNow] > 0)
 		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
 
-	XCTAssertFalse(revisionList.isUpdating, @"the revision list is still walking the repository");
+	XCTAssertFalse(revisionList.isUpdating, @"the revision list is still walking the repository, %@", [self outstandingWorkOf:revisionList]);
+}
+
+// -finishedGraphing clears isUpdating only once the walk has stopped parsing and
+// the graph queue has drained, so a wait that expires has to say which of the
+// two is still outstanding; otherwise the next failure in CI says no more than
+// this one did. Both of them live in ivars, which KVC reaches by name.
+- (NSString *)outstandingWorkOf:(PBGitHistoryList *)revisionList
+{
+	PBGitRevList *walk = [revisionList valueForKey:@"currentRevList"];
+	NSOperationQueue *graphQueue = [revisionList valueForKey:@"graphQueue"];
+
+	return [NSString stringWithFormat:@"walk parsing: %@, graph operations: %lu",
+									  walk ? (walk.isParsing ? @"yes" : @"no") : @"no walk",
+									  (unsigned long)graphQueue.operationCount];
 }
 
 - (void)tearDown
