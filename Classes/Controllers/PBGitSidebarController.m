@@ -237,6 +237,9 @@
 		if ((item = [it findRev:rev]) != nil)
 			return item;
 
+	if ([self.repository isRefHeldByAnotherWorktree:rev.ref])
+		return nil;
+
 	if (![rev isSimpleRef]) {
 		[others addChild:[PBSourceViewItem itemWithRevSpec:rev]];
 		return item;
@@ -338,7 +341,9 @@
 	NSInteger rowNumber = [sourceView selectedRow];
 
 	id item = [sourceView itemAtRow:rowNumber];
-	if ([item isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
+	if ([item isKindOfClass:[PBSourceViewGitWorktreeItem class]]) {
+		[self openRepositoryAtURL:[(PBSourceViewGitWorktreeItem *)item URL]];
+	} else if ([item isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
 		PBSourceViewGitSubmoduleItem *subModule = item;
 
 		[self openRepositoryAtURL:[subModule path]];
@@ -389,6 +394,8 @@
 	// worktree's own state goes on after it.
 	if (worktreeItem)
 		cell.toolTip = worktreeItem.statusDescription;
+	else if (!worktreePath.length)
+		cell.toolTip = item.ref.shortName ?: item.title;
 
 	return cell;
 }
@@ -489,8 +496,27 @@
 		[worktrees addChild:[PBSourceViewGitWorktreeItem itemWithWorktree:worktree]];
 	}
 
-	[sourceView reloadItem:worktrees reloadChildren:YES];
+	[self rebuildBranchesHeldElsewhere];
+
+	[sourceView reloadData];
 	[sourceView expandItem:worktrees];
+}
+
+// A branch belongs to exactly one group, and which one it is only becomes known
+// once the worktree lookup lands, so both directions have to be handled.
+- (void)rebuildBranchesHeldElsewhere
+{
+	for (PBGitRevSpecifier *rev in [self.repository.branches copy]) {
+		BOOL heldElsewhere = [self.repository isRefHeldByAnotherWorktree:rev.ref];
+		// A worktree row answers to the same rev, so the question has to be put to
+		// the branch group alone rather than to the sidebar as a whole.
+		PBSourceViewItem *listed = [branches findRev:rev];
+
+		if (heldElsewhere && listed)
+			[listed.parent removeChild:listed];
+		else if (!heldElsewhere && !listed)
+			[self addRevSpec:rev];
+	}
 }
 
 - (void)expandCollapseItem:(NSNotification *)aNotification

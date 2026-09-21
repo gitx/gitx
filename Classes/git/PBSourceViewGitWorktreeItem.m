@@ -5,6 +5,8 @@
 
 #import "PBSourceViewGitWorktreeItem.h"
 #import "PBGitWorktree.h"
+#import "PBGitRef.h"
+#import "PBGitRevSpecifier.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,9 +23,20 @@ NS_ASSUME_NONNULL_BEGIN
 	return [[self alloc] initWithWorktree:worktree];
 }
 
+// The row stands for the branch parked here, so it carries that branch's rev
+// specifier: selecting it moves the history list, exactly as the branch row did
+// before it moved into this group.
++ (nullable PBGitRevSpecifier *)revSpecifierForWorktree:(PBGitWorktree *)worktree
+{
+	if (!worktree.branchRefName)
+		return nil;
+
+	return [[PBGitRevSpecifier alloc] initWithRef:[PBGitRef refFromString:worktree.branchRefName]];
+}
+
 - (instancetype)initWithWorktree:(PBGitWorktree *)worktree
 {
-	self = [self initWithTitle:worktree.path.lastPathComponent revSpecifier:nil];
+	self = [self initWithTitle:worktree.path.lastPathComponent revSpecifier:[PBSourceViewGitWorktreeItem revSpecifierForWorktree:worktree]];
 	if (!self) return nil;
 
 	_worktree = worktree;
@@ -33,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)title
 {
-	return self.worktree.path.lastPathComponent;
+	return [self headDescription];
 }
 
 - (NSURL *)URL
@@ -41,26 +54,29 @@ NS_ASSUME_NONNULL_BEGIN
 	return [NSURL fileURLWithPath:self.worktree.path];
 }
 
+
 - (NSString *)iconName
 {
 	return @"WorktreeBranchTemplate";
 }
 
+// This is the row's own text, so a worktree with no branch to name it falls
+// back to the directory rather than to the whole path.
 - (NSString *)headDescription
 {
 	if (self.worktree.isBare)
-		return NSLocalizedString(@"Bare repository", @"Sidebar tooltip for a bare worktree");
+		return NSLocalizedString(@"Bare repository", @"Sidebar row for a bare worktree");
 
 	if (self.worktree.isDetached) {
 		NSString *head = self.worktree.HEAD.length > 7 ? [self.worktree.HEAD substringToIndex:7] : self.worktree.HEAD;
-		return [NSString stringWithFormat:NSLocalizedString(@"Detached at %@", @"Sidebar tooltip for a detached worktree"), head ?: @"?"];
+		return [NSString stringWithFormat:NSLocalizedString(@"Detached at %@", @"Sidebar row for a detached worktree"), head ?: @"?"];
 	}
 
 	NSString *branch = self.worktree.branchRefName;
 	if ([branch hasPrefix:@"refs/heads/"])
 		branch = [branch substringFromIndex:[@"refs/heads/" length]];
 
-	return branch ?: self.worktree.path;
+	return branch ?: self.worktree.path.lastPathComponent;
 }
 
 - (NSString *)statusDescription

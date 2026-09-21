@@ -12,6 +12,7 @@
 #import "PBSourceViewItem.h"
 #import "PBSourceViewGitWorktreeItem.h"
 #import "PBGitDefaults.h"
+#import "PBGitRevSpecifier.h"
 
 // Every other worktree test reads a fixed string, so none of them would notice
 // git changing what it prints. This one runs git and reads what comes back.
@@ -82,7 +83,7 @@
 	[self runGit:@[ @"init", @"-q" ] in:self.repositoryURL];
 	[self runGit:@[ @"symbolic-ref", @"HEAD", @"refs/heads/branch_one" ] in:self.repositoryURL];
 	[self runGit:@[ @"commit", @"-q", @"--allow-empty", @"-m", @"root" ] in:self.repositoryURL];
-	[self runGit:@[ @"worktree", @"add", @"-q", self.secondWorktreeURL.path, @"-b", @"second" ] in:self.repositoryURL];
+	[self runGit:@[ @"worktree", @"add", @"-q", self.secondWorktreeURL.path, @"-b", @"parked" ] in:self.repositoryURL];
 	[self runGit:@[ @"worktree", @"lock", @"--reason", @"on an external disk", self.secondWorktreeURL.path ] in:self.repositoryURL];
 
 	NSError *error = nil;
@@ -134,7 +135,7 @@
 	XCTAssertFalse(main.isLocked);
 
 	PBGitWorktree *second = [self worktreeNamed:@"second"];
-	XCTAssertEqualObjects(second.branchRefName, @"refs/heads/second");
+	XCTAssertEqualObjects(second.branchRefName, @"refs/heads/parked");
 	XCTAssertFalse(second.isCurrent);
 	XCTAssertTrue(second.isLocked, @"this worktree was locked with git itself");
 	XCTAssertEqualObjects(second.lockReason, @"on an external disk");
@@ -146,22 +147,27 @@
 
 	// git prints the resolved path, and the temporary directory is reached
 	// through a symlink, so neither side can be compared as it stands.
-	XCTAssertEqualObjects([[self.repository pathOfWorktreeHoldingRef:[PBGitRef refFromString:@"refs/heads/second"]] stringByStandardizingPath],
+	XCTAssertEqualObjects([[self.repository pathOfWorktreeHoldingRef:[PBGitRef refFromString:@"refs/heads/parked"]] stringByStandardizingPath],
 						  self.secondWorktreeURL.path.stringByStandardizingPath,
 						  @"the dictionary the drawing path reads is derived from the same snapshot");
 	XCTAssertNil([self.repository pathOfWorktreeHoldingRef:[PBGitRef refFromString:@"refs/heads/branch_one"]],
 				 @"our own branch is not held somewhere else");
 }
 
-- (PBSourceViewItem *)worktreeGroupOfSidebar:(PBGitSidebarController *)sidebar
+// +groupItemWithTitle: uppercases what it is given, so a group answers to
+// WORKTREES rather than to the name the controller passed.
+- (PBSourceViewItem *)groupOfSidebar:(PBGitSidebarController *)sidebar titled:(NSString *)title
 {
-	// +groupItemWithTitle: uppercases what it is given, so the group answers to
-	// WORKTREES rather than to the name the controller passed.
 	for (PBSourceViewItem *item in sidebar.items)
-		if ([item.title caseInsensitiveCompare:@"Worktrees"] == NSOrderedSame)
+		if ([item.title caseInsensitiveCompare:title] == NSOrderedSame)
 			return item;
 
 	return nil;
+}
+
+- (PBSourceViewItem *)worktreeGroupOfSidebar:(PBGitSidebarController *)sidebar
+{
+	return [self groupOfSidebar:sidebar titled:@"Worktrees"];
 }
 
 - (void)testTheSidebarListsTheOtherWorktreesAndLeavesOutTheOneWeHaveOpen
@@ -189,9 +195,9 @@
 
 	XCTAssertEqual(rows.count, 1u, @"%@", rows.allKeys);
 	XCTAssertNil(rows[@"main"], @"the worktree this window has open is already marked in BRANCHES");
-	XCTAssertFalse(rows[@"second"].worktree.isCurrent);
-	XCTAssertTrue([rows[@"second"].statusDescription containsString:@"on an external disk"],
-				  @"a locked worktree has to say why: %@", rows[@"second"].statusDescription);
+	XCTAssertFalse(rows[@"parked"].worktree.isCurrent);
+	XCTAssertTrue([rows[@"parked"].statusDescription containsString:@"on an external disk"],
+				  @"a locked worktree has to say why: %@", rows[@"parked"].statusDescription);
 	XCTAssertEqual(self.repository.worktrees.count, 2u, @"the model still holds every worktree git reports");
 
 	[windowController close];
@@ -222,6 +228,133 @@
 	XCTAssertTrue([sourceView isItemExpanded:group], @"the group is collapsed, so its worktrees are off screen");
 	XCTAssertNotEqual([sourceView rowForItem:group.sortedChildren.firstObject], -1,
 					  @"the first worktree has no row in the sidebar");
+
+	[windowController close];
+}
+
+- (PBSourceViewItem *)worktreeGroupOnceFilledFor:(PBGitSidebarController *)sidebar
+{
+	PBSourceViewItem *group = [self worktreeGroupOfSidebar:sidebar];
+
+	NSDate *limit = [NSDate dateWithTimeIntervalSinceNow:10];
+	while (group.sortedChildren.count < 1 && [limit timeIntervalSinceNow] > 0)
+		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+
+	return group;
+}
+
+- (void)testTheWorktreeRowIsLabelledByItsBranchNotItsFolder
+{
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	windowController.stubRepository = self.repository;
+	XCTAssertNotNil(windowController.window, @"asking for the window is what loads the sidebar");
+
+	[self waitForTheWorktreeLookup];
+
+	PBSourceViewItem *group = [self worktreeGroupOnceFilledFor:windowController.sidebarViewController];
+	PBSourceViewGitWorktreeItem *row = group.sortedChildren.firstObject;
+
+	XCTAssertEqualObjects(row.title, @"parked", @"the row names the branch parked there, not the directory");
+	XCTAssertEqualObjects(row.worktree.path.lastPathComponent, @"second", @"the directory is still what the model holds");
+	XCTAssertTrue([row.statusDescription containsString:@"second"],
+				  @"the directory moved to the tooltip, so it has to be in there: %@", row.statusDescription);
+
+	[windowController close];
+}
+
+- (void)testABranchHeldInAnotherWorktreeIsListedOnlyUnderWorktrees
+{
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	windowController.stubRepository = self.repository;
+	XCTAssertNotNil(windowController.window, @"asking for the window is what loads the sidebar");
+
+	[self waitForTheWorktreeLookup];
+
+	PBGitSidebarController *sidebar = windowController.sidebarViewController;
+	PBSourceViewItem *group = [self worktreeGroupOnceFilledFor:sidebar];
+	PBSourceViewItem *branchGroup = [self groupOfSidebar:sidebar titled:@"Branches"];
+	XCTAssertNotNil(branchGroup, @"the sidebar has no BRANCHES group");
+
+	NSArray<NSString *> *worktreeTitles = [group.sortedChildren valueForKey:@"title"];
+	NSArray<NSString *> *branchTitles = [branchGroup.sortedChildren valueForKey:@"title"];
+
+	XCTAssertTrue([worktreeTitles containsObject:@"parked"], @"WORKTREES holds %@", worktreeTitles);
+	XCTAssertFalse([branchTitles containsObject:@"parked"],
+				   @"a branch parked in another worktree is listed twice; BRANCHES holds %@", branchTitles);
+	XCTAssertTrue([branchTitles containsObject:@"branch_one"],
+				  @"the branch this window has checked out still belongs in BRANCHES: %@", branchTitles);
+
+	[windowController close];
+}
+
+- (void)testAWorktreeRowAnswersWithItsBranchSoTheRefMenuCanBeBuilt
+{
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	windowController.stubRepository = self.repository;
+	XCTAssertNotNil(windowController.window, @"asking for the window is what loads the sidebar");
+
+	[self waitForTheWorktreeLookup];
+
+	PBSourceViewItem *group = [self worktreeGroupOnceFilledFor:windowController.sidebarViewController];
+	PBSourceViewGitWorktreeItem *row = group.sortedChildren.firstObject;
+
+	XCTAssertEqualObjects(row.ref.ref, @"refs/heads/parked",
+						  @"a row with no ref gets no context menu at all");
+	XCTAssertEqualObjects(row.revSpecifier.ref.ref, @"refs/heads/parked",
+						  @"the row stands for its branch, which is what moves the history list");
+
+	[windowController close];
+}
+
+- (void)testEveryRowSaysWhatItIsOnHoverSoATruncatedNameStaysReadable
+{
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	windowController.stubRepository = self.repository;
+	XCTAssertNotNil(windowController.window, @"asking for the window is what loads the sidebar");
+
+	[self waitForTheWorktreeLookup];
+
+	PBGitSidebarController *sidebar = windowController.sidebarViewController;
+	PBSourceViewItem *worktreeGroup = [self worktreeGroupOnceFilledFor:sidebar];
+	PBSourceViewItem *branchGroup = [self groupOfSidebar:sidebar titled:@"Branches"];
+
+	NSOutlineView *sourceView = sidebar.sourceView;
+	NSTableColumn *column = sourceView.tableColumns.firstObject;
+
+	id<NSOutlineViewDelegate> delegate = sidebar;
+	NSView *branchCell = [delegate outlineView:sourceView viewForTableColumn:column item:branchGroup.sortedChildren.firstObject];
+	XCTAssertEqualObjects(branchCell.toolTip, @"branch_one", @"a branch row has to name itself in full on hover");
+
+	NSView *worktreeCell = [delegate outlineView:sourceView viewForTableColumn:column item:worktreeGroup.sortedChildren.firstObject];
+	XCTAssertTrue([worktreeCell.toolTip containsString:@"parked"],
+				  @"a worktree row keeps its own status on hover: %@", worktreeCell.toolTip);
+	XCTAssertTrue([worktreeCell.toolTip containsString:@"on an external disk"],
+				  @"the lock reason belongs on hover: %@", worktreeCell.toolTip);
+
+	[windowController close];
+}
+
+- (void)testSelectingAWorktreeRowShowsThatBranchInTheHistoryList
+{
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	windowController.stubRepository = self.repository;
+	XCTAssertNotNil(windowController.window, @"asking for the window is what loads the sidebar");
+
+	[self waitForTheWorktreeLookup];
+
+	PBGitSidebarController *sidebar = windowController.sidebarViewController;
+	PBSourceViewItem *group = [self worktreeGroupOnceFilledFor:sidebar];
+	PBSourceViewItem *row = group.sortedChildren.firstObject;
+
+	NSOutlineView *sourceView = sidebar.sourceView;
+	NSInteger rowIndex = [sourceView rowForItem:row];
+	XCTAssertNotEqual(rowIndex, -1, @"the worktree row is not on screen, so it cannot be clicked");
+
+	[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:rowIndex] byExtendingSelection:NO];
+	[(id<NSOutlineViewDelegate>)sidebar outlineViewSelectionDidChange:[NSNotification notificationWithName:NSOutlineViewSelectionDidChangeNotification object:sourceView]];
+
+	XCTAssertEqualObjects(self.repository.currentBranch.ref.ref, @"refs/heads/parked",
+						  @"the history list was left on %@", self.repository.currentBranch);
 
 	[windowController close];
 }
