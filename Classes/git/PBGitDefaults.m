@@ -33,6 +33,7 @@
 #define kPruneOnFetch @"PBPruneOnFetch"
 #define kTerminalHandler @"PBTerminalHandler"
 #define kTerminalOpenAsTab @"PBTerminalOpenAsTab"
+#define kAppearance @"PBAppearance"
 #define kCommitDateFormat @"PBCommitDateFormat"
 #define kCommitDateCustomFormat @"PBCommitDateCustomFormat"
 #define kDefaultCommitDateCustomFormat @"yyyy-MM-dd HH:mm"
@@ -76,6 +77,8 @@
 					  forKey:kTerminalHandler];
 	[defaultValues setObject:[NSNumber numberWithBool:NO]
 					  forKey:kTerminalOpenAsTab];
+	[defaultValues setObject:[NSNumber numberWithInteger:PBAppearanceSystem]
+					  forKey:kAppearance];
 	[defaultValues setObject:[NSNumber numberWithInteger:PBCommitDateFormatLong]
 					  forKey:kCommitDateFormat];
 	[defaultValues setObject:kDefaultCommitDateCustomFormat
@@ -264,6 +267,16 @@
 + (void)setTerminalOpenAsTab:(BOOL)openAsTab
 {
 	[[NSUserDefaults standardUserDefaults] setBool:openAsTab forKey:kTerminalOpenAsTab];
+}
+
++ (PBAppearanceSetting)appearance
+{
+	return [[NSUserDefaults standardUserDefaults] integerForKey:kAppearance];
+}
+
++ (void)setAppearance:(PBAppearanceSetting)appearance
+{
+	[[NSUserDefaults standardUserDefaults] setInteger:appearance forKey:kAppearance];
 }
 
 + (PBCommitDateFormatSetting)commitDateFormat
