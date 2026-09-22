@@ -235,11 +235,9 @@
 // The column is sized from a date that needs about as much room as any the
 // format produces, rather than from the ones on screen, so that scrolling into a
 // longer month does not meet a clipped column. It is an estimate the user can
-// drag afterwards. The date is drawn two points in from each edge of its cell,
-// and a twentieth of its width is left over as breathing room. The header is a
-// floor, since a pattern can render shorter than the word "Date".
-static const CGFloat PBDateColumnInset = 4;
-static const CGFloat PBDateColumnSlack = 1.05;
+// drag afterwards, and the room it is given on top of the sizing date is what
+// absorbs the dates that render wider. The header is a floor, since a pattern
+// can render shorter than the word "Date".
 
 - (void)resizeDateColumn:(NSTableColumn *)column toFitDate:(NSString *)date inFont:(NSFont *)font
 {
