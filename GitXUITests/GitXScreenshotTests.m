@@ -88,7 +88,31 @@
     [self addAttachment:attachment];
 }
 
+// The title of a window whose app is not frontmost is drawn dimmed, so a
+// capture taken while something else holds the activation differs from one
+// taken a moment later and the comparison reports it. Ask for activation only
+// when the app is not already in front, since an activation request would
+// dismiss an open menu.
+- (void)waitForForeground {
+    if (self.app.state == XCUIApplicationStateRunningForeground)
+        return;
+
+    NSLog(@"[GitXScreenshotTests] The app is not frontmost, activating it");
+    [self.app activate];
+
+    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:10];
+    while (self.app.state != XCUIApplicationStateRunningForeground
+           && deadline.timeIntervalSinceNow > 0) {
+        [NSThread sleepForTimeInterval:0.2];
+    }
+    XCTAssertEqual(self.app.state, XCUIApplicationStateRunningForeground,
+                   @"The app should be frontmost when its window is captured");
+    [NSThread sleepForTimeInterval:0.5]; // let the title bar redraw
+}
+
 - (void)saveWindowScreenshotNamed:(NSString *)name {
+    [self waitForForeground];
+
     XCUIElement *window = self.app.windows.firstMatch;
     if (!window.exists) {
         [self saveScreenshotNamed:name]; // fall back to full screen
