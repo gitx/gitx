@@ -72,7 +72,7 @@ MAP_WIDTH := 24
 
 # The tests sign ad-hoc, so they drop the hardened runtime too: a Dev.xcconfig
 # turns it on, and it refuses to map an ad-hoc signed framework into the host.
-TEST_SETTINGS := CODE_SIGN_IDENTITY="-" ENABLE_HARDENED_RUNTIME=NO
+TEST_SETTINGS := CODE_SIGN_IDENTITY="-" ENABLE_HARDENED_RUNTIME=NO CODESIGN_DIGEST_ALGORITHM=sha256
 
 # Asked of xcodebuild: DerivedData holds a GitX-* directory per checkout path.
 BUILD_PRODUCTS_ROOT = $(XCODEBUILD) -showBuildSettings 2>/dev/null \
