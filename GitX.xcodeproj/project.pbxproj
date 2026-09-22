@@ -181,6 +181,7 @@
 		7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */; };
 		09EB95E6AD3341A38EFA5B2F /* PBGitHistoryWorktreeMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */; };
 		C71DBB31DC534C74A24F8AAE /* PBGitHistoryWorktreeDoubleClickTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ABEEB20A12E1438085514553 /* PBGitHistoryWorktreeDoubleClickTests.m */; };
+		B3C36868A8854FF8A894C8A9 /* PBGitRefMenuCopyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 86408145151E4E8DA1107CD1 /* PBGitRefMenuCopyTests.m */; };
 		D95DB968C64F4AC7B93EA89A /* PBGitRepositoryWorktreeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60E5F191BB343B19F63AFE9 /* PBGitRepositoryWorktreeTests.m */; };
 		AA01B1000000000000000501 /* PBGitWorktreeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AA01B1000000000000000401 /* PBGitWorktreeTests.m */; };
 		AA01B1000000000000001001 /* PBGitSidebarWorktreeGroupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AA01B1000000000000000901 /* PBGitSidebarWorktreeGroupTests.m */; };
@@ -757,6 +758,7 @@
 		5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistorySelectionTests.m; path = GitXTests/PBGitHistorySelectionTests.m; sourceTree = "<group>"; };
 		68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryWorktreeMenuTests.m; path = GitXTests/PBGitHistoryWorktreeMenuTests.m; sourceTree = "<group>"; };
 		ABEEB20A12E1438085514553 /* PBGitHistoryWorktreeDoubleClickTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryWorktreeDoubleClickTests.m; path = GitXTests/PBGitHistoryWorktreeDoubleClickTests.m; sourceTree = "<group>"; };
+		86408145151E4E8DA1107CD1 /* PBGitRefMenuCopyTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRefMenuCopyTests.m; path = GitXTests/PBGitRefMenuCopyTests.m; sourceTree = "<group>"; };
 		C60E5F191BB343B19F63AFE9 /* PBGitRepositoryWorktreeTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryWorktreeTests.m; path = GitXTests/PBGitRepositoryWorktreeTests.m; sourceTree = "<group>"; };
 		AA01B1000000000000000401 /* PBGitWorktreeTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWorktreeTests.m; path = GitXTests/PBGitWorktreeTests.m; sourceTree = "<group>"; };
 		AA01B1000000000000000901 /* PBGitSidebarWorktreeGroupTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitSidebarWorktreeGroupTests.m; path = GitXTests/PBGitSidebarWorktreeGroupTests.m; sourceTree = "<group>"; };
@@ -913,6 +915,7 @@
 				5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */,
 				68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */,
 				ABEEB20A12E1438085514553 /* PBGitHistoryWorktreeDoubleClickTests.m */,
+				86408145151E4E8DA1107CD1 /* PBGitRefMenuCopyTests.m */,
 				C60E5F191BB343B19F63AFE9 /* PBGitRepositoryWorktreeTests.m */,
 				AA01B1000000000000000401 /* PBGitWorktreeTests.m */,
 				AA01B1000000000000000901 /* PBGitSidebarWorktreeGroupTests.m */,
@@ -1892,6 +1895,7 @@
 				7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */,
 				09EB95E6AD3341A38EFA5B2F /* PBGitHistoryWorktreeMenuTests.m in Sources */,
 				C71DBB31DC534C74A24F8AAE /* PBGitHistoryWorktreeDoubleClickTests.m in Sources */,
+				B3C36868A8854FF8A894C8A9 /* PBGitRefMenuCopyTests.m in Sources */,
 				D95DB968C64F4AC7B93EA89A /* PBGitRepositoryWorktreeTests.m in Sources */,
 				AA01B1000000000000000501 /* PBGitWorktreeTests.m in Sources */,
 				AA01B1000000000000001001 /* PBGitSidebarWorktreeGroupTests.m in Sources */,
