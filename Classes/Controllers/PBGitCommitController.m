@@ -13,7 +13,6 @@
 #import "PBChangedFile.h"
 #import "PBWebChangesController.h"
 #import "PBGitIndex.h"
-#import "PBGitRepositoryWatcher.h"
 #import "PBCommitMessageView.h"
 #import "PBTask.h"
 #import "NSSplitView+GitX.h"
@@ -66,8 +65,6 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(amendCommit:) name:PBGitIndexAmendMessageAvailable object:index];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(indexChanged:) name:PBGitIndexIndexUpdated object:index];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(indexOperationFailed:) name:PBGitIndexOperationFailed object:index];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:theRepository];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:NSApplicationDidBecomeActiveNotification object:nil];
 
 	return self;
 }
@@ -122,24 +119,6 @@
 	// Copy the menu over so we have two discrete menu objects
 	// which allows us to tell them apart in our delegate methods
 	stagedTable.menu = [unstagedTable.menu copy];
-}
-
-- (void)applicationDidBecomeActive:(NSNotification *)notification
-{
-	[self.repository.index refreshStatCache];
-}
-
-- (void)repositoryUpdatedNotification:(NSNotification *)notification
-{
-	PBGitRepositoryWatcherEventType eventType = [(NSNumber *)[[notification userInfo] objectForKey:kPBGitRepositoryEventTypeUserInfoKey] unsignedIntValue];
-	if (eventType & PBGitRepositoryWatcherEventTypeWorkingDirectory) {
-		// refresh if the working directory is modified
-		[self refresh:self];
-		return;
-	}
-
-	if ((eventType & PBGitRepositoryWatcherEventTypeIndex) && [self.repository.index indexChangedSinceLastRefresh])
-		[self refresh:self];
 }
 
 - (void)updateView
@@ -259,10 +238,7 @@
 {
 	self.isBusy = YES;
 	self.status = NSLocalizedString(@"Refreshing index…", @"Message in status bar while the index is refreshing");
-	[self.repository.index refresh];
-
-	// Reload refs (in case HEAD changed)
-	[self.repository reloadRefs];
+	[self.repository syncWithWorkingTree];
 }
 
 - (IBAction)prepareCommitMessage:(id)sender

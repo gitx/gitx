@@ -33,6 +33,31 @@
 
 NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
+// reloadRefs rebuilds the map from git, so pointer identity is meaningless.
+// The history list and sidebar observe "refs"; they rearrange only when the
+// OID-to-ref-name mapping actually moved.
+static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
+{
+	if (left == right)
+		return YES;
+	if (left.count != right.count)
+		return NO;
+
+	for (GTOID *OID in left) {
+		NSArray *leftRefs = left[OID];
+		NSArray *rightRefs = right[OID];
+		if (leftRefs.count != rightRefs.count)
+			return NO;
+
+		NSSet *leftNames = [NSSet setWithArray:[leftRefs valueForKey:@"ref"]];
+		NSSet *rightNames = [NSSet setWithArray:[rightRefs valueForKey:@"ref"]];
+		if (![leftNames isEqualToSet:rightNames])
+			return NO;
+	}
+
+	return YES;
+}
+
 @interface PBGitRepository () {
 	__strong PBGitRepositoryWatcher *watcher;
 	__strong PBGitRevSpecifier *_headRef; // Caching
@@ -89,11 +114,12 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		return nil;
 	}
 
-	revisionList = [[PBGitHistoryList alloc] initWithRepository:self];
-
 	[self reloadRefs];
 
-	// Setup the FSEvents watcher to fire notifications when things change
+	// The history list snapshots the refs that already exist, so the first
+	// disk note is not itself treated as a rewrite of the repository.
+	revisionList = [[PBGitHistoryList alloc] initWithRepository:self];
+
 	watcher = [[PBGitRepositoryWatcher alloc] initWithRepository:self];
 
 	return self;
@@ -233,6 +259,8 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	_headRef = nil;
 	_headOID = nil;
 	[self reloadWorktreePaths];
+
+	NSDictionary *previousRefs = [self->refs copy];
 	self->refs = [NSMutableDictionary dictionary];
 
 	NSError *error = nil;
@@ -280,9 +308,12 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 	[self loadSubmodules];
 
-	[self willChangeValueForKey:@"refs"];
+	BOOL refsChanged = !PBGitRefMapsEqual(self->refs, previousRefs);
+	if (refsChanged)
+		[self willChangeValueForKey:@"refs"];
 	[self willChangeValueForKey:@"stashes"];
-	[self didChangeValueForKey:@"refs"];
+	if (refsChanged)
+		[self didChangeValueForKey:@"refs"];
 	[self didChangeValueForKey:@"stashes"];
 }
 
@@ -423,6 +454,19 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 	[self.revisionList updateHistory];
 	hasChanged = NO;
+}
+
+// The watcher only reports that the disk moved. This is the one place that
+// reads git afterwards: refs and history through libgit2, the index through
+// the git binary. A file save and a `git commit` from a terminal take the
+// same path. History rebuilds only when the ref set actually changed.
+- (void)syncWithWorkingTree
+{
+	if (self.currentBranch)
+		[self.revisionList updateHistory];
+	else
+		[self reloadRefs];
+	[self.index refresh];
 }
 
 - (PBGitRevSpecifier *)headRef
