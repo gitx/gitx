@@ -32,6 +32,7 @@
 #define kUseRepositoryWatcher @"PBUseRepositoryWatcher"
 #define kPruneOnFetch @"PBPruneOnFetch"
 #define kTerminalHandler @"PBTerminalHandler"
+#define kTerminalOpenAsTab @"PBTerminalOpenAsTab"
 #define kCommitDateFormat @"PBCommitDateFormat"
 #define kCommitDateCustomFormat @"PBCommitDateCustomFormat"
 #define kDefaultCommitDateCustomFormat @"yyyy-MM-dd HH:mm"
@@ -73,6 +74,8 @@
 					  forKey:kPruneOnFetch];
 	[defaultValues setObject:@"com.apple.Terminal"
 					  forKey:kTerminalHandler];
+	[defaultValues setObject:[NSNumber numberWithBool:NO]
+					  forKey:kTerminalOpenAsTab];
 	[defaultValues setObject:[NSNumber numberWithInteger:PBCommitDateFormatLong]
 					  forKey:kCommitDateFormat];
 	[defaultValues setObject:kDefaultCommitDateCustomFormat
@@ -251,6 +254,16 @@
 + (void)setTerminalHandler:(NSString *)bundleIdentifier
 {
 	[[NSUserDefaults standardUserDefaults] setObject:bundleIdentifier forKey:kTerminalHandler];
+}
+
++ (BOOL)terminalOpenAsTab
+{
+	return [[NSUserDefaults standardUserDefaults] boolForKey:kTerminalOpenAsTab];
+}
+
++ (void)setTerminalOpenAsTab:(BOOL)openAsTab
+{
+	[[NSUserDefaults standardUserDefaults] setBool:openAsTab forKey:kTerminalOpenAsTab];
 }
 
 + (PBCommitDateFormatSetting)commitDateFormat

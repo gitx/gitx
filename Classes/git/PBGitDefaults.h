@@ -46,6 +46,8 @@ typedef NS_ENUM(NSInteger, PBCommitDateFormatSetting) {
 + (PBPruneOnFetchSetting)pruneOnFetch;
 + (NSString *)terminalHandler;
 + (void)setTerminalHandler:(NSString *)bundleIdentifier;
++ (BOOL)terminalOpenAsTab;
++ (void)setTerminalOpenAsTab:(BOOL)openAsTab;
 + (PBCommitDateFormatSetting)commitDateFormat;
 + (NSString *)commitDateCustomFormat;
 

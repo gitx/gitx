@@ -16,6 +16,7 @@
                 <outlet property="gitPathOpenAccessory" destination="62" id="65"/>
                 <outlet property="integrationPrefsView" destination="87" id="92"/>
                 <outlet property="terminalHandlerPopup" destination="182" id="187"/>
+                <outlet property="terminalOpenAsTabCheckbox" destination="188" id="191"/>
                 <outlet property="updatesPrefsView" destination="4" id="7"/>
             </connections>
         </customObject>
@@ -431,8 +432,19 @@ or drag it from the Finder.</string>
                         <action selector="changeTerminalHandler:" target="-2" id="186"/>
                     </connections>
                 </popUpButton>
+                <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="188">
+                    <rect key="frame" x="112" y="137" width="120" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Open as tab" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="189">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="changeTerminalOpenAsTab:" target="-2" id="190"/>
+                    </connections>
+                </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="108">
-                    <rect key="frame" x="112" y="69" width="179" height="18"/>
+                    <rect key="frame" x="112" y="51" width="179" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Make Gists public" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="109">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -444,7 +456,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="97">
-                    <rect key="frame" x="112" y="91" width="181" height="18"/>
+                    <rect key="frame" x="112" y="73" width="181" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Confirm creation of Gists" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="98">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -456,7 +468,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="88">
-                    <rect key="frame" x="91" y="35" width="121" height="18"/>
+                    <rect key="frame" x="91" y="17" width="121" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Enable Gravatar" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="91">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -467,7 +479,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="89">
-                    <rect key="frame" x="91" y="113" width="169" height="18"/>
+                    <rect key="frame" x="91" y="95" width="169" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Enable ‘Gist it’ button" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="90">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>

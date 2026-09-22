@@ -22,6 +22,7 @@
 
 	/* Variables for the Integration View */
 	IBOutlet NSPopUpButton *terminalHandlerPopup;
+	IBOutlet NSButton *terminalOpenAsTabCheckbox;
 	IBOutlet NSPathControl *gitPathController;
 	IBOutlet NSImageView *badGitPathIcon;
 	IBOutlet NSView *gitPathOpenAccessory;
@@ -34,6 +35,7 @@
 - (IBAction)resetGitPath:sender;
 - (IBAction)resetAllDialogWarnings:(id)sender;
 - (IBAction)changeTerminalHandler:(id)sender;
+- (IBAction)changeTerminalOpenAsTab:(id)sender;
 - (IBAction)changeCommitDateFormat:(id)sender;
 
 @end
