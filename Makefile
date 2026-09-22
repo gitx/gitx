@@ -72,7 +72,13 @@ MAP_WIDTH := 24
 
 # The tests sign ad-hoc, so they drop the hardened runtime too: a Dev.xcconfig
 # turns it on, and it refuses to map an ad-hoc signed framework into the host.
-TEST_SETTINGS := CODE_SIGN_IDENTITY="-" ENABLE_HARDENED_RUNTIME=NO CODESIGN_DIGEST_ALGORITHM=sha256
+# Ad-hoc signing without the hardened runtime makes Xcode fall back to a
+# SHA1-only digest, which newer codesign builds (Xcode 26.3+) hard-reject with
+# "signing with only SHA1 not allowed". OTHER_CODE_SIGN_FLAGS is what codesign
+# actually reads (CODESIGN_DIGEST_ALGORITHM isn't a real build setting), and it
+# fully replaces the xcconfig's own --timestamp=none when set on the command
+# line, so both flags are repeated here.
+TEST_SETTINGS := CODE_SIGN_IDENTITY="-" ENABLE_HARDENED_RUNTIME=NO OTHER_CODE_SIGN_FLAGS="--timestamp=none --digest-algorithm=sha256"
 
 # Asked of xcodebuild: DerivedData holds a GitX-* directory per checkout path.
 BUILD_PRODUCTS_ROOT = $(XCODEBUILD) -showBuildSettings 2>/dev/null \
