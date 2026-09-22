@@ -7,6 +7,9 @@
 
 NSString *const PBGitCommitDateFormatDidChangeNotification = @"PBGitCommitDateFormatDidChangeNotification";
 
+const CGFloat PBDateColumnSlack = 1.10;
+const CGFloat PBDateColumnInset = 4;
+
 // The history list makes one of these per visible row, so the built formatter is
 // shared by all of them and rebuilt only when the preference actually moves.
 static PBCommitDateFormatSetting builtSetting;
