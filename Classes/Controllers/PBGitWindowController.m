@@ -712,7 +712,13 @@
 - (IBAction)openWorktree:(id)sender
 {
 	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType ]];
-	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:(PBGitRef *)refish];
+
+	[self openWorktreeHoldingRef:(PBGitRef *)refish];
+}
+
+- (void)openWorktreeHoldingRef:(PBGitRef *)ref
+{
+	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:ref];
 	if (!worktreePath) return;
 
 	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:[NSURL fileURLWithPath:worktreePath]

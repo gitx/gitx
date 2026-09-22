@@ -87,6 +87,8 @@
 		4A5D76FC14A9A9CC00DF6C68 /* PBGitIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D765F14A9A9CC00DF6C68 /* PBGitIndex.m */; };
 		4A5D76FD14A9A9CC00DF6C68 /* PBGitLane.mm in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766114A9A9CC00DF6C68 /* PBGitLane.mm */; };
 		4A5D76FE14A9A9CC00DF6C68 /* PBGitRef.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766314A9A9CC00DF6C68 /* PBGitRef.m */; };
+		AA01B1000000000000000301 /* PBGitWorktree.m in Sources */ = {isa = PBXBuildFile; fileRef = AA01B1000000000000000201 /* PBGitWorktree.m */; };
+		AA01B1000000000000000801 /* PBSourceViewGitWorktreeItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AA01B1000000000000000701 /* PBSourceViewGitWorktreeItem.m */; };
 		4A5D76FF14A9A9CC00DF6C68 /* PBGitRepository.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766614A9A9CC00DF6C68 /* PBGitRepository.m */; };
 		4A5D770014A9A9CC00DF6C68 /* PBGitRepositoryWatcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766814A9A9CC00DF6C68 /* PBGitRepositoryWatcher.m */; };
 		4A5D770214A9A9CC00DF6C68 /* PBGitRevList.m in Sources */ = {isa = PBXBuildFile; fileRef = 4A5D766C14A9A9CC00DF6C68 /* PBGitRevList.m */; };
@@ -178,7 +180,10 @@
 		5E1B93C7D04A47F2A8C61B30 /* PBGitCommitControllerRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */; };
 		7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */; };
 		09EB95E6AD3341A38EFA5B2F /* PBGitHistoryWorktreeMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */; };
+		C71DBB31DC534C74A24F8AAE /* PBGitHistoryWorktreeDoubleClickTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ABEEB20A12E1438085514553 /* PBGitHistoryWorktreeDoubleClickTests.m */; };
 		D95DB968C64F4AC7B93EA89A /* PBGitRepositoryWorktreeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C60E5F191BB343B19F63AFE9 /* PBGitRepositoryWorktreeTests.m */; };
+		AA01B1000000000000000501 /* PBGitWorktreeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AA01B1000000000000000401 /* PBGitWorktreeTests.m */; };
+		AA01B1000000000000001001 /* PBGitSidebarWorktreeGroupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AA01B1000000000000000901 /* PBGitSidebarWorktreeGroupTests.m */; };
 		4B1C7D2E9F0A41B3C5D6E701 /* PBGitXEntitlementsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1C7D2E9F0A41B3C5D6E702 /* PBGitXEntitlementsTests.m */; };
 		53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */; };
 		9120A847CBE34BD0AEEA32CD /* PBGitRepositoryCheckoutErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */; };
@@ -580,6 +585,10 @@
 		4A5D766114A9A9CC00DF6C68 /* PBGitLane.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PBGitLane.mm; sourceTree = "<group>"; };
 		4A5D766214A9A9CC00DF6C68 /* PBGitRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRef.h; sourceTree = "<group>"; };
 		4A5D766314A9A9CC00DF6C68 /* PBGitRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitRef.m; sourceTree = "<group>"; };
+		AA01B1000000000000000101 /* PBGitWorktree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitWorktree.h; sourceTree = "<group>"; };
+		AA01B1000000000000000201 /* PBGitWorktree.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBGitWorktree.m; sourceTree = "<group>"; };
+		AA01B1000000000000000601 /* PBSourceViewGitWorktreeItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBSourceViewGitWorktreeItem.h; sourceTree = "<group>"; };
+		AA01B1000000000000000701 /* PBSourceViewGitWorktreeItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PBSourceViewGitWorktreeItem.m; sourceTree = "<group>"; };
 		4A5D766414A9A9CC00DF6C68 /* PBGitRefish.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PBGitRefish.h; sourceTree = "<group>"; };
 		4A5D766514A9A9CC00DF6C68 /* PBGitRepository.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = PBGitRepository.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		4A5D766614A9A9CC00DF6C68 /* PBGitRepository.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = PBGitRepository.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -747,7 +756,10 @@
 		5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitCommitControllerRefreshTests.m; path = GitXTests/PBGitCommitControllerRefreshTests.m; sourceTree = "<group>"; };
 		5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistorySelectionTests.m; path = GitXTests/PBGitHistorySelectionTests.m; sourceTree = "<group>"; };
 		68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryWorktreeMenuTests.m; path = GitXTests/PBGitHistoryWorktreeMenuTests.m; sourceTree = "<group>"; };
+		ABEEB20A12E1438085514553 /* PBGitHistoryWorktreeDoubleClickTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryWorktreeDoubleClickTests.m; path = GitXTests/PBGitHistoryWorktreeDoubleClickTests.m; sourceTree = "<group>"; };
 		C60E5F191BB343B19F63AFE9 /* PBGitRepositoryWorktreeTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryWorktreeTests.m; path = GitXTests/PBGitRepositoryWorktreeTests.m; sourceTree = "<group>"; };
+		AA01B1000000000000000401 /* PBGitWorktreeTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWorktreeTests.m; path = GitXTests/PBGitWorktreeTests.m; sourceTree = "<group>"; };
+		AA01B1000000000000000901 /* PBGitSidebarWorktreeGroupTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitSidebarWorktreeGroupTests.m; path = GitXTests/PBGitSidebarWorktreeGroupTests.m; sourceTree = "<group>"; };
 		4B1C7D2E9F0A41B3C5D6E702 /* PBGitXEntitlementsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitXEntitlementsTests.m; path = GitXTests/PBGitXEntitlementsTests.m; sourceTree = "<group>"; };
 		9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryMenuValidationTests.m; path = GitXTests/PBGitHistoryMenuValidationTests.m; sourceTree = "<group>"; };
 		751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryCheckoutErrorTests.m; path = GitXTests/PBGitRepositoryCheckoutErrorTests.m; sourceTree = "<group>"; };
@@ -900,7 +912,10 @@
 				5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */,
 				5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */,
 				68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */,
+				ABEEB20A12E1438085514553 /* PBGitHistoryWorktreeDoubleClickTests.m */,
 				C60E5F191BB343B19F63AFE9 /* PBGitRepositoryWorktreeTests.m */,
+				AA01B1000000000000000401 /* PBGitWorktreeTests.m */,
+				AA01B1000000000000000901 /* PBGitSidebarWorktreeGroupTests.m */,
 				4B1C7D2E9F0A41B3C5D6E702 /* PBGitXEntitlementsTests.m */,
 				9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */,
 				751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */,
@@ -1210,6 +1225,10 @@
 				4A5D766114A9A9CC00DF6C68 /* PBGitLane.mm */,
 				4A5D766214A9A9CC00DF6C68 /* PBGitRef.h */,
 				4A5D766314A9A9CC00DF6C68 /* PBGitRef.m */,
+				AA01B1000000000000000101 /* PBGitWorktree.h */,
+				AA01B1000000000000000201 /* PBGitWorktree.m */,
+				AA01B1000000000000000601 /* PBSourceViewGitWorktreeItem.h */,
+				AA01B1000000000000000701 /* PBSourceViewGitWorktreeItem.m */,
 				4A5D766414A9A9CC00DF6C68 /* PBGitRefish.h */,
 				4A5D766514A9A9CC00DF6C68 /* PBGitRepository.h */,
 				4A5D766614A9A9CC00DF6C68 /* PBGitRepository.m */,
@@ -1872,7 +1891,10 @@
 				5E1B93C7D04A47F2A8C61B30 /* PBGitCommitControllerRefreshTests.m in Sources */,
 				7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */,
 				09EB95E6AD3341A38EFA5B2F /* PBGitHistoryWorktreeMenuTests.m in Sources */,
+				C71DBB31DC534C74A24F8AAE /* PBGitHistoryWorktreeDoubleClickTests.m in Sources */,
 				D95DB968C64F4AC7B93EA89A /* PBGitRepositoryWorktreeTests.m in Sources */,
+				AA01B1000000000000000501 /* PBGitWorktreeTests.m in Sources */,
+				AA01B1000000000000001001 /* PBGitSidebarWorktreeGroupTests.m in Sources */,
 				4B1C7D2E9F0A41B3C5D6E701 /* PBGitXEntitlementsTests.m in Sources */,
 				53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */,
 				9120A847CBE34BD0AEEA32CD /* PBGitRepositoryCheckoutErrorTests.m in Sources */,
@@ -1936,6 +1958,8 @@
 				4A5D76FC14A9A9CC00DF6C68 /* PBGitIndex.m in Sources */,
 				4A5D76FD14A9A9CC00DF6C68 /* PBGitLane.mm in Sources */,
 				4A5D76FE14A9A9CC00DF6C68 /* PBGitRef.m in Sources */,
+				AA01B1000000000000000301 /* PBGitWorktree.m in Sources */,
+				AA01B1000000000000000801 /* PBSourceViewGitWorktreeItem.m in Sources */,
 				4D843B1F1E5D27C3004C3A6F /* PBTask.m in Sources */,
 				4A5D76FF14A9A9CC00DF6C68 /* PBGitRepository.m in Sources */,
 				4A5D770014A9A9CC00DF6C68 /* PBGitRepositoryWatcher.m in Sources */,

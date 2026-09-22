@@ -14,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @property (assign, nonatomic) BOOL isCheckedOut;
-@property (copy, nonatomic, nullable) NSString *worktreePath;
 
 NS_ASSUME_NONNULL_END
 

@@ -21,12 +21,6 @@ NS_ASSUME_NONNULL_BEGIN
 	[self updateCheckmarkImage];
 }
 
-- (void)setWorktreePath:(nullable NSString *)worktreePath
-{
-	_worktreePath = [worktreePath copy];
-	[self updateCheckmarkImage];
-}
-
 - (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle
 {
 	[super setBackgroundStyle:backgroundStyle];
@@ -76,8 +70,6 @@ NS_ASSUME_NONNULL_BEGIN
 	}
 
 	[checkedOutImageView setHidden:!_isCheckedOut];
-
-	self.toolTip = _worktreePath.length ? [NSString stringWithFormat:NSLocalizedString(@"Checked out in the worktree at %@", @"Sidebar tooltip for a branch held by another worktree"), _worktreePath] : nil;
 }
 
 @end

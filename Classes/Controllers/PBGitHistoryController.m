@@ -949,9 +949,21 @@ static const CGFloat PBDateColumnSlack = 1.05;
 
 - (void)didDoubleClickCommitList:(id)sender
 {
-	PBGitRef *ref = [self clickedRefInCommitList];
+	[self actOnDoubleClickedRef:[self clickedRefInCommitList]];
+}
+
+// git refuses to check out a branch another worktree holds, so a double click
+// opens that worktree instead, which is what the menu on the same label already
+// offers and what the sidebar already does.
+- (void)actOnDoubleClickedRef:(PBGitRef *)ref
+{
 	if (!ref)
 		return;
+
+	if ([self.repository isRefHeldByAnotherWorktree:ref]) {
+		[self.windowController openWorktreeHoldingRef:ref];
+		return;
+	}
 
 	NSError *error = nil;
 	BOOL success = [self.repository checkoutRefish:ref error:&error];
