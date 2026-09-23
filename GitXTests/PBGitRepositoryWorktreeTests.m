@@ -7,6 +7,8 @@
 #import "PBGitRepository.h"
 #import "PBGitRef.h"
 #import "PBGitWorktree.h"
+#import "PBGitBinary.h"
+#import <objc/runtime.h>
 
 // Reading the worktrees and answering for one ref are separate steps, so the
 // test names both rather than launching git for them.
@@ -104,6 +106,22 @@ static NSString *const kPorcelain =
 	// The lookup answers from what was read, so the repository needs nothing
 	// of libgit2 or git here.
 	self.repository = [[PBGitRepository alloc] init];
+}
+
+- (void)testWithNoGitToRunTheLookupReportsNoWorktrees
+{
+	[self.repository takeWorktrees:[PBGitWorktree worktreesFromPorcelain:kPorcelain currentWorktreeAtPath:@"/repos/gitx"]];
+
+	Method path = class_getClassMethod([PBGitBinary class], @selector(path));
+	IMP original = method_setImplementation(path, imp_implementationWithBlock(^NSString *(id binary) {
+												return nil;
+											}));
+
+	XCTAssertNoThrow([self.repository reloadWorktreePaths], @"no git was found, which is no reason to crash");
+	method_setImplementation(path, original);
+
+	XCTAssertEqualObjects(self.repository.worktrees, @[], @"nothing can be known about worktrees without git");
+	XCTAssertFalse([self.repository isRefHeldByAnotherWorktree:[PBGitRef refFromString:@"refs/heads/feature"]]);
 }
 
 - (void)useWorktreePaths:(NSDictionary *)paths

@@ -49,8 +49,6 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 - (void)reloadWorktreePaths;
 - (void)startWorktreeLookupIfIdle;
-- (NSDictionary<NSString *, NSString *> *)readWorktreePathsExcluding:(NSString *)ourPath;
-- (void)takeWorktreePaths:(NSDictionary<NSString *, NSString *> *)paths;
 
 @end
 
@@ -344,7 +342,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 	if (![PBGitBinary path].length) {
 		self.worktreePathsNeedRefresh = NO;
-		[self takeWorktreePaths:@{}];
+		[self takeWorktrees:@[]];
 		return;
 	}
 
