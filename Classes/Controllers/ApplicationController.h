@@ -20,6 +20,7 @@
 }
 
 - (IBAction)openPreferencesWindow:(id)sender;
+- (IBAction)changeAppearance:(id)sender;
 - (IBAction)showAboutPanel:(id)sender;
 
 - (IBAction)installCliTool:(id)sender;

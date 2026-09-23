@@ -14,6 +14,12 @@ typedef NS_ENUM(NSInteger, PBPruneOnFetchSetting) {
 	PBPruneOnFetchNever = 2,
 };
 
+typedef NS_ENUM(NSInteger, PBAppearanceSetting) {
+	PBAppearanceSystem = 0,
+	PBAppearanceLight = 1,
+	PBAppearanceDark = 2,
+};
+
 typedef NS_ENUM(NSInteger, PBCommitDateFormatSetting) {
 	PBCommitDateFormatShort = 0,
 	PBCommitDateFormatMedium = 1,
@@ -48,6 +54,8 @@ typedef NS_ENUM(NSInteger, PBCommitDateFormatSetting) {
 + (void)setTerminalHandler:(NSString *)bundleIdentifier;
 + (BOOL)terminalOpenAsTab;
 + (void)setTerminalOpenAsTab:(BOOL)openAsTab;
++ (PBAppearanceSetting)appearance;
++ (void)setAppearance:(PBAppearanceSetting)appearance;
 + (PBCommitDateFormatSetting)commitDateFormat;
 + (NSString *)commitDateCustomFormat;
 

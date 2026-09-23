@@ -115,6 +115,56 @@ static OpenRecentController *recentsDialog = nil;
 	}
 }
 
+- (void)applicationWillFinishLaunching:(NSNotification *)notification
+{
+	[self applyAppearancePreference];
+
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(userDefaultsDidChange:)
+												 name:NSUserDefaultsDidChangeNotification
+											   object:nil];
+}
+
+- (void)userDefaultsDidChange:(NSNotification *)notification
+{
+	[self applyAppearancePreference];
+}
+
+- (void)applyAppearancePreference
+{
+	NSAppearance *appearance = nil;
+
+	switch ([PBGitDefaults appearance]) {
+		case PBAppearanceLight:
+			appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+			break;
+		case PBAppearanceDark:
+			appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+			break;
+		case PBAppearanceSystem:
+			break;
+	}
+
+	if (NSApp.appearance == appearance || [NSApp.appearance.name isEqualToString:appearance.name])
+		return;
+
+	NSLog(@"Applying appearance preference: %@", appearance.name ?: @"system");
+	NSApp.appearance = appearance;
+}
+
+- (IBAction)changeAppearance:(id)sender
+{
+	[PBGitDefaults setAppearance:[sender tag]];
+}
+
+- (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+{
+	if (menuItem.action == @selector(changeAppearance:))
+		menuItem.state = (menuItem.tag == [PBGitDefaults appearance]) ? NSControlStateValueOn : NSControlStateValueOff;
+
+	return YES;
+}
+
 - (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
 #if !DEBUG

@@ -574,6 +574,28 @@ DQ
                             <menuItem isSeparatorItem="YES" id="847">
                                 <modifierMask key="keyEquivalentModifierMask" command="YES"/>
                             </menuItem>
+                            <menuItem title="Appearance" id="Apr-mn-itm">
+                                <menu key="submenu" title="Appearance" id="Apr-mn-sub">
+                                    <items>
+                                        <menuItem title="System" tag="0" id="Apr-sy-itm">
+                                            <connections>
+                                                <action selector="changeAppearance:" target="-1" id="Apr-sy-act"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Light" tag="1" id="Apr-lt-itm">
+                                            <connections>
+                                                <action selector="changeAppearance:" target="-1" id="Apr-lt-act"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem title="Dark" tag="2" id="Apr-dk-itm">
+                                            <connections>
+                                                <action selector="changeAppearance:" target="-1" id="Apr-dk-act"/>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                </menu>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="Apr-sp-itm"/>
                             <menuItem title="History" keyEquivalent="1" id="927">
                                 <connections>
                                     <action selector="showHistoryView:" target="-1" id="930"/>
