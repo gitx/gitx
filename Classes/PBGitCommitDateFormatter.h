@@ -11,6 +11,12 @@
 // redraw the dates they are showing.
 extern NSString *const PBGitCommitDateFormatDidChangeNotification;
 
+// What a column sized against -sizingDateString allows on top of it: a share of
+// the rendered width as breathing room, and the inset the date is drawn with.
+// The room is what lets a date that renders wider than the sizing date still fit.
+extern const CGFloat PBDateColumnSlack;
+extern const CGFloat PBDateColumnInset;
+
 @interface PBGitCommitDateFormatter : NSFormatter
 
 // A setting the user cannot reach through the popup, and a custom format that is

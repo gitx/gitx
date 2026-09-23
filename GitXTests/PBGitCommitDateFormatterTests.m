@@ -140,17 +140,47 @@
 	return [string sizeWithAttributes:@{NSFontAttributeName : [NSFont systemFontOfSize:[NSFont systemFontSize]]}].width;
 }
 
+- (NSString *)longStringForYear:(NSInteger)year month:(NSInteger)month day:(NSInteger)day hour:(NSInteger)hour minute:(NSInteger)minute
+{
+	NSDateComponents *components = [[NSDateComponents alloc] init];
+	components.year = year;
+	components.month = month;
+	components.day = day;
+	components.hour = hour;
+	components.minute = minute;
+
+	NSDate *date = [[NSCalendar currentCalendar] dateFromComponents:components];
+
+	return [[PBGitCommitDateFormatter dateFormatterForSetting:PBCommitDateFormatLong customFormat:nil] stringFromDate:date];
+}
+
 // Today's date would do on most days and badly on some: a column sized on the
 // first of May has no room for the thirtieth of September. The date used instead
 // is fixed, so the estimate does not depend on the day it was made.
 - (void)testTheSizingDateDoesNotDependOnToday
 {
 	NSString *first = [PBGitCommitDateFormatter sizingDateStringForSetting:PBCommitDateFormatLong customFormat:nil];
-	NSString *today = [[PBGitCommitDateFormatter dateFormatterForSetting:PBCommitDateFormatLong customFormat:nil] stringFromDate:[NSDate date]];
 
 	XCTAssertEqualObjects(first, [PBGitCommitDateFormatter sizingDateStringForSetting:PBCommitDateFormatLong customFormat:nil]);
-	XCTAssertGreaterThanOrEqual([self renderedWidthOf:first], [self renderedWidthOf:today],
-								@"'%@' leaves less room than today's '%@'", first, today);
+	XCTAssertEqualObjects(first, [self longStringForYear:2026 month:9 day:28 hour:22 minute:58]);
+}
+
+// The dates that render widest are not the sizing date - a two digit morning
+// hour beats its evening one, since "AM" is set wider than "PM" - so the column
+// is given room on top rather than sized to the character. Both of these are
+// written down rather than taken from the clock, so the test does not pass or
+// fail depending on the hour it runs at.
+- (void)testTheColumnHasRoomForDatesWiderThanTheSizingDate
+{
+	NSString *sizing = [PBGitCommitDateFormatter sizingDateStringForSetting:PBCommitDateFormatLong customFormat:nil];
+	CGFloat column = ceil([self renderedWidthOf:sizing] * PBDateColumnSlack) + PBDateColumnInset;
+
+	for (NSString *wider in @[ [self longStringForYear:2026 month:9 day:30 hour:10 minute:44],
+							   [self longStringForYear:2026 month:9 day:28 hour:10 minute:58],
+							   [self longStringForYear:2026 month:12 day:31 hour:11 minute:48] ]) {
+		XCTAssertGreaterThanOrEqual(column, [self renderedWidthOf:wider],
+									@"a column sized on '%@' has no room for '%@'", sizing, wider);
+	}
 }
 
 // It is rendered rather than written down, so the estimate is in the reader's
