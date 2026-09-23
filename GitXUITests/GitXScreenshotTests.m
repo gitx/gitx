@@ -88,7 +88,31 @@
     [self addAttachment:attachment];
 }
 
+// The title of a window whose app is not frontmost is drawn dimmed, so a
+// capture taken while something else holds the activation differs from one
+// taken a moment later and the comparison reports it. Ask for activation only
+// when the app is not already in front, since an activation request would
+// dismiss an open menu.
+- (void)waitForForeground {
+    if (self.app.state == XCUIApplicationStateRunningForeground)
+        return;
+
+    NSLog(@"[GitXScreenshotTests] The app is not frontmost, activating it");
+    [self.app activate];
+
+    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:10];
+    while (self.app.state != XCUIApplicationStateRunningForeground
+           && deadline.timeIntervalSinceNow > 0) {
+        [NSThread sleepForTimeInterval:0.2];
+    }
+    XCTAssertEqual(self.app.state, XCUIApplicationStateRunningForeground,
+                   @"The app should be frontmost when its window is captured");
+    [NSThread sleepForTimeInterval:0.5]; // let the title bar redraw
+}
+
 - (void)saveWindowScreenshotNamed:(NSString *)name {
+    [self waitForForeground];
+
     XCUIElement *window = self.app.windows.firstMatch;
     if (!window.exists) {
         [self saveScreenshotNamed:name]; // fall back to full screen
@@ -125,9 +149,23 @@
     XCTAssertTrue([self waitForWindow], @"Main window should appear");
     [self selectCommitView];
 
-    XCUIElement *commitButton = self.app.windows.firstMatch.buttons[@"Commit"];
+    XCUIElement *window = self.app.windows.firstMatch;
+    XCUIElement *commitButton = window.buttons[@"Commit"];
     XCTAssertTrue([commitButton waitForExistenceWithTimeout:10],
                   @"The staging view should show its Commit button");
+
+    // The staging view opens with the keyboard focus in the commit message
+    // field, whose insertion point blinks, so whether the caret lands in the
+    // picture comes down to when the capture is taken, and the comparison
+    // reports a difference no pull request made. Move the focus to the diff
+    // pane, which reads "No file selected" at this point and so takes it
+    // without selecting or changing anything.
+    NSLog(@"[GitXScreenshotTests] Moving the focus out of the commit message field");
+    XCUIElement *diffPane = window.webViews.firstMatch;
+    XCTAssertTrue([diffPane waitForExistenceWithTimeout:10],
+                  @"The staging view should show its diff pane");
+    [diffPane click];
+    [NSThread sleepForTimeInterval:0.5];
 
     [self saveWindowScreenshotNamed:@"staging-view"];
 }
