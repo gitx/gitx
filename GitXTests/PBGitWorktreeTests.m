@@ -182,6 +182,22 @@ static NSString *const kBarePorcelain =
 							 @"locking a worktree has to read as a change");
 }
 
+- (void)testTheFirstRecordIsTheMainWorktree
+{
+	NSArray<PBGitWorktree *> *worktrees = [self worktrees];
+
+	XCTAssertTrue(worktrees.firstObject.isMain, @"git always lists the main worktree first");
+	for (PBGitWorktree *worktree in [worktrees subarrayWithRange:NSMakeRange(1, worktrees.count - 1)])
+		XCTAssertFalse(worktree.isMain, @"%@", worktree);
+}
+
+- (void)testABareRepositoryIsItsOwnMainWorktree
+{
+	NSArray<PBGitWorktree *> *worktrees = [PBGitWorktree worktreesFromPorcelain:kBarePorcelain currentWorktreeAtPath:nil];
+
+	XCTAssertTrue(worktrees.firstObject.isMain);
+}
+
 - (void)testEmptyOutputReadsAsNoWorktrees
 {
 	XCTAssertEqualObjects([PBGitWorktree worktreesFromPorcelain:@"" currentWorktreeAtPath:nil], @[]);

@@ -8,11 +8,13 @@
 #import "PBGitRepository.h"
 #import "PBGitRef.h"
 #import "PBGitWindowController.h"
+#import "PBGitWorktree.h"
 
 // The sidebar and the ref labels in the history view are both handed the menu
 // this builds, so what it offers is what both of them show.
 @interface PBCopyStubRepository : PBGitRepository
 @property (nonatomic, copy) NSString *worktreePath;
+@property (nonatomic, strong) PBGitWorktree *worktree;
 @end
 
 @implementation PBCopyStubRepository
@@ -20,6 +22,11 @@
 - (NSString *)pathOfWorktreeHoldingRef:(PBGitRef *)ref
 {
 	return self.worktreePath;
+}
+
+- (PBGitWorktree *)worktreeHoldingRef:(PBGitRef *)ref
+{
+	return self.worktree;
 }
 
 - (PBGitRevSpecifier *)headRef
@@ -121,12 +128,15 @@
 
 - (void)testItStaysSecondWhenTheFirstEntryOpensAWorktree
 {
+	[self.historyController setValue:@"2.50.1" forKey:@"gitVersion"];
 	self.repository.worktreePath = @"/repos/gitx-feature";
+	self.repository.worktree = [PBGitWorktree worktreesFromPorcelain:@"worktree /repos/gitx\nbare\n\nworktree /repos/gitx-feature\nHEAD 0000000000000000000000000000000000000002\nbranch refs/heads/feature\n" currentWorktreeAtPath:@"/repos/gitx"].lastObject;
 
 	NSArray<NSMenuItem *> *items = [self.historyController menuItemsForRef:[PBGitRef refFromString:@"refs/heads/feature"]];
 
 	XCTAssertTrue(items.firstObject.action == @selector(openWorktree:), @"%@", items.firstObject.title);
 	XCTAssertEqual([self indexOfCopyItemIn:items], 1u, @"%@", [items valueForKey:@"title"]);
+	XCTAssertTrue(items[2].isSeparatorItem, @"the worktree actions start a group of their own: %@", [items valueForKey:@"title"]);
 }
 
 // A remote has no entry to open or check out, so the copy leads the menu there.

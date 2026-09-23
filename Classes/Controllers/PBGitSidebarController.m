@@ -545,7 +545,7 @@
 
 - (void)updateActionMenu
 {
-	[actionButton setEnabled:([[self selectedItem] ref] != nil || [[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]])];
+	[actionButton setEnabled:([[self selectedItem] ref] != nil || [[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]] || [[self selectedItem] isKindOfClass:[PBSourceViewGitWorktreeItem class]])];
 }
 
 - (void)addMenuItemsForRef:(PBGitRef *)ref toMenu:(NSMenu *)menu
@@ -566,6 +566,15 @@
 
 	[menuItem setTarget:self];
 	[menuItem setRepresentedObject:[submodule path]];
+}
+
+- (void)addMenuItemsForWorktreeItem:(PBSourceViewItem *)item toMenu:(NSMenu *)menu
+{
+	if (![item isKindOfClass:[PBSourceViewGitWorktreeItem class]] || item.ref)
+		return;
+
+	for (NSMenuItem *menuItem in [self.windowController.historyViewController menuItemsForWorktree:[(PBSourceViewGitWorktreeItem *)item worktree]])
+		[menu addItem:menuItem];
 }
 
 - (NSMenuItem *)actionIconItem
@@ -594,6 +603,13 @@
 		[self addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)viewItem toMenu:menu];
 	}
 
+	[self addMenuItemsForWorktreeItem:viewItem toMenu:menu];
+
+	if (viewItem == worktrees) {
+		for (NSMenuItem *menuItem in [self.windowController.historyViewController menuItemsForWorktreeGroup])
+			[menu addItem:menuItem];
+	}
+
 	return menu;
 }
 
@@ -609,6 +625,8 @@
 	if ([[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
 		[self addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)[self selectedItem] toMenu:menu];
 	}
+
+	[self addMenuItemsForWorktreeItem:[self selectedItem] toMenu:menu];
 }
 
 
