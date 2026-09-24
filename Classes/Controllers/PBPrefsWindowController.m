@@ -145,6 +145,18 @@
 #pragma mark -
 #pragma mark Commit date format
 
+// UI-test hook: GITX_UITEST_NOW, in seconds since 1970, replaces the current
+// time in the sample so that screenshots of this pane do not change every minute.
+- (NSDate *)commitDateSampleDate
+{
+	NSString *uitestNow = [[[NSProcessInfo processInfo] environment] objectForKey:@"GITX_UITEST_NOW"];
+	if (uitestNow.length == 0)
+		return [NSDate date];
+
+	NSLog(@"[UITest] Showing the commit date sample for GITX_UITEST_NOW=%@", uitestNow);
+	return [NSDate dateWithTimeIntervalSince1970:uitestNow.doubleValue];
+}
+
 // The popup and the field are read rather than the preferences they write, so
 // the sample shows what was just picked whichever of them the change came from.
 - (void)updateCommitDateSample
@@ -155,7 +167,7 @@
 	commitDateCustomFormatField.enabled = (setting == PBCommitDateFormatCustom);
 
 	NSDateFormatter *formatter = [PBGitCommitDateFormatter dateFormatterForSetting:setting customFormat:customFormat];
-	NSString *sample = [formatter stringFromDate:[NSDate date]];
+	NSString *sample = [formatter stringFromDate:[self commitDateSampleDate]];
 
 	// A pattern can be well formed and still render to nothing, so the sample
 	// says the column would be empty instead of going blank itself.

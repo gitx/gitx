@@ -37,11 +37,15 @@
 
     NSLog(@"[GitXScreenshotTests] repoPath = %@", repoPath ?: @"(none)");
 
+    // GITX_UITEST_NOW fixes the date the Preferences date-format sample shows
+    // (2026-01-01 12:00 UTC), so its screenshot is the same on every run.
+    NSMutableDictionary *environment = [NSMutableDictionary dictionaryWithObject:@"1767268800" forKey:@"GITX_UITEST_NOW"];
     if (repoPath) {
         // Passed to the app via applicationDidFinishLaunching: which opens
         // the repo directly, giving the test a reliable document window.
-        self.app.launchEnvironment = @{@"GITX_UITEST_REPO": repoPath};
+        environment[@"GITX_UITEST_REPO"] = repoPath;
     }
+    self.app.launchEnvironment = environment;
 
     [self.app launch];
 }
