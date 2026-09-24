@@ -217,7 +217,7 @@
 - (void)testTreeViewScreenshot {
     // Reuses the same navigation as the Source/Blame/History tab tests so
     // the Tree View pane is guaranteed to have a commit and file selected.
-    if (![self navigateToTreeViewAndSelectFile]) { return; }
+    XCTAssertTrue([self navigateToTreeViewAndSelectFile], @"Tree View must be reachable with a file selected");
     [self saveWindowScreenshotNamed:@"tree-view"];
 }
 
@@ -312,41 +312,25 @@
 // items are titled buttons, so they can be addressed by label directly.
 - (void)selectFileViewScopeBarItemNamed:(NSString *)title andSaveScreenshotNamed:(NSString *)screenshotName {
     XCUIElement *scopeBarButton = self.app.buttons[title];
-    if (![scopeBarButton waitForExistenceWithTimeout:15]) {
-        NSLog(@"[GitXScreenshotTests] Scope bar button '%@' not found", title);
-        return;
-    }
+    XCTAssertTrue([scopeBarButton waitForExistenceWithTimeout:15],
+        @"Scope bar button '%@' must appear", title);
     [scopeBarButton click];
     [NSThread sleepForTimeInterval:0.5];
     [self saveWindowScreenshotNamed:screenshotName];
 }
 
 - (void)testTreeViewSourceTabScreenshot {
-    if (![self navigateToTreeViewAndSelectFile]) { return; }
-    [self saveWindowScreenshotNamed:@"debug-before-source-lookup"];
-
-    NSLog(@"[DEBUG] checkBoxes['Source'] exists=%d", self.app.checkBoxes[@"Source"].exists);
-    NSLog(@"[DEBUG] radioButtons['Source'] exists=%d", self.app.radioButtons[@"Source"].exists);
-    NSLog(@"[DEBUG] buttons['Source'] exists=%d", self.app.buttons[@"Source"].exists);
-
-    XCUIElementQuery *query = [[self.app descendantsMatchingType:XCUIElementTypeAny] matchingPredicate:[NSPredicate predicateWithFormat:@"label == 'Source' OR title == 'Source' OR value == 'Source'"]];
-    NSLog(@"[DEBUG] matchingPredicate count=%lu", (unsigned long)query.count);
-    for (NSUInteger i = 0; i < query.count; i++) {
-        XCUIElement *el = [query elementBoundByIndex:i];
-        NSLog(@"[DEBUG] element[%lu] elementType=%lu identifier='%@' label='%@' title='%@' value='%@'",
-              (unsigned long)i, (unsigned long)el.elementType, el.identifier, el.label, el.title, el.value);
-    }
-
+    XCTAssertTrue([self navigateToTreeViewAndSelectFile], @"Tree View must be reachable with a file selected");
     [self selectFileViewScopeBarItemNamed:@"Source" andSaveScreenshotNamed:@"tree-view-source"];
 }
 
 - (void)testTreeViewBlameTabScreenshot {
-    if (![self navigateToTreeViewAndSelectFile]) { return; }
+    XCTAssertTrue([self navigateToTreeViewAndSelectFile], @"Tree View must be reachable with a file selected");
     [self selectFileViewScopeBarItemNamed:@"Blame" andSaveScreenshotNamed:@"tree-view-blame"];
 }
 
 - (void)testTreeViewHistoryTabScreenshot {
-    if (![self navigateToTreeViewAndSelectFile]) { return; }
+    XCTAssertTrue([self navigateToTreeViewAndSelectFile], @"Tree View must be reachable with a file selected");
     [self selectFileViewScopeBarItemNamed:@"History" andSaveScreenshotNamed:@"tree-view-history"];
 }
 

@@ -226,19 +226,6 @@
 	PBGitHistoryController *history = self.windowController.historyViewController;
 	PBGitCommit *commit = [self commitForRefNamed:refName];
 
-	// -commitController, like every other IBOutlet in PBGitHistoryView.xib,
-	// is only wired up the first time -view is accessed. In the app that
-	// happens as a side effect of -changeContentController:, which only runs
-	// once the repository's "currentBranch" KVO reaches the sidebar's
-	// -selectCurrentBranch and it selects a row - an async chain this test
-	// never drives itself (unlike -sidebarSelecting:, which selects a row
-	// directly and so triggers it as a side effect). On a run slow enough
-	// that chain has not finished by the time this method runs, commitController
-	// is silently nil and every call below became a no-op, which is what made
-	// -singleCommitSelected read false. Forcing -view here removes the wait
-	// entirely rather than trying to outlast it.
-	(void)history.view;
-
 	[history.commitController unbind:NSContentArrayBinding];
 	[history.commitController setContent:@[ commit ]];
 	[history.commitController setSelectedObjects:@[ commit ]];
