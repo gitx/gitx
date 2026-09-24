@@ -312,6 +312,7 @@
 
     [self openPreferencesWindow];
     XCUIElement *prefsWindow = [self waitForPreferencesWindow];
+    XCTAssertTrue(prefsWindow.exists, @"Preferences window must appear");
 
     if (prefsWindow.exists) {
         XCUIElement *btn = [self findPrefsTabButton:@"General" inWindow:prefsWindow];
@@ -340,6 +341,7 @@
 
     [self openPreferencesWindow];
     XCUIElement *prefsWindow = [self waitForPreferencesWindow];
+    XCTAssertTrue(prefsWindow.exists, @"Preferences window must appear");
 
     if (prefsWindow.exists) {
         XCUIElement *btn = [self findPrefsTabButton:@"Integration" inWindow:prefsWindow];
