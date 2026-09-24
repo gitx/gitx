@@ -2,27 +2,24 @@ var commit,
     fileElementPrototype;
 
 // Create a new Commit object
-// obj: PBGitCommit object
+// obj: a plain JSON object built by -[PBWebHistoryController changeContentToCommit:]
+// (WKWebView cannot bridge ObjC selector calls the way the old WebView did,
+// so obj's fields are plain values rather than functions to call).
 var Commit = function(obj) {
 	this.object = obj;
 
-	this.refs = obj.refs();
-	this.author_name = obj.author();
-	this.author_email = obj.authorEmail();
-	this.author_date = obj.authorDate();
-	this.committer_name = obj.committer();
-	this.committer_email = obj.committerEmail();
-	this.committer_date = obj.committerDate();
-	this.sha = obj.SHA();
-	this.parents = obj.parents();
-	this.subject = obj.subject();
-	this.message = obj.message();
+	this.refs = obj.refs;
+	this.author_name = obj.author_name;
+	this.author_email = obj.author_email;
+	this.author_date = obj.author_date;
+	this.committer_name = obj.committer_name;
+	this.committer_email = obj.committer_email;
+	this.committer_date = obj.committer_date;
+	this.sha = obj.sha;
+	this.parents = obj.parents;
+	this.subject = obj.subject;
+	this.message = obj.message;
 	this.notificationID = null;
-
-	this.reloadRefs = function() {
-		this.refs = this.object.refs();
-	}
-
 };
 
 var extractPrototypes = function() {
@@ -130,13 +127,14 @@ var selectCommit = function(a) {
 };
 
 // Relead only refs
-var reload = function(currentRef, worktreeRefs) {
+var reload = function(currentRef, worktreeRefs, refs) {
 	$("notification").classList.add("hidden");
 	if (currentRef !== undefined)
 		commit.currentRef = currentRef;
 	if (worktreeRefs !== undefined)
 		commit.worktreeRefs = worktreeRefs;
-	commit.reloadRefs();
+	if (refs !== undefined)
+		commit.refs = refs;
 	showRefs();
 }
 
@@ -153,14 +151,14 @@ var showRefs = function() {
 		for (var i = 0; i < commit.refs.length; i++) {
 			var ref = commit.refs[i];
 			var span = document.createElement("span");
-			span.classList.add("refs", ref.type());
-			if (commit.worktreeRefs && commit.worktreeRefs.indexOf(ref.ref()) != -1) {
+			span.classList.add("refs", ref.type);
+			if (commit.worktreeRefs && commit.worktreeRefs.indexOf(ref.ref) != -1) {
 				span.classList.add("worktree");
 			}
-			if (commit.currentRef == ref.ref()) {
+			if (commit.currentRef == ref.ref) {
 				span.classList.add("currentBranch");
 			}
-			span.textContent = ref.shortName();
+			span.textContent = ref.shortName;
 			refs.appendChild(span);
 		}
 	} else
@@ -250,7 +248,7 @@ var loadCommit = function(commitObject, currentRef, worktreeRefs) {
 	if (commit.parents) {
 		for (var i = 0; i < commit.parents.length; i++) {
 			var container = document.createElement("span");
-			container.innerHTML = '<a class="SHA commit-link" href="">' + commit.parents[i].SHA() + "</a>";
+			container.innerHTML = '<a class="SHA commit-link" href="">' + commit.parents[i] + "</a>";
 			parentsNode.appendChild(container);
 		}
 		bindCommitSelectionLinks(parentsNode);

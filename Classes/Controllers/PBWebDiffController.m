@@ -34,11 +34,10 @@
 	if (diff == nil || !finishedLoading)
 		return;
 
-	id script = self.view.windowScriptObject;
 	if ([diff length] == 0)
-		[script callWebScriptMethod:@"setMessage" withArguments:[NSArray arrayWithObject:@"There are no differences"]];
+		[self callJavaScriptFunction:@"setMessage" withArguments:@[@"There are no differences"] completionHandler:nil];
 	else
-		[script callWebScriptMethod:@"showDiff" withArguments:[NSArray arrayWithObject:diff]];
+		[self callJavaScriptFunction:@"showDiff" withArguments:@[diff] completionHandler:nil];
 }
 
 @end
