@@ -247,34 +247,36 @@
 }
 
 - (XCUIElement *)waitForPreferencesWindow {
-    // DBPrefsWindowController sets the window title to the active tab label
-    // ("General", "Integration", "Updates") — not "Preferences" or "Settings".
-    // Poll for a second window to appear (index 1), which is the prefs panel.
+    // DBPrefsWindowController's window is an NSPanel with styleMask (Titled |
+    // Closable | Miniaturizable) and no Resizable bit. AppKit reports that
+    // combination to the accessibility API with subrole AXDialog, so XCUITest
+    // classifies it as XCUIElementTypeDialog rather than XCUIElementTypeWindow
+    // — it never shows up in `self.app.windows` no matter how long we wait,
+    // which is why the previous windows.count-based wait always timed out.
+    // It is still a top-level element, just under `self.app.dialogs`.
     //
-    // Each `self.app.windows.count` call round-trips through the accessibility
-    // server; on a slow/contended runner that round trip can itself take
-    // several seconds. A manual loop like `for i<50 { count; sleep(0.1) }`
-    // pays that per-call cost up to 50 times over (minutes, not seconds) before
-    // giving up. expectationForPredicate: polls internally without our loop
+    // Each accessibility query round-trips through the accessibility server;
+    // on a slow/contended runner that round trip can itself take several
+    // seconds. A manual loop like `for i<50 { count; sleep(0.1) }` pays that
+    // per-call cost up to 50 times over (minutes, not seconds) before giving
+    // up. expectationForPredicate: polls internally without our loop
     // multiplying the cost, and the explicit timeout below bounds the total
     // wait to a fixed, predictable budget regardless of how slow each
     // individual accessibility call is.
-    NSPredicate *hasSecondWindow = [NSPredicate predicateWithFormat:@"count > 1"];
+    NSPredicate *hasDialog = [NSPredicate predicateWithFormat:@"count > 0"];
     XCTNSPredicateExpectation *expectation =
-        [[XCTNSPredicateExpectation alloc] initWithPredicate:hasSecondWindow
-                                                       object:self.app.windows];
+        [[XCTNSPredicateExpectation alloc] initWithPredicate:hasDialog
+                                                       object:self.app.dialogs];
     XCTWaiter *waiter = [[XCTWaiter alloc] init];
     [waiter waitForExpectations:@[expectation] timeout:15];
 
-    return [self.app.windows elementBoundByIndex:1];
+    return self.app.dialogs.firstMatch;
 }
 
 - (void)saveWindowElementScreenshotNamed:(NSString *)name element:(XCUIElement *)element {
-    // Re-fetch the prefs window by index to avoid stale element references
-    // (the window title changes when switching tabs, invalidating predicate matches).
-    XCUIElement *target = (self.app.windows.count > 1)
-        ? [self.app.windows elementBoundByIndex:1]
-        : element;
+    // Re-fetch the prefs dialog to avoid a stale element reference (the
+    // window title changes when switching tabs, invalidating predicate matches).
+    XCUIElement *target = self.app.dialogs.firstMatch.exists ? self.app.dialogs.firstMatch : element;
     if (!target.exists) {
         NSLog(@"[GitXScreenshotTests] Preferences window not found for screenshot '%@'", name);
         return;
@@ -314,24 +316,20 @@
     XCUIElement *prefsWindow = [self waitForPreferencesWindow];
     XCTAssertTrue(prefsWindow.exists, @"Preferences window must appear");
 
-    if (prefsWindow.exists) {
-        XCUIElement *btn = [self findPrefsTabButton:@"General" inWindow:prefsWindow];
-        if (btn.exists) {
-            [btn click];
-            [NSThread sleepForTimeInterval:0.6];
-            // Re-fetch by index — title changed to "General" after click
-            prefsWindow = [self.app.windows elementBoundByIndex:1];
-        } else {
-            NSLog(@"[GitXScreenshotTests] General toolbar button not found");
-        }
+    XCUIElement *btn = [self findPrefsTabButton:@"General" inWindow:prefsWindow];
+    if (btn.exists) {
+        [btn click];
+        [NSThread sleepForTimeInterval:0.6];
+        // Re-fetch — title changed to "General" after click
+        prefsWindow = self.app.dialogs.firstMatch;
     } else {
-        NSLog(@"[GitXScreenshotTests] Preferences window not found for General tab");
+        NSLog(@"[GitXScreenshotTests] General toolbar button not found");
     }
 
     [self saveWindowElementScreenshotNamed:@"settings-general" element:prefsWindow];
 
-    if (self.app.windows.count > 1) {
-        [[self.app.windows elementBoundByIndex:1] typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+    if (self.app.dialogs.firstMatch.exists) {
+        [self.app.dialogs.firstMatch typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
         [NSThread sleepForTimeInterval:0.3];
     }
 }
@@ -343,24 +341,20 @@
     XCUIElement *prefsWindow = [self waitForPreferencesWindow];
     XCTAssertTrue(prefsWindow.exists, @"Preferences window must appear");
 
-    if (prefsWindow.exists) {
-        XCUIElement *btn = [self findPrefsTabButton:@"Integration" inWindow:prefsWindow];
-        if (btn.exists) {
-            [btn click];
-            [NSThread sleepForTimeInterval:0.6];
-            // Re-fetch by index — title changed to "Integration" after click
-            prefsWindow = [self.app.windows elementBoundByIndex:1];
-        } else {
-            NSLog(@"[GitXScreenshotTests] Integration toolbar button not found");
-        }
+    XCUIElement *btn = [self findPrefsTabButton:@"Integration" inWindow:prefsWindow];
+    if (btn.exists) {
+        [btn click];
+        [NSThread sleepForTimeInterval:0.6];
+        // Re-fetch — title changed to "Integration" after click
+        prefsWindow = self.app.dialogs.firstMatch;
     } else {
-        NSLog(@"[GitXScreenshotTests] Preferences window not found for Integration tab");
+        NSLog(@"[GitXScreenshotTests] Integration toolbar button not found");
     }
 
     [self saveWindowElementScreenshotNamed:@"settings-integration" element:prefsWindow];
 
-    if (self.app.windows.count > 1) {
-        [[self.app.windows elementBoundByIndex:1] typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+    if (self.app.dialogs.firstMatch.exists) {
+        [self.app.dialogs.firstMatch typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
         [NSThread sleepForTimeInterval:0.3];
     }
 }
