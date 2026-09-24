@@ -217,32 +217,7 @@
 // MARK: - Settings / Preferences
 
 - (void)openPreferencesWindow {
-    // Use the menu bar — more reliable than ⌘, in UI tests because the
-    // main window is guaranteed to have focus after waitForWindow.
-    XCUIElement *appMenu = self.app.menuBars.firstMatch;
-    // "GitX" application menu
-    XCUIElement *gitxMenu = appMenu.menuBarItems[@"GitX"];
-    if ([gitxMenu waitForExistenceWithTimeout:10]) {
-        [gitxMenu click];
-        // Clicking the menu bar item only opens the submenu asynchronously;
-        // its items are not in the accessibility tree immediately, so a bare
-        // `.exists` check races the menu's open animation and can miss items
-        // that are about to appear. Wait for them instead.
-        XCUIElement *prefsItem = self.app.menuItems[@"Preferences…"];
-        if (![prefsItem waitForExistenceWithTimeout:5]) {
-            prefsItem = self.app.menuItems[@"Settings…"];
-        }
-        if ([prefsItem waitForExistenceWithTimeout:5]) {
-            [prefsItem click];
-            return;
-        }
-        NSLog(@"[GitXScreenshotTests] Preferences/Settings menu item not found");
-        // Dismiss the menu before falling back
-        [appMenu typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
-    } else {
-        NSLog(@"[GitXScreenshotTests] GitX application menu not found");
-    }
-    // Fallback: keyboard shortcut
+    NSLog(@"[GitXScreenshotTests] Opening Preferences with Command-,");
     [self.app typeKey:@"," modifierFlags:XCUIKeyModifierCommand];
 }
 
