@@ -292,14 +292,11 @@
     XCTAssertTrue(prefsWindow.exists, @"Preferences window must appear");
 
     XCUIElement *btn = [self findPrefsTabButton:@"General" inWindow:prefsWindow];
-    if (btn.exists) {
-        [btn click];
-        [NSThread sleepForTimeInterval:0.6];
-        // Re-fetch — title changed to "General" after click
-        prefsWindow = self.app.dialogs.firstMatch;
-    } else {
-        NSLog(@"[GitXScreenshotTests] General toolbar button not found");
-    }
+    XCTAssertTrue([btn waitForExistenceWithTimeout:5], @"General toolbar button must exist");
+    [btn click];
+    [NSThread sleepForTimeInterval:0.6];
+    // Re-fetch — title changed to "General" after click
+    prefsWindow = self.app.dialogs.firstMatch;
 
     [self saveWindowElementScreenshotNamed:@"settings-general" element:prefsWindow];
 
@@ -317,14 +314,11 @@
     XCTAssertTrue(prefsWindow.exists, @"Preferences window must appear");
 
     XCUIElement *btn = [self findPrefsTabButton:@"Integration" inWindow:prefsWindow];
-    if (btn.exists) {
-        [btn click];
-        [NSThread sleepForTimeInterval:0.6];
-        // Re-fetch — title changed to "Integration" after click
-        prefsWindow = self.app.dialogs.firstMatch;
-    } else {
-        NSLog(@"[GitXScreenshotTests] Integration toolbar button not found");
-    }
+    XCTAssertTrue([btn waitForExistenceWithTimeout:5], @"Integration toolbar button must exist");
+    [btn click];
+    [NSThread sleepForTimeInterval:0.6];
+    // Re-fetch — title changed to "Integration" after click
+    prefsWindow = self.app.dialogs.firstMatch;
 
     [self saveWindowElementScreenshotNamed:@"settings-integration" element:prefsWindow];
 
