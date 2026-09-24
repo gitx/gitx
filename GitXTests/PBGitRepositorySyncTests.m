@@ -96,4 +96,16 @@
 	XCTAssertEqual(self.historyList.updateCount, 0u, @"there is no history to walk until a branch exists");
 }
 
+// The old suite proved an Index event from a terminal `git add` reached the
+// commit view. There is no typed Index event any more: the same write is a
+// disk note, and sync is what reads it.
+- (void)testAnIndexWrittenOutsideGitXIsReadBySync
+{
+	self.repository.stubCurrentBranch = [PBGitRevSpecifier allBranchesRevSpec];
+
+	[self.repository syncWithWorkingTree];
+
+	XCTAssertEqual(self.repository.countingIndex.refreshCount, 1u, @"a commit or add made in a terminal has to reach the stage list");
+}
+
 @end

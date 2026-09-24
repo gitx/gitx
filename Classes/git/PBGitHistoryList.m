@@ -19,6 +19,7 @@
 }
 
 - (void)resetGraphing;
+- (void)abandonInFlightUpdate;
 
 - (PBGitHistoryGrapher *)grapher;
 - (NSInvocationOperation *)operationForCommits:(NSArray *)newCommits;
@@ -99,6 +100,11 @@
 		currentRevList = nil;
 	}
 	[graphQueue cancelAllOperations];
+	[self abandonInFlightUpdate];
+}
+
+- (void)abandonInFlightUpdate
+{
 	historyUpdatePending = NO;
 	self.isUpdating = NO;
 }

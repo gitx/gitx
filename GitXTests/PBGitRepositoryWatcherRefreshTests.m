@@ -12,6 +12,7 @@
 // same turn, or so a burst can be observed before the timer fires.
 @interface PBGitRepositoryWatcher (RefreshTesting)
 @property (nonatomic) NSTimeInterval coalesceInterval;
+- (BOOL)eventPathsContainInterestingChange:(NSArray *)eventPaths;
 @end
 
 @interface PBSyncCountingRepository : PBGitRepository
@@ -83,6 +84,22 @@
 		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
 
 	XCTAssertEqual(self.repository.syncCount, 1u, @"a rebase or a save burst is one read once the tree is quiet");
+}
+
+// GitX runs git as a subprocess, so IgnoreSelf does not cover index.lock. A
+// sync that fed itself through lock churn would never settle (see #164).
+- (void)testALockFileAloneIsNotAnInterestingChange
+{
+	XCTAssertFalse([self.watcher eventPathsContainInterestingChange:@[ @"/tmp/repo/.git/index.lock" ]],
+				   @"lock churn from a git subprocess must not start another sync");
+}
+
+- (void)testAnIndexWriteBesideItsLockIsInteresting
+{
+	NSArray *paths = @[ @"/tmp/repo/.git/index.lock", @"/tmp/repo/.git/index" ];
+
+	XCTAssertTrue([self.watcher eventPathsContainInterestingChange:paths],
+				  @"the real index write after the lock is what the sync has to see");
 }
 
 @end

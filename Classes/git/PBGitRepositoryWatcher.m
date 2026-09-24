@@ -9,6 +9,7 @@
 
 #import "PBGitRepositoryWatcher.h"
 #import "PBGitRepository.h"
+#import "PBGitIndex.h"
 #import "PBGitDefaults.h"
 
 static const NSTimeInterval PBGitRepositoryWatcherDefaultCoalesceInterval = 0.35;
@@ -16,11 +17,15 @@ static const NSTimeInterval PBGitRepositoryWatcherDefaultCoalesceInterval = 0.35
 @interface PBGitRepositoryWatcher () {
 	FSEventStreamRef eventStream;
 	BOOL _running;
+	NSUInteger _coalesceGeneration;
 }
 
 @property (readonly) NSString *gitDir;
 @property (readonly) NSString *workDir;
 @property (nonatomic) NSTimeInterval coalesceInterval;
+
+- (void)noteDiskChanged;
+- (BOOL)eventPathsContainInterestingChange:(NSArray *)eventPaths;
 
 @end
 
@@ -32,14 +37,17 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 									const FSEventStreamEventId eventIds[])
 {
 	(void)streamRef;
-	(void)numEvents;
-	(void)_eventPaths;
 	(void)eventFlags;
 	(void)eventIds;
 
-	// Paths and flags are not git. Any event under the stream roots means the
-	// repository on disk may have moved; the repository then reads git.
+	// Paths are not git semantics. They only decide whether the disk note is
+	// noise (.lock churn from a git subprocess, or pack files under objects/)
+	// or a real change the repository should read.
 	PBGitRepositoryWatcher *watcher = (__bridge PBGitRepositoryWatcher *)clientCallBackInfo;
+	NSArray *eventPaths = (__bridge NSArray *)_eventPaths;
+	if (numEvents == 0 || ![watcher eventPathsContainInterestingChange:eventPaths])
+		return;
+
 	void (^note)(void) = ^{
 		[watcher noteDiskChanged];
 	};
@@ -64,6 +72,11 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 	_repository = theRepository;
 	_coalesceInterval = PBGitRepositoryWatcherDefaultCoalesceInterval;
 
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(applicationDidBecomeActive:)
+												 name:NSApplicationDidBecomeActiveNotification
+											   object:nil];
+
 	if ([PBGitDefaults useRepositoryWatcher])
 		[self start];
 	return self;
@@ -71,6 +84,7 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[self stop];
 	if (eventStream) {
 		FSEventStreamInvalidate(eventStream);
@@ -87,6 +101,31 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 - (NSString *)workDir
 {
 	return !self.repository.gtRepo.isBare ? [self.repository.gtRepo.fileURL.path stringByStandardizingPath] : nil;
+}
+
+- (NSString *)objectsDir
+{
+	NSString *gitDir = self.gitDir;
+	return gitDir ? [gitDir stringByAppendingPathComponent:@"objects"] : nil;
+}
+
+// Lock files are written by git subprocesses GitX launches. IgnoreSelf only
+// covers this process, so without this a sync would feed itself through
+// index.lock. Pack churn under objects/ is not a reason to re-read refs.
+- (BOOL)eventPathsContainInterestingChange:(NSArray *)eventPaths
+{
+	NSString *objectsDir = self.objectsDir;
+
+	for (NSString *rawPath in eventPaths) {
+		NSString *path = [rawPath stringByStandardizingPath];
+		if ([path hasSuffix:@".lock"])
+			continue;
+		if (objectsDir && [path hasPrefix:objectsDir])
+			continue;
+		return YES;
+	}
+
+	return NO;
 }
 
 - (void)_initializeStream
@@ -127,7 +166,7 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 - (void)stop
 {
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(syncRepository) object:nil];
+	_coalesceGeneration++;
 
 	if (!_running)
 		return;
@@ -142,19 +181,37 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 - (void)noteDiskChanged
 {
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(syncRepository) object:nil];
+	_coalesceGeneration++;
+	NSUInteger generation = _coalesceGeneration;
 
 	if (self.coalesceInterval <= 0) {
 		[self syncRepository];
 		return;
 	}
 
-	[self performSelector:@selector(syncRepository) withObject:nil afterDelay:self.coalesceInterval];
+	// Main-queue afterDelay still runs while a menu or a drag is tracking,
+	// unlike performSelector:afterDelay: which stays in the default mode.
+	__weak typeof(self) weakSelf = self;
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.coalesceInterval * NSEC_PER_SEC)),
+				   dispatch_get_main_queue(), ^{
+					   PBGitRepositoryWatcher *watcher = weakSelf;
+					   if (!watcher || watcher->_coalesceGeneration != generation)
+						   return;
+					   [watcher syncRepository];
+				   });
 }
 
 - (void)syncRepository
 {
 	[self.repository syncWithWorkingTree];
+}
+
+// update-index --refresh holds index.lock, so it stays off the FSEvents path
+// (#164). Become-active is enough to clear phantom mtime-only "modified" rows.
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+	(void)notification;
+	[self.repository.index refreshStatCache];
 }
 
 @end

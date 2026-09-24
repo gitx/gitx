@@ -64,6 +64,8 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 	__strong GTOID *_headOID;
 	__strong GTRepository *_gtRepo;
 	PBGitIndex *_index;
+	BOOL _reloadRefsInFlight;
+	BOOL _currentBranchSetDuringReload;
 }
 
 @property (nonatomic, strong) NSNumber *hasSVNRepoConfig;
@@ -255,6 +257,9 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 
 - (void)reloadRefs
 {
+	_reloadRefsInFlight = YES;
+	_currentBranchSetDuringReload = NO;
+
 	// clear out ref caches
 	_headRef = nil;
 	_headOID = nil;
@@ -294,6 +299,9 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 		[oldBranches removeObject:revSpec];
 	}
 
+	// Re-cache HEAD before prune and observers see an empty cache.
+	(void)[self headRef];
+
 	BOOL prunedCurrentBranch = NO;
 	for (PBGitRevSpecifier *branch in oldBranches)
 		if ([branch isSimpleRef] && ![branch isEqual:[self headRef]]) {
@@ -305,7 +313,6 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 	if (prunedCurrentBranch)
 		[self readCurrentBranch];
 
-
 	[self loadSubmodules];
 
 	BOOL refsChanged = !PBGitRefMapsEqual(self->refs, previousRefs);
@@ -315,6 +322,12 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 	if (refsChanged)
 		[self didChangeValueForKey:@"refs"];
 	[self didChangeValueForKey:@"stashes"];
+
+	_reloadRefsInFlight = NO;
+
+	if (_currentBranchSetDuringReload && self.currentBranch)
+		[self.revisionList updateHistory];
+	_currentBranchSetDuringReload = NO;
 }
 
 // The drawing path asks this dictionary per label, so the snapshot keeps it as
@@ -655,8 +668,10 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 // Returns either this object, or an existing, equal object
 - (PBGitRevSpecifier *)addBranch:(PBGitRevSpecifier *)branch
 {
-	if ([[branch parameters] count] == 0)
+	if (!branch || [[branch parameters] count] == 0)
 		branch = [self headRef];
+	if (!branch)
+		return nil;
 
 	// First check if the branch doesn't exist already
 	if ([self.branchesSet containsObject:branch]) {
@@ -688,12 +703,22 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 
 - (void)readCurrentBranch
 {
-	self.currentBranch = [self addBranch:[self headRef]];
+	PBGitRevSpecifier *head = [self headRef];
+	if (!head)
+		return;
+
+	self.currentBranch = [self addBranch:head];
 }
 
 - (void)setCurrentBranch:(PBGitRevSpecifier *)newCurrentBranch
 {
 	currentBranch = newCurrentBranch;
+	// Nested updateHistory during reloadRefs would clear the HEAD cache again
+	// and walk while branches are still being rebuilt.
+	if (_reloadRefsInFlight) {
+		_currentBranchSetDuringReload = YES;
+		return;
+	}
 	[revisionList updateHistory];
 }
 
