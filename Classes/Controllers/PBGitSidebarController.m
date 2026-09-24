@@ -342,7 +342,11 @@
 
 	id item = [sourceView itemAtRow:rowNumber];
 	if ([item isKindOfClass:[PBSourceViewGitWorktreeItem class]]) {
-		[self openRepositoryAtURL:[(PBSourceViewGitWorktreeItem *)item URL]];
+		PBSourceViewGitWorktreeItem *worktreeItem = item;
+		if (worktreeItem.isUnavailable)
+			[self.windowController showMissingFolderOfWorktree:worktreeItem.worktree];
+		else
+			[self openRepositoryAtURL:worktreeItem.URL];
 	} else if ([item isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
 		PBSourceViewGitSubmoduleItem *subModule = item;
 
@@ -380,6 +384,8 @@
 	cell.textField.stringValue = [[item title] copy];
 	cell.imageView.image = item.icon;
 	cell.isCheckedOut = !worktreeItem && [item.revSpecifier isEqual:[self.repository headRef]];
+	cell.isLocked = worktreeItem.worktree.isLocked;
+	cell.isUnavailable = worktreeItem.isUnavailable;
 	cell.toolTip = worktreeItem ? worktreeItem.statusDescription : (item.ref.shortName ?: item.title);
 
 	return cell;

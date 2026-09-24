@@ -9,6 +9,8 @@
 #import "PBGitBinary.h"
 #import "PBGitHistoryController.h"
 #import "PBGitRef.h"
+#import "PBGitWindowController.h"
+#import "PBSourceViewGitWorktreeItem.h"
 
 @interface PBGitRepository (WorktreeManagementTesting)
 - (void)reloadWorktreePaths;
@@ -16,6 +18,25 @@
 
 @interface PBGitHistoryController (WorktreeManagementTesting)
 @property (nonatomic, copy) NSString *gitVersion;
+@end
+
+@interface PBMissingFolderWindowController : PBGitWindowController
+@property (nonatomic, strong) PBGitRepository *stubRepository;
+@property (nonatomic, strong) PBGitWorktree *missingFolderExplainedFor;
+@end
+
+@implementation PBMissingFolderWindowController
+
+- (PBGitRepository *)repository
+{
+	return self.stubRepository;
+}
+
+- (void)showMissingFolderOfWorktree:(PBGitWorktree *)worktree
+{
+	self.missingFolderExplainedFor = worktree;
+}
+
 @end
 
 @interface PBGitWorktreeManagementTests : XCTestCase
@@ -310,6 +331,37 @@
 
 	XCTAssertTrue([self item:@"Lock Worktree" in:items].isEnabled, @"before 2.31 git does not say whether it is locked");
 	XCTAssertTrue([self item:@"Unlock Worktree" in:items].isEnabled);
+}
+
+#pragma mark A worktree whose folder is gone
+
+- (void)testAWorktreeWhoseFolderIsGoneIsUnavailableBeforeGitIsAskedAgain
+{
+	[self moveTheSecondFolderAway];
+
+	PBSourceViewGitWorktreeItem *row = [PBSourceViewGitWorktreeItem itemWithWorktree:[self second]];
+
+	XCTAssertFalse([self second].isPrunable, @"nothing has read the worktrees again yet");
+	XCTAssertTrue(row.isUnavailable);
+	XCTAssertTrue([row.statusDescription containsString:@"folder"], @"%@", row.statusDescription);
+}
+
+- (void)testAWorktreeWithItsFolderIsAvailable
+{
+	XCTAssertFalse([PBSourceViewGitWorktreeItem itemWithWorktree:[self second]].isUnavailable);
+}
+
+// The menu and a double click on the branch label both land here.
+- (void)testOpeningAWorktreeWhoseFolderIsGoneExplainsInsteadOfOpening
+{
+	[self moveTheSecondFolderAway];
+
+	PBMissingFolderWindowController *windowController = [[PBMissingFolderWindowController alloc] init];
+	windowController.stubRepository = self.repository;
+
+	[windowController openWorktreeHoldingRef:[PBGitRef refFromString:@"refs/heads/parked"]];
+
+	XCTAssertEqualObjects(windowController.missingFolderExplainedFor, [self second]);
 }
 
 #pragma mark The branch menu, shared by the sidebar and the history list

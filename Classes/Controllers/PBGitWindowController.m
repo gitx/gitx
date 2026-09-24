@@ -732,6 +732,12 @@
 	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:ref];
 	if (!worktreePath) return;
 
+	PBGitWorktree *worktree = [self.repository worktreeHoldingRef:ref];
+	if (worktree && ![[NSFileManager defaultManager] fileExistsAtPath:worktreePath]) {
+		[self showMissingFolderOfWorktree:worktree];
+		return;
+	}
+
 	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:[NSURL fileURLWithPath:worktreePath]
 																		  display:YES
 																completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
@@ -739,6 +745,14 @@
 																		[self showErrorSheet:error];
 																	}
 																}];
+}
+
+- (void)showMissingFolderOfWorktree:(PBGitWorktree *)worktree
+{
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = NSLocalizedString(@"The worktree’s folder is missing", @"Title of the sheet when a worktree's folder is not there");
+	alert.informativeText = worktree.isLocked ? [NSString stringWithFormat:NSLocalizedString(@"%@ is not there. The worktree is locked, which is how git is told a folder is on a disk that is not always connected: connect it and try again.", @"Explanation when a locked worktree's folder is not there"), worktree.path] : [NSString stringWithFormat:NSLocalizedString(@"%@ is not there. If it is on a disk that is not connected, connect it and try again. If it was deleted, Prune Worktrees… in the WORKTREES menu lets git forget it.", @"Explanation when a worktree's folder is not there"), worktree.path];
+	[alert beginSheetModalForWindow:self.window completionHandler:nil];
 }
 
 - (IBAction)lockWorktree:(id)sender

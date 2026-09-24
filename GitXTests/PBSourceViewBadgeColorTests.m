@@ -57,6 +57,17 @@ static CGFloat PBRelativeLuminance(NSColor *color)
 	return luminance;
 }
 
+@interface PBSwitchableMainWindowStub : NSWindow
+@property (nonatomic, assign) BOOL pretendsToBeMain;
+@end
+
+@implementation PBSwitchableMainWindowStub
+- (BOOL)isMainWindow
+{
+	return self.pretendsToBeMain;
+}
+@end
+
 @interface PBSourceViewBadgeColorTests : XCTestCase
 @end
 
@@ -75,6 +86,53 @@ static CGFloat PBRelativeLuminance(NSColor *color)
 	cell.backgroundStyle = emphasized ? NSBackgroundStyleEmphasized : NSBackgroundStyleNormal;
 
 	return cell;
+}
+
+- (PBSidebarTableViewCell *)lockedCellEmphasized:(BOOL)emphasized inWindow:(NSWindow *)window
+{
+	PBSidebarTableViewCell *cell = [[PBSidebarTableViewCell alloc] initWithFrame:NSMakeRect(0, 0, 160, 20)];
+	NSImageView *lock = [[NSImageView alloc] initWithFrame:NSMakeRect(140, 2, 16, 16)];
+	[cell addSubview:lock];
+	[cell setValue:lock forKey:@"checkedOutImageView"];
+
+	[[window contentView] addSubview:cell];
+	cell.backgroundStyle = emphasized ? NSBackgroundStyleEmphasized : NSBackgroundStyleNormal;
+	cell.isLocked = YES;
+
+	return cell;
+}
+
+- (NSColor *)lockTintOf:(PBSidebarTableViewCell *)cell
+{
+	return [(NSImageView *)[cell valueForKey:@"checkedOutImageView"] contentTintColor];
+}
+
+- (void)testTheLockTakesTheCapsuleColourInEveryState
+{
+	for (NSNumber *emphasized in @[ @YES, @NO ]) {
+		for (NSNumber *isMain in @[ @YES, @NO ]) {
+			Class windowClass = isMain.boolValue ? [PBMainWindowStub class] : [NSWindow class];
+			NSWindow *window = [[windowClass alloc] initWithContentRect:NSMakeRect(0, 0, 320, 240) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
+			PBSidebarTableViewCell *cell = [self lockedCellEmphasized:emphasized.boolValue inWindow:window];
+
+			XCTAssertEqualObjects([self lockTintOf:cell], [PBSourceViewBadge badgeColorForCell:cell],
+								  @"emphasized=%@ main=%@ gives the lock another colour than the checkmark's capsule", emphasized, isMain);
+		}
+	}
+}
+
+- (void)testTheLockDimsWhenTheWindowStopsBeingMain
+{
+	PBSwitchableMainWindowStub *window = [[PBSwitchableMainWindowStub alloc] initWithContentRect:NSMakeRect(0, 0, 320, 240) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:NO];
+	window.pretendsToBeMain = YES;
+	PBSidebarTableViewCell *cell = [self lockedCellEmphasized:NO inWindow:window];
+	XCTAssertEqualObjects([self lockTintOf:cell], [PBSourceViewBadge badgeHighlightColor]);
+
+	window.pretendsToBeMain = NO;
+	[[NSNotificationCenter defaultCenter] postNotificationName:NSWindowDidResignMainNotification object:window];
+
+	XCTAssertEqualObjects([self lockTintOf:cell], [PBSourceViewBadge badgeBackgroundColor],
+						  @"the lock should dim along with the checkmark when the window goes inactive");
 }
 
 - (void)testEmphasizedRowInAMainWindowGivesTheCheckmarkTheHighlightColour

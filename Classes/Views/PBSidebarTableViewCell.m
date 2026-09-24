@@ -21,6 +21,20 @@ NS_ASSUME_NONNULL_BEGIN
 	[self updateCheckmarkImage];
 }
 
+- (void)setIsLocked:(BOOL)isLocked
+{
+	_isLocked = isLocked;
+	[self updateCheckmarkImage];
+}
+
+- (void)setIsUnavailable:(BOOL)isUnavailable
+{
+	_isUnavailable = isUnavailable;
+	self.textField.textColor = isUnavailable ? [NSColor tertiaryLabelColor] : [NSColor labelColor];
+	self.imageView.alphaValue = isUnavailable ? 0.5 : 1.0;
+	checkedOutImageView.alphaValue = self.imageView.alphaValue;
+}
+
 - (void)setBackgroundStyle:(NSBackgroundStyle)backgroundStyle
 {
 	[super setBackgroundStyle:backgroundStyle];
@@ -61,15 +75,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateCheckmarkImage
 {
+	checkedOutImageView.contentTintColor = nil;
+
 	if (_isCheckedOut) {
 		// We hand over the textField cell because the badge derives its drawing style from that.
 		// Maybe we should replace this custom drawing with an static template image ..
 		[checkedOutImageView setImage:[PBSourceViewBadge checkedOutBadgeForCell:self]];
+	} else if (_isLocked) {
+		[checkedOutImageView setImage:[NSImage imageWithSystemSymbolName:@"lock.fill" accessibilityDescription:NSLocalizedString(@"Locked", @"Accessibility description of the lock on a locked worktree's sidebar row")]];
+		checkedOutImageView.contentTintColor = [PBSourceViewBadge badgeColorForCell:self];
 	} else {
 		[checkedOutImageView setImage:nil];
 	}
 
-	[checkedOutImageView setHidden:!_isCheckedOut];
+	[checkedOutImageView setHidden:!_isCheckedOut && !_isLocked];
 }
 
 @end

@@ -79,6 +79,16 @@ NS_ASSUME_NONNULL_BEGIN
 	return branch ?: self.worktree.path.lastPathComponent;
 }
 
+- (BOOL)folderIsMissing
+{
+	return ![[NSFileManager defaultManager] fileExistsAtPath:self.worktree.path];
+}
+
+- (BOOL)isUnavailable
+{
+	return self.worktree.isPrunable || [self folderIsMissing];
+}
+
 - (NSString *)statusDescription
 {
 	NSMutableArray<NSString *> *parts = [NSMutableArray arrayWithObject:[self headDescription]];
@@ -95,6 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
 		[parts addObject:self.worktree.prunableReason.length
 						 ? [NSString stringWithFormat:NSLocalizedString(@"Prunable: %@", @"Sidebar tooltip for a prunable worktree with a reason"), self.worktree.prunableReason]
 						 : NSLocalizedString(@"Prunable", @"Sidebar tooltip for a prunable worktree")];
+	else if ([self folderIsMissing])
+		[parts addObject:NSLocalizedString(@"Its folder is not there", @"Sidebar tooltip for a worktree whose folder is missing, which git has not reported as prunable")];
 
 	[parts addObject:self.worktree.path];
 
