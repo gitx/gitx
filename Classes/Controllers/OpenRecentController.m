@@ -81,6 +81,18 @@
 	[self hide];
 }
 
+- (void)keyDown:(NSEvent *)event
+{
+	unichar key = event.charactersIgnoringModifiers.length > 0 ? [event.charactersIgnoringModifiers characterAtIndex:0] : 0;
+	if (key != NSCarriageReturnCharacter && key != NSEnterCharacter) {
+		[super keyDown:event];
+		return;
+	}
+
+	[self openSelectedResult];
+	[self hide];
+}
+
 - (void)openSelectedResult
 {
 	if (selectedResult == nil)
@@ -115,7 +127,7 @@
 		result = YES;
 	} else if (commandSelector == @selector(moveUp:)) {
 		if (selectedResult != nil) {
-			NSUInteger index = [currentResults indexOfObject:selectedResult] - 1;
+			NSUInteger index = [currentResults indexOfObject:selectedResult];
 			if (index > 0) {
 				index -= 1;
 			}
@@ -157,6 +169,11 @@
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
 	return [currentResults count];
+}
+
+- (void)tableViewSelectionDidChange:(NSNotification *)notification
+{
+	[self changeSelection:self];
 }
 
 - (IBAction)changeSelection:(id)sender
