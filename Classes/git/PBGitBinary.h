@@ -13,6 +13,7 @@
 #define PBGitWorktreePruneVersion "2.5"
 #define PBGitWorktreeLockVersion "2.10"
 #define PBGitWorktreeRemoveVersion "2.17"
+#define PBGitWorktreeRepairVersion "2.29"
 #define PBGitWorktreeStateVersion "2.31"
 
 @interface PBGitBinary : NSObject

@@ -30,6 +30,7 @@
 #import "PBGitStash.h"
 #import "PBGitCommit.h"
 #import "PBGitWorktree.h"
+#import "PBGitBinary.h"
 
 @interface PBGitWindowController () <NSMenuItemValidation> {
 	__weak PBViewController *contentController;
@@ -747,12 +748,62 @@
 																}];
 }
 
-- (void)showMissingFolderOfWorktree:(PBGitWorktree *)worktree
+- (NSAlert *)alertForMissingFolderOfWorktree:(PBGitWorktree *)worktree gitVersion:(NSString *)version
 {
 	NSAlert *alert = [[NSAlert alloc] init];
 	alert.messageText = NSLocalizedString(@"The worktree’s folder is missing", @"Title of the sheet when a worktree's folder is not there");
 	alert.informativeText = worktree.isLocked ? [NSString stringWithFormat:NSLocalizedString(@"%@ is not there. The worktree is locked, which is how git is told a folder is on a disk that is not always connected: connect it and try again.", @"Explanation when a locked worktree's folder is not there"), worktree.path] : [NSString stringWithFormat:NSLocalizedString(@"%@ is not there. If it is on a disk that is not connected, connect it and try again. If it was deleted, Prune Worktrees… in the WORKTREES menu lets git forget it.", @"Explanation when a worktree's folder is not there"), worktree.path];
-	[alert beginSheetModalForWindow:self.window completionHandler:nil];
+	[alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];
+
+	if ([PBGitBinary version:version isAtLeast:@PBGitWorktreeRepairVersion]) {
+		alert.informativeText = [alert.informativeText stringByAppendingFormat:@" %@", NSLocalizedString(@"If it was moved, Locate Folder… tells git where it went.", @"Explanation on the missing-folder sheet of the button that finds a moved worktree")];
+		[alert addButtonWithTitle:NSLocalizedString(@"Locate Folder…", @"Button that asks where a worktree's folder was moved to")];
+	}
+
+	return alert;
+}
+
+- (void)showMissingFolderOfWorktree:(PBGitWorktree *)worktree
+{
+	NSAlert *alert = [self alertForMissingFolderOfWorktree:worktree gitVersion:[PBGitBinary version]];
+	[alert beginSheetModalForWindow:self.window
+				  completionHandler:^(NSModalResponse returnCode) {
+					  if (returnCode != NSAlertSecondButtonReturn)
+						  return;
+
+					  dispatch_async(dispatch_get_main_queue(), ^{
+						  [self locateFolderOfWorktree:worktree];
+					  });
+				  }];
+}
+
+- (IBAction)locateWorktreeFolder:(id)sender
+{
+	[self locateFolderOfWorktree:[sender representedObject]];
+}
+
+- (void)locateFolderOfWorktree:(PBGitWorktree *)worktree
+{
+	NSString *formerParent = worktree.path.stringByDeletingLastPathComponent;
+	BOOL formerParentIsThere = [[NSFileManager defaultManager] fileExistsAtPath:formerParent];
+
+	NSOpenPanel *panel = [NSOpenPanel openPanel];
+	panel.message = [NSString stringWithFormat:NSLocalizedString(@"Choose the folder the worktree at %@ was moved to.", @"Message when choosing where a worktree's folder went"), worktree.path];
+	panel.prompt = NSLocalizedString(@"Choose", @"Button that picks the folder a worktree was moved to");
+	panel.canChooseFiles = NO;
+	panel.canChooseDirectories = YES;
+	panel.allowsMultipleSelection = NO;
+	panel.directoryURL = formerParentIsThere ? [NSURL fileURLWithPath:formerParent] : [self folderForNewWorktrees];
+
+	[panel beginSheetModalForWindow:self.window
+				  completionHandler:^(NSModalResponse result) {
+					  if (result != NSModalResponseOK)
+						  return;
+
+					  NSError *error = nil;
+					  if (![self.repository repairWorktree:worktree movedTo:panel.URL.path error:&error])
+						  [self showErrorSheet:error];
+				  }];
 }
 
 - (IBAction)lockWorktree:(id)sender
