@@ -17,6 +17,9 @@
 # unit tests CI has already run in its own step. It is there for a local run of
 # everything in one command.
 #
+# Nor do `format`, `format-check` and `format-warning`: CI has no clang-format,
+# and a different version of it may format the same code another way.
+#
 # Signing: without a Dev.xcconfig the build is signed ad-hoc, and the hardened
 # runtime rejects that, leaving the app unable to load its own frameworks. So
 # `dmg` builds with the hardened runtime off and stays runnable either way,
@@ -87,15 +90,31 @@ BUILD_PRODUCTS_ROOT = $(XCODEBUILD) -showBuildSettings 2>/dev/null \
 FRAMEWORK_GIT2_VERSION := ObjectiveGit.framework/Headers/git2/version.h
 LIBGIT2_VERSION_HEADER := External/objective-git/External/libgit2/include/git2/version.h
 
+# Where clang-format looks. Only the lines a branch changed are checked, since
+# some existing files are not formatted that way and would fail as a whole.
+FORMAT_PATHS := Classes GitXTests GitXUITests
+
+# The commit those changed lines are measured from: where this branch left
+# master on the remote that points at gitx/gitx, whatever that remote is called
+# in this clone. `make format BASE=<commit>` measures from somewhere else.
+BASE ?=
+FORMAT_BASE = base="$(BASE)"; \
+	if [ -z "$$base" ]; then \
+		remote=$$(git remote -v | awk '$$3 == "(fetch)" && $$2 ~ /[:\/]gitx\/gitx(\.git)?$$/ { print $$1; exit }'); \
+		base=$$(git merge-base HEAD "$$remote/master" 2>/dev/null); \
+	fi
+
+FORMAT_TOOL_MISSING = ! command -v git-clang-format >/dev/null
+
 # xcodebuild's output runs to tens of thousands of lines, so a warning from
 # before the build has long scrolled past by the time anything reads it. Report
 # it again at the end, keeping the status the build itself returned.
 CHECK_AGAIN = status=$$?; \
-	$(MAKE) --no-print-directory git-submodule-check framework-check; \
+	$(MAKE) --no-print-directory git-submodule-check framework-check format-warning; \
 	exit $$status
 
 .PHONY: help git-submodule-sync git-submodule-check framework-check \
-	framework-clean deps pre-build bootstrap \
+	framework-clean format format-check format-warning deps pre-build bootstrap \
 	build unit-test test \
 	ui-test all-tests archive build-project app smoke-test run dmg map \
 	export-signed \
@@ -189,6 +208,34 @@ framework-clean: ## Drop built ObjectiveGit.frameworks so the next build recopie
 		rm -rf "$$framework"; \
 	done
 
+# Covers uncommitted changes too, but not a new file until it is added to git.
+format: ## Reformat the lines this branch changed, the way clang-format wants them
+	@$(FORMAT_TOOL_MISSING) && { echo 'clang-format is not installed: `brew install clang-format`' >&2; exit 1; }; \
+	$(FORMAT_BASE); \
+	test -n "$$base" || { echo "no remote points at gitx/gitx to measure from; pass BASE=<commit>" >&2; exit 1; }; \
+	git clang-format --force "$$base" -- $(FORMAT_PATHS) || test $$? -eq 1
+
+format-check: ## Show the lines this branch changed that clang-format would reformat
+	@$(FORMAT_TOOL_MISSING) && { echo 'clang-format is not installed: `brew install clang-format`' >&2; exit 1; }; \
+	$(FORMAT_BASE); \
+	test -n "$$base" || { echo "no remote points at gitx/gitx to measure from; pass BASE=<commit>" >&2; exit 1; }; \
+	git clang-format --diff "$$base" -- $(FORMAT_PATHS); status=$$?; \
+	test $$status -ne 1 || echo 'run `make format` to reformat them' >&2; \
+	exit $$status
+
+# Stays quiet where it cannot tell: on CI, without clang-format, or with no
+# gitx/gitx remote to measure from. Never fails the build it reports on.
+format-warning: ## Report lines this branch changed that clang-format would reformat
+	@test -z "$$GITHUB_ACTIONS" || exit 0; \
+	$(FORMAT_TOOL_MISSING) && exit 0; \
+	$(FORMAT_BASE); \
+	test -n "$$base" || exit 0; \
+	files=$$(git clang-format --diff "$$base" -- $(FORMAT_PATHS) 2>/dev/null | sed -n 's|^+++ b/||p'); \
+	test -n "$$files" || exit 0; \
+	{ echo "warning: lines this branch changed are not formatted the way clang-format wants:"; \
+	  echo "$$files" | sed 's/^/  /'; \
+	  echo 'run `make format` to reformat them, or `make format-check` to see how'; } >&2
+
 deps: ## Build the objective-git and libgit2 dependencies
 	cd External/objective-git && script/bootstrap && script/update_libgit2
 
@@ -201,7 +248,7 @@ bootstrap: pre-build ## (alias)
 build: git-submodule-check framework-check ## Build the app for local use
 	@start_time=$$(date +%s); \
 	$(XCODEBUILD) -destination "$(DESTINATION)" build; status=$$?; \
-	$(MAKE) --no-print-directory git-submodule-check framework-check; \
+	$(MAKE) --no-print-directory git-submodule-check framework-check format-warning; \
 	elapsed=$$(($$(date +%s) - start_time)); \
 	printf '\n⏱  make build finished in %dm %02ds (exit %d)\n' $$((elapsed/60)) $$((elapsed%60)) $$status; \
 	exit $$status
