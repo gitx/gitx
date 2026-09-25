@@ -285,3 +285,91 @@ a {
 #notification_message .confirm {
 	color: green;
 }
+
+.body--dark a.servicebutton {
+	border: 1px solid #779dcf;
+	background-color: #22364a;
+	color: #90b0e0;
+}
+
+.body--dark a.servicebutton:hover {
+	border: 2px solid #779dcf;
+}
+
+.body--dark .property_name {
+	color: #808080;
+}
+
+.body--dark hr {
+	background-color: #363636;
+}
+
+.body--dark a {
+	color: rgb(128, 174, 248);
+}
+
+.body--dark .showdiff,
+.body--dark #no-commit-message {
+	background-color: #3d3d3d;
+	border: 1px solid #6c6c6c;
+	-webkit-box-shadow: 1px 1px 2px #373737;
+}
+
+.body--dark .showdiff:hover {
+	background-color: #2b3c59;
+}
+
+.body--dark #files li {
+	color: #e3e3e3;
+}
+
+.body--dark #files li.odd {
+	background-color: #262626;
+}
+
+.body--dark #files li .filename {
+	text-shadow: #1c1c1c 0 0 4px;
+}
+
+.body--dark #files .changes-bar {
+	-webkit-box-shadow: 0 1px 1px #1c1c1c;
+}
+
+.body--dark #files .changes-bar.added {
+	background-color: #033f00;
+	border: 1px solid #4bb54b;
+}
+
+.body--dark #files .changes-bar.removed {
+	background-color: #6a3939;
+	border: 1px solid #ffa5a5;
+}
+
+.body--dark #files .diffstat-numbers.summary {
+	border-left: 1px solid #949494;
+}
+
+.body--dark #files .diffstat-numbers.details {
+	background-color: #e3e3e3;
+	color: #323232;
+}
+
+.body--dark #files .diffstat-numbers.details .added {
+	color: #3d7e3d;
+}
+
+.body--dark #files .diffstat-numbers.details .removed {
+	color: #f37073;
+}
+
+.body--dark #notification_message .cancel {
+	color: #ff8e8e;
+}
+
+.body--dark #notification_message .confirm {
+	color: #54b854;
+}
+
+.body--dark .refs {
+	color: #000;
+}

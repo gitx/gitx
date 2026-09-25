@@ -21,3 +21,18 @@
 	background-color: #ff9999;
 	border: 1px solid #cc6666;
 }
+
+.body--dark #notification {
+	border: 1px solid #e3e3e3;
+	background-color: #252525;
+}
+
+.body--dark #notification.success {
+	background-color: #113800;
+	border: 1px solid #386011;
+}
+
+.body--dark #notification.fail {
+	background-color: #994a4a;
+	border: 1px solid #c17171;
+}
