@@ -260,11 +260,44 @@
         NSLog(@"[GitXScreenshotTests] Preferences window not found for screenshot '%@'", name);
         return;
     }
-    XCUIScreenshot *screenshot = [target screenshot];
-    XCTAttachment *attachment = [XCTAttachment attachmentWithScreenshot:screenshot];
+    NSData *png = [self pngMaskingCornersOfScreenshot:[target screenshot] frame:target.frame];
+    XCTAttachment *attachment = [XCTAttachment attachmentWithData:png uniformTypeIdentifier:@"public.png"];
     attachment.name = name;
     attachment.lifetime = XCTAttachmentLifetimeKeepAlways;
     [self addAttachment:attachment];
+}
+
+- (NSData *)pngMaskingCornersOfScreenshot:(XCUIScreenshot *)screenshot frame:(CGRect)frame {
+    CGImageRef image = [screenshot.image CGImageForProposedRect:NULL context:nil hints:nil];
+    NSInteger width = CGImageGetWidth(image), height = CGImageGetHeight(image);
+    CGFloat scale = frame.size.width > 0 ? width / frame.size.width : 1;
+    CGFloat inset = 6 * scale, radius = 36 * scale;
+    NSLog(@"[GitXScreenshotTests] Masking the corners of a %ldx%ld capture (scale %.2f)",
+          (long)width, (long)height, scale);
+
+    NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+                                                                    pixelsWide:width
+                                                                    pixelsHigh:height
+                                                                 bitsPerSample:8
+                                                               samplesPerPixel:4
+                                                                      hasAlpha:YES
+                                                                      isPlanar:NO
+                                                                colorSpaceName:NSDeviceRGBColorSpace
+                                                                   bytesPerRow:0
+                                                                  bitsPerPixel:0];
+    NSGraphicsContext *context = [NSGraphicsContext graphicsContextWithBitmapImageRep:rep];
+    CGContextRef cg = context.CGContext;
+    CGRect bounds = CGRectMake(0, 0, width, height);
+    CGContextSetRGBFillColor(cg, 1, 1, 1, 1);
+    CGContextFillRect(cg, bounds);
+    CGPathRef shape = CGPathCreateWithRoundedRect(CGRectInset(bounds, inset, inset), radius, radius, NULL);
+    CGContextAddPath(cg, shape);
+    CGContextClip(cg);
+    CGContextDrawImage(cg, bounds, image);
+    CGPathRelease(shape);
+    [context flushGraphics];
+
+    return [rep representationUsingType:NSBitmapImageFileTypePNG properties:@{}];
 }
 
 - (XCUIElement *)findPrefsTabButton:(NSString *)label inWindow:(XCUIElement *)window {
