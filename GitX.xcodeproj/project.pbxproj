@@ -162,6 +162,7 @@
 		4C2D8E3FA01B52C4D6E7F801 /* PBGitRevListEnumerationErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C2D8E3FA01B52C4D6E7F802 /* PBGitRevListEnumerationErrorTests.m */; };
 		4D3E9F40B12C63D5E7F80901 /* PBTerminalHandlerPreferenceTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4D3E9F40B12C63D5E7F80902 /* PBTerminalHandlerPreferenceTests.m */; };
 		7A1C4E2B0D3F58A9C6B41201 /* PBGitHistoryListCleanupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C4E2B0D3F58A9C6B41202 /* PBGitHistoryListCleanupTests.m */; };
+		C8E1F2A3B4D5461C9E7A0B11 /* PBGitRepositoryWatcherRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C8E1F2A3B4D5461C9E7A0B12 /* PBGitRepositoryWatcherRefreshTests.m */; };
 		7A1C4E2B90D3F5A6C1B80011 /* PBGitRepositoryFetchArgumentsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */; };
 		2F9D30A7C15B4E68B4720A50 /* PBGitBinarySearchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F9D30A7C15B4E68B4720A51 /* PBGitBinarySearchTests.m */; };
 		8A1C64D2B3E7492FA0561D40 /* OpenRecentControllerErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C64D2B3E7492FA0561D41 /* OpenRecentControllerErrorTests.m */; };
@@ -177,7 +178,7 @@
 		764739E2E065426C828C6A8D /* NSStringTruncateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 69760FA8A15F4EA2AD3D034A /* NSStringTruncateTests.m */; };
 		7C837A4B980A48D1B91EDF98 /* PBGitHistoryCommitMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 661EC20D32B74C04B2DA75E4 /* PBGitHistoryCommitMenuTests.m */; };
 		7C4D19A8E52B461AB3D80E70 /* GLFileViewContentCacheTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */; };
-		5E1B93C7D04A47F2A8C61B30 /* PBGitCommitControllerRefreshTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */; };
+		5E1B93C7D04A47F2A8C61B30 /* PBGitRepositorySyncTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E1B93C7D04A47F2A8C61B31 /* PBGitRepositorySyncTests.m */; };
 		7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */; };
 		09EB95E6AD3341A38EFA5B2F /* PBGitHistoryWorktreeMenuTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */; };
 		C71DBB31DC534C74A24F8AAE /* PBGitHistoryWorktreeDoubleClickTests.m in Sources */ = {isa = PBXBuildFile; fileRef = ABEEB20A12E1438085514553 /* PBGitHistoryWorktreeDoubleClickTests.m */; };
@@ -739,6 +740,7 @@
 		4C2D8E3FA01B52C4D6E7F802 /* PBGitRevListEnumerationErrorTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRevListEnumerationErrorTests.m; path = GitXTests/PBGitRevListEnumerationErrorTests.m; sourceTree = "<group>"; };
 		4D3E9F40B12C63D5E7F80902 /* PBTerminalHandlerPreferenceTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBTerminalHandlerPreferenceTests.m; path = GitXTests/PBTerminalHandlerPreferenceTests.m; sourceTree = "<group>"; };
 		7A1C4E2B0D3F58A9C6B41202 /* PBGitHistoryListCleanupTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryListCleanupTests.m; path = GitXTests/PBGitHistoryListCleanupTests.m; sourceTree = "<group>"; };
+		C8E1F2A3B4D5461C9E7A0B12 /* PBGitRepositoryWatcherRefreshTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryWatcherRefreshTests.m; path = GitXTests/PBGitRepositoryWatcherRefreshTests.m; sourceTree = "<group>"; };
 		7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryFetchArgumentsTests.m; path = GitXTests/PBGitRepositoryFetchArgumentsTests.m; sourceTree = "<group>"; };
 		2F9D30A7C15B4E68B4720A51 /* PBGitBinarySearchTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitBinarySearchTests.m; path = GitXTests/PBGitBinarySearchTests.m; sourceTree = "<group>"; };
 		8A1C64D2B3E7492FA0561D41 /* OpenRecentControllerErrorTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = OpenRecentControllerErrorTests.m; path = GitXTests/OpenRecentControllerErrorTests.m; sourceTree = "<group>"; };
@@ -754,7 +756,7 @@
 		69760FA8A15F4EA2AD3D034A /* NSStringTruncateTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = NSStringTruncateTests.m; path = GitXTests/NSStringTruncateTests.m; sourceTree = "<group>"; };
 		661EC20D32B74C04B2DA75E4 /* PBGitHistoryCommitMenuTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryCommitMenuTests.m; path = GitXTests/PBGitHistoryCommitMenuTests.m; sourceTree = "<group>"; };
 		7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GLFileViewContentCacheTests.m; path = GitXTests/GLFileViewContentCacheTests.m; sourceTree = "<group>"; };
-		5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitCommitControllerRefreshTests.m; path = GitXTests/PBGitCommitControllerRefreshTests.m; sourceTree = "<group>"; };
+		5E1B93C7D04A47F2A8C61B31 /* PBGitRepositorySyncTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositorySyncTests.m; path = GitXTests/PBGitRepositorySyncTests.m; sourceTree = "<group>"; };
 		5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistorySelectionTests.m; path = GitXTests/PBGitHistorySelectionTests.m; sourceTree = "<group>"; };
 		68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryWorktreeMenuTests.m; path = GitXTests/PBGitHistoryWorktreeMenuTests.m; sourceTree = "<group>"; };
 		ABEEB20A12E1438085514553 /* PBGitHistoryWorktreeDoubleClickTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryWorktreeDoubleClickTests.m; path = GitXTests/PBGitHistoryWorktreeDoubleClickTests.m; sourceTree = "<group>"; };
@@ -896,6 +898,7 @@
 				4C2D8E3FA01B52C4D6E7F802 /* PBGitRevListEnumerationErrorTests.m */,
 				4D3E9F40B12C63D5E7F80902 /* PBTerminalHandlerPreferenceTests.m */,
 				7A1C4E2B0D3F58A9C6B41202 /* PBGitHistoryListCleanupTests.m */,
+				C8E1F2A3B4D5461C9E7A0B12 /* PBGitRepositoryWatcherRefreshTests.m */,
 				7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */,
 				2F9D30A7C15B4E68B4720A51 /* PBGitBinarySearchTests.m */,
 				8A1C64D2B3E7492FA0561D41 /* OpenRecentControllerErrorTests.m */,
@@ -911,7 +914,7 @@
 				69760FA8A15F4EA2AD3D034A /* NSStringTruncateTests.m */,
 				661EC20D32B74C04B2DA75E4 /* PBGitHistoryCommitMenuTests.m */,
 				7C4D19A8E52B461AB3D80E71 /* GLFileViewContentCacheTests.m */,
-				5E1B93C7D04A47F2A8C61B31 /* PBGitCommitControllerRefreshTests.m */,
+				5E1B93C7D04A47F2A8C61B31 /* PBGitRepositorySyncTests.m */,
 				5E9D3B41C86F42A7B10D5E33 /* PBGitHistorySelectionTests.m */,
 				68477EB22B3146C5AAB4FEFA /* PBGitHistoryWorktreeMenuTests.m */,
 				ABEEB20A12E1438085514553 /* PBGitHistoryWorktreeDoubleClickTests.m */,
@@ -1876,6 +1879,7 @@
 				4C2D8E3FA01B52C4D6E7F801 /* PBGitRevListEnumerationErrorTests.m in Sources */,
 				4D3E9F40B12C63D5E7F80901 /* PBTerminalHandlerPreferenceTests.m in Sources */,
 				7A1C4E2B0D3F58A9C6B41201 /* PBGitHistoryListCleanupTests.m in Sources */,
+				C8E1F2A3B4D5461C9E7A0B11 /* PBGitRepositoryWatcherRefreshTests.m in Sources */,
 				7A1C4E2B90D3F5A6C1B80011 /* PBGitRepositoryFetchArgumentsTests.m in Sources */,
 				2F9D30A7C15B4E68B4720A50 /* PBGitBinarySearchTests.m in Sources */,
 				8A1C64D2B3E7492FA0561D40 /* OpenRecentControllerErrorTests.m in Sources */,
@@ -1891,7 +1895,7 @@
 				764739E2E065426C828C6A8D /* NSStringTruncateTests.m in Sources */,
 				7C837A4B980A48D1B91EDF98 /* PBGitHistoryCommitMenuTests.m in Sources */,
 				7C4D19A8E52B461AB3D80E70 /* GLFileViewContentCacheTests.m in Sources */,
-				5E1B93C7D04A47F2A8C61B30 /* PBGitCommitControllerRefreshTests.m in Sources */,
+				5E1B93C7D04A47F2A8C61B30 /* PBGitRepositorySyncTests.m in Sources */,
 				7C41A9E2B5D340E1A7F26C08 /* PBGitHistorySelectionTests.m in Sources */,
 				09EB95E6AD3341A38EFA5B2F /* PBGitHistoryWorktreeMenuTests.m in Sources */,
 				C71DBB31DC534C74A24F8AAE /* PBGitHistoryWorktreeDoubleClickTests.m in Sources */,

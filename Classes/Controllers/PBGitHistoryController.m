@@ -21,7 +21,6 @@
 #import "PBDiffWindowController.h"
 #import "PBGitDefaults.h"
 #import "PBHistorySearchController.h"
-#import "PBGitRepositoryWatcher.h"
 #import "PBQLTextView.h"
 #import "GLFileView.h"
 #import "GitXCommitCopier.h"
@@ -201,8 +200,6 @@
 				  bottomColor:[NSColor colorWithCalibratedHue:0.579 saturation:0.119 brightness:0.765 alpha:1.000]];
 	[self updateBranchFilterMatrix];
 
-	// listen for updates
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_repositoryUpdatedNotification:) name:PBGitRepositoryEventNotification object:repository];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(_commitDateFormatChangedNotification:) name:PBGitCommitDateFormatDidChangeNotification object:nil];
 
 	[super awakeFromNib];
@@ -248,18 +245,6 @@
 	CGFloat width = MAX(ceil(widest * PBDateColumnSlack) + PBDateColumnInset, column.headerCell.cellSize.width);
 
 	column.width = MIN(MAX(width, column.minWidth), column.maxWidth);
-}
-
-- (void)_repositoryUpdatedNotification:(NSNotification *)notification
-{
-	PBGitRepositoryWatcherEventType eventType = [(NSNumber *)[[notification userInfo] objectForKey:kPBGitRepositoryEventTypeUserInfoKey] unsignedIntValue];
-	if (eventType & PBGitRepositoryWatcherEventTypeGitDirectory) {
-		// refresh if the .git repository is modified, coalescing bursts of
-		// git-directory events (e.g. a single `git switch -c` touching both a
-		// ref file and HEAD) into a single refresh
-		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(refresh:) object:self];
-		[self performSelector:@selector(refresh:) withObject:self afterDelay:0.2];
-	}
 }
 
 - (void)reselectCommitAfterUpdate
