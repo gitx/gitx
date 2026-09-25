@@ -171,6 +171,22 @@ a {
 .refs.currentBranch {
 	background-color: var(--ref-currentBranch, #fca64f);
 }
+
+.body--dark {
+	-webkit-filter: none;
+}
+
+.body--dark > #commit {
+	background-color: transparent;
+}
+
+.body--dark > :not(#commit),
+.body--dark #commit > :not(.commit_info),
+.body--dark .commit_info th,
+.body--dark .commit_info td:not(:has(#refs)),
+.body--dark #commitID {
+	-webkit-filter: invert(0.89) hue-rotate(180deg);
+}
 #message_files {
 	margin: 0;
 	padding: 0;
