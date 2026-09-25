@@ -1190,27 +1190,81 @@
 	return [self menuItemWithTitle:NSLocalizedString(@"Reveal Worktree in Finder", @"Contextual Menu Item to show a worktree's folder in the Finder") action:@selector(revealWorktreeInFinder:) worktree:worktree disabledBecause:reason];
 }
 
-- (NSArray<NSMenuItem *> *)menuItemsForWorktree:(PBGitWorktree *)worktree
+- (NSMenuItem *)removeMenuItemForWorktree:(PBGitWorktree *)worktree
+{
+	NSString *version = self.gitVersion;
+	NSString *reason = nil;
+
+	if (worktree.isMain)
+		reason = NSLocalizedString(@"git never removes the main worktree", @"Contextual Menu Item tooltip for the main worktree, which cannot be removed");
+	else if (![PBGitBinary version:version isAtLeast:@PBGitWorktreeRemoveVersion])
+		reason = [PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreeRemoveVersion];
+	else if (worktree.isLocked)
+		reason = worktree.lockReason.length ? [NSString stringWithFormat:NSLocalizedString(@"Locked: %@. Unlock it first.", @"Contextual Menu Item tooltip for a locked worktree, which cannot be removed"), worktree.lockReason] : NSLocalizedString(@"Locked. Unlock it first.", @"Contextual Menu Item tooltip for a locked worktree with no reason, which cannot be removed");
+
+	return [self menuItemWithTitle:NSLocalizedString(@"Remove Worktree…", @"Contextual Menu Item to remove a worktree") action:@selector(removeWorktree:) worktree:worktree disabledBecause:reason];
+}
+
+- (NSMenuItem *)checkOutInNewWorktreeMenuItemForBranch:(PBGitRef *)branch isHead:(BOOL)isHead
+{
+	NSString *version = self.gitVersion;
+	NSString *reason = nil;
+
+	if (isHead)
+		reason = [NSString stringWithFormat:NSLocalizedString(@"“%@” is checked out here, and git checks a branch out in one worktree at a time", @"Contextual Menu Item tooltip for the branch already checked out in this worktree"), branch.shortName];
+	else if (![PBGitBinary version:version isAtLeast:@PBGitWorktreeAddVersion])
+		reason = [PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreeAddVersion];
+
+	NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Checkout “%@” in New Worktree…", @"Contextual Menu Item to check out the selected branch in a new worktree"), branch.shortName];
+	NSMenuItem *item = [NSMenuItem pb_itemWithTitle:title action:@selector(checkOutInNewWorktree:) enabled:!reason];
+	item.toolTip = reason;
+
+	return item;
+}
+
+- (NSArray<NSMenuItem *> *)worktreeGroupItemsForWorktree:(PBGitWorktree *)worktree
 {
 	return [@[ [self revealMenuItemForWorktree:worktree] ] arrayByAddingObjectsFromArray:[self lockMenuItemsForWorktree:worktree]];
 }
 
-- (NSArray<NSMenuItem *> *)menuItemsForWorktreeGroup
+- (NSArray<NSMenuItem *> *)menuItemsForWorktree:(PBGitWorktree *)worktree
 {
-	NSString *title = NSLocalizedString(@"Prune Worktrees…", @"Contextual Menu Item to prune worktrees whose folders are gone");
-	NSString *version = self.gitVersion;
+	return [[self worktreeGroupItemsForWorktree:worktree] arrayByAddingObjectsFromArray:@[ [NSMenuItem separatorItem], [self removeMenuItemForWorktree:worktree] ]];
+}
 
-	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreePruneVersion])
-		return @[ [self menuItemWithTitle:title action:@selector(pruneWorktrees:) worktree:nil disabledBecause:[PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreePruneVersion]] ];
-
-	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreeStateVersion])
-		return @[ [self menuItemWithTitle:title action:@selector(pruneWorktrees:) worktree:nil disabledBecause:nil] ];
+- (BOOL)anyWorktreeCanBePruned
+{
+	if (![PBGitBinary version:self.gitVersion isAtLeast:@PBGitWorktreeStateVersion])
+		return YES;
 
 	for (PBGitWorktree *worktree in self.repository.worktrees)
 		if (worktree.isPrunable || ![[NSFileManager defaultManager] fileExistsAtPath:worktree.path])
-			return @[ [self menuItemWithTitle:title action:@selector(pruneWorktrees:) worktree:nil disabledBecause:nil] ];
+			return YES;
 
-	return @[ [self menuItemWithTitle:title action:@selector(pruneWorktrees:) worktree:nil disabledBecause:NSLocalizedString(@"Every worktree still has its folder", @"Contextual Menu Item tooltip when no worktree can be pruned")] ];
+	return NO;
+}
+
+- (NSArray<NSMenuItem *> *)menuItemsForWorktreeGroup
+{
+	NSString *version = self.gitVersion;
+	NSString *addReason = [PBGitBinary version:version isAtLeast:@PBGitWorktreeAddVersion] ? nil : [PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreeAddVersion];
+	NSString *pruneReason = nil;
+
+	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreePruneVersion])
+		pruneReason = [PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreePruneVersion];
+	else if (![self anyWorktreeCanBePruned])
+		pruneReason = NSLocalizedString(@"Every worktree still has its folder", @"Contextual Menu Item tooltip when no worktree can be pruned");
+
+	return @[
+		[self menuItemWithTitle:NSLocalizedString(@"Add Worktree…", @"Contextual Menu Item to add a worktree on a new branch")
+						 action:@selector(addWorktree:)
+					   worktree:nil
+				disabledBecause:addReason],
+		[self menuItemWithTitle:NSLocalizedString(@"Prune Worktrees…", @"Contextual Menu Item to prune worktrees whose folders are gone")
+						 action:@selector(pruneWorktrees:)
+					   worktree:nil
+				disabledBecause:pruneReason],
+	];
 }
 
 - (NSArray<NSMenuItem *> *)menuItemsForRef:(PBGitRef *)ref
@@ -1268,7 +1322,10 @@
 		[items addObject:[NSMenuItem separatorItem]];
 
 		if (worktree) {
-			[items addObjectsFromArray:[self menuItemsForWorktree:worktree]];
+			[items addObjectsFromArray:[self worktreeGroupItemsForWorktree:worktree]];
+			[items addObject:[NSMenuItem separatorItem]];
+		} else if (ref.isBranch && !worktreePath) {
+			[items addObject:[self checkOutInNewWorktreeMenuItemForBranch:ref isHead:isHead]];
 			[items addObject:[NSMenuItem separatorItem]];
 		}
 
@@ -1369,7 +1426,7 @@
 		}
 		NSMenuItem *deleteItem = [NSMenuItem pb_itemWithTitle:deleteItemTitle action:@selector(deleteRef:) enabled:!worktreePath];
 		deleteItem.toolTip = worktreePath ? [NSString stringWithFormat:NSLocalizedString(@"Checked out in the worktree at %@", @"Contextual Menu Item tooltip for a branch that cannot be removed because a worktree holds it"), worktreePath] : nil;
-		[items addObject:deleteItem];
+		[items addObject:worktree ? [self removeMenuItemForWorktree:worktree] : deleteItem];
 	}
 
 	for (NSMenuItem *item in items) {

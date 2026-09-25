@@ -830,6 +830,158 @@
 				  }];
 }
 
+- (NSURL *)folderForNewWorktrees
+{
+	for (PBGitWorktree *worktree in self.repository.worktrees)
+		if (worktree.isMain)
+			return [[NSURL fileURLWithPath:worktree.path] URLByDeletingLastPathComponent];
+
+	return self.repository.workingDirectoryURL.URLByDeletingLastPathComponent;
+}
+
+- (NSString *)folderNameForWorktreeOnBranch:(NSString *)branchName
+{
+	NSString *repositoryName = self.repository.workingDirectoryURL.lastPathComponent.stringByDeletingPathExtension;
+	for (PBGitWorktree *worktree in self.repository.worktrees)
+		if (worktree.isMain)
+			repositoryName = worktree.path.lastPathComponent.stringByDeletingPathExtension;
+
+	return [NSString stringWithFormat:@"%@-%@", repositoryName, [branchName stringByReplacingOccurrencesOfString:@"/" withString:@"-"]];
+}
+
+- (void)chooseFolderForWorktreeOnBranch:(NSString *)branchName message:(NSString *)message then:(void (^)(NSString *path))create
+{
+	NSSavePanel *panel = [NSSavePanel savePanel];
+	panel.message = message;
+	panel.prompt = NSLocalizedString(@"Create", @"Button that creates a worktree in the chosen folder");
+	panel.nameFieldLabel = NSLocalizedString(@"Folder:", @"Label of the name field when choosing a new worktree's folder");
+	panel.nameFieldStringValue = [self folderNameForWorktreeOnBranch:branchName];
+	panel.directoryURL = [self folderForNewWorktrees];
+	panel.canCreateDirectories = YES;
+	panel.showsTagField = NO;
+
+	[panel beginSheetModalForWindow:self.window
+				  completionHandler:^(NSModalResponse result) {
+					  if (result == NSModalResponseOK)
+						  create(panel.URL.path);
+				  }];
+}
+
+- (IBAction)checkOutInNewWorktree:(id)sender
+{
+	PBGitRef *branch = (PBGitRef *)[self refishForSender:sender refishTypes:@[ kGitXBranchType ]];
+	if (!branch) return;
+
+	NSString *message = [NSString stringWithFormat:NSLocalizedString(@"Choose a folder for the worktree that checks out “%@”.", @"Message when choosing where to check a branch out in a new worktree"), branch.shortName];
+	[self chooseFolderForWorktreeOnBranch:branch.shortName
+								  message:message
+									 then:^(NSString *path) {
+										 NSError *error = nil;
+										 if (![self.repository addWorktreeAtPath:path branch:branch error:&error])
+											 [self showErrorSheet:error];
+									 }];
+}
+
+- (IBAction)addWorktree:(id)sender
+{
+	NSTextField *nameField = [NSTextField textFieldWithString:@""];
+	nameField.placeholderString = NSLocalizedString(@"Branch name", @"Placeholder for the name of the branch a new worktree starts");
+	nameField.frame = NSMakeRect(0, 0, 300, nameField.intrinsicContentSize.height);
+
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = NSLocalizedString(@"Add a worktree on a new branch", @"Title of the sheet that adds a worktree");
+	alert.informativeText = NSLocalizedString(@"The branch starts at the commit checked out here. The next step chooses the worktree's folder.", @"Explanation on the sheet that adds a worktree");
+	alert.accessoryView = nameField;
+	[alert addButtonWithTitle:NSLocalizedString(@"Continue", @"Button that goes on to choose the new worktree's folder")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+	alert.window.initialFirstResponder = nameField;
+
+	[alert beginSheetModalForWindow:self.window
+				  completionHandler:^(NSModalResponse returnCode) {
+					  NSString *name = [nameField.stringValue stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+					  if (returnCode != NSAlertFirstButtonReturn || !name.length)
+						  return;
+
+					  dispatch_async(dispatch_get_main_queue(), ^{
+						  NSString *message = [NSString stringWithFormat:NSLocalizedString(@"Choose a folder for the worktree on the new branch “%@”.", @"Message when choosing where a new worktree on a new branch goes"), name];
+						  [self chooseFolderForWorktreeOnBranch:name
+														message:message
+														   then:^(NSString *path) {
+															   NSError *error = nil;
+															   if (![self.repository addWorktreeAtPath:path newBranchNamed:name error:&error])
+																   [self showErrorSheet:error];
+														   }];
+					  });
+				  }];
+}
+
+- (IBAction)removeWorktree:(id)sender
+{
+	PBGitWorktree *worktree = [sender representedObject];
+	NSString *branchName = [worktree.branchRefName hasPrefix:@"refs/heads/"] ? [worktree.branchRefName substringFromIndex:[@"refs/heads/" length]] : nil;
+
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = [NSString stringWithFormat:NSLocalizedString(@"Remove the worktree at %@?", @"Title of the sheet that removes a worktree"), worktree.path];
+	alert.informativeText = branchName ? [NSString stringWithFormat:NSLocalizedString(@"Its folder is deleted. The branch “%@” is kept.", @"Explanation on the sheet that removes a worktree on a branch"), branchName] : NSLocalizedString(@"Its folder is deleted.", @"Explanation on the sheet that removes a worktree with no branch");
+	[alert addButtonWithTitle:NSLocalizedString(@"Remove", @"Button that removes a worktree")].hasDestructiveAction = YES;
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+
+	[alert beginSheetModalForWindow:self.window
+				  completionHandler:^(NSModalResponse returnCode) {
+					  if (returnCode != NSAlertFirstButtonReturn)
+						  return;
+
+					  NSError *error = nil;
+					  if ([self.repository removeWorktree:worktree force:NO error:&error])
+						  return;
+
+					  dispatch_async(dispatch_get_main_queue(), ^{
+						  [self answerRefusalToRemoveWorktree:worktree error:error];
+					  });
+				  }];
+}
+
+- (void)answerRefusalToRemoveWorktree:(PBGitWorktree *)worktree error:(NSError *)error
+{
+	NSString *message = error.localizedFailureReason ?: error.localizedDescription;
+
+	if ([message containsString:@"use --force"] || [message containsString:@"containing submodules"]) {
+		[self offerToRemoveWorktree:worktree anywayAfter:error];
+		return;
+	}
+
+	NSLog(@"git refused to remove %@ for a reason --force does not override, so only the error is shown", worktree.path);
+	[self showErrorSheet:error];
+}
+
++ (NSString *)refusalFromGitMessage:(NSString *)message
+{
+	NSString *refusal = [message stringByReplacingOccurrencesOfString:@", use --force to delete it" withString:@""];
+	if ([refusal hasPrefix:@"fatal: "])
+		refusal = [refusal substringFromIndex:[@"fatal: " length]];
+
+	return refusal;
+}
+
+- (void)offerToRemoveWorktree:(PBGitWorktree *)worktree anywayAfter:(NSError *)refusal
+{
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = NSLocalizedString(@"git did not remove the worktree", @"Title of the sheet when git refuses to remove a worktree");
+	alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"%@\n\nRemove Anyway deletes the folder all the same, and whatever in it is not committed is lost.", @"Explanation when git refuses to remove a worktree, after git's own reason"), [PBGitWindowController refusalFromGitMessage:refusal.localizedFailureReason ?: refusal.localizedDescription]];
+	[alert addButtonWithTitle:NSLocalizedString(@"Remove Anyway", @"Button that removes a worktree despite what it holds")].hasDestructiveAction = YES;
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+
+	[alert beginSheetModalForWindow:self.window
+				  completionHandler:^(NSModalResponse returnCode) {
+					  if (returnCode != NSAlertFirstButtonReturn)
+						  return;
+
+					  NSError *error = nil;
+					  if (![self.repository removeWorktree:worktree force:YES error:&error])
+						  [self showErrorSheet:error];
+				  }];
+}
+
 - (IBAction)merge:(id)sender
 {
 	id<PBGitRefish> refish = [self refishForSender:sender refishTypes:@[ kGitXBranchType, kGitXRemoteBranchType, kGitXCommitType, kGitXTagType ]];
