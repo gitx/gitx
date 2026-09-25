@@ -127,7 +127,7 @@
 		result = YES;
 	} else if (commandSelector == @selector(moveUp:)) {
 		if (selectedResult != nil) {
-			NSUInteger index = [currentResults indexOfObject:selectedResult] - 1;
+			NSUInteger index = [currentResults indexOfObject:selectedResult];
 			if (index > 0) {
 				index -= 1;
 			}

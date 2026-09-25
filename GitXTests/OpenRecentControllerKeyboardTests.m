@@ -10,6 +10,7 @@
 @interface PBKeyboardOpenRecentController : OpenRecentController
 @property (nonatomic, strong) NSMutableArray<NSURL *> *openedResults;
 @property (nonatomic, readonly) NSTableView *table;
+@property (nonatomic, readonly) NSSearchField *search;
 @end
 
 @implementation PBKeyboardOpenRecentController
@@ -17,6 +18,11 @@
 - (NSTableView *)table
 {
 	return resultViewer;
+}
+
+- (NSSearchField *)search
+{
+	return searchField;
 }
 
 - (void)openSelectedResult
@@ -82,6 +88,14 @@
 			 modifiers:NSEventModifierFlagFunction | NSEventModifierFlagNumericPad];
 }
 
+- (void)pressUpArrow
+{
+	unichar up = NSUpArrowFunctionKey;
+	[self pressKeyCode:126
+			characters:[NSString stringWithCharacters:&up length:1]
+			 modifiers:NSEventModifierFlagFunction | NSEventModifierFlagNumericPad];
+}
+
 - (void)testReturnInTheListOpensTheRowChosenWithTheArrowKeys
 {
 	[self pressDownArrow];
@@ -100,6 +114,26 @@
 	[self pressKeyCode:76 characters:@"\x03" modifiers:NSEventModifierFlagNumericPad];
 
 	XCTAssertEqualObjects(self.controller.openedResults, @[ self.repositories[2] ]);
+}
+
+- (void)testUpArrowInTheSearchFieldMovesUpOneRow
+{
+	[self.controller.window makeFirstResponder:self.controller.search];
+	[self pressDownArrow];
+	[self pressDownArrow];
+
+	[self pressUpArrow];
+
+	XCTAssertEqual(self.controller.table.selectedRow, 1);
+}
+
+- (void)testUpArrowInTheSearchFieldStaysOnTheTopRow
+{
+	[self.controller.window makeFirstResponder:self.controller.search];
+
+	XCTAssertNoThrow([self pressUpArrow]);
+
+	XCTAssertEqual(self.controller.table.selectedRow, 0);
 }
 
 @end
