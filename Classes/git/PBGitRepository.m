@@ -487,6 +487,40 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return [self changeWorktreesWithArguments:arguments failureTitle:@"Removing the worktree failed" error:error];
 }
 
++ (NSString *)resolvedPath:(NSString *)path
+{
+	char resolved[PATH_MAX];
+	if (!realpath(path.fileSystemRepresentation, resolved))
+		return path;
+
+	return [NSString stringWithUTF8String:resolved];
+}
+
+- (BOOL)repairWorktree:(PBGitWorktree *)worktree movedTo:(NSString *)path error:(NSError **)error
+{
+	NSString *folder = [PBGitRepository resolvedPath:path];
+	for (PBGitWorktree *other in self.worktrees) {
+		if (![[PBGitRepository resolvedPath:other.path] isEqualToString:folder])
+			continue;
+
+		NSLog(@"Not repairing %@: %@ is the folder of the worktree at %@", worktree.path, path, other.path);
+		return PBReturnError(error, @"Repair failed", [NSString stringWithFormat:@"%@ is already the folder of a worktree.", path], nil);
+	}
+
+	if (![self changeWorktreesWithArguments:@[ @"repair", path ] failureTitle:@"Repair failed" error:error])
+		return NO;
+
+	for (PBGitWorktree *listed in [PBGitWorktree worktreesFromPorcelain:[self readWorktreePorcelain] ?: @"" currentWorktreeAtPath:nil]) {
+		if (![listed.path isEqualToString:worktree.path])
+			continue;
+
+		NSLog(@"git repair of %@ left the worktree at %@ where it was", path, worktree.path);
+		return PBReturnError(error, @"Repair failed", [NSString stringWithFormat:@"%@ is not the folder of the worktree at %@.", path, worktree.path], nil);
+	}
+
+	return YES;
+}
+
 - (void)lazyReload
 {
 	if (!hasChanged)
