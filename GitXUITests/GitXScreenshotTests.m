@@ -37,11 +37,15 @@
 
     NSLog(@"[GitXScreenshotTests] repoPath = %@", repoPath ?: @"(none)");
 
+    // GITX_UITEST_NOW fixes the date the Preferences date-format sample shows
+    // (2026-01-01 12:00 UTC), so its screenshot is the same on every run.
+    NSMutableDictionary *environment = [NSMutableDictionary dictionaryWithObject:@"1767268800" forKey:@"GITX_UITEST_NOW"];
     if (repoPath) {
         // Passed to the app via applicationDidFinishLaunching: which opens
         // the repo directly, giving the test a reliable document window.
-        self.app.launchEnvironment = @{@"GITX_UITEST_REPO": repoPath};
+        environment[@"GITX_UITEST_REPO"] = repoPath;
     }
+    self.app.launchEnvironment = environment;
 
     [self.app launch];
 }
@@ -212,6 +216,120 @@
 
     // Dismiss the menu
     [window typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+}
+
+// MARK: - Settings / Preferences
+
+- (void)openPreferencesWindow {
+    NSLog(@"[GitXScreenshotTests] Opening Preferences with Command-,");
+    [self.app typeKey:@"," modifierFlags:XCUIKeyModifierCommand];
+}
+
+- (XCUIElement *)waitForPreferencesWindow {
+    // DBPrefsWindowController's window is an NSPanel with styleMask (Titled |
+    // Closable | Miniaturizable) and no Resizable bit. AppKit reports that
+    // combination to the accessibility API with subrole AXDialog, so XCUITest
+    // classifies it as XCUIElementTypeDialog rather than XCUIElementTypeWindow
+    // — it never shows up in `self.app.windows` no matter how long we wait,
+    // which is why the previous windows.count-based wait always timed out.
+    // It is still a top-level element, just under `self.app.dialogs`.
+    //
+    // Each accessibility query round-trips through the accessibility server;
+    // on a slow/contended runner that round trip can itself take several
+    // seconds. A manual loop like `for i<50 { count; sleep(0.1) }` pays that
+    // per-call cost up to 50 times over (minutes, not seconds) before giving
+    // up. expectationForPredicate: polls internally without our loop
+    // multiplying the cost, and the explicit timeout below bounds the total
+    // wait to a fixed, predictable budget regardless of how slow each
+    // individual accessibility call is.
+    NSPredicate *hasDialog = [NSPredicate predicateWithFormat:@"count > 0"];
+    XCTNSPredicateExpectation *expectation =
+        [[XCTNSPredicateExpectation alloc] initWithPredicate:hasDialog
+                                                       object:self.app.dialogs];
+    XCTWaiter *waiter = [[XCTWaiter alloc] init];
+    [waiter waitForExpectations:@[expectation] timeout:15];
+
+    return self.app.dialogs.firstMatch;
+}
+
+- (void)saveWindowElementScreenshotNamed:(NSString *)name element:(XCUIElement *)element {
+    // Re-fetch the prefs dialog to avoid a stale element reference (the
+    // window title changes when switching tabs, invalidating predicate matches).
+    XCUIElement *target = self.app.dialogs.firstMatch.exists ? self.app.dialogs.firstMatch : element;
+    if (!target.exists) {
+        NSLog(@"[GitXScreenshotTests] Preferences window not found for screenshot '%@'", name);
+        return;
+    }
+    XCUIScreenshot *screenshot = [target screenshot];
+    XCTAttachment *attachment = [XCTAttachment attachmentWithScreenshot:screenshot];
+    attachment.name = name;
+    attachment.lifetime = XCTAttachmentLifetimeKeepAlways;
+    [self addAttachment:attachment];
+}
+
+- (XCUIElement *)findPrefsTabButton:(NSString *)label inWindow:(XCUIElement *)window {
+    // NSPanel toolbars are not always in .toolbars — search the full descendant tree.
+    XCUIElement *btn = [window.toolbars.buttons elementMatchingPredicate:
+        [NSPredicate predicateWithFormat:@"label == %@ OR title == %@ OR identifier == %@",
+         label, label, label]];
+    if (btn.exists) return btn;
+
+    // Broader: any button or toolbar button anywhere in the window
+    btn = [window.buttons elementMatchingPredicate:
+        [NSPredicate predicateWithFormat:@"label == %@ OR title == %@", label, label]];
+    if (btn.exists) return btn;
+
+    // Fallback: search all descendants
+    NSPredicate *pred = [NSPredicate predicateWithFormat:
+        @"(elementType == %d OR elementType == %d) AND (label == %@ OR title == %@)",
+        XCUIElementTypeButton, XCUIElementTypeToolbarButton, label, label];
+    XCUIElementQuery *q = [window descendantsMatchingType:XCUIElementTypeAny];
+    btn = [q elementMatchingPredicate:pred];
+    return btn;
+}
+
+- (void)testSettingsGeneralTabScreenshot {
+    XCTAssertTrue([self waitForWindow], @"Main window must appear before opening Preferences");
+
+    [self openPreferencesWindow];
+    XCUIElement *prefsWindow = [self waitForPreferencesWindow];
+    XCTAssertTrue(prefsWindow.exists, @"Preferences window must appear");
+
+    XCUIElement *btn = [self findPrefsTabButton:@"General" inWindow:prefsWindow];
+    XCTAssertTrue([btn waitForExistenceWithTimeout:5], @"General toolbar button must exist");
+    [btn click];
+    [NSThread sleepForTimeInterval:0.6];
+    // Re-fetch — title changed to "General" after click
+    prefsWindow = self.app.dialogs.firstMatch;
+
+    [self saveWindowElementScreenshotNamed:@"settings-general" element:prefsWindow];
+
+    if (self.app.dialogs.firstMatch.exists) {
+        [self.app.dialogs.firstMatch typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+        [NSThread sleepForTimeInterval:0.3];
+    }
+}
+
+- (void)testSettingsIntegrationTabScreenshot {
+    XCTAssertTrue([self waitForWindow], @"Main window must appear before opening Preferences");
+
+    [self openPreferencesWindow];
+    XCUIElement *prefsWindow = [self waitForPreferencesWindow];
+    XCTAssertTrue(prefsWindow.exists, @"Preferences window must appear");
+
+    XCUIElement *btn = [self findPrefsTabButton:@"Integration" inWindow:prefsWindow];
+    XCTAssertTrue([btn waitForExistenceWithTimeout:5], @"Integration toolbar button must exist");
+    [btn click];
+    [NSThread sleepForTimeInterval:0.6];
+    // Re-fetch — title changed to "Integration" after click
+    prefsWindow = self.app.dialogs.firstMatch;
+
+    [self saveWindowElementScreenshotNamed:@"settings-integration" element:prefsWindow];
+
+    if (self.app.dialogs.firstMatch.exists) {
+        [self.app.dialogs.firstMatch typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+        [NSThread sleepForTimeInterval:0.3];
+    }
 }
 
 @end
