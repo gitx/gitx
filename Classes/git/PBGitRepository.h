@@ -87,6 +87,7 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)addWorktreeAtPath:(NSString *)path branch:(PBGitRef *)branch error:(NSError **)error;
 - (BOOL)addWorktreeAtPath:(NSString *)path newBranchNamed:(NSString *)name error:(NSError **)error;
 - (BOOL)removeWorktree:(PBGitWorktree *)worktree force:(BOOL)force error:(NSError **)error;
+- (BOOL)repairWorktree:(PBGitWorktree *)worktree movedTo:(NSString *)path error:(NSError **)error;
 
 - (BOOL)checkoutRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)checkoutFiles:(NSArray *)files fromRefish:(id<PBGitRefish>)ref error:(NSError **)error;

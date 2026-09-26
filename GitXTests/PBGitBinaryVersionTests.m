@@ -61,6 +61,9 @@
 	XCTAssertFalse([PBGitBinary version:@"2.16.6" isAtLeast:@PBGitWorktreeRemoveVersion]);
 	XCTAssertTrue([PBGitBinary version:@"2.17.0" isAtLeast:@PBGitWorktreeRemoveVersion]);
 
+	XCTAssertFalse([PBGitBinary version:@"2.28.1" isAtLeast:@PBGitWorktreeRepairVersion]);
+	XCTAssertTrue([PBGitBinary version:@"2.29.0" isAtLeast:@PBGitWorktreeRepairVersion]);
+
 	XCTAssertFalse([PBGitBinary version:@"2.30.9" isAtLeast:@PBGitWorktreeStateVersion]);
 	XCTAssertTrue([PBGitBinary version:@"2.31.0" isAtLeast:@PBGitWorktreeStateVersion]);
 }

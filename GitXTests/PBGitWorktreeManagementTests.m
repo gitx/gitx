@@ -14,12 +14,14 @@
 
 @interface PBGitRepository (WorktreeManagementTesting)
 - (void)reloadWorktreePaths;
+- (NSString *)readWorktreePorcelain;
 @end
 
 @interface PBGitWindowController (WorktreeManagementTesting)
 + (NSString *)refusalFromGitMessage:(NSString *)message;
 - (void)answerRefusalToRemoveWorktree:(PBGitWorktree *)worktree error:(NSError *)error;
 - (void)offerToRemoveWorktree:(PBGitWorktree *)worktree anywayAfter:(NSError *)refusal;
+- (NSAlert *)alertForMissingFolderOfWorktree:(PBGitWorktree *)worktree gitVersion:(NSString *)version;
 @end
 
 @interface PBRemovalRefusedWindowController : PBGitWindowController
@@ -161,10 +163,23 @@
 	return [[self.repositoryURL URLByDeletingLastPathComponent] URLByAppendingPathComponent:name].path;
 }
 
+- (NSString *)movedSecondPath
+{
+	return [self.secondWorktreeURL URLByAppendingPathExtension:@"moved"].path;
+}
+
 - (void)moveTheSecondFolderAway
 {
-	NSURL *moved = [self.secondWorktreeURL URLByAppendingPathExtension:@"moved"];
-	XCTAssertTrue([[NSFileManager defaultManager] moveItemAtURL:self.secondWorktreeURL toURL:moved error:NULL]);
+	XCTAssertTrue([[NSFileManager defaultManager] moveItemAtPath:self.secondWorktreeURL.path toPath:[self movedSecondPath] error:NULL]);
+}
+
+- (NSArray<NSString *> *)worktreePathsGitLists
+{
+	NSMutableArray<NSString *> *paths = [NSMutableArray array];
+	for (PBGitWorktree *worktree in [PBGitWorktree worktreesFromPorcelain:[self.repository readWorktreePorcelain] currentWorktreeAtPath:nil])
+		[paths addObject:worktree.path.lastPathComponent];
+
+	return paths;
 }
 
 // A disabled item carries no action, so that nothing re-enables it, which
@@ -292,6 +307,78 @@
 
 #pragma mark The worktree row menu
 
+- (void)testAMovedWorktreeIsFoundAgainWhereItWent
+{
+	[self moveTheSecondFolderAway];
+
+	NSError *error = nil;
+	XCTAssertTrue([self.repository repairWorktree:[self second] movedTo:[self movedSecondPath] error:&error], @"%@", error);
+
+	XCTAssertEqualObjects([self worktreePathsGitLists], (@[ @"main", @"second.moved" ]));
+
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return [self worktreeNamed:@"second.moved"] != nil;
+	}];
+	XCTAssertFalse([self worktreeNamed:@"second.moved"].isPrunable);
+}
+
+- (void)testAMovedLockedWorktreeIsFoundAgainAndStaysLocked
+{
+	[self runGit:@[ @"worktree", @"lock", @"--reason", @"on the usb disk", self.secondWorktreeURL.path ] in:self.repositoryURL];
+	[self moveTheSecondFolderAway];
+
+	NSError *error = nil;
+	XCTAssertTrue([self.repository repairWorktree:[self second] movedTo:[self movedSecondPath] error:&error], @"%@", error);
+
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return [self worktreeNamed:@"second.moved"] != nil;
+	}];
+	XCTAssertEqualObjects([self worktreeNamed:@"second.moved"].lockReason, @"on the usb disk");
+	[self runGit:@[ @"worktree", @"unlock", [self movedSecondPath] ] in:self.repositoryURL];
+}
+
+- (void)testTheFolderOfAnotherWorktreeIsRefused
+{
+	[self moveTheSecondFolderAway];
+
+	NSError *error = nil;
+	XCTAssertFalse([self.repository repairWorktree:[self second] movedTo:self.repositoryURL.path error:&error]);
+
+	XCTAssertTrue([error.localizedFailureReason containsString:@"already"], @"%@", error.localizedFailureReason);
+	XCTAssertEqualObjects([self worktreePathsGitLists], (@[ @"main", @"second" ]));
+}
+
+- (void)testAFolderThatIsNoWorktreeIsRefusedInGitsWords
+{
+	[self moveTheSecondFolderAway];
+	NSString *plain = [self siblingPath:@"plain"];
+	[[NSFileManager defaultManager] createDirectoryAtPath:plain withIntermediateDirectories:NO attributes:nil error:NULL];
+
+	NSError *error = nil;
+	XCTAssertFalse([self.repository repairWorktree:[self second] movedTo:plain error:&error]);
+
+	XCTAssertTrue(error.localizedFailureReason.length > 0);
+	XCTAssertEqualObjects([self worktreePathsGitLists], (@[ @"main", @"second" ]));
+}
+
+- (void)testTheMovedFolderOfAnotherWorktreeIsNotTakenForThisOne
+{
+	NSString *third = [self siblingPath:@"third"];
+	[self runGit:@[ @"worktree", @"add", @"-q", third, @"-b", @"other" ] in:self.repositoryURL];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return [self worktreeNamed:@"third"] != nil;
+	}];
+	[self moveTheSecondFolderAway];
+	NSString *movedThird = [third stringByAppendingPathExtension:@"moved"];
+	XCTAssertTrue([[NSFileManager defaultManager] moveItemAtPath:third toPath:movedThird error:NULL]);
+
+	NSError *error = nil;
+	XCTAssertFalse([self.repository repairWorktree:[self second] movedTo:movedThird error:&error]);
+
+	XCTAssertTrue([error.localizedFailureReason containsString:self.secondWorktreeURL.lastPathComponent], @"%@", error.localizedFailureReason);
+	XCTAssertTrue([[self worktreePathsGitLists] containsObject:@"second"], @"the worktree asked about is still where it was");
+}
+
 - (void)testAWorktreeRowOffersToRevealItsFolder
 {
 	NSMenuItem *reveal = [self item:@"Reveal Worktree in Finder" in:[self.menus menuItemsForWorktree:[self second]]];
@@ -302,14 +389,34 @@
 	XCTAssertEqualObjects(reveal.representedObject, [self second]);
 }
 
-- (void)testAFolderThatIsGoneCannotBeRevealedAndSaysSo
+- (void)testAFolderThatIsGoneIsOfferedToBeLocatedWhereRevealWas
 {
 	[self moveTheSecondFolderAway];
 
-	NSMenuItem *reveal = [self item:@"Reveal Worktree in Finder" in:[self.menus menuItemsForWorktree:[self second]]];
+	NSArray<NSMenuItem *> *items = [self.menus menuItemsForWorktree:[self second]];
+	NSMenuItem *locate = [self item:@"Locate Worktree Folder" in:items];
 
-	XCTAssertFalse(reveal.isEnabled);
-	XCTAssertTrue(reveal.toolTip.length > 0);
+	XCTAssertEqualObjects(items.firstObject, locate);
+	XCTAssertNil([self item:@"Reveal Worktree in Finder" in:items], @"there is nothing to reveal");
+	XCTAssertTrue(locate.isEnabled);
+	XCTAssertTrue(locate.action == @selector(locateWorktreeFolder:));
+	XCTAssertEqualObjects(locate.representedObject, [self second]);
+}
+
+- (void)testAWorktreeWithItsFolderIsNotOfferedToBeLocated
+{
+	XCTAssertNil([self item:@"Locate Worktree Folder" in:[self.menus menuItemsForWorktree:[self second]]]);
+}
+
+- (void)testAGitTooOldToRepairSaysWhichVersionItNeeds
+{
+	self.menus.gitVersion = @"2.28.1";
+	[self moveTheSecondFolderAway];
+
+	NSMenuItem *locate = [self item:@"Locate Worktree Folder" in:[self.menus menuItemsForWorktree:[self second]]];
+
+	XCTAssertFalse(locate.isEnabled);
+	XCTAssertTrue([locate.toolTip containsString:@PBGitWorktreeRepairVersion], @"%@", locate.toolTip);
 }
 
 - (void)testAnUnlockedWorktreeOffersLockAndNotUnlock
@@ -394,6 +501,24 @@
 	XCTAssertEqualObjects(windowController.missingFolderExplainedFor, [self second]);
 }
 
+- (void)testTheMissingFolderSheetOffersToLocateTheFolder
+{
+	[self moveTheSecondFolderAway];
+
+	NSAlert *alert = [[[PBGitWindowController alloc] init] alertForMissingFolderOfWorktree:[self second] gitVersion:@"2.50.1"];
+
+	XCTAssertEqualObjects([alert.buttons valueForKey:@"title"], (@[ @"OK", @"Locate Folder…" ]));
+}
+
+- (void)testTheMissingFolderSheetOffersNoLocateToAGitTooOldToRepair
+{
+	[self moveTheSecondFolderAway];
+
+	NSAlert *alert = [[[PBGitWindowController alloc] init] alertForMissingFolderOfWorktree:[self second] gitVersion:@"2.28.1"];
+
+	XCTAssertEqualObjects([alert.buttons valueForKey:@"title"], (@[ @"OK" ]));
+}
+
 #pragma mark The branch menu, shared by the sidebar and the history list
 
 - (void)testTheWorktreeActionsFollowOpenAndCopyInAGroupOfTheirOwn
@@ -401,6 +526,16 @@
 	NSArray<NSMenuItem *> *items = [self.menus menuItemsForRef:[PBGitRef refFromString:@"refs/heads/parked"]];
 
 	NSArray *expected = @[ @[ @"Open Worktree of Branch", @"Copy name" ], @[ @"Reveal Worktree in Finder", @"Lock Worktree…" ] ];
+	XCTAssertEqualObjects([self titlesOfFirstTwoGroupsIn:items], expected);
+}
+
+- (void)testABranchWhoseWorktreeFolderIsGoneOffersLocateWhereRevealWouldBe
+{
+	[self moveTheSecondFolderAway];
+
+	NSArray<NSMenuItem *> *items = [self.menus menuItemsForRef:[PBGitRef refFromString:@"refs/heads/parked"]];
+
+	NSArray *expected = @[ @[ @"Open Worktree of Branch", @"Copy name" ], @[ @"Locate Worktree Folder…", @"Lock Worktree…" ] ];
 	XCTAssertEqualObjects([self titlesOfFirstTwoGroupsIn:items], expected);
 }
 
