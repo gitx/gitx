@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, getter=isBare) BOOL bare;
 @property (nonatomic, assign, getter=isDetached) BOOL detached;
 @property (nonatomic, assign, getter=isCurrent) BOOL current;
+@property (nonatomic, assign, getter=isMain) BOOL main;
 @property (nonatomic, assign, getter=isLocked) BOOL locked;
 @property (nonatomic, copy, nullable) NSString *lockReason;
 @property (nonatomic, assign, getter=isPrunable) BOOL prunable;
@@ -88,6 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 			worktree = [[PBGitWorktree alloc] init];
 			worktree.path = [line substringFromIndex:[@"worktree " length]];
 			worktree.current = standardizedCurrent && [worktree.path.stringByStandardizingPath isEqualToString:standardizedCurrent];
+			worktree.main = worktrees.count == 0;
 			[worktrees addObject:worktree];
 			continue;
 		}
@@ -140,6 +142,7 @@ NS_ASSUME_NONNULL_BEGIN
 		&& self.isBare == other.isBare
 		&& self.isDetached == other.isDetached
 		&& self.isCurrent == other.isCurrent
+		&& self.isMain == other.isMain
 		&& self.isLocked == other.isLocked
 		&& (self.lockReason == other.lockReason || [self.lockReason isEqualToString:other.lockReason])
 		&& self.isPrunable == other.isPrunable

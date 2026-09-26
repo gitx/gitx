@@ -76,7 +76,14 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 
 - (nullable NSString *)pathOfWorktreeHoldingRef:(nullable PBGitRef *)ref;
 - (BOOL)isRefHeldByAnotherWorktree:(nullable PBGitRef *)ref;
+- (nullable PBGitWorktree *)worktreeHoldingRef:(nullable PBGitRef *)ref;
 - (NSArray<NSString *> *)refNamesHeldByOtherWorktrees;
+
+- (BOOL)lockWorktree:(PBGitWorktree *)worktree reason:(nullable NSString *)reason error:(NSError **)error;
+- (BOOL)unlockWorktree:(PBGitWorktree *)worktree error:(NSError **)error;
+// What `git worktree prune` would remove and why, one line each; empty when nothing.
+- (nullable NSString *)worktreePruneReportWithError:(NSError **)error;
+- (BOOL)pruneWorktreesWithError:(NSError **)error;
 
 - (BOOL)checkoutRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)checkoutFiles:(NSArray *)files fromRefish:(id<PBGitRefish>)ref error:(NSError **)error;

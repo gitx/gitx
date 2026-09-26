@@ -12,6 +12,7 @@
 @implementation PBGitBinary
 
 static NSString *gitPath = nil;
+static NSString *gitVersion = nil;
 
 + (NSString *)versionForPath:(NSString *)path
 {
@@ -53,6 +54,7 @@ static NSString *gitPath = nil;
 	NSComparisonResult c = [version compare:@"" MIN_GIT_VERSION options:NSNumericSearch];
 	if (c == NSOrderedSame || c == NSOrderedDescending) {
 		gitPath = path;
+		gitVersion = version;
 		return YES;
 	}
 
@@ -150,7 +152,23 @@ static NSMutableArray *locations = nil;
 
 + (NSString *)version
 {
-	return [self versionForPath:gitPath];
+	return gitVersion;
+}
+
++ (BOOL)version:(NSString *)version isAtLeast:(NSString *)minimum
+{
+	if (!version)
+		return NO;
+
+	return [version compare:minimum options:NSNumericSearch] != NSOrderedAscending;
+}
+
++ (NSString *)explanationForVersion:(NSString *)version belowRequired:(NSString *)minimum
+{
+	if (!version)
+		return [NSString stringWithFormat:NSLocalizedString(@"Requires git %@ or later", @"Tooltip for an action the git in use cannot perform, when its version is unknown"), minimum];
+
+	return [NSString stringWithFormat:NSLocalizedString(@"Requires git %@ or later (found %@)", @"Tooltip for an action the git in use is too old to perform"), minimum, version];
 }
 
 @end

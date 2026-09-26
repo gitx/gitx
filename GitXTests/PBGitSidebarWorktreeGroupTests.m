@@ -13,6 +13,7 @@
 #import "PBSourceViewGitWorktreeItem.h"
 #import "PBGitDefaults.h"
 #import "PBGitRevSpecifier.h"
+#import "PBSidebarTableViewCell.h"
 
 // Every other worktree test reads a fixed string, so none of them would notice
 // git changing what it prints. This one runs git and reads what comes back.
@@ -20,11 +21,21 @@
 - (void)reloadWorktreePaths;
 @end
 
+@interface PBGitSidebarController (WorktreeGroupTesting)
+- (void)doubleClicked:(id)sender;
+@end
+
 @interface PBWorktreeStubWindowController : PBGitWindowController
 @property (nonatomic, strong) PBGitRepository *stubRepository;
+@property (nonatomic, strong) PBGitWorktree *missingFolderExplainedFor;
 @end
 
 @implementation PBWorktreeStubWindowController
+
+- (void)showMissingFolderOfWorktree:(PBGitWorktree *)worktree
+{
+	self.missingFolderExplainedFor = worktree;
+}
 
 - (PBGitRepository *)repository
 {
@@ -330,6 +341,104 @@
 				  @"a worktree row keeps its own status on hover: %@", worktreeCell.toolTip);
 	XCTAssertTrue([worktreeCell.toolTip containsString:@"on an external disk"],
 				  @"the lock reason belongs on hover: %@", worktreeCell.toolTip);
+
+	[windowController close];
+}
+
+- (PBSidebarTableViewCell *)cellOfTheWorktreeRowIn:(PBGitSidebarController *)sidebar
+{
+	PBSourceViewItem *worktreeGroup = [self worktreeGroupOnceFilledFor:sidebar];
+	NSOutlineView *sourceView = sidebar.sourceView;
+	id<NSOutlineViewDelegate> delegate = sidebar;
+
+	return (PBSidebarTableViewCell *)[delegate outlineView:sourceView viewForTableColumn:sourceView.tableColumns.firstObject item:worktreeGroup.sortedChildren.firstObject];
+}
+
+- (PBGitSidebarController *)loadedSidebarFor:(PBWorktreeStubWindowController *)windowController
+{
+	windowController.stubRepository = self.repository;
+	XCTAssertNotNil(windowController.window, @"asking for the window is what loads the sidebar");
+	[self waitForTheWorktreeLookup];
+
+	return windowController.sidebarViewController;
+}
+
+// The checkmark marks the branch checked out here, which a worktree row never
+// is, so its place is free; the lock takes it without the checkmark's pill.
+- (void)testALockedWorktreeShowsALockWhereTheCheckmarkWouldBe
+{
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	PBSidebarTableViewCell *cell = [self cellOfTheWorktreeRowIn:[self loadedSidebarFor:windowController]];
+
+	NSImageView *badge = [cell valueForKey:@"checkedOutImageView"];
+	XCTAssertFalse(badge.isHidden);
+	XCTAssertTrue(badge.image.isTemplate, @"a plain symbol, tinted, rather than the drawn pill");
+	XCTAssertEqualObjects(badge.image.accessibilityDescription, @"Locked");
+
+	[windowController close];
+}
+
+- (void)testAnUnlockedWorktreeShowsNoLock
+{
+	[self runGit:@[ @"worktree", @"unlock", self.secondWorktreeURL.path ] in:self.repositoryURL];
+
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	PBGitSidebarController *sidebar = [self loadedSidebarFor:windowController];
+
+	NSDate *limit = [NSDate dateWithTimeIntervalSinceNow:10];
+	while ([self worktreeNamed:@"second"].isLocked && [limit timeIntervalSinceNow] > 0)
+		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+
+	PBSidebarTableViewCell *cell = [self cellOfTheWorktreeRowIn:sidebar];
+
+	XCTAssertTrue([(NSImageView *)[cell valueForKey:@"checkedOutImageView"] isHidden]);
+
+	[self runGit:@[ @"worktree", @"lock", self.secondWorktreeURL.path ] in:self.repositoryURL];
+	[windowController close];
+}
+
+// Locked with its folder gone is git's own case for a disk that is not
+// mounted: the row keeps its lock, is dimmed, and says what is missing.
+- (void)testAWorktreeWhoseFolderIsGoneIsDimmedAndSaysSo
+{
+	NSURL *moved = [self.secondWorktreeURL URLByAppendingPathExtension:@"moved"];
+	XCTAssertTrue([[NSFileManager defaultManager] moveItemAtURL:self.secondWorktreeURL toURL:moved error:NULL]);
+
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	PBSidebarTableViewCell *cell = [self cellOfTheWorktreeRowIn:[self loadedSidebarFor:windowController]];
+
+	XCTAssertEqualObjects(cell.textField.textColor, [NSColor tertiaryLabelColor]);
+	XCTAssertFalse([(NSImageView *)[cell valueForKey:@"checkedOutImageView"] isHidden], @"it is still locked");
+	XCTAssertEqual([(NSImageView *)[cell valueForKey:@"checkedOutImageView"] alphaValue], cell.imageView.alphaValue, @"the lock dims with the rest of the row");
+	XCTAssertTrue([cell.toolTip containsString:@"folder"], @"%@", cell.toolTip);
+
+	[windowController close];
+}
+
+- (void)testAWorktreeWithItsFolderIsNotDimmed
+{
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	PBSidebarTableViewCell *cell = [self cellOfTheWorktreeRowIn:[self loadedSidebarFor:windowController]];
+
+	XCTAssertEqualObjects(cell.textField.textColor, [NSColor labelColor]);
+
+	[windowController close];
+}
+
+- (void)testDoubleClickingAWorktreeWhoseFolderIsGoneExplainsInsteadOfOpening
+{
+	NSURL *moved = [self.secondWorktreeURL URLByAppendingPathExtension:@"moved"];
+	XCTAssertTrue([[NSFileManager defaultManager] moveItemAtURL:self.secondWorktreeURL toURL:moved error:NULL]);
+
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	PBGitSidebarController *sidebar = [self loadedSidebarFor:windowController];
+	PBSourceViewItem *worktreeGroup = [self worktreeGroupOnceFilledFor:sidebar];
+	NSOutlineView *sourceView = sidebar.sourceView;
+
+	[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:[sourceView rowForItem:worktreeGroup.sortedChildren.firstObject]] byExtendingSelection:NO];
+	[sidebar doubleClicked:sourceView];
+
+	XCTAssertEqualObjects(windowController.missingFolderExplainedFor.path.lastPathComponent, @"second");
 
 	[windowController close];
 }

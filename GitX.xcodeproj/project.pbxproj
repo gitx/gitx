@@ -165,6 +165,8 @@
 		7A1C4E2B0D3F58A9C6B41201 /* PBGitHistoryListCleanupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C4E2B0D3F58A9C6B41202 /* PBGitHistoryListCleanupTests.m */; };
 		7A1C4E2B90D3F5A6C1B80011 /* PBGitRepositoryFetchArgumentsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */; };
 		2F9D30A7C15B4E68B4720A50 /* PBGitBinarySearchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F9D30A7C15B4E68B4720A51 /* PBGitBinarySearchTests.m */; };
+		EDA0B673382143C99FF08BF1 /* PBGitWorktreeManagementTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 983BC9964567491793972591 /* PBGitWorktreeManagementTests.m */; };
+		E6091F19ADC34F5D96951951 /* PBGitBinaryVersionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 2387DE092483427FA369F82A /* PBGitBinaryVersionTests.m */; };
 		8A1C64D2B3E7492FA0561D40 /* OpenRecentControllerErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8A1C64D2B3E7492FA0561D41 /* OpenRecentControllerErrorTests.m */; };
 		5C0E7A2D9B4F4E1A8D3C6B70 /* OpenRecentControllerKeyboardTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C0E7A2D9B4F4E1A8D3C6B71 /* OpenRecentControllerKeyboardTests.m */; };
 		3D8A5F14C7E9420B96741C80 /* PBGitRepositoryIgnoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3D8A5F14C7E9420B96741C81 /* PBGitRepositoryIgnoreTests.m */; };
@@ -743,6 +745,8 @@
 		7A1C4E2B0D3F58A9C6B41202 /* PBGitHistoryListCleanupTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryListCleanupTests.m; path = GitXTests/PBGitHistoryListCleanupTests.m; sourceTree = "<group>"; };
 		7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryFetchArgumentsTests.m; path = GitXTests/PBGitRepositoryFetchArgumentsTests.m; sourceTree = "<group>"; };
 		2F9D30A7C15B4E68B4720A51 /* PBGitBinarySearchTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitBinarySearchTests.m; path = GitXTests/PBGitBinarySearchTests.m; sourceTree = "<group>"; };
+		983BC9964567491793972591 /* PBGitWorktreeManagementTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWorktreeManagementTests.m; path = GitXTests/PBGitWorktreeManagementTests.m; sourceTree = "<group>"; };
+		2387DE092483427FA369F82A /* PBGitBinaryVersionTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitBinaryVersionTests.m; path = GitXTests/PBGitBinaryVersionTests.m; sourceTree = "<group>"; };
 		8A1C64D2B3E7492FA0561D41 /* OpenRecentControllerErrorTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = OpenRecentControllerErrorTests.m; path = GitXTests/OpenRecentControllerErrorTests.m; sourceTree = "<group>"; };
 		5C0E7A2D9B4F4E1A8D3C6B71 /* OpenRecentControllerKeyboardTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = OpenRecentControllerKeyboardTests.m; path = GitXTests/OpenRecentControllerKeyboardTests.m; sourceTree = "<group>"; };
 		3D8A5F14C7E9420B96741C81 /* PBGitRepositoryIgnoreTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryIgnoreTests.m; path = GitXTests/PBGitRepositoryIgnoreTests.m; sourceTree = "<group>"; };
@@ -902,6 +906,8 @@
 				7A1C4E2B0D3F58A9C6B41202 /* PBGitHistoryListCleanupTests.m */,
 				7A1C4E2B90D3F5A6C1B80012 /* PBGitRepositoryFetchArgumentsTests.m */,
 				2F9D30A7C15B4E68B4720A51 /* PBGitBinarySearchTests.m */,
+				983BC9964567491793972591 /* PBGitWorktreeManagementTests.m */,
+				2387DE092483427FA369F82A /* PBGitBinaryVersionTests.m */,
 				8A1C64D2B3E7492FA0561D41 /* OpenRecentControllerErrorTests.m */,
 				5C0E7A2D9B4F4E1A8D3C6B71 /* OpenRecentControllerKeyboardTests.m */,
 				3D8A5F14C7E9420B96741C81 /* PBGitRepositoryIgnoreTests.m */,
@@ -1883,6 +1889,8 @@
 				7A1C4E2B0D3F58A9C6B41201 /* PBGitHistoryListCleanupTests.m in Sources */,
 				7A1C4E2B90D3F5A6C1B80011 /* PBGitRepositoryFetchArgumentsTests.m in Sources */,
 				2F9D30A7C15B4E68B4720A50 /* PBGitBinarySearchTests.m in Sources */,
+				EDA0B673382143C99FF08BF1 /* PBGitWorktreeManagementTests.m in Sources */,
+				E6091F19ADC34F5D96951951 /* PBGitBinaryVersionTests.m in Sources */,
 				8A1C64D2B3E7492FA0561D40 /* OpenRecentControllerErrorTests.m in Sources */,
 				5C0E7A2D9B4F4E1A8D3C6B70 /* OpenRecentControllerKeyboardTests.m in Sources */,
 				3D8A5F14C7E9420B96741C80 /* PBGitRepositoryIgnoreTests.m in Sources */,

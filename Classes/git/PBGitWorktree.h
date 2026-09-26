@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, getter=isBare) BOOL bare;
 @property (nonatomic, readonly, getter=isDetached) BOOL detached;
 @property (nonatomic, readonly, getter=isCurrent) BOOL current;
+@property (nonatomic, readonly, getter=isMain) BOOL main;
 
 @property (nonatomic, readonly, getter=isLocked) BOOL locked;
 @property (nonatomic, readonly, nullable) NSString *lockReason;

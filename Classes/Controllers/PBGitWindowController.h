@@ -10,6 +10,7 @@
 #import "PBHistorySearchMode.h"
 
 @class PBViewController;
+@class PBGitWorktree;
 @class PBGitSidebarController;
 @class PBGitCommitController;
 @class PBGitHistoryController;
@@ -53,6 +54,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)checkout:(id)sender;
 - (IBAction)openWorktree:(id)sender;
 - (void)openWorktreeHoldingRef:(PBGitRef *)ref;
+- (void)showMissingFolderOfWorktree:(PBGitWorktree *)worktree;
+- (IBAction)lockWorktree:(id)sender;
+- (IBAction)unlockWorktree:(id)sender;
+- (IBAction)revealWorktreeInFinder:(id)sender;
+- (IBAction)pruneWorktrees:(id)sender;
 - (IBAction)copyRefName:(id)sender;
 - (IBAction)createBranch:(id)sender;
 - (IBAction)createTag:(id)sender;

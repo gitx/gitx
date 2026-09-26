@@ -342,7 +342,11 @@
 
 	id item = [sourceView itemAtRow:rowNumber];
 	if ([item isKindOfClass:[PBSourceViewGitWorktreeItem class]]) {
-		[self openRepositoryAtURL:[(PBSourceViewGitWorktreeItem *)item URL]];
+		PBSourceViewGitWorktreeItem *worktreeItem = item;
+		if (worktreeItem.isUnavailable)
+			[self.windowController showMissingFolderOfWorktree:worktreeItem.worktree];
+		else
+			[self openRepositoryAtURL:worktreeItem.URL];
 	} else if ([item isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
 		PBSourceViewGitSubmoduleItem *subModule = item;
 
@@ -380,6 +384,8 @@
 	cell.textField.stringValue = [[item title] copy];
 	cell.imageView.image = item.icon;
 	cell.isCheckedOut = !worktreeItem && [item.revSpecifier isEqual:[self.repository headRef]];
+	cell.isLocked = worktreeItem.worktree.isLocked;
+	cell.isUnavailable = worktreeItem.isUnavailable;
 	cell.toolTip = worktreeItem ? worktreeItem.statusDescription : (item.ref.shortName ?: item.title);
 
 	return cell;
@@ -545,7 +551,7 @@
 
 - (void)updateActionMenu
 {
-	[actionButton setEnabled:([[self selectedItem] ref] != nil || [[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]])];
+	[actionButton setEnabled:([[self selectedItem] ref] != nil || [[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]] || [[self selectedItem] isKindOfClass:[PBSourceViewGitWorktreeItem class]])];
 }
 
 - (void)addMenuItemsForRef:(PBGitRef *)ref toMenu:(NSMenu *)menu
@@ -566,6 +572,15 @@
 
 	[menuItem setTarget:self];
 	[menuItem setRepresentedObject:[submodule path]];
+}
+
+- (void)addMenuItemsForWorktreeItem:(PBSourceViewItem *)item toMenu:(NSMenu *)menu
+{
+	if (![item isKindOfClass:[PBSourceViewGitWorktreeItem class]] || item.ref)
+		return;
+
+	for (NSMenuItem *menuItem in [self.windowController.historyViewController menuItemsForWorktree:[(PBSourceViewGitWorktreeItem *)item worktree]])
+		[menu addItem:menuItem];
 }
 
 - (NSMenuItem *)actionIconItem
@@ -594,6 +609,13 @@
 		[self addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)viewItem toMenu:menu];
 	}
 
+	[self addMenuItemsForWorktreeItem:viewItem toMenu:menu];
+
+	if (viewItem == worktrees) {
+		for (NSMenuItem *menuItem in [self.windowController.historyViewController menuItemsForWorktreeGroup])
+			[menu addItem:menuItem];
+	}
+
 	return menu;
 }
 
@@ -609,6 +631,8 @@
 	if ([[self selectedItem] isKindOfClass:[PBSourceViewGitSubmoduleItem class]]) {
 		[self addMenuItemsForSubmodule:(PBSourceViewGitSubmoduleItem *)[self selectedItem] toMenu:menu];
 	}
+
+	[self addMenuItemsForWorktreeItem:[self selectedItem] toMenu:menu];
 }
 
 

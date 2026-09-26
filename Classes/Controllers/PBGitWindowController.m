@@ -29,6 +29,7 @@
 #import "PBDiffWindowController.h"
 #import "PBGitStash.h"
 #import "PBGitCommit.h"
+#import "PBGitWorktree.h"
 
 @interface PBGitWindowController () <NSMenuItemValidation> {
 	__weak PBViewController *contentController;
@@ -731,6 +732,12 @@
 	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:ref];
 	if (!worktreePath) return;
 
+	PBGitWorktree *worktree = [self.repository worktreeHoldingRef:ref];
+	if (worktree && ![[NSFileManager defaultManager] fileExistsAtPath:worktreePath]) {
+		[self showMissingFolderOfWorktree:worktree];
+		return;
+	}
+
 	[[NSDocumentController sharedDocumentController] openDocumentWithContentsOfURL:[NSURL fileURLWithPath:worktreePath]
 																		  display:YES
 																completionHandler:^(NSDocument *document, BOOL documentWasAlreadyOpen, NSError *error) {
@@ -738,6 +745,89 @@
 																		[self showErrorSheet:error];
 																	}
 																}];
+}
+
+- (void)showMissingFolderOfWorktree:(PBGitWorktree *)worktree
+{
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = NSLocalizedString(@"The worktree’s folder is missing", @"Title of the sheet when a worktree's folder is not there");
+	alert.informativeText = worktree.isLocked ? [NSString stringWithFormat:NSLocalizedString(@"%@ is not there. The worktree is locked, which is how git is told a folder is on a disk that is not always connected: connect it and try again.", @"Explanation when a locked worktree's folder is not there"), worktree.path] : [NSString stringWithFormat:NSLocalizedString(@"%@ is not there. If it is on a disk that is not connected, connect it and try again. If it was deleted, Prune Worktrees… in the WORKTREES menu lets git forget it.", @"Explanation when a worktree's folder is not there"), worktree.path];
+	[alert beginSheetModalForWindow:self.window completionHandler:nil];
+}
+
+- (IBAction)lockWorktree:(id)sender
+{
+	PBGitWorktree *worktree = [sender representedObject];
+
+	NSTextField *reasonField = [NSTextField textFieldWithString:@""];
+	reasonField.placeholderString = NSLocalizedString(@"Reason (optional)", @"Placeholder for the reason a worktree is being locked");
+	reasonField.frame = NSMakeRect(0, 0, 300, reasonField.intrinsicContentSize.height);
+
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = [NSString stringWithFormat:NSLocalizedString(@"Lock the worktree at %@?", @"Title of the sheet that locks a worktree"), worktree.path];
+	alert.informativeText = NSLocalizedString(@"git will not prune, move or remove a locked worktree, and shows the reason to anyone who tries.", @"Explanation on the sheet that locks a worktree");
+	alert.accessoryView = reasonField;
+	[alert addButtonWithTitle:NSLocalizedString(@"Lock", @"Button that locks a worktree")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+	alert.window.initialFirstResponder = reasonField;
+
+	[alert beginSheetModalForWindow:self.window
+				  completionHandler:^(NSModalResponse returnCode) {
+					  if (returnCode != NSAlertFirstButtonReturn)
+						  return;
+
+					  NSError *error = nil;
+					  if (![self.repository lockWorktree:worktree reason:reasonField.stringValue error:&error])
+						  [self showErrorSheet:error];
+				  }];
+}
+
+- (IBAction)unlockWorktree:(id)sender
+{
+	NSError *error = nil;
+	if (![self.repository unlockWorktree:[sender representedObject] error:&error])
+		[self showErrorSheet:error];
+}
+
+- (IBAction)revealWorktreeInFinder:(id)sender
+{
+	PBGitWorktree *worktree = [sender representedObject];
+
+	[self revealURLsInFinder:@[ [NSURL fileURLWithPath:worktree.path] ]];
+}
+
+- (IBAction)pruneWorktrees:(id)sender
+{
+	NSError *error = nil;
+	NSString *report = [self.repository worktreePruneReportWithError:&error];
+	if (!report) {
+		[self showErrorSheet:error];
+		return;
+	}
+
+	NSAlert *alert = [[NSAlert alloc] init];
+
+	if (!report.length) {
+		alert.messageText = NSLocalizedString(@"Nothing to prune", @"Title of the sheet when no worktree can be pruned");
+		alert.informativeText = NSLocalizedString(@"Every worktree git knows of still has its folder.", @"Explanation when no worktree can be pruned");
+		[alert beginSheetModalForWindow:self.window completionHandler:nil];
+		return;
+	}
+
+	alert.messageText = NSLocalizedString(@"Prune these worktrees?", @"Title of the sheet that confirms pruning worktrees");
+	alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"git will forget these worktrees:\n\n%@", @"Explanation on the sheet that confirms pruning worktrees, followed by git's own list"), report];
+	[alert addButtonWithTitle:NSLocalizedString(@"Prune", @"Button that prunes worktrees")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Cancel")];
+
+	[alert beginSheetModalForWindow:self.window
+				  completionHandler:^(NSModalResponse returnCode) {
+					  if (returnCode != NSAlertFirstButtonReturn)
+						  return;
+
+					  NSError *pruneError = nil;
+					  if (![self.repository pruneWorktreesWithError:&pruneError])
+						  [self showErrorSheet:pruneError];
+				  }];
 }
 
 - (IBAction)merge:(id)sender

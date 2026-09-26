@@ -32,6 +32,8 @@
 #import "PBGitSidebarController.h"
 #import "NSString_Truncate.h"
 #import "PBGitCommitDateFormatter.h"
+#import "PBGitWorktree.h"
+#import "PBGitBinary.h"
 
 #define kHistorySelectedDetailIndexKey @"PBHistorySelectedDetailIndex"
 #define kHistoryDetailViewIndex 0
@@ -65,6 +67,7 @@
 
 @property (nonatomic, assign) BOOL awaitingBranchSelection;
 @property (nonatomic, strong) GTOID *lastSelectedOID;
+@property (nonatomic, copy, nullable) NSString *gitVersion;
 
 - (void)updateBranchFilterMatrix;
 - (void)restoreFileBrowserSelection;
@@ -78,6 +81,14 @@
 @synthesize webCommits, gitTree, commitController;
 @synthesize searchController;
 @synthesize commitList;
+
+- (NSString *)gitVersion
+{
+	if (!_gitVersion)
+		_gitVersion = [[PBGitBinary version] copy];
+
+	return _gitVersion;
+}
 @synthesize treeController;
 @synthesize selectedCommits;
 
@@ -1138,6 +1149,70 @@
 	return items;
 }
 
+- (NSMenuItem *)menuItemWithTitle:(NSString *)title action:(SEL)action worktree:(PBGitWorktree *)worktree disabledBecause:(NSString *)reason
+{
+	NSMenuItem *item = [NSMenuItem pb_itemWithTitle:title action:action enabled:!reason];
+	item.toolTip = reason;
+	item.representedObject = worktree;
+
+	return item;
+}
+
+- (NSArray<NSMenuItem *> *)lockMenuItemsForWorktree:(PBGitWorktree *)worktree
+{
+	NSString *lockTitle = NSLocalizedString(@"Lock Worktree…", @"Contextual Menu Item to lock a worktree");
+	NSString *unlockTitle = NSLocalizedString(@"Unlock Worktree", @"Contextual Menu Item to unlock a worktree");
+	NSString *version = self.gitVersion;
+
+	if (worktree.isMain)
+		return @[ [self menuItemWithTitle:lockTitle action:@selector(lockWorktree:) worktree:worktree disabledBecause:NSLocalizedString(@"git cannot lock the main worktree", @"Contextual Menu Item tooltip for the main worktree, which cannot be locked")] ];
+
+	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreeLockVersion])
+		return @[ [self menuItemWithTitle:lockTitle action:@selector(lockWorktree:) worktree:worktree disabledBecause:[PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreeLockVersion]] ];
+
+	NSMenuItem *lock = [self menuItemWithTitle:lockTitle action:@selector(lockWorktree:) worktree:worktree disabledBecause:nil];
+	NSMenuItem *unlock = [self menuItemWithTitle:unlockTitle action:@selector(unlockWorktree:) worktree:worktree disabledBecause:nil];
+
+	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreeStateVersion]) {
+		NSLog(@"git %@ does not report whether a worktree is locked, so both lock and unlock are offered", version);
+		return @[ lock, unlock ];
+	}
+
+	return @[ worktree.isLocked ? unlock : lock ];
+}
+
+- (NSMenuItem *)revealMenuItemForWorktree:(PBGitWorktree *)worktree
+{
+	NSString *reason = nil;
+	if (![[NSFileManager defaultManager] fileExistsAtPath:worktree.path])
+		reason = [NSString stringWithFormat:NSLocalizedString(@"The folder %@ no longer exists", @"Contextual Menu Item tooltip for a worktree whose folder is gone"), worktree.path];
+
+	return [self menuItemWithTitle:NSLocalizedString(@"Reveal Worktree in Finder", @"Contextual Menu Item to show a worktree's folder in the Finder") action:@selector(revealWorktreeInFinder:) worktree:worktree disabledBecause:reason];
+}
+
+- (NSArray<NSMenuItem *> *)menuItemsForWorktree:(PBGitWorktree *)worktree
+{
+	return [@[ [self revealMenuItemForWorktree:worktree] ] arrayByAddingObjectsFromArray:[self lockMenuItemsForWorktree:worktree]];
+}
+
+- (NSArray<NSMenuItem *> *)menuItemsForWorktreeGroup
+{
+	NSString *title = NSLocalizedString(@"Prune Worktrees…", @"Contextual Menu Item to prune worktrees whose folders are gone");
+	NSString *version = self.gitVersion;
+
+	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreePruneVersion])
+		return @[ [self menuItemWithTitle:title action:@selector(pruneWorktrees:) worktree:nil disabledBecause:[PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreePruneVersion]] ];
+
+	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreeStateVersion])
+		return @[ [self menuItemWithTitle:title action:@selector(pruneWorktrees:) worktree:nil disabledBecause:nil] ];
+
+	for (PBGitWorktree *worktree in self.repository.worktrees)
+		if (worktree.isPrunable || ![[NSFileManager defaultManager] fileExistsAtPath:worktree.path])
+			return @[ [self menuItemWithTitle:title action:@selector(pruneWorktrees:) worktree:nil disabledBecause:nil] ];
+
+	return @[ [self menuItemWithTitle:title action:@selector(pruneWorktrees:) worktree:nil disabledBecause:NSLocalizedString(@"Every worktree still has its folder", @"Contextual Menu Item tooltip when no worktree can be pruned")] ];
+}
+
 - (NSArray<NSMenuItem *> *)menuItemsForRef:(PBGitRef *)ref
 {
 	if (!ref) {
@@ -1171,6 +1246,7 @@
 	BOOL isRemote = (ref.isRemote && !ref.isRemoteBranch);
 
 	NSString *worktreePath = [self.repository pathOfWorktreeHoldingRef:ref];
+	PBGitWorktree *worktree = worktreePath ? [self.repository worktreeHoldingRef:ref] : nil;
 
 	// copy ref name
 	NSString *copyTitle = [NSString stringWithFormat:NSLocalizedString(@"Copy name “%@”", @"Contextual Menu Item to copy the selected ref's name to the clipboard"), refName];
@@ -1190,6 +1266,11 @@
 		}
 		[items addObject:copyItem];
 		[items addObject:[NSMenuItem separatorItem]];
+
+		if (worktree) {
+			[items addObjectsFromArray:[self menuItemsForWorktree:worktree]];
+			[items addObject:[NSMenuItem separatorItem]];
+		}
 
 		// create branch
 		NSString *createBranchTitle = ref.isRemoteBranch ? [NSString stringWithFormat:NSLocalizedString(@"Create Branch tracking “%@”…", @"Contextual Menu Item to create a branch tracking the selected remote branch"), refName] : NSLocalizedString(@"Create Branch…", @"Contextual Menu Item to create a new branch at the selected ref");

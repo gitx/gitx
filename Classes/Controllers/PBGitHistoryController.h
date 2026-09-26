@@ -11,6 +11,7 @@
 #import "PBHistorySearchMode.h"
 
 @class PBGitCommit;
+@class PBGitWorktree;
 @class PBGitTree;
 @class PBGitRef;
 
@@ -75,6 +76,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface PBGitHistoryController (PBContextMenu)
 
 - (NSArray *)menuItemsForRef:(PBGitRef *)refs;
+- (NSArray<NSMenuItem *> *)menuItemsForWorktree:(PBGitWorktree *)worktree;
+- (NSArray<NSMenuItem *> *)menuItemsForWorktreeGroup;
 - (NSArray *)menuItemsForCommits:(NSArray<PBGitCommit *> *)commits;
 
 @end

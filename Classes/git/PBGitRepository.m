@@ -49,8 +49,6 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 - (void)reloadWorktreePaths;
 - (void)startWorktreeLookupIfIdle;
-- (NSDictionary<NSString *, NSString *> *)readWorktreePathsExcluding:(NSString *)ourPath;
-- (void)takeWorktreePaths:(NSDictionary<NSString *, NSString *> *)paths;
 
 @end
 
@@ -344,7 +342,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 	if (![PBGitBinary path].length) {
 		self.worktreePathsNeedRefresh = NO;
-		[self takeWorktreePaths:@{}];
+		[self takeWorktrees:@[]];
 		return;
 	}
 
@@ -411,9 +409,61 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return [self pathOfWorktreeHoldingRef:ref] != nil;
 }
 
+- (PBGitWorktree *)worktreeHoldingRef:(PBGitRef *)ref
+{
+	for (PBGitWorktree *worktree in self.worktrees)
+		if (!worktree.isCurrent && [worktree.branchRefName isEqualToString:ref.ref])
+			return worktree;
+
+	return nil;
+}
+
 - (NSArray<NSString *> *)refNamesHeldByOtherWorktrees
 {
 	return self.worktreePathsByRefName.allKeys;
+}
+
+- (BOOL)changeWorktreesWithArguments:(NSArray<NSString *> *)arguments failureTitle:(NSString *)title error:(NSError **)error
+{
+	NSError *gitError = nil;
+	NSString *output = [self outputOfTaskWithArguments:[@[ @"worktree" ] arrayByAddingObjectsFromArray:arguments] error:&gitError];
+	if (!output)
+		return PBReturnError(error, title, [self failureReasonFromTaskError:gitError orFallback:title], gitError);
+
+	[self reloadWorktreePaths];
+	return YES;
+}
+
+- (BOOL)lockWorktree:(PBGitWorktree *)worktree reason:(NSString *)reason error:(NSError **)error
+{
+	NSMutableArray<NSString *> *arguments = [NSMutableArray arrayWithObject:@"lock"];
+	if (reason.length)
+		[arguments addObjectsFromArray:@[ @"--reason", reason ]];
+	[arguments addObject:worktree.path];
+
+	return [self changeWorktreesWithArguments:arguments failureTitle:@"Lock failed" error:error];
+}
+
+- (BOOL)unlockWorktree:(PBGitWorktree *)worktree error:(NSError **)error
+{
+	return [self changeWorktreesWithArguments:@[ @"unlock", worktree.path ] failureTitle:@"Unlock failed" error:error];
+}
+
+- (NSString *)worktreePruneReportWithError:(NSError **)error
+{
+	NSError *gitError = nil;
+	NSString *output = [self outputOfTaskWithArguments:@[ @"worktree", @"prune", @"--dry-run", @"--verbose" ] error:&gitError];
+	if (!output) {
+		PBReturnError(error, @"Prune failed", [self failureReasonFromTaskError:gitError orFallback:@"Prune failed"], gitError);
+		return nil;
+	}
+
+	return [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+}
+
+- (BOOL)pruneWorktreesWithError:(NSError **)error
+{
+	return [self changeWorktreesWithArguments:@[ @"prune" ] failureTitle:@"Prune failed" error:error];
 }
 
 - (void)lazyReload

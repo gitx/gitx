@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @property (assign, nonatomic) BOOL isCheckedOut;
+@property (assign, nonatomic) BOOL isLocked;
+@property (assign, nonatomic) BOOL isUnavailable;
 
 NS_ASSUME_NONNULL_END
 
