@@ -12,3 +12,8 @@
 
 	-webkit-border-radius: 10px;
 }
+
+.body--dark #message {
+	background-color: #274262;
+	border: 2px solid #3279c2;
+}
