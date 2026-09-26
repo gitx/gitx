@@ -162,6 +162,9 @@ static OpenRecentController *recentsDialog = nil;
 	if (menuItem.action == @selector(changeAppearance:))
 		menuItem.state = (menuItem.tag == [PBGitDefaults appearance]) ? NSControlStateValueOn : NSControlStateValueOff;
 
+	if (menuItem.action == @selector(installCliTool:))
+		menuItem.state = [self isCliToolInstalled] ? NSControlStateValueOn : NSControlStateValueOff;
+
 	return YES;
 }
 
@@ -302,6 +305,30 @@ static OpenRecentController *recentsDialog = nil;
 		alert.informativeText = [NSString stringWithFormat:NSLocalizedString(@"Installation to %@ failed.", @"Informative text for successfully completed installation of the command line tool at the location %@"), installationPath];
 	}
 	[alert runModal];
+}
+
+// The full path the "Enable Terminal Usage…" menu item installs, e.g. /usr/local/bin/gitx.
+- (NSString *)cliToolInstalledPath
+{
+	return @"/usr/local/bin/gitx";
+}
+
+// YES when /usr/local/bin/gitx is a symlink pointing at the gitx tool bundled
+// inside this app, i.e. -installCliTool: has already been run for this copy
+// of GitX. Used to show a checkmark on the menu item rather than re-running
+// the installer (and re-prompting for admin credentials) unconditionally.
+- (BOOL)isCliToolInstalled
+{
+	NSString *toolPath = [[NSBundle mainBundle] pathForResource:@"gitx" ofType:@""];
+	if (!toolPath)
+		return NO;
+
+	NSString *installedPath = [self cliToolInstalledPath];
+	NSString *destination = [[NSFileManager defaultManager] destinationOfSymbolicLinkAtPath:installedPath error:nil];
+	if (!destination)
+		return NO;
+
+	return [destination.stringByStandardizingPath isEqualToString:toolPath.stringByStandardizingPath];
 }
 
 #pragma mark Sparkle delegate methods
