@@ -8,6 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @class PBGitHistoryList;
 @class PBGitWorktree;
 @class PBGitRevSpecifier;
@@ -43,27 +45,34 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 
 @interface PBGitRepository : NSObject
 
-@property (nonatomic, weak) PBGitRepositoryDocument *document; // Backward-compatibility while PBGitRepository gets "modelized";
+// Weak, so it zeroes out on its own once the owning document is gone, aside
+// from ever being unset while GitX still supports non-document-backed uses.
+@property (nonatomic, weak, nullable) PBGitRepositoryDocument *document; // Backward-compatibility while PBGitRepository gets "modelized";
 
 @property (nonatomic, assign) BOOL hasChanged;
 @property (nonatomic, assign) NSInteger currentBranchFilter;
 
-@property (readonly, getter=getIndexURL) NSURL *indexURL;
+@property (readonly, getter=getIndexURL, nullable) NSURL *indexURL;
 
-@property (nonatomic, strong) PBGitHistoryList *revisionList;
+// Unset until -initWithURL:error: (or a test double built with plain -init)
+// gives the repository somewhere to read history from.
+@property (nonatomic, strong, nullable) PBGitHistoryList *revisionList;
 @property (nonatomic, readonly, strong) NSArray<PBGitStash *> *stashes;
 @property (nonatomic, readonly, strong) NSArray<PBGitRevSpecifier *> *branches;
 @property (nonatomic, strong) NSMutableOrderedSet<PBGitRevSpecifier *> *branchesSet;
-@property (nonatomic, strong) PBGitRevSpecifier *currentBranch;
+// Unset until -readCurrentBranch runs.
+@property (nonatomic, strong, nullable) PBGitRevSpecifier *currentBranch;
 @property (nonatomic, strong) NSMutableDictionary<GTOID *, NSMutableArray<PBGitRef *> *> *refs;
-@property (readonly, strong) GTRepository *gtRepo;
+// Unset on a repository built with plain -init, as GitXTests' fakes do.
+@property (readonly, strong, nullable) GTRepository *gtRepo;
 @property (nonatomic, readonly) BOOL isShallowRepository;
 
 @property (nonatomic, strong) NSMutableArray<GTSubmodule *> *submodules;
 @property (readonly, strong) PBGitIndex *index;
 
-// Designated initializer
-- (id)initWithURL:(NSURL *)repositoryURL error:(NSError **)error;
+// Designated initializer. Returns nil, with a reason in error, when
+// repositoryURL isn't (in) a git repository.
+- (nullable instancetype)initWithURL:(NSURL *)repositoryURL error:(NSError **)error;
 
 - (BOOL)addRemote:(NSString *)remoteName withURL:(NSString *)URLString error:(NSError **)error;
 - (BOOL)fetchRemoteForRef:(PBGitRef *)ref error:(NSError **)error;
@@ -93,15 +102,17 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)mergeWithRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)cherryPickRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)resetRefish:(GTRepositoryResetType)mode to:(id<PBGitRefish>)ref error:(NSError **)error;
-- (BOOL)rebaseBranch:(id<PBGitRefish>)branch onRefish:(id<PBGitRefish>)upstream error:(NSError **)error;
+// nil branch means HEAD.
+- (BOOL)rebaseBranch:(nullable id<PBGitRefish>)branch onRefish:(id<PBGitRefish>)upstream error:(NSError **)error;
 - (BOOL)createBranch:(NSString *)branchName atRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)createTag:(NSString *)tagName message:(NSString *)message atRefish:(id<PBGitRefish>)commitSHA error:(NSError **)error;
 - (BOOL)deleteRemote:(PBGitRef *)ref error:(NSError **)error;
 - (BOOL)deleteRemoteBranch:(PBGitRef *)ref error:(NSError **)error;
 - (BOOL)deleteRef:(PBGitRef *)ref error:(NSError **)error;
 
-- (NSDictionary<NSString *, NSString *> *)gitConfigDictionaryForScope:(PBGitConfigScope)scope error:(NSError **)error;
-- (BOOL)setGitConfigValue:(NSString *)value forKey:(NSString *)key scope:(PBGitConfigScope)scope error:(NSError **)error;
+- (nullable NSDictionary<NSString *, NSString *> *)gitConfigDictionaryForScope:(PBGitConfigScope)scope error:(NSError **)error;
+// A nil or empty value unsets the key instead of writing it.
+- (BOOL)setGitConfigValue:(nullable NSString *)value forKey:(NSString *)key scope:(PBGitConfigScope)scope error:(NSError **)error;
 
 - (BOOL)stashPop:(PBGitStash *)stash error:(NSError **)error;
 - (BOOL)stashApply:(PBGitStash *)stash error:(NSError **)error;
@@ -112,13 +123,15 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)ignoreFilePaths:(NSArray *)filePaths error:(NSError **)error;
 
 - (BOOL)updateReference:(PBGitRef *)ref toPointAtCommit:(PBGitCommit *)newCommit error:(NSError **)error;
-- (NSString *)performDiff:(PBGitCommit *)startCommit against:(PBGitCommit *)diffCommit forFiles:(NSArray *)filePaths;
+// nil diffCommit diffs against HEAD; nil filePaths diffs every file.
+- (NSString *)performDiff:(PBGitCommit *)startCommit against:(nullable PBGitCommit *)diffCommit forFiles:(nullable NSArray *)filePaths;
 
 - (NSURL *)gitURL;
 
 - (BOOL)executeHook:(NSString *)name error:(NSError **)error;
 - (BOOL)executeHook:(NSString *)name arguments:(NSArray *)arguments error:(NSError **)error;
-- (BOOL)executeHook:(NSString *)name arguments:(NSArray *)arguments output:(NSString **)outputPtr error:(NSError **)error;
+// Pass NULL for outputPtr to discard the hook's output.
+- (BOOL)executeHook:(NSString *)name arguments:(NSArray *)arguments output:(NSString * _Nullable * _Nullable)outputPtr error:(NSError **)error;
 - (BOOL)hookExists:(NSString *)name;
 
 - (NSString *)workingDirectory;
@@ -132,23 +145,23 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 
 - (void)reloadRefs;
 - (void)lazyReload;
-- (PBGitRevSpecifier *)headRef;
+- (nullable PBGitRevSpecifier *)headRef;
 - (GTOID *)headOID;
 - (PBGitCommit *)headCommit;
-- (GTOID *)OIDForRef:(PBGitRef *)ref;
-- (PBGitCommit *)commitForRef:(PBGitRef *)ref;
-- (PBGitCommit *)commitForOID:(GTOID *)sha;
+- (nullable GTOID *)OIDForRef:(PBGitRef *)ref;
+- (nullable PBGitCommit *)commitForRef:(PBGitRef *)ref;
+- (nullable PBGitCommit *)commitForOID:(GTOID *)sha;
 - (BOOL)isOIDOnSameBranch:(GTOID *)baseOID asOID:(GTOID *)testOID;
 - (BOOL)isOIDOnHeadBranch:(GTOID *)testOID;
 - (PBGitStash *)stashForRef:(PBGitRef *)ref;
 - (BOOL)isRefOnHeadBranch:(PBGitRef *)testRef;
 - (BOOL)checkRefFormat:(NSString *)refName;
 - (BOOL)refExists:(PBGitRef *)ref;
-- (PBGitRef *)refForName:(NSString *)name;
+- (nullable PBGitRef *)refForName:(NSString *)name;
 
-- (NSArray<NSString *> *)remotes;
+- (nullable NSArray<NSString *> *)remotes;
 - (BOOL)hasRemotes;
-- (PBGitRef *)remoteRefForBranch:(PBGitRef *)branch error:(NSError **)error;
+- (nullable PBGitRef *)remoteRefForBranch:(PBGitRef *)branch error:(NSError **)error;
 
 - (void)readCurrentBranch;
 - (PBGitRevSpecifier *)addBranch:(PBGitRevSpecifier *)rev;
@@ -157,8 +170,10 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)revisionExists:(NSString *)spec;
 
 - (void)forceUpdateRevisions;
-- (NSURL *)getIndexURL;
+- (nullable NSURL *)getIndexURL;
 
-- (GTSubmodule *)submoduleAtPath:(NSString *)path error:(NSError **)error;
+- (nullable GTSubmodule *)submoduleAtPath:(NSString *)path error:(NSError **)error;
 
 @end
+
+NS_ASSUME_NONNULL_END
