@@ -596,8 +596,12 @@
 	NSError *error = nil;
 	XCTAssertTrue([self.repository addWorktreeAtPath:[self siblingPath:@"loose-here"] branch:[PBGitRef refFromString:@"refs/heads/loose"] error:&error], @"%@", error);
 
+	// A `git worktree list` already in flight from -setUp can land mid-add, when
+	// git still reports the new worktree as an unborn, detached, locked
+	// placeholder, so the wait has to settle on the branch it ends up on, not
+	// merely on the worktree's existence.
 	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
-		return [self worktreeNamed:@"loose-here"] != nil;
+		return [[self worktreeNamed:@"loose-here"].branchRefName isEqualToString:@"refs/heads/loose"];
 	}];
 	XCTAssertEqualObjects([self worktreeNamed:@"loose-here"].branchRefName, @"refs/heads/loose");
 }
@@ -607,8 +611,10 @@
 	NSError *error = nil;
 	XCTAssertTrue([self.repository addWorktreeAtPath:[self siblingPath:@"fresh-here"] newBranchNamed:@"fresh" error:&error], @"%@", error);
 
+	// See the comment above: wait for the branch itself, since a lookup started
+	// before the add can still observe the worktree mid-creation.
 	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
-		return [self worktreeNamed:@"fresh-here"] != nil;
+		return [[self worktreeNamed:@"fresh-here"].branchRefName isEqualToString:@"refs/heads/fresh"];
 	}];
 	XCTAssertEqualObjects([self worktreeNamed:@"fresh-here"].branchRefName, @"refs/heads/fresh");
 }
