@@ -1183,11 +1183,17 @@
 
 - (NSMenuItem *)revealMenuItemForWorktree:(PBGitWorktree *)worktree
 {
-	NSString *reason = nil;
-	if (![[NSFileManager defaultManager] fileExistsAtPath:worktree.path])
-		reason = [NSString stringWithFormat:NSLocalizedString(@"The folder %@ no longer exists", @"Contextual Menu Item tooltip for a worktree whose folder is gone"), worktree.path];
+	return [self menuItemWithTitle:NSLocalizedString(@"Reveal Worktree in Finder", @"Contextual Menu Item to show a worktree's folder in the Finder") action:@selector(revealWorktreeInFinder:) worktree:worktree disabledBecause:nil];
+}
 
-	return [self menuItemWithTitle:NSLocalizedString(@"Reveal Worktree in Finder", @"Contextual Menu Item to show a worktree's folder in the Finder") action:@selector(revealWorktreeInFinder:) worktree:worktree disabledBecause:reason];
+- (NSMenuItem *)locateMenuItemForWorktree:(PBGitWorktree *)worktree
+{
+	NSString *version = self.gitVersion;
+	NSString *reason = nil;
+	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreeRepairVersion])
+		reason = [PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreeRepairVersion];
+
+	return [self menuItemWithTitle:NSLocalizedString(@"Locate Worktree Folder…", @"Contextual Menu Item to tell git where a worktree's folder was moved to") action:@selector(locateWorktreeFolder:) worktree:worktree disabledBecause:reason];
 }
 
 - (NSMenuItem *)removeMenuItemForWorktree:(PBGitWorktree *)worktree
@@ -1224,7 +1230,10 @@
 
 - (NSArray<NSMenuItem *> *)worktreeGroupItemsForWorktree:(PBGitWorktree *)worktree
 {
-	return [@[ [self revealMenuItemForWorktree:worktree] ] arrayByAddingObjectsFromArray:[self lockMenuItemsForWorktree:worktree]];
+	BOOL folderIsThere = [[NSFileManager defaultManager] fileExistsAtPath:worktree.path];
+	NSMenuItem *folderItem = folderIsThere ? [self revealMenuItemForWorktree:worktree] : [self locateMenuItemForWorktree:worktree];
+
+	return [@[ folderItem ] arrayByAddingObjectsFromArray:[self lockMenuItemsForWorktree:worktree]];
 }
 
 - (NSArray<NSMenuItem *> *)menuItemsForWorktree:(PBGitWorktree *)worktree
