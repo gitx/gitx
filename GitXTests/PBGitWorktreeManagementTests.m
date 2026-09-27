@@ -153,9 +153,16 @@
 {
 	[self.repository reloadWorktreePaths];
 
-	NSDate *limit = [NSDate dateWithTimeIntervalSinceNow:10];
+	// -reloadWorktreePaths dispatches a background `git worktree list` and hops
+	// back to the main queue, so this polls the run loop rather than blocking
+	// it. 20s gives a loaded CI runner enough headroom; asserting afterwards
+	// turns a stall into a clear failure here instead of a confusing mismatch
+	// at the call site once the timeout is reached.
+	NSDate *limit = [NSDate dateWithTimeIntervalSinceNow:20];
 	while (!condition([self second]) && [limit timeIntervalSinceNow] > 0)
 		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+
+	XCTAssertTrue(condition([self second]), @"Worktrees did not reach the expected state before the wait timed out");
 }
 
 - (NSString *)siblingPath:(NSString *)name
