@@ -466,6 +466,27 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	return [self changeWorktreesWithArguments:@[ @"prune" ] failureTitle:@"Prune failed" error:error];
 }
 
+- (BOOL)addWorktreeAtPath:(NSString *)path branch:(PBGitRef *)branch error:(NSError **)error
+{
+	return [self changeWorktreesWithArguments:@[ @"add", path, branch.shortName ] failureTitle:@"Adding the worktree failed" error:error];
+}
+
+- (BOOL)addWorktreeAtPath:(NSString *)path newBranchNamed:(NSString *)name error:(NSError **)error
+{
+	if (![self changeWorktreesWithArguments:@[ @"add", @"-b", name, path ] failureTitle:@"Adding the worktree failed" error:error])
+		return NO;
+
+	[self reloadRefs];
+	return YES;
+}
+
+- (BOOL)removeWorktree:(PBGitWorktree *)worktree force:(BOOL)force error:(NSError **)error
+{
+	NSArray<NSString *> *arguments = force ? @[ @"remove", @"--force", worktree.path ] : @[ @"remove", worktree.path ];
+
+	return [self changeWorktreesWithArguments:arguments failureTitle:@"Removing the worktree failed" error:error];
+}
+
 - (void)lazyReload
 {
 	if (!hasChanged)

@@ -9,8 +9,10 @@
 #import <Cocoa/Cocoa.h>
 
 #define MIN_GIT_VERSION "1.6.0"
+#define PBGitWorktreeAddVersion "2.5"
 #define PBGitWorktreePruneVersion "2.5"
 #define PBGitWorktreeLockVersion "2.10"
+#define PBGitWorktreeRemoveVersion "2.17"
 #define PBGitWorktreeStateVersion "2.31"
 
 @interface PBGitBinary : NSObject

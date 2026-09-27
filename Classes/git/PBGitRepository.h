@@ -84,6 +84,9 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 // What `git worktree prune` would remove and why, one line each; empty when nothing.
 - (nullable NSString *)worktreePruneReportWithError:(NSError **)error;
 - (BOOL)pruneWorktreesWithError:(NSError **)error;
+- (BOOL)addWorktreeAtPath:(NSString *)path branch:(PBGitRef *)branch error:(NSError **)error;
+- (BOOL)addWorktreeAtPath:(NSString *)path newBranchNamed:(NSString *)name error:(NSError **)error;
+- (BOOL)removeWorktree:(PBGitWorktree *)worktree force:(BOOL)force error:(NSError **)error;
 
 - (BOOL)checkoutRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)checkoutFiles:(NSArray *)files fromRefish:(id<PBGitRefish>)ref error:(NSError **)error;
