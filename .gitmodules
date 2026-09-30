@@ -18,4 +18,4 @@
 	url = git@github.com:hannesa2/screenShotScript.git
 [submodule "git-diff-image"]
 	path = git-diff-image
-	url = git@github.com:ewanmellor/git-diff-image.git
+	url = git@github.com:hannesa2/git-diff-image.git
