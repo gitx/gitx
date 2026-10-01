@@ -816,7 +816,7 @@ IA
                         <segmentedControl verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="48">
                             <rect key="frame" x="268" y="3" width="67" height="23"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            <segmentedCell key="cell" state="on" borderStyle="border" alignment="left" style="texturedSquare" trackingMode="selectOne" id="51">
+                            <segmentedCell key="cell" state="on" borderStyle="border" alignment="left" style="rounded" trackingMode="selectOne" id="51">
                                 <font key="font" metaFont="system"/>
                                 <segments>
                                     <segment toolTip="Detailed View" image="DetailViewTemplate" imageScaling="none" width="32" selected="YES"/>
