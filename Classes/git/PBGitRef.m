@@ -126,6 +126,20 @@ NSString *const kGitXStashRefPrefix = @"refs/stash@";
 	return [self.ref isEqualToString:[otherRef ref]];
 }
 
+- (BOOL)isEqual:(id)object
+{
+	if (self == object)
+		return YES;
+	if (![object isKindOfClass:[PBGitRef class]])
+		return NO;
+	return [self isEqualToRef:object];
+}
+
+- (NSUInteger)hash
+{
+	return self.ref.hash;
+}
+
 - (PBGitRef *)remoteRef
 {
 	if (![self isRemote])
