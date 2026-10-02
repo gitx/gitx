@@ -160,6 +160,7 @@ Dev.xcconfig: ## Write the local signing settings from the keychain certificate
 
 git-submodule-sync: ## Check out the submodules at the revisions this tree wants
 	git submodule sync
+	scripts/repair-submodules.sh
 	git submodule update --init --recursive
 
 # Locally this warns and carries on: parking a submodule on a commit of your
@@ -172,20 +173,22 @@ git-submodule-sync: ## Check out the submodules at the revisions this tree wants
 #
 # GitHub reads its annotations from stdout, and %0A is how one carries a
 # newline.
-git-submodule-check: ## Report a submodule that is not at the revision this tree wants
+git-submodule-check: ## Report a submodule that is not checked out at the revision this tree wants
 	@drifted=$$(git submodule status --recursive 2>/dev/null | sed -n 's/^[+-]//p'); \
-	test -n "$$drifted" || exit 0; \
-	list=$$(echo "$$drifted" | awk '{ print $$2 " is at " substr($$1, 1, 8) }'); \
+	unfinished=$$(scripts/repair-submodules.sh --check); \
+	test -n "$$drifted$$unfinished" || exit 0; \
+	list=$$(echo "$$drifted" | awk 'NF { print $$2 " is at " substr($$1, 1, 8) }'; \
+		echo "$$unfinished" | sed '/^$$/d'); \
 	if [ -n "$$GITHUB_ACTIONS" ]; then \
-		summary="the checkout left submodules that are not at the recorded revisions"; \
+		summary="the checkout left submodules that are not checked out at the recorded revisions"; \
 		echo "::error title=Submodule drift::$$(printf '%s\n%s\n' "$$summary" "$$list" \
 			| awk '{ printf "%s%s", separator, $$0; separator = "%0A" }')"; \
 		{ echo "error: $$summary:"; echo "$$list" | sed 's/^/  /'; } >&2; \
 		exit 1; \
 	fi; \
-	{ echo "warning: submodules are not at the revisions this tree wants:"; \
+	{ echo "warning: submodules are not checked out at the revisions this tree wants:"; \
 	  echo "$$list" | sed 's/^/  /'; \
-	  echo 'run `make git-submodule-sync` to check them out'; } >&2
+	  echo 'run `make bootstrap` to check them out and build the dependencies'; } >&2
 
 # The compile meets both sets of git2 headers and dies before the phase that
 # refreshes the copy runs, so a build directory in this state cannot recover.
@@ -237,6 +240,7 @@ format-warning: ## Report lines this branch changed that clang-format would refo
 	  echo 'run `make format` to reformat them, or `make format-check` to see how'; } >&2
 
 deps: ## Build the objective-git and libgit2 dependencies
+	@test -x External/objective-git/script/bootstrap || { echo 'the submodules are not checked out: run `make bootstrap`' >&2; exit 1; }
 	cd External/objective-git && script/bootstrap && script/update_libgit2
 
 # CI gets the submodules from actions/checkout and so calls `deps` on its own;

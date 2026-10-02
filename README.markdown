@@ -26,23 +26,26 @@ See also: [How to Build in Xcode](#how-to-build-in-xcode)
 
 ### How to Build in Xcode:
 
-To build and run in the Xcode app with your own developer account, create
-a config file called `Dev.xcconfig` at the project root like this:
+In a fresh clone, run `make bootstrap` before the first build, in Xcode or on
+the command line - \
+it checks out the submodules and builds the `objective-git`
+and `libgit2` dependencies the app links against. If it stops partway, on a
+dropped connection for instance, run it again.
 
-```
-DEVELOPMENT_TEAM = YOUR_TEAM_ID
-CODE_SIGN_IDENTITY = YOUR_CERT_NAME
-ENABLE_HARDENED_RUNTIME = YES
-```
+You can also build and run on the command line. The `Makefile` wraps the
+commands CI uses: `make build`, `make unit-test` and `make dmg` are the common
+ones, `make help` lists them all, and `ARCH=x86_64` selects an x86 build.
 
-Replace `YOUR_TEAM_ID` with your development team ID and `YOUR_CERT_NAME` with the name of your certificate.
-If you don't know your ID or don't have a certificate yet, follow the steps below.
+From a fresh clone, `make bootstrap run` builds the app and opens it.
 
-Once a certificate is in your keychain, `make Dev.xcconfig` writes this file
-for you, reading both values off the certificate itself.
+#### Signing (optional)
 
-The certificate name is usually something like _Apple Development, Mac Developer, iPhone Developer, Apple Developer,_ etc.
-In the steps below, we assume the certificate name to be _"Apple Development"_ but you should use the name you see in your keychain.
+Debug builds, from Xcode or `make run`, are signed ad-hoc and need no setup.
+Signing with your own certificate is only needed for a build with the hardened
+runtime on, and for `make dmg-signed`. It takes a `Dev.xcconfig` file at the
+project root, which git ignores.
+
+If you don't have a development certificate yet:
 
 1. Open the **Xcode** app.
 2. In Settings > Accounts, if you haven't added your Apple ID yet, click the `+` button and add your Apple ID.
@@ -50,19 +53,13 @@ In the steps below, we assume the certificate name to be _"Apple Development"_ b
 4. Click on the **Manage Certificates** button.
 5. If you don't see any certificate listed, click the `+` button and click on **Apple Development**.
 6. Click Done and close the Settings window.
-7. Use Spotlight to open **Keychain Access** (or open it in Applications > Utilities).
-8. Go to the `login` keychain, and open the **My Certificates** tab.
-9. Find the certificate named **Apple Development** with your Apple ID email address.
-10. Double-click on this certificate to view its details.
-11. Copy the **Organizational Unit** value. This is your development team ID.
 
-You can also build and run on the command line. The `Makefile` wraps the
-commands CI uses: `make build`, `make unit-test` and `make dmg` are the common
-ones, `make help` lists them all, and `ARCH=x86_64` selects an x86 build.
-
-Once you've created the config file, you may also use
-[the script shared here](https://github.com/gitx/gitx/discussions/366#discussion-4897466).
-For x86 builds, please replace `arm64` with `x86_64`.
+Then `make Dev.xcconfig` writes the file, reading your team ID and certificate
+name off the certificate itself, or says what is missing if it cannot. It never
+overwrites a file that is already there: after renewing the certificate, run
+`FORCE=1 scripts/make-dev-xcconfig.sh`.
+If your keychain holds certificates for more than one team, pick one with
+`TEAM=YOUR_TEAM_ID make Dev.xcconfig`.
 
 ### Apple Silicon
 
