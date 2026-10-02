@@ -12,7 +12,16 @@ version.
 
 ### How to Install:
 
-Get the latest release of GitX from the [Releases](https://github.com/gitx/gitx/releases)
+Install it with [Homebrew](https://brew.sh):
+
+```
+brew install --cask gitx
+```
+
+This picks the build for your Mac, puts the `gitx` command-line tool on your
+PATH, and lets `brew upgrade` keep it up to date.
+
+Or get the latest release of GitX from the [Releases](https://github.com/gitx/gitx/releases)
 page. Download, extract and move it to your Applications folder.
 For Apple Silicon (M1, M2 processors) please use the `arm64` release.
 
