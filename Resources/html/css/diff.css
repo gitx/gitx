@@ -81,3 +81,54 @@
 #CurrentHunk {
 	border-left: 5px solid black;
 }
+
+.body--dark .diff .file {
+	border: 1px solid #444444;
+}
+
+.body--dark .diff .file .fileHeader {
+	background: #1c1c1c;
+}
+
+.body--dark .diff .file .fileHeader a {
+	color: #e3e3e3;
+}
+
+.body--dark .diff .file .diffcontent .lineno {
+	background-color: #2b2b2b;
+	color: #5f5f5f;
+	border-right: 1px solid #373737;
+}
+
+.body--dark .diff .file .diffContent .lines .hunkheader {
+	background-color: #222222;
+	color: #515151;
+}
+
+.body--dark .diff .file .diffcontent .lines .delline {
+	background-color: #312424;
+	color: #ffa5a5;
+}
+
+.body--dark .diff .file .diffcontent .lines .addline {
+	background-color: #112b11;
+	color: #4bb54b;
+}
+
+.body--dark .diff .file .diffcontent .lines .whitespace {
+	background-color: rgba(255, 118, 108, 0.68);
+}
+
+.body--dark .diff .file .diffcontent .lines .delline del {
+	background-color: #6a3939;
+	color: #ffaaaa;
+}
+
+.body--dark .diff .file .diffcontent .lines .addline ins {
+	background-color: #033f00;
+	color: #5ebb5e;
+}
+
+.body--dark #CurrentHunk {
+	border-left: 5px solid #e3e3e3;
+}

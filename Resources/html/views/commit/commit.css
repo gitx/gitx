@@ -121,3 +121,49 @@ table.diff {
 .top-link {
     display: none;
 }
+
+.body--dark #title {
+	border-bottom: 1px solid #e3e3e3;
+	background-color: #21272e;
+}
+
+.body--dark #state {
+	background-color: #274262;
+	border: 2px solid #3279c2;
+}
+
+.body--dark .diff .hunkbutton {
+	border: 1px solid #3d577b;
+	background-color: #22364a;
+	color: #90b0e0;
+}
+
+.body--dark #selected {
+	background-color: #2a4363 !important;
+}
+
+.body--dark #selected div {
+	background-color: #2a4363;
+}
+
+.body--dark #selected div del,
+.body--dark #selected div ins {
+	background-color: #3d577b;
+}
+
+.body--dark #selected div .whitespace {
+	background-color: #5c739a;
+}
+
+.body--dark #selected .hunkbutton {
+	background-color: #1c1c1c;
+}
+
+.body--dark #multiselect {
+	border: 1px solid #292929;
+}
+
+.body--dark #multiselect div.title {
+	background-color: #292929;
+	border: 5px solid #292929;
+}
