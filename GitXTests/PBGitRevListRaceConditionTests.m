@@ -10,7 +10,6 @@
 // test can drive it directly without depending on FSEvents/operation-queue timing.
 @interface PBGitRevList (RaceConditionTesting)
 @property (nonatomic, assign) NSUInteger loadGeneration;
-@property (nonatomic, assign) BOOL resetCommits;
 - (void)updateCommits:(NSArray *)revisions operation:(NSOperation *)operation generation:(NSUInteger)generation;
 @end
 
@@ -30,16 +29,16 @@
 	NSOperation *currentOperation = [[NSOperation alloc] init];
 
 	// Generation 1 (the first loadRevisionsWithCompletionBlock: call) flushes a batch.
-	revList.resetCommits = YES;
+	revList.commits = [NSMutableArray array];
 	revList.loadGeneration = 1;
 	[revList updateCommits:@[@"a", @"b"] operation:staleOperation generation:1];
 	XCTAssertEqual(revList.commits.count, 2u);
 
 	// A newer load (generation 2) starts, as an overlapping refresh would trigger,
-	// and flushes a batch of its own. That flush is what consumes resetCommits and
-	// clears out generation 1's commits - without it the two code paths converge on
-	// the same count and the assertion below cannot tell them apart.
-	revList.resetCommits = YES;
+	// and flushes a batch of its own. Starting a load clears generation 1's
+	// commits - without that the two code paths converge on the same count and
+	// the assertion below cannot tell them apart.
+	revList.commits = [NSMutableArray array];
 	revList.loadGeneration = 2;
 	[revList updateCommits:@[@"c"] operation:currentOperation generation:2];
 	XCTAssertEqual(revList.commits.count, 1u);
@@ -56,12 +55,23 @@
 	PBGitRevList *revList = [[PBGitRevList alloc] initWithRepository:nil rev:nil shouldGraph:NO];
 	NSOperation *operation = [[NSOperation alloc] init];
 
-	revList.resetCommits = YES;
+	revList.commits = [NSMutableArray array];
 	revList.loadGeneration = 1;
 	[revList updateCommits:@[@"a"] operation:operation generation:1];
 	[revList updateCommits:@[@"b"] operation:operation generation:1];
 
 	XCTAssertEqual(revList.commits.count, 2u, @"batches from the current generation should still accumulate normally");
+}
+
+- (void)testStartingALoadClearsThePreviousCommitsImmediately
+{
+	PBGitRevList *revList = [[PBGitRevList alloc] initWithRepository:nil rev:nil shouldGraph:NO];
+	revList.commits = [NSMutableArray arrayWithArray:@[@"a", @"b"]];
+
+	[revList loadRevisionsWithCompletionBlock:nil];
+	[revList cancel];
+
+	XCTAssertEqual(revList.commits.count, 0u, @"a second update arriving before the first chunk must not see the previous load's commits");
 }
 
 @end
