@@ -70,6 +70,11 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)fetchRemoteForRef:(PBGitRef *)ref forcePrune:(BOOL)forcePrune error:(NSError **)error;
 - (BOOL)pullBranch:(PBGitRef *)branchRef fromRemote:(PBGitRef *)remoteRef rebase:(BOOL)rebase error:(NSError **)error;
 - (BOOL)pushBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef error:(NSError **)error;
+- (BOOL)pushBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef forceWithLeaseExpecting:(nullable NSString *)expectedRemoteSHA error:(NSError **)error;
+// The SHA this repository last saw for the branch on the remote the push would go to; nil when it has none.
+- (nullable NSString *)remoteTrackingSHAForBranch:(PBGitRef *)branchRef toRemote:(nullable PBGitRef *)remoteRef;
+// YES when the push failed because the remote has commits the local branch lacks, so only a forced push can succeed.
++ (BOOL)isRejectedPushError:(NSError *)error;
 
 // Every worktree git reports, this one included and marked as current.
 @property (nonatomic, readonly) NSArray<PBGitWorktree *> *worktrees;

@@ -192,6 +192,7 @@
 		4B1C7D2E9F0A41B3C5D6E701 /* PBGitXEntitlementsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1C7D2E9F0A41B3C5D6E702 /* PBGitXEntitlementsTests.m */; };
 		53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */; };
 		9120A847CBE34BD0AEEA32CD /* PBGitRepositoryCheckoutErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */; };
+		A1F0C0DE00000000000000F2 /* PBGitRepositoryForcePushTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE00000000000000F1 /* PBGitRepositoryForcePushTests.m */; };
 		1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */; };
 		7A1C3E5D2B8F49A0C6D14E82 /* PBRepositoryFinderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6E9B0D4A18C7452FB3A0D95E /* PBRepositoryFinderTests.m */; };
 		4C7F2A9E5D1B48A3E602F7C1 /* PBGitCommitFileSelectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 3B8E1D6C0A9F42B7D51C8E30 /* PBGitCommitFileSelectionTests.m */; };
@@ -772,6 +773,7 @@
 		4B1C7D2E9F0A41B3C5D6E702 /* PBGitXEntitlementsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitXEntitlementsTests.m; path = GitXTests/PBGitXEntitlementsTests.m; sourceTree = "<group>"; };
 		9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryMenuValidationTests.m; path = GitXTests/PBGitHistoryMenuValidationTests.m; sourceTree = "<group>"; };
 		751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryCheckoutErrorTests.m; path = GitXTests/PBGitRepositoryCheckoutErrorTests.m; sourceTree = "<group>"; };
+		A1F0C0DE00000000000000F1 /* PBGitRepositoryForcePushTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryForcePushTests.m; path = GitXTests/PBGitRepositoryForcePushTests.m; sourceTree = "<group>"; };
 		4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWindowWiringTests.m; path = GitXTests/PBGitWindowWiringTests.m; sourceTree = "<group>"; };
 		B1C0DE04A000000400000000 /* PBGitCommitDateFormatterTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitCommitDateFormatterTests.m; path = GitXTests/PBGitCommitDateFormatterTests.m; sourceTree = "<group>"; };
 		B1C0DE06A000000600000000 /* PBGitHistoryDateRedrawTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryDateRedrawTests.m; path = GitXTests/PBGitHistoryDateRedrawTests.m; sourceTree = "<group>"; };
@@ -933,6 +935,7 @@
 				4B1C7D2E9F0A41B3C5D6E702 /* PBGitXEntitlementsTests.m */,
 				9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */,
 				751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */,
+				A1F0C0DE00000000000000F1 /* PBGitRepositoryForcePushTests.m */,
 				4F2E8A13C7D9406B85A31E27 /* PBGitWindowWiringTests.m */,
 				B1C0DE04A000000400000000 /* PBGitCommitDateFormatterTests.m */,
 				B1C0DE06A000000600000000 /* PBGitHistoryDateRedrawTests.m */,
@@ -1916,6 +1919,7 @@
 				4B1C7D2E9F0A41B3C5D6E701 /* PBGitXEntitlementsTests.m in Sources */,
 				53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */,
 				9120A847CBE34BD0AEEA32CD /* PBGitRepositoryCheckoutErrorTests.m in Sources */,
+				A1F0C0DE00000000000000F2 /* PBGitRepositoryForcePushTests.m in Sources */,
 				1D8C4F70A93E42B6BE7C0D95 /* PBGitWindowWiringTests.m in Sources */,
 				B1C0DE05A000000500000000 /* PBGitCommitDateFormatterTests.m in Sources */,
 				B1C0DE07A000000700000000 /* PBGitHistoryDateRedrawTests.m in Sources */,
