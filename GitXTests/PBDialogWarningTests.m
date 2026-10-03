@@ -153,6 +153,48 @@
 	XCTAssertFalse([PBGitDefaults isDialogWarningSuppressedForDialog:identifier]);
 }
 
+- (NSTableView *)shownPreferencesTable
+{
+	PBPrefsWindowController *controller = (PBPrefsWindowController *)[PBPrefsWindowController sharedPrefsWindowController];
+	[controller showWindow:nil];
+	[controller displayViewForIdentifier:@"Warnings" animate:NO];
+	return [controller valueForKey:@"dialogWarningsTable"];
+}
+
+- (void)testClickingTheCheckboxOfARowTogglesTheSuppression
+{
+	NSTableView *table = [self shownPreferencesTable];
+	NSString *identifier = [PBGitDefaults dialogWarnings][0].identifier;
+	NSWindow *window = table.window;
+	NSRect cell = [table frameOfCellAtColumn:0 row:0];
+	NSPoint point = [table convertPoint:NSMakePoint(NSMidX(cell), NSMidY(cell)) toView:nil];
+	NSTimeInterval now = NSProcessInfo.processInfo.systemUptime;
+
+	NSEvent *down = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDown location:point modifierFlags:0 timestamp:now windowNumber:window.windowNumber context:nil eventNumber:1 clickCount:1 pressure:1];
+	NSEvent *up = [NSEvent mouseEventWithType:NSEventTypeLeftMouseUp location:point modifierFlags:0 timestamp:now windowNumber:window.windowNumber context:nil eventNumber:2 clickCount:1 pressure:0];
+	[NSApp postEvent:up atStart:NO];
+	[NSApp sendEvent:down];
+
+	XCTAssertTrue([PBGitDefaults isDialogWarningSuppressedForDialog:identifier], @"a click on the checkbox must toggle it");
+	[(PBPrefsWindowController *)[PBPrefsWindowController sharedPrefsWindowController] close];
+}
+
+- (void)testSpaceTogglesTheSelectedRow
+{
+	NSTableView *table = [self shownPreferencesTable];
+	NSString *identifier = [PBGitDefaults dialogWarnings][1].identifier;
+	NSWindow *window = table.window;
+	[window makeFirstResponder:table];
+	[table selectRowIndexes:[NSIndexSet indexSetWithIndex:1] byExtendingSelection:NO];
+	NSTimeInterval now = NSProcessInfo.processInfo.systemUptime;
+
+	[NSApp sendEvent:[NSEvent keyEventWithType:NSEventTypeKeyDown location:NSZeroPoint modifierFlags:0 timestamp:now windowNumber:window.windowNumber context:nil characters:@" " charactersIgnoringModifiers:@" " isARepeat:NO keyCode:49]];
+	[NSApp sendEvent:[NSEvent keyEventWithType:NSEventTypeKeyUp location:NSZeroPoint modifierFlags:0 timestamp:now windowNumber:window.windowNumber context:nil characters:@" " charactersIgnoringModifiers:@" " isARepeat:NO keyCode:49]];
+
+	XCTAssertTrue([PBGitDefaults isDialogWarningSuppressedForDialog:identifier], @"Space on the selected row must toggle its checkbox");
+	[(PBPrefsWindowController *)[PBPrefsWindowController sharedPrefsWindowController] close];
+}
+
 - (void)testResetWarningsClearsTheCheckedRows
 {
 	PBPrefsWindowController *controller = (PBPrefsWindowController *)[PBPrefsWindowController sharedPrefsWindowController];
@@ -165,13 +207,12 @@
 	XCTAssertEqualObjects([table.dataSource tableView:table objectValueForTableColumn:ask row:0], @NO);
 }
 
-- (void)testThePreferencesListIsAsTallAsItsRowsUpToTheMaximum
+- (void)testThePreferencesListShowsFourAndAHalfRows
 {
 	NSTableView *table = [self preferencesTable];
 	NSScrollView *scrollView = table.enclosingScrollView;
-	NSUInteger rows = MIN([PBGitDefaults dialogWarnings].count, 8u);
 
-	XCTAssertEqualWithAccuracy(NSHeight(scrollView.frame), rows * table.rowHeight, 0.5);
+	XCTAssertEqualWithAccuracy(NSHeight(scrollView.frame), 4.5 * table.rowHeight, 0.5);
 	XCTAssertTrue(scrollView.hasVerticalScroller);
 	XCTAssertTrue(NSMaxY(scrollView.frame) < NSHeight(scrollView.superview.frame));
 }
