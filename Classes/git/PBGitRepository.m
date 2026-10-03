@@ -1128,14 +1128,42 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 - (BOOL)pushBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef error:(NSError **)error
 {
+	return [self pushBranch:branchRef toRemote:remoteRef forceWithLease:NO expecting:nil error:error];
+}
+
+- (BOOL)pushBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef forceWithLeaseExpecting:(NSString *)expectedRemoteSHA error:(NSError **)error
+{
+	return [self pushBranch:branchRef toRemote:remoteRef forceWithLease:YES expecting:expectedRemoteSHA error:error];
+}
+
+- (PBGitRef *)pushRemoteRefForBranch:(PBGitRef *)branchRef remoteRef:(PBGitRef *)remoteRef
+{
+	// a nil remoteRef means lookup the ref's default remote
+	if (remoteRef && [remoteRef isRemote]) return remoteRef;
+
+	NSError *lookupError = nil;
+	return [self remoteRefForBranch:branchRef error:&lookupError];
+}
+
+- (NSString *)remoteTrackingSHAForBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef
+{
+	if (!branchRef || !branchRef.isBranch) return nil;
+
+	PBGitRef *pushRemoteRef = [self pushRemoteRefForBranch:branchRef remoteRef:remoteRef];
+	if (!pushRemoteRef) return nil;
+
+	NSString *trackingRefName = [NSString stringWithFormat:@"refs/remotes/%@/%@", pushRemoteRef.remoteName, branchRef.shortName];
+	NSString *output = [self outputOfTaskWithArguments:@[ @"rev-parse", @"--verify", @"--quiet", trackingRefName ] error:NULL];
+	NSString *sha = [output stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+	return sha.length ? sha : nil;
+}
+
+- (BOOL)pushBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef forceWithLease:(BOOL)forceWithLease expecting:(NSString *)expectedRemoteSHA error:(NSError **)error
+{
 	NSMutableArray *arguments = [NSMutableArray arrayWithObject:@"push"];
 
-	// a nil remoteRef means lookup the ref's default remote
-	if (!remoteRef || ![remoteRef isRemote]) {
-		NSError *error = nil;
-		remoteRef = [self remoteRefForBranch:branchRef error:&error];
-		if (!remoteRef) return NO;
-	}
+	remoteRef = [self pushRemoteRefForBranch:branchRef remoteRef:remoteRef];
+	if (!remoteRef) return NO;
 
 	NSString *remoteName = [remoteRef remoteName];
 	[arguments addObject:remoteName];
@@ -1152,6 +1180,11 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		[arguments addObject:branchName];
 	}
 
+	if (forceWithLease && branchRef.isBranch) {
+		NSString *leaseArgument = [NSString stringWithFormat:@"--force-with-lease=%@:%@", branchName, expectedRemoteSHA ?: @""];
+		[arguments insertObject:leaseArgument atIndex:1];
+	}
+
 	PBTask *task = [self taskWithArguments:arguments];
 
 	NSError *taskError = nil;
@@ -1166,6 +1199,15 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	});
 
 	return success;
+}
+
++ (BOOL)isRejectedPushError:(NSError *)error
+{
+	NSError *taskError = error.userInfo[NSUnderlyingErrorKey];
+	if (![taskError.domain isEqualToString:PBTaskErrorDomain]) return NO;
+
+	NSString *output = taskError.userInfo[PBTaskTerminationOutputKey];
+	return [output containsString:@"(non-fast-forward)"] || [output containsString:@"(fetch first)"];
 }
 
 - (NSString *)failureReasonFromTaskError:(NSError *)taskError orFallback:(NSString *)fallback

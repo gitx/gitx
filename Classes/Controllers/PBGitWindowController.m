@@ -385,18 +385,61 @@
 																								 description:description
 																							windowController:self];
 
+						__block NSString *expectedRemoteSHA = nil;
+
 						[progressSheet
 							beginProgressSheetForBlock:^{
+								expectedRemoteSHA = [self.repository remoteTrackingSHAForBranch:branchRef toRemote:remoteRef];
 								NSError *error = nil;
 								BOOL success = [self.repository pushBranch:branchRef toRemote:remoteRef error:&error];
 								return (success ? nil : error);
 							}
 							completionHandler:^(NSError *error) {
-								if (error) {
+								if (!error) return;
+
+								if (branchRef.isBranch && expectedRemoteSHA.length && [PBGitRepository isRejectedPushError:error]) {
+									[self offerForcePushOfBranch:branchRef toRemote:remoteRef expectingRemoteSHA:expectedRemoteSHA];
+								} else {
 									[self showErrorSheet:error];
 								}
 							}];
 					}];
+}
+
+- (void)offerForcePushOfBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef expectingRemoteSHA:(NSString *)expectedRemoteSHA
+{
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = [NSString stringWithFormat:NSLocalizedString(@"Push of branch “%@” was rejected", @"Force push alert - message"), branchRef.shortName];
+	alert.informativeText = NSLocalizedString(@"The remote has commits this branch does not have. A force push replaces them, but only if the remote is still where GitX last saw it (git push --force-with-lease).", @"Force push alert - informative text");
+	[alert addButtonWithTitle:NSLocalizedString(@"Force Push (with Lease)", @"Force push alert - confirm button")];
+	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Force push alert - cancel and default button")];
+	[self makeCancelTheDefaultButtonForDestructiveAlert:alert];
+
+	[self confirmDialog:alert
+		suppressionIdentifier:@"Force Push With Lease"
+					forAction:^{
+						[self forcePushBranch:branchRef toRemote:remoteRef expectingRemoteSHA:expectedRemoteSHA];
+					}];
+}
+
+- (void)forcePushBranch:(PBGitRef *)branchRef toRemote:(PBGitRef *)remoteRef expectingRemoteSHA:(NSString *)expectedRemoteSHA
+{
+	NSString *description = [NSString stringWithFormat:@"Force pushing branch '%@' (with lease)", branchRef.shortName];
+	PBRemoteProgressSheet *progressSheet = [PBRemoteProgressSheet progressSheetWithTitle:@"Force pushing remote…"
+																			 description:description
+																		windowController:self];
+
+	[progressSheet
+		beginProgressSheetForBlock:^{
+			NSError *error = nil;
+			BOOL success = [self.repository pushBranch:branchRef toRemote:remoteRef forceWithLeaseExpecting:expectedRemoteSHA error:&error];
+			return (success ? nil : error);
+		}
+		completionHandler:^(NSError *error) {
+			if (error) {
+				[self showErrorSheet:error];
+			}
+		}];
 }
 
 - (void)performDeleteForRemoteBranch:(PBGitRef *)ref
