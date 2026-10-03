@@ -416,7 +416,7 @@
 	[self makeCancelTheDefaultButtonForDestructiveAlert:alert];
 
 	[self confirmDialog:alert
-		suppressionIdentifier:@"Force Push With Lease"
+		suppressionIdentifier:kDialogForcePushWithLease
 					forAction:^{
 						[self forcePushBranch:branchRef toRemote:remoteRef expectingRemoteSHA:expectedRemoteSHA];
 					}];
