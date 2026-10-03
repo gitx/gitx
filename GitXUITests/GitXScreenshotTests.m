@@ -365,5 +365,27 @@
     }
 }
 
+- (void)testSettingsWarningsTabScreenshot {
+    XCTAssertTrue([self waitForWindow], @"Main window must appear before opening Preferences");
+
+    [self openPreferencesWindow];
+    XCUIElement *prefsWindow = [self waitForPreferencesWindow];
+    XCTAssertTrue(prefsWindow.exists, @"Preferences window must appear");
+
+    XCUIElement *btn = [self findPrefsTabButton:@"Warnings" inWindow:prefsWindow];
+    XCTAssertTrue([btn waitForExistenceWithTimeout:5], @"Warnings toolbar button must exist");
+    [btn click];
+    [NSThread sleepForTimeInterval:0.6];
+    // Re-fetch — title changed to "Warnings" after click
+    prefsWindow = self.app.dialogs.firstMatch;
+
+    [self saveWindowElementScreenshotNamed:@"settings-warnings" element:prefsWindow];
+
+    if (self.app.dialogs.firstMatch.exists) {
+        [self.app.dialogs.firstMatch typeKey:XCUIKeyboardKeyEscape modifierFlags:0];
+        [NSThread sleepForTimeInterval:0.3];
+    }
+}
+
 @end
 
