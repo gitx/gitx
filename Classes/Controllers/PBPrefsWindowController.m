@@ -14,6 +14,26 @@
 
 #define kPreferenceViewIdentifier @"PBGitXPreferenceViewIdentifier"
 
+// A cell-based table steps through its focusable cells on Tab, which parks focus on the checkbox
+// column after the table itself. Tab should instead leave the list.
+@interface PBDialogWarningsTable : NSTableView
+@end
+
+@implementation PBDialogWarningsTable
+
+- (void)keyDown:(NSEvent *)event
+{
+	NSString *key = event.charactersIgnoringModifiers;
+	if ([key isEqualToString:@"\t"])
+		[self.window selectNextKeyView:self];
+	else if ([key isEqualToString:@"\x19"])
+		[self.window selectPreviousKeyView:self];
+	else
+		[super keyDown:event];
+}
+
+@end
+
 @implementation PBPrefsWindowController
 
 #pragma mark DBPrefsWindowController overrides
@@ -26,6 +46,7 @@
 	[self updateCommitDateSample];
 
 	dialogWarningsTable.style = NSTableViewStyleFullWidth;
+	dialogWarningsTable.enclosingScrollView.verticalScroller.refusesFirstResponder = YES;
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(dialogWarningsDidChange:)
@@ -140,11 +161,6 @@
 		[PBGitDefaults suppressDialogWarningForDialog:identifier];
 	else
 		[PBGitDefaults unsuppressDialogWarningForDialog:identifier];
-}
-
-- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
-{
-	return NO;
 }
 
 #pragma mark -

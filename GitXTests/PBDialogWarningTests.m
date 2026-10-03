@@ -7,6 +7,25 @@
 #import "PBGitDefaults.h"
 #import "PBPrefsWindowController.h"
 
+@interface PBKeyViewRecordingWindow : NSWindow
+@property NSUInteger nextKeyViewRequests;
+@property NSUInteger previousKeyViewRequests;
+@end
+
+@implementation PBKeyViewRecordingWindow
+
+- (void)selectNextKeyView:(id)sender
+{
+	self.nextKeyViewRequests++;
+}
+
+- (void)selectPreviousKeyView:(id)sender
+{
+	self.previousKeyViewRequests++;
+}
+
+@end
+
 @interface PBDialogWarningTests : XCTestCase {
 	NSString *suiteName;
 	NSUserDefaults *testDefaults;
@@ -151,6 +170,64 @@
 
 	[table.dataSource tableView:table setObjectValue:@NO forTableColumn:ask row:0];
 	XCTAssertFalse([PBGitDefaults isDialogWarningSuppressedForDialog:identifier]);
+}
+
+- (NSTableView *)shownPreferencesTable
+{
+	PBPrefsWindowController *controller = (PBPrefsWindowController *)[PBPrefsWindowController sharedPrefsWindowController];
+	[controller showWindow:nil];
+	[controller displayViewForIdentifier:@"Warnings" animate:NO];
+	return [controller valueForKey:@"dialogWarningsTable"];
+}
+
+- (void)testClickingTheCheckboxOfARowTogglesTheSuppression
+{
+	NSTableView *table = [self shownPreferencesTable];
+	NSString *identifier = [PBGitDefaults dialogWarnings][0].identifier;
+	NSWindow *window = table.window;
+	NSRect cell = [table frameOfCellAtColumn:0 row:0];
+	NSPoint point = [table convertPoint:NSMakePoint(NSMidX(cell), NSMidY(cell)) toView:nil];
+	NSTimeInterval now = NSProcessInfo.processInfo.systemUptime;
+
+	NSEvent *down = [NSEvent mouseEventWithType:NSEventTypeLeftMouseDown location:point modifierFlags:0 timestamp:now windowNumber:window.windowNumber context:nil eventNumber:1 clickCount:1 pressure:1];
+	NSEvent *up = [NSEvent mouseEventWithType:NSEventTypeLeftMouseUp location:point modifierFlags:0 timestamp:now windowNumber:window.windowNumber context:nil eventNumber:2 clickCount:1 pressure:0];
+	[NSApp postEvent:up atStart:NO];
+	[NSApp sendEvent:down];
+
+	XCTAssertTrue([PBGitDefaults isDialogWarningSuppressedForDialog:identifier], @"a click on the checkbox must toggle it");
+	[(PBPrefsWindowController *)[PBPrefsWindowController sharedPrefsWindowController] close];
+}
+
+- (void)testTheListAllowsRowSelectionSoItsCheckboxesTrackClicks
+{
+	NSTableView *table = [self preferencesTable];
+	id<NSTableViewDelegate> delegate = table.delegate;
+
+	if ([delegate respondsToSelector:@selector(tableView:shouldSelectRow:)])
+		XCTAssertTrue([delegate tableView:table shouldSelectRow:0]);
+}
+
+- (void)testTabAndShiftTabLeaveTheListInOnePress
+{
+	NSTableView *table = [self preferencesTable];
+	XCTAssertEqualObjects(NSStringFromClass([table class]), @"PBDialogWarningsTable");
+
+	PBKeyViewRecordingWindow *window = [[PBKeyViewRecordingWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:YES];
+	NSTableView *list = [[NSClassFromString(@"PBDialogWarningsTable") alloc] initWithFrame:NSMakeRect(0, 0, 100, 100)];
+	[window.contentView addSubview:list];
+
+	[list keyDown:[self keyDownWithCharacters:@"\t" keyCode:48]];
+	XCTAssertEqual(window.nextKeyViewRequests, 1u);
+	XCTAssertEqual(window.previousKeyViewRequests, 0u);
+
+	[list keyDown:[self keyDownWithCharacters:@"\x19" keyCode:48]];
+	XCTAssertEqual(window.nextKeyViewRequests, 1u);
+	XCTAssertEqual(window.previousKeyViewRequests, 1u);
+}
+
+- (NSEvent *)keyDownWithCharacters:(NSString *)characters keyCode:(unsigned short)keyCode
+{
+	return [NSEvent keyEventWithType:NSEventTypeKeyDown location:NSZeroPoint modifierFlags:0 timestamp:NSProcessInfo.processInfo.systemUptime windowNumber:0 context:nil characters:characters charactersIgnoringModifiers:characters isARepeat:NO keyCode:keyCode];
 }
 
 - (void)testResetWarningsClearsTheCheckedRows
