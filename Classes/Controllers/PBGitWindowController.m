@@ -371,7 +371,7 @@
 	[alert setShowsSuppressionButton:YES];
 
 	[self confirmDialog:alert
-		suppressionIdentifier:@"Confirm Push"
+		suppressionIdentifier:kDialogConfirmPush
 					forAction:^{
 						NSString *description = nil;
 						if (branchRef && remoteRef)
@@ -587,7 +587,7 @@
 	[self makeCancelTheDefaultButtonForDestructiveAlert:alert];
 
 	[self confirmDialog:alert
-		suppressionIdentifier:@"Delete Ref"
+		suppressionIdentifier:kDialogDeleteRef
 					forAction:^{
 						NSError *error = nil;
 						BOOL success = [self.repository deleteRef:ref error:&error];
@@ -1154,7 +1154,7 @@
 	[alert addButtonWithTitle:NSLocalizedString(@"Cancel", @"Stash drop alert - cancel button")];
 
 	[self confirmDialog:alert
-		suppressionIdentifier:@"Stash Drop"
+		suppressionIdentifier:kDialogStashDrop
 					forAction:^{
 						NSError *error = nil;
 						BOOL success = [self.repository stashDrop:stash error:&error];

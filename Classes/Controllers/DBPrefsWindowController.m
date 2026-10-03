@@ -6,6 +6,7 @@
 
 
 static DBPrefsWindowController *_sharedPrefsWindowController = nil;
+static const CGFloat kMinimumWindowWidth = 560;
 
 
 @implementation DBPrefsWindowController
@@ -249,6 +250,7 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 
 	if (![newView isEqualTo:oldView]) {
 		NSRect frame = [newView bounds];
+		frame.origin.x = MAX(0, floor((kMinimumWindowWidth - NSWidth(frame)) / 2));
 		frame.origin.y = NSHeight([contentSubview frame]) - NSHeight([newView bounds]);
 		[newView setFrame:frame];
 		[contentSubview addSubview:newView];
@@ -348,7 +350,7 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 	CGFloat windowTitleAndToolbarHeight = NSHeight(windowFrame) - NSHeight(contentRect);
 
 	windowFrame.size.height = NSHeight([view frame]) + windowTitleAndToolbarHeight;
-	windowFrame.size.width = NSWidth([view frame]);
+	windowFrame.size.width = MAX(NSWidth([view frame]), kMinimumWindowWidth);
 	windowFrame.origin.y = NSMaxY([[self window] frame]) - NSHeight(windowFrame);
 
 	return windowFrame;

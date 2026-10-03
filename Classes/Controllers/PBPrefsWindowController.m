@@ -13,6 +13,7 @@
 #import "PBGitCommitDateFormatter.h"
 
 #define kPreferenceViewIdentifier @"PBGitXPreferenceViewIdentifier"
+#define kMaximumVisibleDialogWarnings 8
 
 @implementation PBPrefsWindowController
 
@@ -24,6 +25,19 @@
 
 	[self populateTerminalHandlers];
 	[self updateCommitDateSample];
+
+	dialogWarningsTable.style = NSTableViewStyleFullWidth;
+	[self sizeDialogWarningsList];
+
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(dialogWarningsDidChange:)
+												 name:NSUserDefaultsDidChangeNotification
+											   object:nil];
+}
+
+- (void)dealloc
+{
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setupToolbar
@@ -32,6 +46,8 @@
 	[self addView:generalPrefsView label:@"General" image:[NSImage imageNamed:NSImageNameApplicationIcon]];
 	// INTERGRATION
 	[self addView:integrationPrefsView label:@"Integration" image:[NSImage imageNamed:NSImageNameNetwork]];
+	// CONFIRMATIONS
+	[self addView:confirmationsPrefsView label:@"Warnings" image:[NSImage imageNamed:NSImageNameCaution]];
 	// UPDATES
 	[self addView:updatesPrefsView label:@"Updates"];
 }
@@ -40,15 +56,16 @@
 {
 	[super displayViewForIdentifier:identifier animate:animate];
 
-	[[NSUserDefaults standardUserDefaults] setObject:identifier forKey:kPreferenceViewIdentifier];
+	[[PBGitDefaults userDefaults] setObject:identifier forKey:kPreferenceViewIdentifier];
 }
 
 - (NSString *)defaultViewIdentifier
 {
-	NSString *identifier = [[NSUserDefaults standardUserDefaults] objectForKey:kPreferenceViewIdentifier];
-	if (identifier)
+	NSString *identifier = [[PBGitDefaults userDefaults] objectForKey:kPreferenceViewIdentifier];
+	if (identifier && [toolbarIdentifiers containsObject:identifier])
 		return identifier;
 
+	NSLog(@"Ignoring the remembered preferences tab '%@', which this build does not have", identifier);
 	return [super defaultViewIdentifier];
 }
 
@@ -82,6 +99,79 @@
 - (IBAction)resetAllDialogWarnings:(id)sender
 {
 	[PBGitDefaults resetAllDialogWarnings];
+	[dialogWarningsTable reloadData];
+}
+
+#pragma mark -
+#pragma mark Dialog warnings
+
+- (void)sizeDialogWarningsList
+{
+	NSScrollView *scrollView = dialogWarningsTable.enclosingScrollView;
+	NSUInteger rows = MIN([PBGitDefaults dialogWarnings].count, kMaximumVisibleDialogWarnings);
+	CGFloat delta = rows * dialogWarningsTable.rowHeight - NSHeight(scrollView.frame);
+	if (delta == 0)
+		return;
+
+	NSLog(@"Resizing the dialog warnings list by %g points for %lu rows", delta, (unsigned long)rows);
+
+	NSView *pane = confirmationsPrefsView;
+	CGFloat listBottom = NSMinY(scrollView.frame);
+	pane.autoresizesSubviews = NO;
+	for (NSView *subview in pane.subviews) {
+		NSRect frame = subview.frame;
+		if (subview == scrollView)
+			frame.size.height += delta;
+		else if (NSMinY(frame) > listBottom)
+			frame.origin.y += delta;
+		subview.frame = frame;
+	}
+	[pane setFrameSize:NSMakeSize(NSWidth(pane.frame), NSHeight(pane.frame) + delta)];
+	pane.autoresizesSubviews = YES;
+}
+
+- (void)dialogWarningsDidChange:(NSNotification *)notification
+{
+	[dialogWarningsTable reloadData];
+}
+
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
+{
+	return [PBGitDefaults dialogWarnings].count;
+}
+
+- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)column row:(NSInteger)row
+{
+	PBDialogWarning *warning = [PBGitDefaults dialogWarnings][row];
+
+	if ([column.identifier isEqualToString:@"skip"])
+		return @([PBGitDefaults isDialogWarningSuppressedForDialog:warning.identifier]);
+
+	NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:warning.title
+																			 attributes:@{NSFontAttributeName : [NSFont systemFontOfSize:NSFont.systemFontSize]}];
+	[text appendAttributedString:[[NSAttributedString alloc] initWithString:[@"\n" stringByAppendingString:warning.detail]
+																 attributes:@{
+																	 NSFontAttributeName : [NSFont systemFontOfSize:NSFont.smallSystemFontSize],
+																	 NSForegroundColorAttributeName : NSColor.secondaryLabelColor,
+																 }]];
+	return text;
+}
+
+- (void)tableView:(NSTableView *)tableView setObjectValue:(id)value forTableColumn:(NSTableColumn *)column row:(NSInteger)row
+{
+	if (![column.identifier isEqualToString:@"skip"])
+		return;
+
+	NSString *identifier = [PBGitDefaults dialogWarnings][row].identifier;
+	if ([value boolValue])
+		[PBGitDefaults suppressDialogWarningForDialog:identifier];
+	else
+		[PBGitDefaults unsuppressDialogWarningForDialog:identifier];
+}
+
+- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
+{
+	return NO;
 }
 
 #pragma mark -
