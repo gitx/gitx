@@ -142,11 +142,6 @@
 		[PBGitDefaults unsuppressDialogWarningForDialog:identifier];
 }
 
-- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
-{
-	return NO;
-}
-
 #pragma mark -
 #pragma mark Terminal application
 
