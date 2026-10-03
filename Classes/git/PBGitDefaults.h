@@ -9,6 +9,7 @@
 #define kDialogAcceptDroppedRef @"Accept Dropped Ref"
 #define kDialogConfirmPush @"Confirm Push"
 #define kDialogDeleteRef @"Delete Ref"
+#define kDialogForcePushWithLease @"Force Push With Lease"
 #define kDialogStashDrop @"Stash Drop"
 
 typedef NS_ENUM(NSInteger, PBPruneOnFetchSetting) {
