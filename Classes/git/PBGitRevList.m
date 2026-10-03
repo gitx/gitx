@@ -22,7 +22,6 @@
 @interface PBGitRevList ()
 
 @property (nonatomic, assign) BOOL isGraphing;
-@property (nonatomic, assign) BOOL resetCommits;
 
 @property (nonatomic, weak) PBGitRepository *repository;
 @property (nonatomic, strong) PBGitRevSpecifier *currentRev;
@@ -62,7 +61,7 @@
 {
 	[self cancel];
 
-	self.resetCommits = YES;
+	self.commits = [NSMutableArray array];
 
 	NSUInteger generation = ++self.loadGeneration;
 
@@ -102,11 +101,6 @@
 {
 	if (!revisions || [revisions count] == 0 || operation.cancelled || generation != self.loadGeneration)
 		return;
-
-	if (self.resetCommits) {
-		self.commits = [NSMutableArray array];
-		self.resetCommits = NO;
-	}
 
 	NSRange range = NSMakeRange([self.commits count], [revisions count]);
 	NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:range];
