@@ -482,22 +482,8 @@ jobs:
           repository: Homebrew/homebrew-cask.git
           path: brew
           ref: main
-      - name: Show shasum
-        run: |
-          find . -name "gitx.rb"
-          export shax86=$(shasum -a 256 GitX-x86_64.dmg | cut -d " " -f1)
-          echo "x86 sha256=$shax86"
-          export shaarm64=$(shasum -a 256 GitX-arm64.dmg | cut -d " " -f1)
-          echo "arm64 sha256=$shaarm64"
-          cd brew/Casks/g
-          sed -n 1,3p gitx.rb > gitx.rb.new
-          echo "  version \"${{ steps.tagger.outputs.tag }}\"" >> gitx.rb.new
-          echo "  sha256 arm:   \"$shaarm64\"," >> gitx.rb.new
-          echo "         intel: \"$shax86\"" >> gitx.rb.new
-          sed -n 7,33p gitx.rb >> gitx.rb.new
-          cat gitx.rb.new
-          cp gitx.rb.new gitx.rb
-          rm gitx.rb.new
+      - name: Update the Homebrew cask
+        run: scripts/update-homebrew-cask.sh brew/Casks/g/gitx.rb "${{ steps.tagger.outputs.tag }}" GitX-arm64.dmg GitX-x86_64.dmg
       - name: Fetch Homebrew PR template
         if: ${{ env.PRE_RELEASE == 'false' }}
         run: |
