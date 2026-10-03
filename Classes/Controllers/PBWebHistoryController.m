@@ -65,6 +65,7 @@
 
 - (void)changeContentToMultipleSelectionMessage
 {
+	currentOID = nil;
 	NSArray *arguments = @[
 		@[ NSLocalizedString(@"Multiple commits are selected.", @"Multiple selection Message: Title"),
 		   NSLocalizedString(@"Use the Copy command to copy their information.", @"Multiple selection Message: Copy Command"),
