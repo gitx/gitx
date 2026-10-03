@@ -165,13 +165,12 @@
 	XCTAssertEqualObjects([table.dataSource tableView:table objectValueForTableColumn:ask row:0], @NO);
 }
 
-- (void)testThePreferencesListIsAsTallAsItsRowsUpToTheMaximum
+- (void)testThePreferencesListShowsFourAndAHalfRows
 {
 	NSTableView *table = [self preferencesTable];
 	NSScrollView *scrollView = table.enclosingScrollView;
-	NSUInteger rows = MIN([PBGitDefaults dialogWarnings].count, 8u);
 
-	XCTAssertEqualWithAccuracy(NSHeight(scrollView.frame), rows * table.rowHeight, 0.5);
+	XCTAssertEqualWithAccuracy(NSHeight(scrollView.frame), 4.5 * table.rowHeight, 0.5);
 	XCTAssertTrue(scrollView.hasVerticalScroller);
 	XCTAssertTrue(NSMaxY(scrollView.frame) < NSHeight(scrollView.superview.frame));
 }
