@@ -10,3 +10,12 @@
 	border: 1px solid #CCC;
 	-webkit-box-shadow: 1px 1px 2px #DDD;
 }
+
+.body--dark .commit table tr td:nth-of-type(1) {
+	color: #7f7f7f;
+}
+
+.body--dark .commit {
+	border: 1px solid #444444;
+	-webkit-box-shadow: 1px 1px 2px #373737;
+}
