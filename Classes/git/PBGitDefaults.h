@@ -7,6 +7,9 @@
 //
 
 #define kDialogAcceptDroppedRef @"Accept Dropped Ref"
+#define kDialogConfirmPush @"Confirm Push"
+#define kDialogDeleteRef @"Delete Ref"
+#define kDialogStashDrop @"Stash Drop"
 
 typedef NS_ENUM(NSInteger, PBPruneOnFetchSetting) {
 	PBPruneOnFetchUseGitConfig = 0,
@@ -26,6 +29,14 @@ typedef NS_ENUM(NSInteger, PBCommitDateFormatSetting) {
 	PBCommitDateFormatLong = 2,
 	PBCommitDateFormatCustom = 3,
 };
+
+@interface PBDialogWarning : NSObject
+
+@property (nonatomic, readonly, copy) NSString *identifier;
+@property (nonatomic, readonly, copy) NSString *title;
+@property (nonatomic, readonly, copy) NSString *detail;
+
+@end
 
 @interface PBGitDefaults : NSObject {
 }
@@ -60,8 +71,15 @@ typedef NS_ENUM(NSInteger, PBCommitDateFormatSetting) {
 + (NSString *)commitDateCustomFormat;
 
 
+// The store for the dialog warnings and the remembered Preferences tab. Tests give
+// it a store of their own so they leave the user's settings alone; nil restores it.
++ (NSUserDefaults *)userDefaults;
++ (void)useUserDefaults:(nullable NSUserDefaults *)defaults;
+
 // Suppressed Dialog Warnings
++ (NSArray<PBDialogWarning *> *)dialogWarnings;
 + (void)suppressDialogWarningForDialog:(NSString *)dialog;
++ (void)unsuppressDialogWarningForDialog:(NSString *)dialog;
 + (BOOL)isDialogWarningSuppressedForDialog:(NSString *)dialog;
 + (void)resetAllDialogWarnings;
 

@@ -9,9 +9,10 @@
 #import <Cocoa/Cocoa.h>
 #import "DBPrefsWindowController.h"
 
-@interface PBPrefsWindowController : DBPrefsWindowController {
+@interface PBPrefsWindowController : DBPrefsWindowController <NSTableViewDataSource, NSTableViewDelegate> {
 	/* Outlets for Preference Views */
 	IBOutlet NSView *generalPrefsView;
+	IBOutlet NSView *confirmationsPrefsView;
 	IBOutlet NSView *integrationPrefsView;
 	IBOutlet NSView *updatesPrefsView;
 
@@ -19,6 +20,7 @@
 	IBOutlet NSPopUpButton *commitDateFormatPopup;
 	IBOutlet NSTextField *commitDateCustomFormatField;
 	IBOutlet NSTextField *commitDateSampleField;
+	IBOutlet NSTableView *dialogWarningsTable;
 
 	/* Variables for the Integration View */
 	IBOutlet NSPopUpButton *terminalHandlerPopup;

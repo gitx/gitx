@@ -38,6 +38,20 @@
 #define kCommitDateCustomFormat @"PBCommitDateCustomFormat"
 #define kDefaultCommitDateCustomFormat @"yyyy-MM-dd HH:mm"
 
+@implementation PBDialogWarning
+
+- (instancetype)initWithIdentifier:(NSString *)identifier title:(NSString *)title detail:(NSString *)detail
+{
+	if ((self = [super init])) {
+		_identifier = [identifier copy];
+		_title = [title copy];
+		_detail = [detail copy];
+	}
+	return self;
+}
+
+@end
+
 @implementation PBGitDefaults
 
 + (void)initialize
@@ -206,6 +220,18 @@
 }
 
 
+static NSUserDefaults *userDefaultsOverride;
+
++ (NSUserDefaults *)userDefaults
+{
+	return userDefaultsOverride ?: [NSUserDefaults standardUserDefaults];
+}
+
++ (void)useUserDefaults:(NSUserDefaults *)defaults
+{
+	userDefaultsOverride = defaults;
+}
+
 // Suppressed Dialog Warnings
 //
 // Represents dialogs where the user has checked the "Do not show this message again" checkbox.
@@ -213,18 +239,49 @@
 
 + (NSSet *)suppressedDialogWarnings
 {
-	NSSet *suppressedDialogWarnings = [NSSet setWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:kSuppressedDialogWarnings]];
+	NSSet *suppressedDialogWarnings = [NSSet setWithArray:[[self userDefaults] arrayForKey:kSuppressedDialogWarnings]];
 	if (suppressedDialogWarnings == nil)
 		suppressedDialogWarnings = [NSSet set];
 
 	return suppressedDialogWarnings;
 }
 
++ (NSArray<PBDialogWarning *> *)dialogWarnings
+{
+	static NSArray<PBDialogWarning *> *warnings;
+	static dispatch_once_t once;
+	dispatch_once(&once, ^{
+		warnings = @[
+			[[PBDialogWarning alloc] initWithIdentifier:kDialogConfirmPush
+												  title:NSLocalizedString(@"Push a branch", @"Dialog warnings: title")
+												 detail:NSLocalizedString(@"Shows the branch and remote before a push starts.", @"Dialog warnings: description")],
+			[[PBDialogWarning alloc] initWithIdentifier:kDialogDeleteRef
+												  title:NSLocalizedString(@"Delete a branch or tag", @"Dialog warnings: title")
+												 detail:NSLocalizedString(@"Deleting a remote branch always asks.", @"Dialog warnings: description")],
+			[[PBDialogWarning alloc] initWithIdentifier:kDialogStashDrop
+												  title:NSLocalizedString(@"Drop a stash", @"Dialog warnings: title")
+												 detail:NSLocalizedString(@"The changes in a dropped stash are hard to recover.", @"Dialog warnings: description")],
+			[[PBDialogWarning alloc] initWithIdentifier:kDialogAcceptDroppedRef
+												  title:NSLocalizedString(@"Move a branch by dragging it onto a commit", @"Dialog warnings: title")
+												 detail:NSLocalizedString(@"Applies to branches and tags dropped in the history list.", @"Dialog warnings: description")],
+		];
+	});
+	return warnings;
+}
+
 + (void)suppressDialogWarningForDialog:(NSString *)dialog
 {
 	NSSet *suppressedDialogWarnings = [[self suppressedDialogWarnings] setByAddingObject:dialog];
 
-	[[NSUserDefaults standardUserDefaults] setObject:[suppressedDialogWarnings allObjects] forKey:kSuppressedDialogWarnings];
+	[[self userDefaults] setObject:[suppressedDialogWarnings allObjects] forKey:kSuppressedDialogWarnings];
+}
+
++ (void)unsuppressDialogWarningForDialog:(NSString *)dialog
+{
+	NSMutableSet *suppressedDialogWarnings = [[self suppressedDialogWarnings] mutableCopy];
+	[suppressedDialogWarnings removeObject:dialog];
+
+	[[self userDefaults] setObject:[suppressedDialogWarnings allObjects] forKey:kSuppressedDialogWarnings];
 }
 
 + (BOOL)isDialogWarningSuppressedForDialog:(NSString *)dialog
@@ -234,8 +291,8 @@
 
 + (void)resetAllDialogWarnings
 {
-	[[NSUserDefaults standardUserDefaults] setObject:nil forKey:kSuppressedDialogWarnings];
-	[[NSUserDefaults standardUserDefaults] synchronize];
+	[[self userDefaults] setObject:nil forKey:kSuppressedDialogWarnings];
+	[[self userDefaults] synchronize];
 }
 
 
