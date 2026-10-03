@@ -260,7 +260,7 @@ static NSUserDefaults *userDefaultsOverride;
 												 detail:NSLocalizedString(@"Deleting a remote branch always asks.", @"Dialog warnings: description")],
 			[[PBDialogWarning alloc] initWithIdentifier:kDialogForcePushWithLease
 												  title:NSLocalizedString(@"Force push a rejected push", @"Dialog warnings: title")
-												 detail:NSLocalizedString(@"Replaces the remote's commits, but only if the remote is where GitX last saw it.", @"Dialog warnings: description")],
+												 detail:NSLocalizedString(@"Replaces remote commits, unless someone pushed since.", @"Dialog warnings: description")],
 			[[PBDialogWarning alloc] initWithIdentifier:kDialogStashDrop
 												  title:NSLocalizedString(@"Drop a stash", @"Dialog warnings: title")
 												 detail:NSLocalizedString(@"The changes in a dropped stash are hard to recover.", @"Dialog warnings: description")],
