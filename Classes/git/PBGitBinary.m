@@ -22,9 +22,16 @@ static NSString *gitVersion = nil;
 	if (![[NSFileManager defaultManager] fileExistsAtPath:path])
 		return nil;
 
-	NSString *version = [PBTask outputForCommand:path arguments:@[ @"--version" ] error:NULL];
+	NSError *error = nil;
+	NSString *version = [PBTask outputForCommand:path arguments:@[ @"--version" ] error:&error];
+	if (!version)
+		NSLog(@"Running '%@ --version' failed: %@", path, error);
 
-	return [self extractGitVersion:version];
+	NSString *extracted = [self extractGitVersion:version];
+	if (version && !extracted)
+		NSLog(@"Could not parse the output of '%@ --version': %@", path, version);
+
+	return extracted;
 }
 
 + (NSString *)extractGitVersion:(NSString *)versionString
@@ -33,6 +40,9 @@ static NSString *gitVersion = nil;
 	NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"git version ([0-9.]+)"
 																		   options:0
 																			 error:&error];
+	if (!versionString)
+		return nil;
+
 	NSTextCheckingResult *result = [regex firstMatchInString:versionString
 													 options:0
 													   range:NSMakeRange(0, versionString.length)];
@@ -62,29 +72,24 @@ static NSString *gitVersion = nil;
 	return NO;
 }
 
-+ (void)initialize
++ (void)showInvalidGitPathAlert:(NSString *)path
 {
-	// Check what we might have in user defaults
-	// NOTE: Currently this should NOT have a registered default, or the searching bits below won't work
-	gitPath = [[NSUserDefaults standardUserDefaults] stringForKey:@"gitExecutable"];
-	if (gitPath.length > 0) {
-		if ([self acceptBinary:gitPath])
-			return;
+	NSAlert *alert = [[NSAlert alloc] init];
 
-		NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = NSLocalizedString(@"Invalid git path", @"Error message for NSUserDefaults configured path to git binary that does not point to a git binary");
+	alert.informativeText = [NSString stringWithFormat:NSLocalizedString(
+														   @"The path „%@“, which is configured as a custom git path in the "
+															"preferences window, is not a valid git v" MIN_GIT_VERSION " or higher binary. "
+															"Using the default search paths instead.",
+														   "Informative text for NSUserDefaults configured path to git binary that does not point to a git binary"),
+													   path];
+	[alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];
 
-		alert.messageText = NSLocalizedString(@"Invalid git path", @"Error message for NSUserDefaults configured path to git binary that does not point to a git binary");
-		alert.informativeText = [NSString stringWithFormat:NSLocalizedString(
-															   @"The path „%@“, which is configured as a custom git path in the "
-																"preferences window, is not a valid git v" MIN_GIT_VERSION " or higher binary. "
-																"Using the default search paths instead.",
-															   "Informative text for NSUserDefaults configured path to git binary that does not point to a git binary"),
-														   gitPath];
-		[alert addButtonWithTitle:NSLocalizedString(@"OK", @"OK")];
+	[alert runModal];
+}
 
-		[alert runModal];
-	}
-
++ (void)findDefaultBinary
+{
 	// Try to find the path of the Git binary
 	char *path = getenv("GIT_PATH");
 	if (path && [self acceptBinary:[NSString stringWithUTF8String:path]])
@@ -110,6 +115,45 @@ static NSString *gitVersion = nil;
 	}
 
 	NSLog(@"Could not find a git binary higher than version " MIN_GIT_VERSION);
+}
+
++ (void)validateConfiguredPath:(NSString *)path
+{
+	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+		NSString *version = [self versionForPath:path];
+		BOOL accepted = [self version:version isAtLeast:@"" MIN_GIT_VERSION];
+
+		dispatch_async(dispatch_get_main_queue(), ^{
+			if (accepted) {
+				gitVersion = version;
+				return;
+			}
+
+			NSLog(@"The configured git path %@ failed validation (version: %@), falling back to the default search", path, version);
+			gitPath = nil;
+			[self findDefaultBinary];
+			[self showInvalidGitPathAlert:path];
+		});
+	});
+}
+
++ (void)initialize
+{
+	// Check what we might have in user defaults
+	// NOTE: Currently this should NOT have a registered default, or the searching bits below won't work
+	gitPath = [[NSUserDefaults standardUserDefaults] stringForKey:@"gitExecutable"];
+	if (gitPath.length > 0) {
+		if ([[NSFileManager defaultManager] isExecutableFileAtPath:gitPath]) {
+			NSLog(@"Using the configured git path %@, validating it in the background", gitPath);
+			[self validateConfiguredPath:gitPath];
+			return;
+		}
+
+		NSLog(@"The configured git path %@ is not an executable file", gitPath);
+		[self showInvalidGitPathAlert:gitPath];
+	}
+
+	[self findDefaultBinary];
 }
 
 + (NSString *)path;
