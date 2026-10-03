@@ -13,7 +13,6 @@
 #import "PBGitCommitDateFormatter.h"
 
 #define kPreferenceViewIdentifier @"PBGitXPreferenceViewIdentifier"
-#define kMaximumVisibleDialogWarnings 8
 
 @implementation PBPrefsWindowController
 
@@ -27,7 +26,6 @@
 	[self updateCommitDateSample];
 
 	dialogWarningsTable.style = NSTableViewStyleFullWidth;
-	[self sizeDialogWarningsList];
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(dialogWarningsDidChange:)
@@ -104,31 +102,6 @@
 
 #pragma mark -
 #pragma mark Dialog warnings
-
-- (void)sizeDialogWarningsList
-{
-	NSScrollView *scrollView = dialogWarningsTable.enclosingScrollView;
-	NSUInteger rows = MIN([PBGitDefaults dialogWarnings].count, kMaximumVisibleDialogWarnings);
-	CGFloat delta = rows * dialogWarningsTable.rowHeight - NSHeight(scrollView.frame);
-	if (delta == 0)
-		return;
-
-	NSLog(@"Resizing the dialog warnings list by %g points for %lu rows", delta, (unsigned long)rows);
-
-	NSView *pane = confirmationsPrefsView;
-	CGFloat listBottom = NSMinY(scrollView.frame);
-	pane.autoresizesSubviews = NO;
-	for (NSView *subview in pane.subviews) {
-		NSRect frame = subview.frame;
-		if (subview == scrollView)
-			frame.size.height += delta;
-		else if (NSMinY(frame) > listBottom)
-			frame.origin.y += delta;
-		subview.frame = frame;
-	}
-	[pane setFrameSize:NSMakeSize(NSWidth(pane.frame), NSHeight(pane.frame) + delta)];
-	pane.autoresizesSubviews = YES;
-}
 
 - (void)dialogWarningsDidChange:(NSNotification *)notification
 {

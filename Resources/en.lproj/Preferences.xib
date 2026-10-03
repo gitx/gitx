@@ -253,11 +253,11 @@
             <point key="canvasLocation" x="30" y="125"/>
         </customView>
         <customView id="CF-view" userLabel="Warnings">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="360"/>
+            <rect key="frame" x="0.0" y="0.0" width="500" height="380"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CF-desc">
-                    <rect key="frame" x="38" y="288" width="424" height="34"/>
+                    <rect key="frame" x="38" y="308" width="424" height="34"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="CF-desc-cel">
                         <font key="font" metaFont="system"/>
@@ -267,7 +267,7 @@
                     </textFieldCell>
                 </textField>
                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="40" horizontalPageScroll="10" verticalLineScroll="40" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" drawsBackground="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DW-sv">
-                    <rect key="frame" x="40" y="96" width="420" height="160"/>
+                    <rect key="frame" x="40" y="96" width="420" height="180"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <clipView key="contentView" drawsBackground="NO" fixedFrame="YES" id="DW-cv">
                         <rect key="frame" x="0.0" y="0.0" width="420" height="160"/>
@@ -323,7 +323,7 @@
                     </scroller>
                 </scrollView>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CF-hdr1">
-                    <rect key="frame" x="44" y="262" width="40" height="14"/>
+                    <rect key="frame" x="44" y="282" width="40" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Skip" id="CF-hdr1-cel">
                         <font key="font" metaFont="smallSystem"/>
@@ -332,7 +332,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CF-hdr2">
-                    <rect key="frame" x="90" y="262" width="200" height="14"/>
+                    <rect key="frame" x="90" y="282" width="200" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Warning message" id="CF-hdr2-cel">
                         <font key="font" metaFont="smallSystem"/>
