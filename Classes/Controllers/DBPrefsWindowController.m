@@ -9,7 +9,9 @@ static DBPrefsWindowController *_sharedPrefsWindowController = nil;
 static const CGFloat kMinimumWindowWidth = 560;
 
 
-@implementation DBPrefsWindowController
+@implementation DBPrefsWindowController {
+	id _toolbarArrowKeyMonitor;
+}
 
 
 #pragma mark -
@@ -77,6 +79,46 @@ static const CGFloat kMinimumWindowWidth = 560;
 	[[[self window] contentView] addSubview:contentSubview];
 	[[self window] setShowsToolbarButton:NO];
 	[panel setAutorecalculatesKeyViewLoop:YES];
+	[self installToolbarArrowKeyMonitor];
+}
+
+
+- (void)dealloc
+{
+	if (_toolbarArrowKeyMonitor)
+		[NSEvent removeMonitor:_toolbarArrowKeyMonitor];
+}
+
+
+// Left and Right inside the toolbar would move focus to an internal view that does not react to
+// Space. Walk the key view loop instead, as Tab does, so focus always lands on a button. Return
+// is ignored by the button, so it is turned into a click here.
+- (void)installToolbarArrowKeyMonitor
+{
+	__weak DBPrefsWindowController *weakSelf = self;
+	NSEvent * (^handler)(NSEvent *) = ^NSEvent *(NSEvent *event) {
+		NSWindow *window = weakSelf.window;
+		if (!window || event.window != window)
+			return event;
+		if (![NSStringFromClass([window.firstResponder class]) hasPrefix:@"NSToolbar"])
+			return event;
+
+		unichar key = event.charactersIgnoringModifiers.length ? [event.charactersIgnoringModifiers characterAtIndex:0] : 0;
+		if (key == NSRightArrowFunctionKey) {
+			[window selectNextKeyView:nil];
+			return nil;
+		}
+		if (key == NSLeftArrowFunctionKey) {
+			[window selectPreviousKeyView:nil];
+			return nil;
+		}
+		if ((key == '\r' || key == NSEnterCharacter) && [window.firstResponder respondsToSelector:@selector(performClick:)]) {
+			[(id)window.firstResponder performClick:nil];
+			return nil;
+		}
+		return event;
+	};
+	_toolbarArrowKeyMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown handler:handler];
 }
 
 
