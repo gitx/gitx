@@ -13,7 +13,26 @@
 #import "PBGitCommitDateFormatter.h"
 
 #define kPreferenceViewIdentifier @"PBGitXPreferenceViewIdentifier"
-#define kMaximumVisibleDialogWarnings 8
+
+// A cell-based table steps through its focusable cells on Tab, which parks focus on the checkbox
+// column after the table itself. Tab should instead leave the list.
+@interface PBDialogWarningsTable : NSTableView
+@end
+
+@implementation PBDialogWarningsTable
+
+- (void)keyDown:(NSEvent *)event
+{
+	NSString *key = event.charactersIgnoringModifiers;
+	if ([key isEqualToString:@"\t"])
+		[self.window selectNextKeyView:self];
+	else if ([key isEqualToString:@"\x19"])
+		[self.window selectPreviousKeyView:self];
+	else
+		[super keyDown:event];
+}
+
+@end
 
 @implementation PBPrefsWindowController
 
@@ -27,7 +46,7 @@
 	[self updateCommitDateSample];
 
 	dialogWarningsTable.style = NSTableViewStyleFullWidth;
-	[self sizeDialogWarningsList];
+	dialogWarningsTable.enclosingScrollView.verticalScroller.refusesFirstResponder = YES;
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(dialogWarningsDidChange:)
@@ -105,31 +124,6 @@
 #pragma mark -
 #pragma mark Dialog warnings
 
-- (void)sizeDialogWarningsList
-{
-	NSScrollView *scrollView = dialogWarningsTable.enclosingScrollView;
-	NSUInteger rows = MIN([PBGitDefaults dialogWarnings].count, kMaximumVisibleDialogWarnings);
-	CGFloat delta = rows * dialogWarningsTable.rowHeight - NSHeight(scrollView.frame);
-	if (delta == 0)
-		return;
-
-	NSLog(@"Resizing the dialog warnings list by %g points for %lu rows", delta, (unsigned long)rows);
-
-	NSView *pane = confirmationsPrefsView;
-	CGFloat listBottom = NSMinY(scrollView.frame);
-	pane.autoresizesSubviews = NO;
-	for (NSView *subview in pane.subviews) {
-		NSRect frame = subview.frame;
-		if (subview == scrollView)
-			frame.size.height += delta;
-		else if (NSMinY(frame) > listBottom)
-			frame.origin.y += delta;
-		subview.frame = frame;
-	}
-	[pane setFrameSize:NSMakeSize(NSWidth(pane.frame), NSHeight(pane.frame) + delta)];
-	pane.autoresizesSubviews = YES;
-}
-
 - (void)dialogWarningsDidChange:(NSNotification *)notification
 {
 	[dialogWarningsTable reloadData];
@@ -167,11 +161,6 @@
 		[PBGitDefaults suppressDialogWarningForDialog:identifier];
 	else
 		[PBGitDefaults unsuppressDialogWarningForDialog:identifier];
-}
-
-- (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(NSInteger)row
-{
-	return NO;
 }
 
 #pragma mark -

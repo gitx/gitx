@@ -253,11 +253,11 @@
             <point key="canvasLocation" x="30" y="125"/>
         </customView>
         <customView id="CF-view" userLabel="Warnings">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="326"/>
+            <rect key="frame" x="0.0" y="0.0" width="500" height="380"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CF-desc">
-                    <rect key="frame" x="38" y="272" width="424" height="34"/>
+                    <rect key="frame" x="38" y="308" width="424" height="34"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" id="CF-desc-cel">
                         <font key="font" metaFont="system"/>
@@ -267,13 +267,13 @@
                     </textFieldCell>
                 </textField>
                 <scrollView borderType="none" autohidesScrollers="YES" horizontalLineScroll="40" horizontalPageScroll="10" verticalLineScroll="40" verticalPageScroll="10" hasHorizontalScroller="NO" usesPredominantAxisScrolling="NO" drawsBackground="NO" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="DW-sv">
-                    <rect key="frame" x="40" y="80" width="420" height="160"/>
+                    <rect key="frame" x="40" y="96" width="420" height="180"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <clipView key="contentView" drawsBackground="NO" fixedFrame="YES" id="DW-cv">
                         <rect key="frame" x="0.0" y="0.0" width="420" height="160"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" rowHeight="40" id="DW-tv">
+                            <tableView customClass="PBDialogWarningsTable" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" multipleSelection="NO" emptySelection="NO" autosaveColumns="NO" rowHeight="40" id="DW-tv">
                                 <rect key="frame" x="0.0" y="0.0" width="420" height="160"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <size key="intercellSpacing" width="3" height="0.0"/>
@@ -323,7 +323,7 @@
                     </scroller>
                 </scrollView>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CF-hdr1">
-                    <rect key="frame" x="44" y="246" width="40" height="14"/>
+                    <rect key="frame" x="44" y="282" width="40" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Skip" id="CF-hdr1-cel">
                         <font key="font" metaFont="smallSystem"/>
@@ -332,7 +332,7 @@
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CF-hdr2">
-                    <rect key="frame" x="90" y="246" width="200" height="14"/>
+                    <rect key="frame" x="90" y="282" width="200" height="14"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Warning message" id="CF-hdr2-cel">
                         <font key="font" metaFont="smallSystem"/>
@@ -341,11 +341,11 @@
                     </textFieldCell>
                 </textField>
                 <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="CF-sep">
-                    <rect key="frame" x="40" y="65" width="420" height="5"/>
+                    <rect key="frame" x="40" y="81" width="420" height="5"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                 </box>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CF-rl">
-                    <rect key="frame" x="40" y="28" width="280" height="17"/>
+                    <rect key="frame" x="40" y="44" width="280" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Reset all dialog warnings:" id="138">
                         <font key="font" metaFont="system"/>
@@ -354,7 +354,7 @@
                     </textFieldCell>
                 </textField>
                 <button toolTip="Resets the &quot;Don't show this again&quot; preferences." verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CF-rb">
-                    <rect key="frame" x="323" y="19" width="137" height="32"/>
+                    <rect key="frame" x="323" y="35" width="137" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="push" title="Reset Warnings" bezelStyle="rounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="139">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -471,11 +471,11 @@
         <customObject id="26" customClass="SUUpdater"/>
         <userDefaultsController representsSharedInstance="YES" id="28"/>
         <customView id="87" userLabel="Integration">
-            <rect key="frame" x="0.0" y="0.0" width="500" height="290"/>
+            <rect key="frame" x="0.0" y="0.0" width="500" height="328"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="43">
-                    <rect key="frame" x="91" y="265" width="99" height="17"/>
+                    <rect key="frame" x="91" y="269" width="99" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Git Executable:" id="44">
                         <font key="font" metaFont="system"/>
@@ -484,7 +484,7 @@
                     </textFieldCell>
                 </textField>
                 <pathControl focusRingType="none" verticalHuggingPriority="750" fixedFrame="YES" allowsExpansionToolTips="YES" translatesAutoresizingMaskIntoConstraints="NO" id="45">
-                    <rect key="frame" x="205" y="261" width="195" height="25"/>
+                    <rect key="frame" x="205" y="265" width="195" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <pathCell key="cell" selectable="YES" editable="YES" focusRingType="none" alignment="left" pathStyle="popUp" id="46">
                         <font key="font" metaFont="system"/>
@@ -505,7 +505,7 @@
                     </connections>
                 </pathControl>
                 <button toolTip="Reset to 'No executable set'" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="77">
-                    <rect key="frame" x="404" y="265" width="16" height="16"/>
+                    <rect key="frame" x="404" y="269" width="16" height="16"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="bevel" bezelStyle="regularSquare" image="NSStopProgressFreestandingTemplate" imagePosition="left" alignment="left" alternateImage="NSStopProgressFreestandingTemplate" state="on" imageScaling="proportionallyDown" inset="2" id="78">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -521,7 +521,7 @@
                     </connections>
                 </button>
                 <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="47">
-                    <rect key="frame" x="112" y="226" width="270" height="28"/>
+                    <rect key="frame" x="112" y="230" width="270" height="28"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" id="48">
                         <font key="font" metaFont="smallSystem"/>
@@ -532,7 +532,7 @@ or drag it from the Finder.</string>
                     </textFieldCell>
                 </textField>
                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="180">
-                    <rect key="frame" x="91" y="180" width="110" height="17"/>
+                    <rect key="frame" x="91" y="184" width="110" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Open in Terminal:" id="181">
                         <font key="font" metaFont="system"/>
@@ -541,7 +541,7 @@ or drag it from the Finder.</string>
                     </textFieldCell>
                 </textField>
                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="182">
-                    <rect key="frame" x="205" y="175" width="195" height="25"/>
+                    <rect key="frame" x="205" y="179" width="195" height="25"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <popUpButtonCell key="cell" type="push" title="Terminal" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="185" id="183">
                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
@@ -557,7 +557,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </popUpButton>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="188">
-                    <rect key="frame" x="112" y="155" width="120" height="18"/>
+                    <rect key="frame" x="112" y="159" width="120" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Open as tab" bezelStyle="regularSquare" imagePosition="left" alignment="left" inset="2" id="189">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -568,7 +568,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="108">
-                    <rect key="frame" x="112" y="69" width="179" height="18"/>
+                    <rect key="frame" x="112" y="73" width="179" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Make Gists public" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="109">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -580,7 +580,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="97">
-                    <rect key="frame" x="112" y="91" width="181" height="18"/>
+                    <rect key="frame" x="112" y="95" width="181" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Confirm creation of Gists" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="98">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -592,7 +592,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="88">
-                    <rect key="frame" x="91" y="35" width="121" height="18"/>
+                    <rect key="frame" x="91" y="39" width="121" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Enable Gravatar" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="91">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -603,7 +603,7 @@ or drag it from the Finder.</string>
                     </connections>
                 </button>
                 <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="89">
-                    <rect key="frame" x="91" y="113" width="169" height="18"/>
+                    <rect key="frame" x="91" y="117" width="169" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="Enable ‘Gist it’ button" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="90">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
