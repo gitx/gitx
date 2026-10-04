@@ -373,15 +373,9 @@ jobs:
       - name: Staple Notarization
         if: ${{ env.variableSet != '' }}
         run: |
-          # While you can notarize a ZIP archive, you can’t staple to it directly.
-          # Instead, run stapler against each item that you added to the archive.
-          # Then create a new ZIP file containing the stapled items for distribution.
-          # Reference: https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution/customizing_the_notarization_workflow
           APP_PATH="GitX.app"
-          ZIP_PATH="GitX.zip"
 
           xcrun stapler staple "$APP_PATH"
-          ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
       - name: Check Notarization
         if: ${{ env.variableSet != '' }}
         run: spctl -a -vv GitX.app
