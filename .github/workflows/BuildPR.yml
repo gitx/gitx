@@ -346,8 +346,7 @@ jobs:
             ARCHIVE=GitX.xcarchive \
             EXPORT_DIR=. \
             EXPORT_OPTIONS="$EXPORT_OPTIONS_PATH" \
-            DMG=GitX-${{ matrix.abi }}.dmg \
-            ZIP=GitX-${{ matrix.abi }}.zip
+            DMG=GitX-${{ matrix.abi }}.dmg
       - name: Notarize App
         if: ${{ env.variableSet != '' }}
         env:
@@ -389,12 +388,11 @@ jobs:
       - name: Package the stapled app
         if: ${{ env.variableSet != '' }}
         run: |
-          echo "Create GitX-${{ matrix.abi }}.dmg and .zip from the stapled app"
+          echo "Create GitX-${{ matrix.abi }}.dmg from the stapled app"
           make package-signed \
             ARCH=${{ matrix.abi }} \
             EXPORT_DIR=. \
-            DMG=GitX-${{ matrix.abi }}.dmg \
-            ZIP=GitX-${{ matrix.abi }}.zip
+            DMG=GitX-${{ matrix.abi }}.dmg
           xcrun stapler validate GitX.app
       - name: Upload dmg
         uses: actions/upload-artifact@v7
@@ -403,12 +401,6 @@ jobs:
           name: GitX-${{ matrix.abi }}.dmg
           path: GitX-${{ matrix.abi }}.dmg
           overwrite: true
-          retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
-      - name: Upload zip
-        uses: actions/upload-artifact@v7
-        with:
-          name: GitX-${{ matrix.abi }}.zip
-          path: GitX-${{ matrix.abi }}.zip
           retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
       - name: Clean up keychain and provisioning profile
         if: ${{ env.variableSet != '' }}
@@ -439,12 +431,6 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: GitX-arm64.dmg
-      - uses: actions/download-artifact@v8
-        with:
-          name: GitX-x86_64.zip
-      - uses: actions/download-artifact@v8
-        with:
-          name: GitX-arm64.zip
       - name: Check pre-release
         run: |
           echo "tag=${{steps.tagger.outputs.tag}}"
@@ -465,9 +451,7 @@ jobs:
           name: ${{steps.tagger.outputs.tag}}
           files: |
             GitX-x86_64.dmg
-            GitX-x86_64.zip
             GitX-arm64.dmg
-            GitX-arm64.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
