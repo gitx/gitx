@@ -107,8 +107,38 @@
 {
 	NSString *line = [PBTerminalUtil shellLineForCommand:@"git status" inDirectory:[NSURL fileURLWithPath:@"/tmp/repo"]];
 
-	XCTAssertTrue([line hasPrefix:@"cd \"/tmp/repo\";"], @"%@", line);
+	XCTAssertTrue([line hasPrefix:@"cd '/tmp/repo';"], @"%@", line);
 	XCTAssertTrue([line hasSuffix:@"git status"], @"%@", line);
+}
+
+- (void)testTheOpeningLineQuotesTheDirectoryLiterally
+{
+	NSString *line = [PBTerminalUtil shellLineForCommand:@"git status" inDirectory:[NSURL fileURLWithPath:@"/tmp/$(id) `id` it's"]];
+
+	XCTAssertTrue([line hasPrefix:@"cd '/tmp/$(id) `id` it'\\''s';"], @"%@", line);
+}
+
+- (void)testTheShellEntersADirectoryWhoseNameLooksLikeShellSyntax
+{
+	NSURL *parent = [[NSURL fileURLWithPath:NSTemporaryDirectory()] URLByAppendingPathComponent:[NSUUID UUID].UUIDString];
+	NSURL *directory = [parent URLByAppendingPathComponent:@"$(echo injected) `echo injected` it's \"quoted\""];
+	XCTAssertTrue([[NSFileManager defaultManager] createDirectoryAtURL:directory withIntermediateDirectories:YES attributes:nil error:nil]);
+
+	NSTask *task = [[NSTask alloc] init];
+	task.executableURL = [NSURL fileURLWithPath:@"/bin/sh"];
+	task.arguments = @[ @"-c", [PBTerminalUtil shellLineForCommand:@"pwd" inDirectory:directory] ];
+	task.environment = @{@"TERM" : @"dumb"};
+	NSPipe *output = [NSPipe pipe];
+	task.standardOutput = output;
+	task.standardError = [NSFileHandle fileHandleWithNullDevice];
+	XCTAssertTrue([task launchAndReturnError:nil]);
+	NSData *data = [output.fileHandleForReading readDataToEndOfFile];
+	[task waitUntilExit];
+	[[NSFileManager defaultManager] removeItemAtURL:parent error:nil];
+
+	NSString *printed = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	NSString *lastLine = [[printed stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]] componentsSeparatedByString:@"\n"].lastObject;
+	XCTAssertEqualObjects(lastLine, directory.path);
 }
 
 - (void)testAnApplicationThatIsNotInstalledIsNotReportedAsInstalled

@@ -82,9 +82,15 @@ static const NSTimeInterval PBTerminalLaunchedWindowPollInterval = 0.05;
 	return [bundleIdentifier isEqualToString:PBTerminalHandleriTerm2];
 }
 
++ (NSString *)shellQuote:(NSString *)string
+{
+	NSString *escaped = [string stringByReplacingOccurrencesOfString:@"'" withString:@"'\\''"];
+	return [NSString stringWithFormat:@"'%@'", escaped];
+}
+
 + (NSString *)shellLineForCommand:(NSString *)command inDirectory:(NSURL *)directory
 {
-	return [NSString stringWithFormat:@"cd \"%@\"; tput clear; echo '# Opened by GitX'; %@", directory.path, command];
+	return [NSString stringWithFormat:@"cd %@; tput clear; echo '# Opened by GitX'; %@", [self shellQuote:directory.path], command];
 }
 
 + (PBTerminalSessionPlan)sessionPlanWhenRunning:(BOOL)running hasOpenWindow:(BOOL)hasOpenWindow openAsTab:(BOOL)openAsTab
