@@ -52,14 +52,11 @@ EXPORT_OPTIONS ?= ExportOptions.plist
 # Extra build settings for the archive, as `xcodebuild` NAME=VALUE arguments.
 ARCHIVE_SETTINGS ?=
 
-# Where `dmg-signed` exports the signed app, and the zip it packs alongside the
-# disk image. CI overrides both, since it notarizes the app where it lands.
+# Where `dmg-signed` exports the signed app. CI overrides it, since it notarizes the app where it lands.
 EXPORT_DIR ?= $(BUILD_DIR)/export
-ZIP ?= $(BUILD_DIR)/GitX-$(ARCH).zip
 
 # Set to anything to have the packaging commands name every file they pack.
 VERBOSE ?=
-ZIP_QUIET := $(if $(VERBOSE),,-q)
 
 # Set to a path to have xcodebuild write an .xcresult bundle, which is where CI
 # reads the screenshots back out of a test run.
@@ -331,28 +328,25 @@ dmg: app ## Package build/GitX.app into an unsigned disk image that runs locally
 export-signed: ## Export the signed app from an archive that already exists
 	@test -f $(EXPORT_OPTIONS) \
 		|| { echo "No $(EXPORT_OPTIONS); see EXPORT_OPTIONS in the Makefile"; exit 1; }
-	rm -rf $(EXPORT_DIR)/GitX.app $(BUILD_DIR)/dist $(DMG) $(ZIP)
+	rm -rf $(EXPORT_DIR)/GitX.app $(BUILD_DIR)/dist $(DMG)
 	mkdir -p $(EXPORT_DIR)
 	xcodebuild -exportArchive -archivePath $(ARCHIVE) \
 		-exportPath $(EXPORT_DIR) -exportOptionsPlist $(EXPORT_OPTIONS)
 
 # Kept apart from the export so that notarization can staple the exported app
-# before it is sealed into anything: a dmg or zip made ahead of the stapler
+# before it is sealed into anything: a dmg made ahead of the stapler
 # carries no ticket, whatever is done to the app afterwards.
 package-signed: ## Package the exported app (run export-signed first)
-	rm -rf $(BUILD_DIR)/dist $(DMG) $(ZIP)
+	rm -rf $(BUILD_DIR)/dist $(DMG)
 	mkdir -p $(BUILD_DIR)/dist
 	cp -R $(EXPORT_DIR)/GitX.app $(BUILD_DIR)/dist/
 	ln -s /Applications $(BUILD_DIR)/dist/
 	hdiutil create -fs HFS+ -srcfolder $(BUILD_DIR)/dist -volname GitX $(DMG)
 	rm -rf $(BUILD_DIR)/dist
-	# -y stores the symlinks rather than following them, which is what keeps
-	# the frameworks' Versions/Current a link and the signature verifiable.
-	cd $(EXPORT_DIR) && zip -r -y $(ZIP_QUIET) $(abspath $(ZIP)) GitX.app
 
 # Packaging runs as its own make so that it cannot start before the archive
 # has finished. CI archives in a step of its own and calls package-signed.
-dmg-signed: archive ## Build and package a signed disk image and zip
+dmg-signed: archive ## Build and package a signed disk image
 	$(MAKE) export-signed
 	$(MAKE) package-signed
 
