@@ -214,6 +214,30 @@
 	[windowController close];
 }
 
+// The lookup lands after the sidebar has selected the current branch, and
+// rebuilding the group reloads the whole outline.
+- (void)testTheCurrentBranchStaysSelectedWhenTheWorktreeLookupLands
+{
+	PBWorktreeStubWindowController *windowController = [[PBWorktreeStubWindowController alloc] init];
+	windowController.stubRepository = self.repository;
+	XCTAssertNotNil(windowController.window, @"asking for the window is what loads the sidebar");
+
+	[self waitForTheWorktreeLookup];
+
+	PBGitSidebarController *sidebar = windowController.sidebarViewController;
+	PBSourceViewItem *group = [self worktreeGroupOfSidebar:sidebar];
+
+	NSDate *limit = [NSDate dateWithTimeIntervalSinceNow:10];
+	while (group.sortedChildren.count < 1 && [limit timeIntervalSinceNow] > 0)
+		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+	XCTAssertEqual(group.sortedChildren.count, 1u, @"the lookup has to have landed for this test to mean anything");
+
+	PBSourceViewItem *selected = [sidebar.sourceView itemAtRow:sidebar.sourceView.selectedRow];
+	XCTAssertEqualObjects(selected.ref.ref, @"refs/heads/branch_one", @"selected row: %@", selected.title);
+
+	[windowController close];
+}
+
 // The group having the rows is not the same as the sidebar showing them: the
 // outline view keeps its own expansion state, and a group that was empty when
 // the sidebar was built stays collapsed unless it is expanded after the reload.
