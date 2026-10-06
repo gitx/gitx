@@ -49,7 +49,7 @@
 		repoPath = [[NSString alloc] initWithBytes:path_buffer.ptr
 											length:path_buffer.size
 										  encoding:NSUTF8StringEncoding];
-		git_buf_free(&path_buffer);
+		git_buf_dispose(&path_buffer);
 	}
 
 	if (gitResult == GIT_OK && repoPath.length) {
