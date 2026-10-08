@@ -427,9 +427,9 @@
 
 	branches = [PBSourceViewItem groupItemWithTitle:@"Branches"];
 	worktrees = [PBSourceViewItem groupItemWithTitle:@"Worktrees"];
-	remotes = [PBSourceViewItem groupItemWithTitle:@"Remotes"];
-	tags = [PBSourceViewItem groupItemWithTitle:@"Tags"];
-	stashes = [PBSourceViewItem groupItemWithTitle:@"Stashes"];
+	remotes = [PBSourceViewItem groupItemWithTitle:@"Remotes Test"];
+	tags = [PBSourceViewItem groupItemWithTitle:@"Tag Tests"];
+	stashes = [PBSourceViewItem groupItemWithTitle:@"Stashes Test"];
 	submodules = [PBSourceViewItem groupItemWithTitle:@"Submodules"];
 	others = [PBSourceViewItem groupItemWithTitle:@"Other"];
 
