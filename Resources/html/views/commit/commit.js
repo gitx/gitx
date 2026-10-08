@@ -61,7 +61,8 @@ var showFileChanges = function(file, cached) {
 		Controller.refresh();
 	}
 
-	if (file.status == 0) // New file?
+	// Only an untracked file is shown whole; a staged addition has a real diff on both sides
+	if (file.status == 0 && !file.hasStagedChanges) // Untracked file?
 		return showNewFile(file);
 
 	setTitle((cached ? "Staged" : "Unstaged") + " changes for " + file.path);
@@ -378,10 +379,30 @@ var stageLines = function(reverse) {
 			patch += l+"\n";
 		}
 	}
-	patch = diffHeader + '\n' + "@@ -" + start_old.toString() + "," + count[0].toString() +
+	var header = diffHeader;
+	if (start_old == 0 && count[0] > 0) {
+		// Old side empty (addition, empty file gaining lines, insert at top with
+		// context 0): git won't partially reverse a creation header, so unstage the
+		// selection as a modification of the index entry. A full selection keeps
+		// the header and removes the entry, like the hunk button
+		header = modificationHeader(diffHeader);
+		start_old = 1;
+	}
+	patch = header + '\n' + "@@ -" + start_old.toString() + "," + count[0].toString() +
 		" +" + start_new.toString() + "," + count[1].toString() + " @@\n"+patch;
 
 	addHunkText(patch,reverse);
+}
+
+/* Plain modification header for the path of any diff header. Git writes both
+ * names on the "diff --git A B" line the same length, so splitting at the
+ * middle is safe for paths with spaces or quotes */
+var modificationHeader = function(header)
+{
+	var names = header.split("\n")[0].replace(/^diff --git /, "");
+	var half = (names.length - 1) / 2;
+	var a = names.substr(0, half), b = names.substr(half + 1);
+	return "diff --git " + a + " " + b + "\n--- " + a + "\n+++ " + b;
 }
 
 /* Compute the selection before actually making it.  Return as object
