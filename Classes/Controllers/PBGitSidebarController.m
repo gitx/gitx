@@ -37,6 +37,8 @@
 	PBSourceViewItem *stage;
 
 	PBSourceViewItem *branches, *remotes, *tags, *others, *submodules, *stashes, *worktrees;
+
+	BOOL restoringSelection;
 }
 
 - (void)populateList;
@@ -176,7 +178,9 @@
 	if (row == -1)
 		return;
 
+	restoringSelection = YES;
 	[sourceView selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
+	restoringSelection = NO;
 }
 
 - (void)selectCurrentBranch
@@ -266,7 +270,7 @@
 
 	PBSourceViewItem *parent = item.parent;
 	[parent removeChild:item];
-	[sourceView reloadData];
+	[self reloadPreservingSelection];
 }
 
 - (void)openSubmoduleFromMenuItem:(NSMenuItem *)menuItem
@@ -305,6 +309,9 @@
 
 - (void)outlineViewSelectionDidChange:(NSNotification *)notification
 {
+	if (restoringSelection)
+		return;
+
 	NSInteger index = [sourceView selectedRow];
 	PBSourceViewItem *item = [sourceView itemAtRow:index];
 	PBGitWindowController *windowController = self.windowController;
@@ -489,7 +496,7 @@
 
 	[self rebuildBranchesHeldElsewhere];
 
-	[sourceView reloadData];
+	[self reloadPreservingSelection];
 	[sourceView expandItem:worktrees];
 }
 

@@ -13,6 +13,7 @@
 #import "PBGitRevList.h"
 #import "PBGitCommit.h"
 #import "PBGitRef.h"
+#import "PBGitRevSpecifier.h"
 #import "PBSourceViewItem.h"
 
 // -selectedRef is private to the window controller, so the test names it the
@@ -245,6 +246,23 @@
 	NSResponder *sidebar = [self sidebarSelecting:@"refs/heads/branch_two"];
 
 	XCTAssertEqualObjects([self.windowController selectedRefForResponder:sidebar].ref, @"refs/heads/branch_two");
+}
+
+// A rebase or a checkout moves HEAD while another branch is selected, and the
+// repository then reads the new current branch. The sidebar has to follow it
+// instead of putting the branch it had selected back.
+- (void)testTheSidebarFollowsTheCurrentBranchWhenTheRepositoryRereadsIt
+{
+	PBGitRepository *repository = self.windowController.repository;
+	[self sidebarSelecting:@"refs/heads/branch_two"];
+	NSOutlineView *sourceView = self.windowController.sidebarViewController.sourceView;
+	XCTAssertEqualObjects(repository.currentBranch.ref.ref, @"refs/heads/branch_two");
+
+	[repository readCurrentBranch];
+
+	XCTAssertEqualObjects(repository.currentBranch.ref.ref, @"refs/heads/branch_one", @"HEAD is on branch_one");
+	XCTAssertEqual(sourceView.selectedRow, [self sidebarRowForRefNamed:@"refs/heads/branch_one"],
+				   @"the sidebar selects the branch that is now current");
 }
 
 // A row directly under REMOTES stands for the whole remote rather than for any
