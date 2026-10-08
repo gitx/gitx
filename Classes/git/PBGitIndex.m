@@ -737,13 +737,9 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 {
 	NSString *parameter = [NSString stringWithFormat:@"-U%lu", context];
 	if (staged) {
-		NSArray *arguments = nil;
-		if (file.status == NEW) {
-			NSString *indexPath = [@":0:" stringByAppendingString:file.path];
-			arguments = @[ @"show", indexPath ];
-		} else {
-			arguments = @[ @"diff-index", parameter, @"--cached", self.parentTree, @"--", file.path ];
-		}
+		// A staged addition is diffed against the parent tree (the empty tree in
+		// an unborn repository), not dumped from the index blob
+		NSArray *arguments = @[ @"diff-index", parameter, @"--cached", self.parentTree, @"--", file.path ];
 
 		NSError *error = nil;
 		NSString *output = [self.repository outputOfTaskWithArguments:arguments error:&error];
@@ -754,7 +750,10 @@ NS_ENUM(NSUInteger, PBGitIndexOperation){
 	}
 
 	// unstaged
-	if (file.status == NEW) {
+	// NEW only means absent from the parent tree; once staged there is an index
+	// entry to diff against, so only an untracked file is shown whole
+	BOOL untracked = file.status == NEW && !file.hasStagedChanges;
+	if (untracked) {
 		NSStringEncoding encoding;
 		NSError *error = nil;
 		NSURL *fileURL = [self.repository.workingDirectoryURL URLByAppendingPathComponent:file.path];

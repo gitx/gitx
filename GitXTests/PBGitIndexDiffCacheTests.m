@@ -184,4 +184,41 @@
 	XCTAssertEqual(self.repository.askedFor.count, 2u);
 }
 
+#pragma mark A staged addition is diffed, only an untracked file is read whole
+
+- (PBChangedFile *)newFileStaged:(BOOL)staged
+{
+	PBChangedFile *file = [[PBChangedFile alloc] initWithPath:@"a.txt"];
+	file.status = NEW;
+	file.hasStagedChanges = staged;
+	file.hasUnstagedChanges = YES;
+	return file;
+}
+
+- (void)testUntrackedFileIsReadFromDiskWithoutAskingGit
+{
+	NSString *diff = [self.gitIndex diffForFile:[self newFileStaged:NO] staged:NO contextLines:3];
+
+	XCTAssertEqual(self.repository.askedFor.count, 0u, @"git has no index entry to diff an untracked file against");
+	XCTAssertEqualObjects(diff, @"one\n");
+}
+
+- (void)testPartiallyStagedAdditionAsksForTheWorkingTreeDiff
+{
+	[self.gitIndex diffForFile:[self newFileStaged:YES] staged:NO contextLines:3];
+
+	NSArray *expected = @[ @"diff-files", @"-U3", @"--", @"a.txt" ];
+	XCTAssertEqualObjects(self.repository.askedFor.lastObject, expected,
+						  @"the edits since staging are a diff against the index, not the whole file again");
+}
+
+- (void)testStagedAdditionIsDiffedAgainstTheParentTree
+{
+	[self.gitIndex diffForFile:[self newFileStaged:YES] staged:YES contextLines:3];
+
+	NSArray *expected = @[ @"diff-index", @"-U3", @"--cached", @"HEAD", @"--", @"a.txt" ];
+	XCTAssertEqualObjects(self.repository.askedFor.lastObject, expected,
+						  @"shown as added lines like any staged change, not as a bare blob");
+}
+
 @end
