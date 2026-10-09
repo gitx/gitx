@@ -1196,6 +1196,16 @@
 	return [self menuItemWithTitle:NSLocalizedString(@"Locate Worktree Folder…", @"Contextual Menu Item to tell git where a worktree's folder was moved to") action:@selector(locateWorktreeFolder:) worktree:worktree disabledBecause:reason];
 }
 
+- (NSMenuItem *)repairLinksMenuItemForWorktree:(PBGitWorktree *)worktree
+{
+	NSString *version = self.gitVersion;
+	NSString *reason = nil;
+	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreeRepairVersion])
+		reason = [PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreeRepairVersion];
+
+	return [self menuItemWithTitle:NSLocalizedString(@"Repair Worktree Links…", @"Contextual Menu Item to reconnect worktrees that can no longer find the moved main repository") action:@selector(repairWorktreeLinks:) worktree:worktree disabledBecause:reason];
+}
+
 - (NSMenuItem *)removeMenuItemForWorktree:(PBGitWorktree *)worktree
 {
 	NSString *version = self.gitVersion;
@@ -1232,6 +1242,8 @@
 {
 	BOOL folderIsThere = [[NSFileManager defaultManager] fileExistsAtPath:worktree.path];
 	NSMenuItem *folderItem = folderIsThere ? [self revealMenuItemForWorktree:worktree] : [self locateMenuItemForWorktree:worktree];
+	if (worktree.hasBrokenLink)
+		folderItem = [self repairLinksMenuItemForWorktree:worktree];
 
 	return [@[ folderItem ] arrayByAddingObjectsFromArray:[self lockMenuItemsForWorktree:worktree]];
 }
@@ -1253,6 +1265,15 @@
 	return NO;
 }
 
+- (BOOL)anyWorktreeMovedWithRepository
+{
+	for (PBGitWorktree *worktree in self.repository.worktrees)
+		if (worktree.movedPath)
+			return YES;
+
+	return NO;
+}
+
 - (NSArray<NSMenuItem *> *)menuItemsForWorktreeGroup
 {
 	NSString *version = self.gitVersion;
@@ -1261,6 +1282,8 @@
 
 	if (![PBGitBinary version:version isAtLeast:@PBGitWorktreePruneVersion])
 		pruneReason = [PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreePruneVersion];
+	else if ([self anyWorktreeMovedWithRepository])
+		pruneReason = NSLocalizedString(@"Repair the worktree links first: git would forget a worktree that moved with this repository", @"Contextual Menu Item tooltip when pruning would drop a worktree that moved along with the main repository");
 	else if (![self anyWorktreeCanBePruned])
 		pruneReason = NSLocalizedString(@"Every worktree still has its folder", @"Contextual Menu Item tooltip when no worktree can be pruned");
 

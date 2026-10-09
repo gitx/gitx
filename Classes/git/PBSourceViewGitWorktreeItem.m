@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)isUnavailable
 {
-	return self.worktree.isPrunable || [self folderIsMissing];
+	return self.worktree.isPrunable || self.worktree.hasBrokenLink || [self folderIsMissing];
 }
 
 - (NSString *)statusDescription
@@ -101,7 +101,11 @@ NS_ASSUME_NONNULL_BEGIN
 						 ? [NSString stringWithFormat:NSLocalizedString(@"Locked: %@", @"Sidebar tooltip for a locked worktree with a reason"), self.worktree.lockReason]
 						 : NSLocalizedString(@"Locked", @"Sidebar tooltip for a locked worktree")];
 
-	if (self.worktree.isPrunable)
+	if (self.worktree.movedPath)
+		[parts addObject:[NSString stringWithFormat:NSLocalizedString(@"Moved with this repository to %@, and its link to this repository is broken", @"Sidebar tooltip for a worktree that moved along with the main repository"), self.worktree.movedPath]];
+	else if (self.worktree.hasBrokenLink)
+		[parts addObject:NSLocalizedString(@"Its link to this repository is broken", @"Sidebar tooltip for a worktree that can no longer find the moved main repository")];
+	else if (self.worktree.isPrunable)
 		[parts addObject:self.worktree.prunableReason.length
 						 ? [NSString stringWithFormat:NSLocalizedString(@"Prunable: %@", @"Sidebar tooltip for a prunable worktree with a reason"), self.worktree.prunableReason]
 						 : NSLocalizedString(@"Prunable", @"Sidebar tooltip for a prunable worktree")];
