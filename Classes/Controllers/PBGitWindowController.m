@@ -47,6 +47,9 @@
 	__weak IBOutlet NSTextField *statusField;
 	__weak IBOutlet NSProgressIndicator *progressIndicator;
 }
+
+@property (nonatomic, assign) BOOL offeredToRepairWorktreeLinks;
+
 @end
 
 @implementation PBGitWindowController
@@ -58,6 +61,8 @@
 	self = [super initWithWindowNibName:@"RepositoryWindow"];
 	if (!self)
 		return nil;
+
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(offerToRepairWorktreeLinks) name:PBGitBinaryVersionDidChangeNotification object:nil];
 
 	return self;
 }
@@ -80,6 +85,8 @@
 - (void)windowWillClose:(NSNotification *)notification
 {
 	//	NSLog(@"Window will close!");
+
+	[self.repository removeObserver:self keyPath:@"worktrees"];
 
 	[self.sidebarViewController closeView];
 	[self.historyViewController closeView];
@@ -147,6 +154,19 @@
 
 	[[statusField cell] setBackgroundStyle:NSBackgroundStyleRaised];
 	[progressIndicator setUsesThreadedAnimation:YES];
+
+	[self.repository addObserver:self
+						 keyPath:@"worktrees"
+						 options:0
+						   block:^(MAKVONotification *notification) {
+							   PBGitWindowController *observer = notification.observer;
+							   [observer offerToRepairWorktreeLinks];
+						   }];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification
+{
+	[self offerToRepairWorktreeLinks];
 }
 
 - (void)removeAllContentSubViews
@@ -777,6 +797,11 @@
 	if (!worktreePath) return;
 
 	PBGitWorktree *worktree = [self.repository worktreeHoldingRef:ref];
+	if (worktree.hasBrokenLink) {
+		[self repairWorktreeLinks:self];
+		return;
+	}
+
 	if (worktree && ![[NSFileManager defaultManager] fileExistsAtPath:worktreePath]) {
 		[self showMissingFolderOfWorktree:worktree];
 		return;
@@ -849,6 +874,163 @@
 				  }];
 }
 
+- (NSArray<PBGitWorktree *> *)worktreesWithBrokenLinks
+{
+	NSMutableArray<PBGitWorktree *> *broken = [NSMutableArray array];
+	for (PBGitWorktree *worktree in self.repository.worktrees)
+		if (worktree.hasBrokenLink)
+			[broken addObject:worktree];
+
+	return broken;
+}
+
++ (NSView *)listOfWorktrees:(NSArray<PBGitWorktree *> *)worktrees
+{
+	NSMutableArray<NSView *> *rows = [NSMutableArray array];
+
+	for (PBGitWorktree *worktree in worktrees) {
+		NSString *branch = [worktree.branchRefName hasPrefix:@"refs/heads/"] ? [worktree.branchRefName substringFromIndex:[@"refs/heads/" length]] : worktree.branchRefName;
+		NSString *path = worktree.movedPath ?: worktree.path;
+		NSString *shown = path.stringByAbbreviatingWithTildeInPath;
+
+		NSTextField *row = [NSTextField labelWithString:branch ? [NSString stringWithFormat:@"%@ (%@)", shown, branch] : shown];
+		row.font = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
+		row.lineBreakMode = NSLineBreakByTruncatingMiddle;
+		row.alignment = NSTextAlignmentCenter;
+		row.toolTip = path;
+		[row setContentCompressionResistancePriority:NSLayoutPriorityDefaultLow forOrientation:NSLayoutConstraintOrientationHorizontal];
+		[rows addObject:row];
+	}
+
+	NSStackView *list = [NSStackView stackViewWithViews:rows];
+	list.orientation = NSUserInterfaceLayoutOrientationVertical;
+	list.alignment = NSLayoutAttributeCenterX;
+	list.spacing = 2;
+	list.frame = NSMakeRect(0, 0, 220, list.fittingSize.height);
+	for (NSView *row in rows)
+		[row.widthAnchor constraintLessThanOrEqualToConstant:220].active = YES;
+
+	return list;
+}
+
+// Repair writes every link in one style, so the button for the style the
+// links already share is the default, and absolute when they differ.
+- (NSAlert *)alertForBrokenLinksOfWorktrees:(NSArray<PBGitWorktree *> *)worktrees linkStyle:(PBGitWorktreeLinkStyle)style gitVersion:(NSString *)version
+{
+	BOOL canRepair = [PBGitBinary version:version isAtLeast:@PBGitWorktreeRepairVersion];
+	BOOL canChooseStyle = [PBGitBinary version:version isAtLeast:@PBGitWorktreeLinkStyleVersion];
+
+	NSAlert *alert = [[NSAlert alloc] init];
+	alert.messageText = worktrees.count == 1 ? NSLocalizedString(@"This repository was moved, so one of its worktrees can no longer find it", @"Title of the sheet when one worktree's link to the moved main repository is broken") : [NSString stringWithFormat:NSLocalizedString(@"This repository was moved, so %lu of its worktrees can no longer find it", @"Title of the sheet when several worktrees' links to the moved main repository are broken"), (unsigned long)worktrees.count];
+
+	NSString *explanation = nil;
+	if (!canRepair)
+		explanation = [NSString stringWithFormat:NSLocalizedString(@"Reconnecting them needs git %@ or later, and GitX found git %@. Install a newer git, or choose one in Git Preferences…, then open this repository again.", @"Explanation on the broken worktree links sheet when git cannot repair them"), @PBGitWorktreeRepairVersion, version ?: @"?"];
+	else if (!canChooseStyle)
+		explanation = [NSString stringWithFormat:NSLocalizedString(@"GitX can reconnect them with “git worktree repair”, which writes the link of every worktree of this repository as an absolute path. Relative paths need git %@ or later, and GitX found git %@.", @"Explanation on the broken worktree links sheet when git can repair them only as absolute paths"), @PBGitWorktreeLinkStyleVersion, version];
+	else
+		explanation = NSLocalizedString(@"GitX can reconnect them with “git worktree repair”, which writes the link of every worktree of this repository in the style you choose.", @"Explanation on the broken worktree links sheet");
+
+	alert.informativeText = explanation;
+	alert.accessoryView = [PBGitWindowController listOfWorktrees:worktrees];
+
+	NSButton *absolute = [alert addButtonWithTitle:NSLocalizedString(@"Repair as Absolute Paths", @"Button that repairs worktree links as absolute paths")];
+	NSButton *relative = [alert addButtonWithTitle:NSLocalizedString(@"Repair as Relative Paths", @"Button that repairs worktree links as relative paths")];
+	NSButton *skip = [alert addButtonWithTitle:NSLocalizedString(@"Skip Repair", @"Button that leaves broken worktree links as they are")];
+
+	absolute.enabled = canRepair;
+	absolute.toolTip = canRepair ? nil : [PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreeRepairVersion];
+	relative.enabled = canChooseStyle;
+	relative.toolTip = canChooseStyle ? nil : [PBGitBinary explanationForVersion:version belowRequired:@PBGitWorktreeLinkStyleVersion];
+
+	NSButton *defaultButton = skip;
+	if (relative.enabled && style == PBGitWorktreeLinkStyleRelative)
+		defaultButton = relative;
+	else if (absolute.enabled)
+		defaultButton = absolute;
+
+	for (NSButton *button in alert.buttons)
+		button.keyEquivalent = @"";
+	defaultButton.keyEquivalent = @"\r";
+	if (defaultButton != skip)
+		skip.keyEquivalent = @"\033";
+
+	return alert;
+}
+
+- (void)offerToRepairWorktreeLinks
+{
+	NSArray<PBGitWorktree *> *broken = [self worktreesWithBrokenLinks];
+	if (!broken.count) {
+		self.offeredToRepairWorktreeLinks = NO;
+		return;
+	}
+
+	if (self.offeredToRepairWorktreeLinks || !self.window.isVisible || self.window.attachedSheet)
+		return;
+
+	if ([PBGitBinary path].length && !self.gitVersion) {
+		NSLog(@"git at %@ is still being checked, so the offer to repair worktree links waits for its version", [PBGitBinary path]);
+		return;
+	}
+
+	self.offeredToRepairWorktreeLinks = YES;
+	[self showBrokenLinksOfWorktrees:broken];
+}
+
+- (IBAction)repairWorktreeLinks:(id)sender
+{
+	NSArray<PBGitWorktree *> *broken = [self worktreesWithBrokenLinks];
+	if (broken.count)
+		[self showBrokenLinksOfWorktrees:broken];
+}
+
+- (nullable NSString *)gitVersion
+{
+	return [PBGitBinary version];
+}
+
+- (void)showBrokenLinksOfWorktrees:(NSArray<PBGitWorktree *> *)worktrees
+{
+	NSString *version = self.gitVersion;
+	NSAlert *alert = [self alertForBrokenLinksOfWorktrees:worktrees linkStyle:[PBGitWorktree linkStyleOfWorktrees:self.repository.worktrees] gitVersion:version];
+	BOOL canChooseStyle = [PBGitBinary version:version isAtLeast:@PBGitWorktreeLinkStyleVersion];
+
+	NSButton *skip = alert.buttons.lastObject;
+	id escapeMonitor = nil;
+	if ([skip.keyEquivalent isEqualToString:@"\r"]) {
+		__weak NSAlert *weakAlert = alert;
+		escapeMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskKeyDown
+															  handler:^NSEvent *(NSEvent *event) {
+																  if (event.window != weakAlert.window || ![event.charactersIgnoringModifiers isEqualToString:@"\033"])
+																	  return event;
+
+																  [skip performClick:nil];
+																  return nil;
+															  }];
+	}
+
+	[alert beginSheetModalForWindow:self.window
+				  completionHandler:^(NSModalResponse returnCode) {
+					  if (escapeMonitor)
+						  [NSEvent removeMonitor:escapeMonitor];
+
+					  PBGitWorktreeLinkStyle style = PBGitWorktreeLinkStyleUnknown;
+					  if (returnCode == NSAlertFirstButtonReturn)
+						  style = canChooseStyle ? PBGitWorktreeLinkStyleAbsolute : PBGitWorktreeLinkStyleUnknown;
+					  else if (returnCode == NSAlertSecondButtonReturn)
+						  style = PBGitWorktreeLinkStyleRelative;
+					  else
+						  return;
+
+					  dispatch_async(dispatch_get_main_queue(), ^{
+						  NSError *error = nil;
+						  if (![self.repository repairWorktreeLinksInStyle:style error:&error])
+							  [self showErrorSheet:error];
+					  });
+				  }];
+}
+
 - (IBAction)lockWorktree:(id)sender
 {
 	PBGitWorktree *worktree = [sender representedObject];
@@ -892,6 +1074,14 @@
 
 - (IBAction)pruneWorktrees:(id)sender
 {
+	for (PBGitWorktree *worktree in self.repository.worktrees) {
+		if (!worktree.movedPath)
+			continue;
+
+		[self repairWorktreeLinks:sender];
+		return;
+	}
+
 	NSError *error = nil;
 	NSString *report = [self.repository worktreePruneReportWithError:&error];
 	if (!report) {

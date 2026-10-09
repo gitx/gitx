@@ -7,9 +7,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "PBGitWorktree.h"
 
 @class PBGitHistoryList;
-@class PBGitWorktree;
 @class PBGitRevSpecifier;
 @protocol PBGitRefish;
 @class PBGitRef;
@@ -93,6 +93,9 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 - (BOOL)addWorktreeAtPath:(NSString *)path newBranchNamed:(NSString *)name error:(NSError **)error;
 - (BOOL)removeWorktree:(PBGitWorktree *)worktree force:(BOOL)force error:(NSError **)error;
 - (BOOL)repairWorktree:(PBGitWorktree *)worktree movedTo:(NSString *)path error:(NSError **)error;
+// Runs `git worktree repair`, which rewrites the link of every linked worktree
+// in the given style; Unknown passes no style and leaves it to git.
+- (BOOL)repairWorktreeLinksInStyle:(PBGitWorktreeLinkStyle)style error:(NSError **)error;
 
 - (BOOL)checkoutRefish:(id<PBGitRefish>)ref error:(NSError **)error;
 - (BOOL)checkoutFiles:(NSArray *)files fromRefish:(id<PBGitRefish>)ref error:(NSError **)error;

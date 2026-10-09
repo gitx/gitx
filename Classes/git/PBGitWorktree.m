@@ -20,6 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, nullable) NSString *lockReason;
 @property (nonatomic, assign, getter=isPrunable) BOOL prunable;
 @property (nonatomic, copy, nullable) NSString *prunableReason;
+@property (nonatomic, assign) PBGitWorktreeLinkStyle linkStyle;
+@property (nonatomic, assign, getter=hasBrokenLink) BOOL brokenLink;
+@property (nonatomic, copy, nullable) NSString *movedPath;
 
 @end
 
@@ -123,6 +126,165 @@ NS_ASSUME_NONNULL_BEGIN
 	return worktrees;
 }
 
+// A path that is gone cannot be resolved as a whole, so the part of it that
+// is still there is, which keeps /var and /private/var from differing.
++ (NSString *)canonicalPath:(NSString *)path
+{
+	NSString *standardized = path.stringByStandardizingPath;
+	NSString *existing = standardized;
+	NSMutableArray<NSString *> *missing = [NSMutableArray array];
+
+	while (existing.length > 1 && ![[NSFileManager defaultManager] fileExistsAtPath:existing]) {
+		[missing insertObject:existing.lastPathComponent atIndex:0];
+		existing = existing.stringByDeletingLastPathComponent;
+	}
+
+	char resolved[PATH_MAX];
+	NSString *base = realpath(existing.fileSystemRepresentation, resolved) ? [NSString stringWithUTF8String:resolved] : existing;
+
+	return missing.count ? [base stringByAppendingPathComponent:[NSString pathWithComponents:missing]] : base;
+}
+
++ (nullable NSString *)firstLineOfFileAtPath:(NSString *)path
+{
+	NSString *contents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
+
+	return [contents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]].firstObject;
+}
+
+// A worktree's .git file holds "gitdir: <path>", relative to the worktree when
+// it was made with --relative-paths.
++ (nullable NSString *)linkTargetOfWorktreeAtPath:(NSString *)worktreePath style:(PBGitWorktreeLinkStyle *)style
+{
+	NSString *dotGit = [worktreePath stringByAppendingPathComponent:@".git"];
+	BOOL isDirectory = NO;
+	if (![[NSFileManager defaultManager] fileExistsAtPath:dotGit isDirectory:&isDirectory] || isDirectory)
+		return nil;
+
+	NSString *line = [self firstLineOfFileAtPath:dotGit];
+	if (![line hasPrefix:@"gitdir: "])
+		return nil;
+
+	NSString *target = [line substringFromIndex:[@"gitdir: " length]];
+	*style = target.isAbsolutePath ? PBGitWorktreeLinkStyleAbsolute : PBGitWorktreeLinkStyleRelative;
+
+	return target.isAbsolutePath ? target.stringByStandardizingPath : [worktreePath stringByAppendingPathComponent:target].stringByStandardizingPath;
+}
+
+// Each worktrees/<id>/gitdir names the worktree's .git file, which is how git
+// itself ties a listed path to its administrative folder.
++ (NSDictionary<NSString *, NSString *> *)idsByWorktreePathInCommonDirectory:(NSString *)commonDirectory
+{
+	NSString *administrative = [commonDirectory stringByAppendingPathComponent:@"worktrees"];
+	NSMutableDictionary<NSString *, NSString *> *ids = [NSMutableDictionary dictionary];
+
+	for (NSString *identifier in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:administrative error:NULL]) {
+		NSString *folder = [administrative stringByAppendingPathComponent:identifier];
+		NSString *dotGit = [self firstLineOfFileAtPath:[folder stringByAppendingPathComponent:@"gitdir"]];
+		if (!dotGit.length)
+			continue;
+
+		if (!dotGit.isAbsolutePath)
+			dotGit = [folder stringByAppendingPathComponent:dotGit];
+
+		ids[[self canonicalPath:dotGit.stringByDeletingLastPathComponent]] = identifier;
+	}
+
+	return ids;
+}
+
+// A worktree nested in the main folder moved along with it, so its folder is
+// the old path with the old main folder swapped for the new one. Its .git file
+// still names the old main folder, which says where that boundary is.
++ (nullable NSString *)movedPathOfWorktree:(PBGitWorktree *)worktree identifier:(NSString *)identifier mainPath:(NSString *)mainPath commonDirectory:(NSString *)commonDirectory style:(PBGitWorktreeLinkStyle *)style
+{
+	NSString *main = [self canonicalPath:mainPath];
+	NSString *common = [self canonicalPath:commonDirectory];
+	NSString *commonInsideMain = nil;
+
+	if ([common isEqualToString:main])
+		commonInsideMain = @"";
+	else if ([common hasPrefix:[main stringByAppendingString:@"/"]])
+		commonInsideMain = [common substringFromIndex:main.length + 1];
+	else
+		return nil;
+
+	NSString *path = worktree.path.stringByStandardizingPath;
+	for (NSString *formerMain = path.stringByDeletingLastPathComponent; formerMain.length > 1; formerMain = formerMain.stringByDeletingLastPathComponent) {
+		NSString *candidate = [mainPath stringByAppendingPathComponent:[path substringFromIndex:formerMain.length + 1]];
+		PBGitWorktreeLinkStyle candidateStyle = PBGitWorktreeLinkStyleUnknown;
+		NSString *target = [self linkTargetOfWorktreeAtPath:candidate style:&candidateStyle];
+		NSString *formerAdministrative = [[[formerMain stringByAppendingPathComponent:commonInsideMain] stringByAppendingPathComponent:@"worktrees"] stringByAppendingPathComponent:identifier].stringByStandardizingPath;
+
+		if (![target isEqualToString:formerAdministrative] || [[NSFileManager defaultManager] fileExistsAtPath:target])
+			continue;
+
+		*style = candidateStyle;
+		return candidate;
+	}
+
+	return nil;
+}
+
++ (void)checkLinksOfWorktrees:(NSArray<PBGitWorktree *> *)worktrees commonDirectory:(NSString *)commonDirectory
+{
+	NSDictionary<NSString *, NSString *> *ids = [self idsByWorktreePathInCommonDirectory:commonDirectory];
+	PBGitWorktree *main = worktrees.firstObject.isMain ? worktrees.firstObject : nil;
+
+	for (PBGitWorktree *worktree in worktrees) {
+		if (worktree.isMain)
+			continue;
+
+		NSString *identifier = ids[[self canonicalPath:worktree.path]];
+		if (!identifier) {
+			NSLog(@"No administrative folder names the worktree at %@, so its link is not checked", worktree.path);
+			continue;
+		}
+
+		PBGitWorktreeLinkStyle style = PBGitWorktreeLinkStyleUnknown;
+
+		if (![[NSFileManager defaultManager] fileExistsAtPath:worktree.path]) {
+			worktree.movedPath = main ? [self movedPathOfWorktree:worktree identifier:identifier mainPath:main.path commonDirectory:commonDirectory style:&style] : nil;
+			worktree.brokenLink = worktree.movedPath != nil;
+			worktree.linkStyle = style;
+			continue;
+		}
+
+		NSString *target = [self linkTargetOfWorktreeAtPath:worktree.path style:&style];
+		worktree.linkStyle = style;
+		if (!target)
+			continue;
+
+		NSString *administrative = [self canonicalPath:[[commonDirectory stringByAppendingPathComponent:@"worktrees"] stringByAppendingPathComponent:identifier]];
+		if ([[self canonicalPath:target] isEqualToString:administrative])
+			continue;
+
+		if ([[NSFileManager defaultManager] fileExistsAtPath:target]) {
+			NSLog(@"The worktree at %@ links to %@, another repository, so it is left alone", worktree.path, target);
+			continue;
+		}
+
+		worktree.brokenLink = YES;
+	}
+}
+
++ (PBGitWorktreeLinkStyle)linkStyleOfWorktrees:(NSArray<PBGitWorktree *> *)worktrees
+{
+	PBGitWorktreeLinkStyle shared = PBGitWorktreeLinkStyleUnknown;
+
+	for (PBGitWorktree *worktree in worktrees) {
+		if (worktree.linkStyle == PBGitWorktreeLinkStyleUnknown)
+			continue;
+
+		if (shared == PBGitWorktreeLinkStyleUnknown)
+			shared = worktree.linkStyle;
+		else if (shared != worktree.linkStyle)
+			return PBGitWorktreeLinkStyleMixed;
+	}
+
+	return shared;
+}
+
 // The snapshot is compared against the last one to decide whether anything
 // changed, and the history list polls, so identity comparison here would
 // reload the sidebar on every poll.
@@ -146,7 +308,10 @@ NS_ASSUME_NONNULL_BEGIN
 		&& self.isLocked == other.isLocked
 		&& (self.lockReason == other.lockReason || [self.lockReason isEqualToString:other.lockReason])
 		&& self.isPrunable == other.isPrunable
-		&& (self.prunableReason == other.prunableReason || [self.prunableReason isEqualToString:other.prunableReason]);
+		&& (self.prunableReason == other.prunableReason || [self.prunableReason isEqualToString:other.prunableReason])
+		&& self.linkStyle == other.linkStyle
+		&& self.hasBrokenLink == other.hasBrokenLink
+		&& (self.movedPath == other.movedPath || [self.movedPath isEqualToString:other.movedPath]);
 }
 
 - (NSUInteger)hash
@@ -156,11 +321,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<%@ %@%@%@%@%@>", NSStringFromClass([self class]), self.path,
+	return [NSString stringWithFormat:@"<%@ %@%@%@%@%@%@>", NSStringFromClass([self class]), self.path,
 									  self.bare ? @" bare" : @"",
 									  self.detached ? @" detached" : (self.branchRefName ? [@" " stringByAppendingString:self.branchRefName] : @""),
 									  self.locked ? @" locked" : @"",
-									  self.prunable ? @" prunable" : @""];
+									  self.prunable ? @" prunable" : @"",
+									  self.brokenLink ? @" broken link" : @""];
 }
 
 @end
