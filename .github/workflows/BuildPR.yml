@@ -88,7 +88,9 @@ jobs:
           rm -rf /opt/homebrew/etc/openssl@1.1 /opt/homebrew/etc/openssl@3
           rm -rf /opt/homebrew/opt/openssl@1.1 /opt/homebrew/opt/openssl@3
           rm -rf /opt/homebrew/Cellar/openssl@1.1 /opt/homebrew/Cellar/openssl@3
+          brew cleanup --prune-prefix
           brew install openssl@3
+          brew link --force --overwrite openssl@3
           openssl version
       - name: pre build
         run: make deps
