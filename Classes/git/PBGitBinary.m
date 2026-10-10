@@ -14,6 +14,8 @@
 static NSString *gitPath = nil;
 static NSString *gitVersion = nil;
 
+NSString *const PBGitBinaryVersionDidChangeNotification = @"PBGitBinaryVersionDidChangeNotification";
+
 + (NSString *)versionForPath:(NSString *)path
 {
 	if (!path)
@@ -52,6 +54,15 @@ static NSString *gitVersion = nil;
 	return nil;
 }
 
++ (void)takeVersion:(NSString *)version
+{
+	gitVersion = version;
+
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[[NSNotificationCenter defaultCenter] postNotificationName:PBGitBinaryVersionDidChangeNotification object:nil];
+	});
+}
+
 + (BOOL)acceptBinary:(NSString *)path
 {
 	if (!path)
@@ -64,7 +75,7 @@ static NSString *gitVersion = nil;
 	NSComparisonResult c = [version compare:@"" MIN_GIT_VERSION options:NSNumericSearch];
 	if (c == NSOrderedSame || c == NSOrderedDescending) {
 		gitPath = path;
-		gitVersion = version;
+		[self takeVersion:version];
 		return YES;
 	}
 
@@ -125,7 +136,7 @@ static NSString *gitVersion = nil;
 
 		dispatch_async(dispatch_get_main_queue(), ^{
 			if (accepted) {
-				gitVersion = version;
+				[self takeVersion:version];
 				return;
 			}
 

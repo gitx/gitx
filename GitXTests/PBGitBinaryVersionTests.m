@@ -8,6 +8,7 @@
 
 @interface PBGitBinary (VersionTesting)
 + (NSString *)extractGitVersion:(NSString *)versionString;
++ (BOOL)acceptBinary:(NSString *)path;
 @end
 
 @interface PBGitBinaryVersionTests : XCTestCase
@@ -33,6 +34,18 @@
 
 	XCTAssertNotNil([PBGitBinary version], @"every check against a minimum fails when the version is unknown");
 	XCTAssertEqualObjects([PBGitBinary version], expected, @"the version has to be that of the git actually in use");
+}
+
+- (void)testAcceptingAGitAnnouncesItsVersion
+{
+	NSString *path = [PBGitBinary path];
+	XCTAssertNotNil(path, @"no git was found, so nothing below means anything");
+
+	XCTNSNotificationExpectation *announced = [[XCTNSNotificationExpectation alloc] initWithName:@"PBGitBinaryVersionDidChangeNotification"];
+
+	XCTAssertTrue([PBGitBinary acceptBinary:path]);
+
+	[self waitForExpectations:@[ announced ] timeout:5];
 }
 
 - (void)testAVersionMeetsTheMinimumItEquals
