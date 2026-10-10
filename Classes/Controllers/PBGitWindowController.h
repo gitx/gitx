@@ -59,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (IBAction)unlockWorktree:(id)sender;
 - (IBAction)revealWorktreeInFinder:(id)sender;
 - (IBAction)locateWorktreeFolder:(id)sender;
+- (IBAction)repairWorktreeLinks:(id)sender;
 - (IBAction)pruneWorktrees:(id)sender;
 - (IBAction)checkOutInNewWorktree:(id)sender;
 - (IBAction)addWorktree:(id)sender;

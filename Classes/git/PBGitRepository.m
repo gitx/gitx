@@ -357,7 +357,7 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		if (!repository)
 			return;
 
-		NSArray<PBGitWorktree *> *worktrees = [PBGitWorktree worktreesFromPorcelain:[repository readWorktreePorcelain] ?: @"" currentWorktreeAtPath:ourPath];
+		NSArray<PBGitWorktree *> *worktrees = [repository readWorktreesWithCurrentWorktreeAtPath:ourPath];
 
 		dispatch_async(dispatch_get_main_queue(), ^{
 			PBGitRepository *mainRepository = weakSelf;
@@ -376,6 +376,26 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 - (NSString *)readWorktreePorcelain
 {
 	return [self outputOfTaskWithArguments:@[ @"worktree", @"list", @"--porcelain" ] error:NULL];
+}
+
+// A linked worktree's git folder is worktrees/<id> inside the main one, and
+// names it in its commondir file.
+- (NSString *)commonDirectory
+{
+	NSString *gitDirectory = self.gitURL.path;
+	NSString *common = [PBGitWorktree firstLineOfFileAtPath:[gitDirectory stringByAppendingPathComponent:@"commondir"]];
+	if (!common.length)
+		return gitDirectory;
+
+	return common.isAbsolutePath ? common : [gitDirectory stringByAppendingPathComponent:common].stringByStandardizingPath;
+}
+
+- (NSArray<PBGitWorktree *> *)readWorktreesWithCurrentWorktreeAtPath:(nullable NSString *)currentPath
+{
+	NSArray<PBGitWorktree *> *worktrees = [PBGitWorktree worktreesFromPorcelain:[self readWorktreePorcelain] ?: @"" currentWorktreeAtPath:currentPath];
+	[PBGitWorktree checkLinksOfWorktrees:worktrees commonDirectory:[self commonDirectory]];
+
+	return worktrees;
 }
 
 // The refs observers rearrange the history and reload the sidebar, so a reload
@@ -519,6 +539,33 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	}
 
 	return YES;
+}
+
+- (BOOL)repairWorktreeLinksInStyle:(PBGitWorktreeLinkStyle)style error:(NSError **)error
+{
+	NSMutableArray<NSString *> *arguments = [NSMutableArray arrayWithObject:@"repair"];
+	if (style == PBGitWorktreeLinkStyleRelative)
+		[arguments addObject:@"--relative-paths"];
+	else if (style == PBGitWorktreeLinkStyleAbsolute)
+		[arguments addObject:@"--no-relative-paths"];
+
+	for (PBGitWorktree *worktree in self.worktrees)
+		if (worktree.movedPath)
+			[arguments addObject:worktree.movedPath];
+
+	if (![self changeWorktreesWithArguments:arguments failureTitle:@"Repair failed" error:error])
+		return NO;
+
+	NSMutableArray<NSString *> *stillBroken = [NSMutableArray array];
+	for (PBGitWorktree *worktree in [self readWorktreesWithCurrentWorktreeAtPath:nil])
+		if (worktree.hasBrokenLink)
+			[stillBroken addObject:worktree.movedPath ?: worktree.path];
+
+	if (!stillBroken.count)
+		return YES;
+
+	NSLog(@"git worktree repair left these links broken: %@", stillBroken);
+	return PBReturnError(error, @"Repair failed", [NSString stringWithFormat:@"git could not reconnect %@.", [stillBroken componentsJoinedByString:@", "]], nil);
 }
 
 - (void)lazyReload

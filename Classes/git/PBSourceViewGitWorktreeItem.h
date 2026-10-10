@@ -21,8 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 // locked or prunable when it is either.
 @property (nonatomic, readonly) NSString *statusDescription;
 
-// git reports it prunable, or its folder is not there right now; moving a
-// folder away touches nothing git watches, so the folder is looked for too.
+// git reports it prunable, its folder is not there right now, or its link to
+// this repository is broken; moving a folder away touches nothing git watches,
+// so the folder is looked for too.
 @property (nonatomic, readonly, getter=isUnavailable) BOOL unavailable;
 
 @end

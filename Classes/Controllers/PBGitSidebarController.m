@@ -350,7 +350,9 @@
 	id item = [sourceView itemAtRow:rowNumber];
 	if ([item isKindOfClass:[PBSourceViewGitWorktreeItem class]]) {
 		PBSourceViewGitWorktreeItem *worktreeItem = item;
-		if (worktreeItem.isUnavailable)
+		if (worktreeItem.worktree.hasBrokenLink)
+			[self.windowController repairWorktreeLinks:self];
+		else if (worktreeItem.isUnavailable)
 			[self.windowController showMissingFolderOfWorktree:worktreeItem.worktree];
 		else
 			[self openRepositoryAtURL:worktreeItem.URL];
