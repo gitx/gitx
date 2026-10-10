@@ -8,6 +8,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <AppKit/AppKit.h>
 
 @interface GitXScreenshotTests : XCTestCase
 @property (nonatomic, strong) XCUIApplication *app;
@@ -134,6 +135,36 @@
 - (void)testMainWindowExists {
     XCTAssertTrue([self waitForWindow],
                   @"Main window should appear within 30 seconds");
+}
+
+- (void)testRepositoryFolderOpensThroughLaunchServices {
+	XCTAssertTrue([self waitForWindow], @"The fixture repository should open");
+	[self.app typeKey:@"w" modifierFlags:XCUIKeyModifierCommand];
+	XCTNSPredicateExpectation *closed = [[XCTNSPredicateExpectation alloc]
+		initWithPredicate:[NSPredicate predicateWithFormat:@"exists == NO"]
+		object:self.app.windows.firstMatch];
+	[self waitForExpectations:@[closed] timeout:10];
+
+	NSString *repoPath = [[NSProcessInfo processInfo] environment][@"GITX_UITEST_REPO"];
+	XCTAssertNotNil(repoPath);
+	NSURL *repoURL = [NSURL fileURLWithPath:repoPath isDirectory:YES];
+	// The UI test runner and the app under test are sibling build products.
+	NSURL *appURL = [[NSBundle mainBundle].bundleURL.URLByDeletingLastPathComponent
+		URLByAppendingPathComponent:@"GitX.app" isDirectory:YES];
+	XCTestExpectation *opened = [self expectationWithDescription:@"Deliver the repository open event"];
+	[[NSWorkspace sharedWorkspace] openURLs:@[repoURL] withApplicationAtURL:appURL
+		configuration:[NSWorkspaceOpenConfiguration configuration]
+		completionHandler:^(NSRunningApplication *application, NSError *error) {
+			XCTAssertNil(error);
+			XCTAssertNotNil(application);
+			[opened fulfill];
+		}];
+	[self waitForExpectations:@[opened] timeout:10];
+	XCTAssertTrue([self waitForWindow], @"The folder open event should reopen the repository window");
+	[self selectHistoryView];
+	XCTAssertTrue([self.app.windows.firstMatch.tables.firstMatch waitForExistenceWithTimeout:10],
+		@"The reopened repository should show its history");
+	[self saveWindowScreenshotNamed:@"repository-folder-open"];
 }
 
 - (void)testHistoryTabScreenshot {
