@@ -137,33 +137,49 @@
                   @"Main window should appear within 30 seconds");
 }
 
-- (void)testRepositoryFolderOpensThroughLaunchServices {
+- (void)testRepositoryFolderOpensThroughLaunchServices
+{
 	XCTAssertTrue([self waitForWindow], @"The fixture repository should open");
-	[self.app typeKey:@"w" modifierFlags:XCUIKeyModifierCommand];
+
+	// Cmd-W is not reliable here on every machine; click the window's own
+	// close button instead so a no-op does not leave the original window
+	// around to be mistaken for the one the open event below should create.
+	XCUIElement *originalWindow = self.app.windows.firstMatch;
+	XCUIElement *closeButton = originalWindow.buttons[XCUIIdentifierCloseWindow];
+	XCTAssertTrue([closeButton waitForExistenceWithTimeout:5],
+				  @"The repository window should have a close button");
+	[closeButton click];
+
 	XCTNSPredicateExpectation *closed = [[XCTNSPredicateExpectation alloc]
 		initWithPredicate:[NSPredicate predicateWithFormat:@"exists == NO"]
-		object:self.app.windows.firstMatch];
-	[self waitForExpectations:@[closed] timeout:10];
+				   object:originalWindow];
+	XCTAssertEqual([XCTWaiter waitForExpectations:@[ closed ] timeout:10], XCTWaiterResultCompleted,
+				   @"Closing the window should leave none open before the Launch Services event");
 
 	NSString *repoPath = [[NSProcessInfo processInfo] environment][@"GITX_UITEST_REPO"];
 	XCTAssertNotNil(repoPath);
 	NSURL *repoURL = [NSURL fileURLWithPath:repoPath isDirectory:YES];
 	// The UI test runner and the app under test are sibling build products.
 	NSURL *appURL = [[NSBundle mainBundle].bundleURL.URLByDeletingLastPathComponent
-		URLByAppendingPathComponent:@"GitX.app" isDirectory:YES];
+		URLByAppendingPathComponent:@"GitX.app"
+						isDirectory:YES];
 	XCTestExpectation *opened = [self expectationWithDescription:@"Deliver the repository open event"];
-	[[NSWorkspace sharedWorkspace] openURLs:@[repoURL] withApplicationAtURL:appURL
-		configuration:[NSWorkspaceOpenConfiguration configuration]
-		completionHandler:^(NSRunningApplication *application, NSError *error) {
-			XCTAssertNil(error);
-			XCTAssertNotNil(application);
-			[opened fulfill];
-		}];
-	[self waitForExpectations:@[opened] timeout:10];
+	[[NSWorkspace sharedWorkspace] openURLs:@[ repoURL ]
+					   withApplicationAtURL:appURL
+							  configuration:[NSWorkspaceOpenConfiguration configuration]
+						  completionHandler:^(NSRunningApplication *application, NSError *error) {
+							  XCTAssertNil(error);
+							  XCTAssertNotNil(application);
+							  [opened fulfill];
+						  }];
+	[self waitForExpectations:@[ opened ] timeout:10];
+
+	// The window was fully closed above, so any window that exists now was
+	// created by the open event, not merely reactivated by it.
 	XCTAssertTrue([self waitForWindow], @"The folder open event should reopen the repository window");
 	[self selectHistoryView];
 	XCTAssertTrue([self.app.windows.firstMatch.tables.firstMatch waitForExistenceWithTimeout:10],
-		@"The reopened repository should show its history");
+				  @"The reopened repository should show its history");
 	[self saveWindowScreenshotNamed:@"repository-folder-open"];
 }
 
