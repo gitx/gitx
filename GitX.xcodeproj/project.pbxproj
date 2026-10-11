@@ -191,6 +191,7 @@
 		AA01B1000000000000000501 /* PBGitWorktreeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AA01B1000000000000000401 /* PBGitWorktreeTests.m */; };
 		AA01B1000000000000001001 /* PBGitSidebarWorktreeGroupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AA01B1000000000000000901 /* PBGitSidebarWorktreeGroupTests.m */; };
 		4B1C7D2E9F0A41B3C5D6E701 /* PBGitXEntitlementsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B1C7D2E9F0A41B3C5D6E702 /* PBGitXEntitlementsTests.m */; };
+		C2843C4C46D54E88AF210001 /* PBGitXDocumentTypesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C2843C4C46D54E88AF210002 /* PBGitXDocumentTypesTests.m */; };
 		53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */; };
 		9120A847CBE34BD0AEEA32CD /* PBGitRepositoryCheckoutErrorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */; };
 		A1F0C0DE00000000000000F2 /* PBGitRepositoryForcePushTests.m in Sources */ = {isa = PBXBuildFile; fileRef = A1F0C0DE00000000000000F1 /* PBGitRepositoryForcePushTests.m */; };
@@ -773,6 +774,7 @@
 		AA01B1000000000000000401 /* PBGitWorktreeTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitWorktreeTests.m; path = GitXTests/PBGitWorktreeTests.m; sourceTree = "<group>"; };
 		AA01B1000000000000000901 /* PBGitSidebarWorktreeGroupTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitSidebarWorktreeGroupTests.m; path = GitXTests/PBGitSidebarWorktreeGroupTests.m; sourceTree = "<group>"; };
 		4B1C7D2E9F0A41B3C5D6E702 /* PBGitXEntitlementsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitXEntitlementsTests.m; path = GitXTests/PBGitXEntitlementsTests.m; sourceTree = "<group>"; };
+		C2843C4C46D54E88AF210002 /* PBGitXDocumentTypesTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitXDocumentTypesTests.m; path = GitXTests/PBGitXDocumentTypesTests.m; sourceTree = "<group>"; };
 		9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitHistoryMenuValidationTests.m; path = GitXTests/PBGitHistoryMenuValidationTests.m; sourceTree = "<group>"; };
 		751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryCheckoutErrorTests.m; path = GitXTests/PBGitRepositoryCheckoutErrorTests.m; sourceTree = "<group>"; };
 		A1F0C0DE00000000000000F1 /* PBGitRepositoryForcePushTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PBGitRepositoryForcePushTests.m; path = GitXTests/PBGitRepositoryForcePushTests.m; sourceTree = "<group>"; };
@@ -936,6 +938,7 @@
 				AA01B1000000000000000401 /* PBGitWorktreeTests.m */,
 				AA01B1000000000000000901 /* PBGitSidebarWorktreeGroupTests.m */,
 				4B1C7D2E9F0A41B3C5D6E702 /* PBGitXEntitlementsTests.m */,
+				C2843C4C46D54E88AF210002 /* PBGitXDocumentTypesTests.m */,
 				9AD4A0BA06594816ACB9327B /* PBGitHistoryMenuValidationTests.m */,
 				751132C10E5249A5A42FDC71 /* PBGitRepositoryCheckoutErrorTests.m */,
 				A1F0C0DE00000000000000F1 /* PBGitRepositoryForcePushTests.m */,
@@ -1921,6 +1924,7 @@
 				AA01B1000000000000000501 /* PBGitWorktreeTests.m in Sources */,
 				AA01B1000000000000001001 /* PBGitSidebarWorktreeGroupTests.m in Sources */,
 				4B1C7D2E9F0A41B3C5D6E701 /* PBGitXEntitlementsTests.m in Sources */,
+				C2843C4C46D54E88AF210001 /* PBGitXDocumentTypesTests.m in Sources */,
 				53E95A725F5849DA845F5010 /* PBGitHistoryMenuValidationTests.m in Sources */,
 				9120A847CBE34BD0AEEA32CD /* PBGitRepositoryCheckoutErrorTests.m in Sources */,
 				A1F0C0DE00000000000000F2 /* PBGitRepositoryForcePushTests.m in Sources */,

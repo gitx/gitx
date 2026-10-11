@@ -13,14 +13,16 @@
 			<true/>
 			<key>CFBundleTypeName</key>
 			<string>Folder</string>
-			<key>CFBundleTypeOSTypes</key>
+			<key>LSItemContentTypes</key>
 			<array>
-				<string>fold</string>
+				<string>public.folder</string>
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
 			<key>LSHandlerRank</key>
 			<string>Default</string>
+			<key>NSDocumentClass</key>
+			<string>PBGitRepositoryDocument</string>
 		</dict>
 		<dict>
 			<key>CFBundleTypeExtensions</key>
