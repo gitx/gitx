@@ -15,6 +15,10 @@
 #define PBGitWorktreeRemoveVersion "2.17"
 #define PBGitWorktreeRepairVersion "2.29"
 #define PBGitWorktreeStateVersion "2.31"
+#define PBGitWorktreeLinkStyleVersion "2.48"
+
+// Posted on the main queue once the version of the git in use is known or changes.
+extern NSString *const PBGitBinaryVersionDidChangeNotification;
 
 @interface PBGitBinary : NSObject
 

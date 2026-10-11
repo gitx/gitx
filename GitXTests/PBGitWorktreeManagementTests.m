@@ -22,6 +22,7 @@
 - (void)answerRefusalToRemoveWorktree:(PBGitWorktree *)worktree error:(NSError *)error;
 - (void)offerToRemoveWorktree:(PBGitWorktree *)worktree anywayAfter:(NSError *)refusal;
 - (NSAlert *)alertForMissingFolderOfWorktree:(PBGitWorktree *)worktree gitVersion:(NSString *)version;
+- (NSAlert *)alertForBrokenLinksOfWorktrees:(NSArray<PBGitWorktree *> *)worktrees linkStyle:(PBGitWorktreeLinkStyle)style gitVersion:(NSString *)version;
 @end
 
 @interface PBRemovalRefusedWindowController : PBGitWindowController
@@ -43,6 +44,61 @@
 
 @end
 
+@interface PBGitBinary (LinkStyleTesting)
++ (NSString *)versionForPath:(NSString *)path;
+@end
+
+@interface PBGitWindowController (RepairOfferTesting)
+- (void)offerToRepairWorktreeLinks;
+- (nullable NSString *)gitVersion;
+@end
+
+@interface PBVisibleWindow : NSWindow
+@end
+
+@implementation PBVisibleWindow
+
+- (BOOL)isVisible
+{
+	return YES;
+}
+
+@end
+
+@interface PBRepairOfferWindowController : PBGitWindowController
+@property (nonatomic, strong) PBGitRepository *stubRepository;
+@property (nonatomic, copy, nullable) NSString *stubGitVersion;
+@property (nonatomic, strong) NSWindow *stubWindow;
+@property (nonatomic, assign) NSUInteger offersShown;
+@end
+
+@implementation PBRepairOfferWindowController
+
+- (PBGitRepository *)repository
+{
+	return self.stubRepository;
+}
+
+- (NSWindow *)window
+{
+	if (!self.stubWindow)
+		self.stubWindow = [[PBVisibleWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100) styleMask:NSWindowStyleMaskTitled backing:NSBackingStoreBuffered defer:YES];
+
+	return self.stubWindow;
+}
+
+- (NSString *)gitVersion
+{
+	return self.stubGitVersion;
+}
+
+- (void)showBrokenLinksOfWorktrees:(NSArray<PBGitWorktree *> *)worktrees
+{
+	self.offersShown++;
+}
+
+@end
+
 @interface PBGitHistoryController (WorktreeManagementTesting)
 @property (nonatomic, copy) NSString *gitVersion;
 @end
@@ -50,6 +106,7 @@
 @interface PBMissingFolderWindowController : PBGitWindowController
 @property (nonatomic, strong) PBGitRepository *stubRepository;
 @property (nonatomic, strong) PBGitWorktree *missingFolderExplainedFor;
+@property (nonatomic, assign) BOOL repairOfLinksOffered;
 @end
 
 @implementation PBMissingFolderWindowController
@@ -62,6 +119,11 @@
 - (void)showMissingFolderOfWorktree:(PBGitWorktree *)worktree
 {
 	self.missingFolderExplainedFor = worktree;
+}
+
+- (IBAction)repairWorktreeLinks:(id)sender
+{
+	self.repairOfLinksOffered = YES;
 }
 
 @end
@@ -850,6 +912,352 @@
 	XCTAssertFalse(prune.isEnabled);
 	XCTAssertTrue([prune.toolTip containsString:@PBGitWorktreePruneVersion], @"%@", prune.toolTip);
 	XCTAssertTrue([prune.toolTip containsString:@"2.4.6"], @"%@", prune.toolTip);
+}
+
+#pragma mark A moved main repository
+
+- (void)waitUntil:(BOOL (^)(void))condition
+{
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return condition();
+	}];
+}
+
+- (void)skipUnlessGitCanChooseLinkStyle
+{
+	NSString *fixtureGit = [PBGitBinary versionForPath:@"/usr/bin/git"];
+	NSString *gitxGit = [PBGitBinary version];
+
+	XCTSkipUnless([PBGitBinary version:fixtureGit isAtLeast:@PBGitWorktreeLinkStyleVersion] && [PBGitBinary version:gitxGit isAtLeast:@PBGitWorktreeLinkStyleVersion],
+				  @"relative worktree links need git %s, and the fixtures use git %@ while GitX uses git %@", PBGitWorktreeLinkStyleVersion, fixtureGit, gitxGit);
+}
+
+- (void)addWorktreeAt:(NSString *)path branch:(NSString *)branch relative:(BOOL)relative
+{
+	NSMutableArray<NSString *> *arguments = [@[ @"worktree", @"add", @"-q" ] mutableCopy];
+	if (relative)
+		[arguments addObject:@"--relative-paths"];
+	[arguments addObjectsFromArray:@[ path, @"-b", branch ]];
+	[self runGit:arguments in:self.repositoryURL];
+}
+
+- (void)openRepositoryAt:(NSURL *)url
+{
+	self.repositoryURL = url;
+
+	NSError *error = nil;
+	self.repository = [[PBGitRepository alloc] initWithURL:url error:&error];
+	XCTAssertNotNil(self.repository, @"%@", error);
+
+	self.menus = [[PBGitHistoryController alloc] initWithRepository:self.repository superController:nil];
+	self.menus.gitVersion = @"2.50.1";
+}
+
+- (NSURL *)moveTheMainFolder
+{
+	NSURL *moved = [self.repositoryURL URLByAppendingPathExtension:@"moved"];
+	XCTAssertTrue([[NSFileManager defaultManager] moveItemAtURL:self.repositoryURL toURL:moved error:NULL]);
+	[self openRepositoryAt:moved];
+
+	return moved;
+}
+
+- (NSString *)linkOfWorktreeAt:(NSString *)path
+{
+	return [NSString stringWithContentsOfFile:[path stringByAppendingPathComponent:@".git"] encoding:NSUTF8StringEncoding error:NULL];
+}
+
+- (void)testAnIntactLinkIsNotBroken
+{
+	XCTAssertFalse([self second].hasBrokenLink);
+	XCTAssertEqual([self second].linkStyle, PBGitWorktreeLinkStyleAbsolute);
+}
+
+- (void)testMovingTheMainFolderBreaksTheLinkOfAWorktreeOutsideIt
+{
+	[self moveTheMainFolder];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return second.hasBrokenLink;
+	}];
+
+	XCTAssertNil([self second].movedPath, @"its folder did not move");
+	XCTAssertFalse([self worktreeNamed:@"main.moved"].hasBrokenLink, @"the main worktree has no link to break");
+}
+
+- (void)testARelativeLinkBreaksTooWhenOnlyTheMainFolderMoves
+{
+	[self skipUnlessGitCanChooseLinkStyle];
+
+	[self addWorktreeAt:[self siblingPath:@"third"] branch:@"third" relative:YES];
+	[self moveTheMainFolder];
+	[self waitUntil:^BOOL {
+		return [self worktreeNamed:@"third"].hasBrokenLink;
+	}];
+
+	XCTAssertEqual([self worktreeNamed:@"third"].linkStyle, PBGitWorktreeLinkStyleRelative);
+}
+
+- (void)testAWorktreeInsideTheMainFolderIsFoundWhereItMovedTo
+{
+	[self addWorktreeAt:[self.repositoryURL URLByAppendingPathComponent:@"nested"].path branch:@"nested" relative:NO];
+	NSURL *moved = [self moveTheMainFolder];
+	[self waitUntil:^BOOL {
+		return [self worktreeNamed:@"nested"].hasBrokenLink;
+	}];
+
+	NSString *expected = [moved URLByAppendingPathComponent:@"nested"].path;
+	XCTAssertEqualObjects([self worktreeNamed:@"nested"].movedPath.stringByResolvingSymlinksInPath, expected.stringByResolvingSymlinksInPath);
+	XCTAssertTrue([self worktreeNamed:@"nested"].isPrunable, @"git takes it for a worktree whose folder is gone");
+}
+
+- (void)testARelativeWorktreeInsideTheMainFolderMovesIntact
+{
+	[self skipUnlessGitCanChooseLinkStyle];
+
+	[self addWorktreeAt:[self.repositoryURL URLByAppendingPathComponent:@"nested"].path branch:@"nested" relative:YES];
+	[self moveTheMainFolder];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return second.hasBrokenLink;
+	}];
+
+	XCTAssertFalse([self worktreeNamed:@"nested"].hasBrokenLink);
+}
+
+- (void)testACopyOfTheRepositoryLeavesTheOriginalsWorktreesAlone
+{
+	NSURL *copy = [self.repositoryURL URLByAppendingPathExtension:@"copy"];
+	XCTAssertTrue([[NSFileManager defaultManager] copyItemAtURL:self.repositoryURL toURL:copy error:NULL]);
+	NSURL *original = self.repositoryURL;
+	[self openRepositoryAt:copy];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return second != nil;
+	}];
+
+	XCTAssertFalse([self second].hasBrokenLink, @"repairing it from the copy would take it from the original");
+	self.repositoryURL = original;
+}
+
+- (void)testRepairingAsRelativePathsReconnectsEveryWorktree
+{
+	[self skipUnlessGitCanChooseLinkStyle];
+
+	[self addWorktreeAt:[self siblingPath:@"third"] branch:@"third" relative:NO];
+	[self moveTheMainFolder];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return second.hasBrokenLink;
+	}];
+
+	NSError *error = nil;
+	XCTAssertTrue([self.repository repairWorktreeLinksInStyle:PBGitWorktreeLinkStyleRelative error:&error], @"%@", error);
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return !second.hasBrokenLink;
+	}];
+
+	XCTAssertTrue([[self linkOfWorktreeAt:self.secondWorktreeURL.path] hasPrefix:@"gitdir: ../"], @"%@", [self linkOfWorktreeAt:self.secondWorktreeURL.path]);
+	XCTAssertTrue([[self linkOfWorktreeAt:[self siblingPath:@"third"]] hasPrefix:@"gitdir: ../"], @"the healthy one is rewritten too");
+}
+
+- (void)testRepairingAsAbsolutePathsRewritesARelativeLink
+{
+	[self skipUnlessGitCanChooseLinkStyle];
+
+	[self addWorktreeAt:[self siblingPath:@"third"] branch:@"third" relative:YES];
+	[self moveTheMainFolder];
+	[self waitUntil:^BOOL {
+		return [self worktreeNamed:@"third"].hasBrokenLink;
+	}];
+
+	NSError *error = nil;
+	XCTAssertTrue([self.repository repairWorktreeLinksInStyle:PBGitWorktreeLinkStyleAbsolute error:&error], @"%@", error);
+	[self waitUntil:^BOOL {
+		return ![self worktreeNamed:@"third"].hasBrokenLink;
+	}];
+
+	XCTAssertEqual([self worktreeNamed:@"third"].linkStyle, PBGitWorktreeLinkStyleAbsolute);
+}
+
+- (void)testRepairingReconnectsAWorktreeThatMovedWithTheRepository
+{
+	[self skipUnlessGitCanChooseLinkStyle];
+
+	[self addWorktreeAt:[self.repositoryURL URLByAppendingPathComponent:@"nested"].path branch:@"nested" relative:NO];
+	[self moveTheMainFolder];
+	[self waitUntil:^BOOL {
+		return [self worktreeNamed:@"nested"].hasBrokenLink;
+	}];
+
+	NSError *error = nil;
+	XCTAssertTrue([self.repository repairWorktreeLinksInStyle:PBGitWorktreeLinkStyleAbsolute error:&error], @"%@", error);
+	[self waitUntil:^BOOL {
+		PBGitWorktree *nested = [self worktreeNamed:@"nested"];
+		return nested && !nested.hasBrokenLink && !nested.isPrunable;
+	}];
+
+	XCTAssertTrue([[self worktreeNamed:@"nested"].path.stringByResolvingSymlinksInPath hasPrefix:self.repositoryURL.path.stringByResolvingSymlinksInPath]);
+}
+
+- (void)testPruneWaitsWhileAWorktreeMovedWithTheRepository
+{
+	[self addWorktreeAt:[self.repositoryURL URLByAppendingPathComponent:@"nested"].path branch:@"nested" relative:NO];
+	[self moveTheMainFolder];
+	[self waitUntil:^BOOL {
+		return [self worktreeNamed:@"nested"].hasBrokenLink;
+	}];
+
+	NSMenuItem *prune = [self item:@"Prune Worktrees" in:[self.menus menuItemsForWorktreeGroup]];
+
+	XCTAssertFalse(prune.isEnabled, @"git would forget the worktree that moved along");
+	XCTAssertTrue([prune.toolTip containsString:@"Repair"], @"%@", prune.toolTip);
+}
+
+- (void)testAWorktreeWithABrokenLinkOffersRepairWhereRevealWas
+{
+	[self moveTheMainFolder];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return second.hasBrokenLink;
+	}];
+
+	NSArray<NSMenuItem *> *items = [self.menus menuItemsForWorktree:[self second]];
+	NSMenuItem *repair = [self item:@"Repair Worktree Links" in:items];
+
+	XCTAssertEqualObjects(items.firstObject, repair);
+	XCTAssertTrue(repair.isEnabled);
+	XCTAssertTrue(repair.action == @selector(repairWorktreeLinks:));
+}
+
+- (void)testAGitTooOldToRepairLinksSaysWhichVersionItNeeds
+{
+	[self moveTheMainFolder];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return second.hasBrokenLink;
+	}];
+	self.menus.gitVersion = @"2.28.1";
+
+	NSMenuItem *repair = [self item:@"Repair Worktree Links" in:[self.menus menuItemsForWorktree:[self second]]];
+
+	XCTAssertFalse(repair.isEnabled);
+	XCTAssertTrue([repair.toolTip containsString:@PBGitWorktreeRepairVersion], @"%@", repair.toolTip);
+}
+
+- (void)testAWorktreeWithABrokenLinkIsUnavailableAndSaysWhy
+{
+	[self moveTheMainFolder];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return second.hasBrokenLink;
+	}];
+
+	PBSourceViewGitWorktreeItem *item = [PBSourceViewGitWorktreeItem itemWithWorktree:[self second]];
+
+	XCTAssertTrue(item.isUnavailable);
+	XCTAssertTrue([item.statusDescription containsString:@"link to this repository is broken"], @"%@", item.statusDescription);
+}
+
+- (void)testOpeningAWorktreeWithABrokenLinkOffersTheRepair
+{
+	[self moveTheMainFolder];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return second.hasBrokenLink;
+	}];
+
+	PBMissingFolderWindowController *windowController = [[PBMissingFolderWindowController alloc] init];
+	windowController.stubRepository = self.repository;
+
+	[windowController openWorktreeHoldingRef:[PBGitRef refFromString:@"refs/heads/parked"]];
+
+	XCTAssertTrue(windowController.repairOfLinksOffered);
+	XCTAssertNil(windowController.missingFolderExplainedFor);
+}
+
+- (PBRepairOfferWindowController *)repairOfferAfterMovingTheMainFolder
+{
+	[self moveTheMainFolder];
+	[self waitForWorktrees:^BOOL(PBGitWorktree *second) {
+		return second.hasBrokenLink;
+	}];
+
+	PBRepairOfferWindowController *windowController = [[PBRepairOfferWindowController alloc] init];
+	windowController.stubRepository = self.repository;
+
+	return windowController;
+}
+
+- (void)testTheRepairIsOfferedOncePerWindow
+{
+	PBRepairOfferWindowController *windowController = [self repairOfferAfterMovingTheMainFolder];
+	windowController.stubGitVersion = @"2.50.1";
+
+	[windowController offerToRepairWorktreeLinks];
+	[windowController offerToRepairWorktreeLinks];
+
+	XCTAssertEqual(windowController.offersShown, 1u);
+}
+
+- (void)testTheRepairWaitsUntilTheGitVersionIsKnown
+{
+	PBRepairOfferWindowController *windowController = [self repairOfferAfterMovingTheMainFolder];
+
+	[windowController offerToRepairWorktreeLinks];
+	XCTAssertEqual(windowController.offersShown, 0u, @"a configured git is still being checked, and would be taken for one too old to repair");
+
+	windowController.stubGitVersion = @"2.50.1";
+	[[NSNotificationCenter defaultCenter] postNotificationName:PBGitBinaryVersionDidChangeNotification object:nil];
+	XCTAssertEqual(windowController.offersShown, 1u, @"the offer is made as soon as the version is known");
+}
+
+#pragma mark The broken links sheet
+
+- (NSAlert *)brokenLinksAlertForStyle:(PBGitWorktreeLinkStyle)style gitVersion:(NSString *)version
+{
+	return [[[PBGitWindowController alloc] init] alertForBrokenLinksOfWorktrees:@[ [self second] ] linkStyle:style gitVersion:version];
+}
+
+- (void)assertButtonsOf:(NSAlert *)alert enabled:(NSArray<NSNumber *> *)enabled keys:(NSArray<NSString *> *)keys
+{
+	XCTAssertEqualObjects([alert.buttons valueForKey:@"title"], (@[ @"Repair as Absolute Paths", @"Repair as Relative Paths", @"Skip Repair" ]));
+	XCTAssertEqualObjects([alert.buttons valueForKey:@"enabled"], enabled);
+	XCTAssertEqualObjects([alert.buttons valueForKey:@"keyEquivalent"], keys);
+}
+
+- (void)testAbsoluteLinksMakeAbsoluteTheDefault
+{
+	[self assertButtonsOf:[self brokenLinksAlertForStyle:PBGitWorktreeLinkStyleAbsolute gitVersion:@"2.50.1"] enabled:@[ @YES, @YES, @YES ] keys:@[ @"\r", @"", @"\033" ]];
+}
+
+- (void)testRelativeLinksMakeRelativeTheDefault
+{
+	[self assertButtonsOf:[self brokenLinksAlertForStyle:PBGitWorktreeLinkStyleRelative gitVersion:@"2.50.1"] enabled:@[ @YES, @YES, @YES ] keys:@[ @"", @"\r", @"\033" ]];
+}
+
+- (void)testMixedLinksMakeAbsoluteTheDefault
+{
+	[self assertButtonsOf:[self brokenLinksAlertForStyle:PBGitWorktreeLinkStyleMixed gitVersion:@"2.50.1"] enabled:@[ @YES, @YES, @YES ] keys:@[ @"\r", @"", @"\033" ]];
+}
+
+- (void)testAGitThatCannotChooseTheStyleRepairsOnlyAsAbsolutePaths
+{
+	NSAlert *alert = [self brokenLinksAlertForStyle:PBGitWorktreeLinkStyleRelative gitVersion:@"2.47.1"];
+
+	[self assertButtonsOf:alert enabled:@[ @YES, @NO, @YES ] keys:@[ @"\r", @"", @"\033" ]];
+	XCTAssertTrue([alert.buttons[1].toolTip containsString:@PBGitWorktreeLinkStyleVersion], @"%@", alert.buttons[1].toolTip);
+}
+
+- (void)testAGitTooOldToRepairLeavesOnlySkip
+{
+	NSAlert *alert = [self brokenLinksAlertForStyle:PBGitWorktreeLinkStyleAbsolute gitVersion:@"2.28.1"];
+
+	[self assertButtonsOf:alert enabled:@[ @NO, @NO, @YES ] keys:@[ @"", @"", @"\r" ]];
+	XCTAssertTrue([alert.informativeText containsString:@PBGitWorktreeRepairVersion], @"%@", alert.informativeText);
+	XCTAssertTrue([alert.informativeText containsString:@"2.28.1"], @"%@", alert.informativeText);
+}
+
+- (void)testTheSheetListsTheWorktreesWithTheirBranches
+{
+	NSAlert *alert = [self brokenLinksAlertForStyle:PBGitWorktreeLinkStyleAbsolute gitVersion:@"2.50.1"];
+
+	NSTextField *row = (NSTextField *)alert.accessoryView.subviews.firstObject;
+	XCTAssertEqualObjects(row.stringValue, ([NSString stringWithFormat:@"%@ (parked)", [self second].path.stringByAbbreviatingWithTildeInPath]));
+	XCTAssertEqualObjects(row.toolTip, [self second].path, @"the full path is there when the row is cut short");
+	XCTAssertEqualObjects(alert.messageText, @"This repository was moved, so one of its worktrees can no longer find it");
 }
 
 @end
