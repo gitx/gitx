@@ -33,12 +33,39 @@
 
 NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
+// reloadRefs rebuilds the map from git, so pointer identity is meaningless.
+// The history list and sidebar observe "refs"; they rearrange only when the
+// OID-to-ref-name mapping actually moved.
+static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
+{
+	if (left == right)
+		return YES;
+	if (left.count != right.count)
+		return NO;
+
+	for (GTOID *OID in left) {
+		NSArray *leftRefs = left[OID];
+		NSArray *rightRefs = right[OID];
+		if (leftRefs.count != rightRefs.count)
+			return NO;
+
+		NSSet *leftNames = [NSSet setWithArray:[leftRefs valueForKey:@"ref"]];
+		NSSet *rightNames = [NSSet setWithArray:[rightRefs valueForKey:@"ref"]];
+		if (![leftNames isEqualToSet:rightNames])
+			return NO;
+	}
+
+	return YES;
+}
+
 @interface PBGitRepository () {
 	__strong PBGitRepositoryWatcher *watcher;
 	__strong PBGitRevSpecifier *_headRef; // Caching
 	__strong GTOID *_headOID;
 	__strong GTRepository *_gtRepo;
 	PBGitIndex *_index;
+	BOOL _reloadRefsInFlight;
+	BOOL _currentBranchSetDuringReload;
 }
 
 @property (nonatomic, strong) NSNumber *hasSVNRepoConfig;
@@ -87,11 +114,12 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		return nil;
 	}
 
-	revisionList = [[PBGitHistoryList alloc] initWithRepository:self];
-
 	[self reloadRefs];
 
-	// Setup the FSEvents watcher to fire notifications when things change
+	// The history list snapshots the refs that already exist, so the first
+	// disk note is not itself treated as a rewrite of the repository.
+	revisionList = [[PBGitHistoryList alloc] initWithRepository:self];
+
 	watcher = [[PBGitRepositoryWatcher alloc] initWithRepository:self];
 
 	return self;
@@ -227,10 +255,18 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 - (void)reloadRefs
 {
+	_reloadRefsInFlight = YES;
+	_currentBranchSetDuringReload = NO;
+
+	NSString *previousHeadName = _headRef.simpleRef;
+	GTOID *previousHeadOID = _headOID;
+
 	// clear out ref caches
 	_headRef = nil;
 	_headOID = nil;
 	[self reloadWorktreePaths];
+
+	NSDictionary *previousRefs = [self->refs copy];
 	self->refs = [NSMutableDictionary dictionary];
 
 	NSError *error = nil;
@@ -264,6 +300,9 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		[oldBranches removeObject:revSpec];
 	}
 
+	// Re-cache HEAD before prune and observers see an empty cache.
+	(void)[self headRef];
+
 	BOOL prunedCurrentBranch = NO;
 	for (PBGitRevSpecifier *branch in oldBranches)
 		if ([branch isSimpleRef] && ![branch isEqual:[self headRef]]) {
@@ -275,13 +314,24 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	if (prunedCurrentBranch)
 		[self readCurrentBranch];
 
-
 	[self loadSubmodules];
 
-	[self willChangeValueForKey:@"refs"];
+	// Checkout to another branch at the same commit leaves the OID-to-name map
+	// unchanged, but the sidebar still has to redraw which ref is HEAD.
+	BOOL headMoved = (previousHeadName != nil || _headRef != nil) && (![previousHeadName isEqualToString:_headRef.simpleRef] || ![previousHeadOID isEqual:_headOID]);
+	BOOL refsChanged = !PBGitRefMapsEqual(self->refs, previousRefs) || headMoved;
+	if (refsChanged)
+		[self willChangeValueForKey:@"refs"];
 	[self willChangeValueForKey:@"stashes"];
-	[self didChangeValueForKey:@"refs"];
+	if (refsChanged)
+		[self didChangeValueForKey:@"refs"];
 	[self didChangeValueForKey:@"stashes"];
+
+	_reloadRefsInFlight = NO;
+
+	if (_currentBranchSetDuringReload && self.currentBranch)
+		[self.revisionList updateHistory];
+	_currentBranchSetDuringReload = NO;
 }
 
 // The drawing path asks this dictionary per label, so the snapshot keeps it as
@@ -577,6 +627,19 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 	hasChanged = NO;
 }
 
+// The watcher only reports that the disk moved. This is the one place that
+// reads git afterwards: refs and history through libgit2, the index through
+// the git binary. A file save and a `git commit` from a terminal take the
+// same path. History rebuilds only when the ref set actually changed.
+- (void)syncWithWorkingTree
+{
+	if (self.currentBranch)
+		[self.revisionList updateHistory];
+	else
+		[self reloadRefs];
+	[self.index refresh];
+}
+
 - (PBGitRevSpecifier *)headRef
 {
 	if (_headRef && _headOID)
@@ -763,8 +826,10 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 // Returns either this object, or an existing, equal object
 - (PBGitRevSpecifier *)addBranch:(PBGitRevSpecifier *)branch
 {
-	if ([[branch parameters] count] == 0)
+	if (!branch || [[branch parameters] count] == 0)
 		branch = [self headRef];
+	if (!branch)
+		return nil;
 
 	// First check if the branch doesn't exist already
 	if ([self.branchesSet containsObject:branch]) {
@@ -796,12 +861,22 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 
 - (void)readCurrentBranch
 {
-	self.currentBranch = [self addBranch:[self headRef]];
+	PBGitRevSpecifier *head = [self headRef];
+	if (!head)
+		return;
+
+	self.currentBranch = [self addBranch:head];
 }
 
 - (void)setCurrentBranch:(PBGitRevSpecifier *)newCurrentBranch
 {
 	currentBranch = newCurrentBranch;
+	// Nested updateHistory during reloadRefs would clear the HEAD cache again
+	// and walk while branches are still being rebuilt.
+	if (_reloadRefsInFlight) {
+		_currentBranchSetDuringReload = YES;
+		return;
+	}
 	[revisionList updateHistory];
 }
 

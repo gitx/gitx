@@ -38,8 +38,14 @@
 
 - (void)graphCommits:(NSArray *)revList
 {
-	if (!revList || [revList count] == 0)
+	if (!revList || [revList count] == 0) {
+		// An empty list used to return without finishing, which left
+		// isUpdating set forever once updateHistory started waiting on it.
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[self->delegate finishedGraphing];
+		});
 		return;
+	}
 
 	//NSDate *start = [NSDate date];
 	NSThread *currentThread = [NSThread currentThread];
