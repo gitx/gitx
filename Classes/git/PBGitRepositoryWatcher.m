@@ -13,16 +13,19 @@
 #import "PBGitDefaults.h"
 
 static const NSTimeInterval PBGitRepositoryWatcherDefaultCoalesceInterval = 0.35;
+static const NSTimeInterval PBGitRepositoryWatcherDefaultMaxCoalesceInterval = 1.5;
 
 @interface PBGitRepositoryWatcher () {
 	FSEventStreamRef eventStream;
 	BOOL _running;
 	NSUInteger _coalesceGeneration;
+	NSDate *_coalesceStartedAt;
 }
 
 @property (readonly) NSString *gitDir;
 @property (readonly) NSString *workDir;
 @property (nonatomic) NSTimeInterval coalesceInterval;
+@property (nonatomic) NSTimeInterval maxCoalesceInterval;
 
 - (void)noteDiskChanged;
 - (BOOL)eventPathsContainInterestingChange:(NSArray *)eventPaths;
@@ -39,23 +42,17 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 	(void)streamRef;
 	(void)eventFlags;
 	(void)eventIds;
+	(void)numEvents;
 
-	// Paths are not git semantics. They only decide whether the disk note is
-	// noise (.lock churn from a git subprocess, or pack files under objects/)
-	// or a real change the repository should read.
+	// Paths are not git semantics. With FileEvents they name the file that
+	// moved, so .lock and objects/ churn can be dropped without reading git.
 	PBGitRepositoryWatcher *watcher = (__bridge PBGitRepositoryWatcher *)clientCallBackInfo;
 	NSArray *eventPaths = (__bridge NSArray *)_eventPaths;
-	if (numEvents == 0 || ![watcher eventPathsContainInterestingChange:eventPaths])
+	if (![watcher eventPathsContainInterestingChange:eventPaths])
 		return;
 
-	void (^note)(void) = ^{
-		[watcher noteDiskChanged];
-	};
-
-	if ([NSThread isMainThread])
-		note();
-	else
-		dispatch_async(dispatch_get_main_queue(), note);
+	// The stream is on the main queue, so this is already the UI thread.
+	[watcher noteDiskChanged];
 }
 
 @implementation PBGitRepositoryWatcher
@@ -71,6 +68,7 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 	_repository = theRepository;
 	_coalesceInterval = PBGitRepositoryWatcherDefaultCoalesceInterval;
+	_maxCoalesceInterval = PBGitRepositoryWatcherDefaultMaxCoalesceInterval;
 
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(applicationDidBecomeActive:)
@@ -143,10 +141,11 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 		return;
 
 	FSEventStreamContext context = {0, (__bridge void *)(self), NULL, NULL, NULL};
+	// FileEvents so paths name files (index.lock) rather than only the folder.
 	eventStream = FSEventStreamCreate(kCFAllocatorDefault, PBGitRepositoryWatcherCallback, &context,
 									  (__bridge CFArrayRef)array,
 									  kFSEventStreamEventIdSinceNow, 0.1,
-									  kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf);
+									  kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf | kFSEventStreamCreateFlagFileEvents);
 }
 
 - (void)start
@@ -158,7 +157,7 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 	if (!eventStream)
 		return;
 
-	FSEventStreamScheduleWithRunLoop(eventStream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+	FSEventStreamSetDispatchQueue(eventStream, dispatch_get_main_queue());
 	FSEventStreamStart(eventStream);
 
 	_running = YES;
@@ -167,13 +166,14 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 - (void)stop
 {
 	_coalesceGeneration++;
+	_coalesceStartedAt = nil;
 
 	if (!_running)
 		return;
 
 	if (eventStream) {
 		FSEventStreamStop(eventStream);
-		FSEventStreamUnscheduleFromRunLoop(eventStream, CFRunLoopGetCurrent(), kCFRunLoopDefaultMode);
+		FSEventStreamSetDispatchQueue(eventStream, NULL);
 	}
 
 	_running = NO;
@@ -181,22 +181,34 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 - (void)noteDiskChanged
 {
+	NSDate *now = [NSDate date];
+	if (!_coalesceStartedAt)
+		_coalesceStartedAt = now;
+
 	_coalesceGeneration++;
 	NSUInteger generation = _coalesceGeneration;
 
 	if (self.coalesceInterval <= 0) {
+		_coalesceStartedAt = nil;
 		[self syncRepository];
 		return;
 	}
 
-	// Main-queue afterDelay still runs while a menu or a drag is tracking,
-	// unlike performSelector:afterDelay: which stays in the default mode.
+	// Quiet period after the last event, but never wait longer than the max
+	// once the first event of a burst arrived — a watch-mode build must not
+	// starve a terminal commit forever.
+	NSTimeInterval sinceStart = [now timeIntervalSinceDate:_coalesceStartedAt];
+	NSTimeInterval delay = self.coalesceInterval;
+	if (self.maxCoalesceInterval > 0 && sinceStart + delay > self.maxCoalesceInterval)
+		delay = MAX(0, self.maxCoalesceInterval - sinceStart);
+
 	__weak typeof(self) weakSelf = self;
-	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.coalesceInterval * NSEC_PER_SEC)),
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)),
 				   dispatch_get_main_queue(), ^{
 					   PBGitRepositoryWatcher *watcher = weakSelf;
 					   if (!watcher || watcher->_coalesceGeneration != generation)
 						   return;
+					   watcher->_coalesceStartedAt = nil;
 					   [watcher syncRepository];
 				   });
 }

@@ -260,6 +260,9 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 	_reloadRefsInFlight = YES;
 	_currentBranchSetDuringReload = NO;
 
+	NSString *previousHeadName = _headRef.simpleRef;
+	GTOID *previousHeadOID = _headOID;
+
 	// clear out ref caches
 	_headRef = nil;
 	_headOID = nil;
@@ -315,7 +318,10 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 
 	[self loadSubmodules];
 
-	BOOL refsChanged = !PBGitRefMapsEqual(self->refs, previousRefs);
+	// Checkout to another branch at the same commit leaves the OID-to-name map
+	// unchanged, but the sidebar still has to redraw which ref is HEAD.
+	BOOL headMoved = (previousHeadName != nil || _headRef != nil) && (![previousHeadName isEqualToString:_headRef.simpleRef] || ![previousHeadOID isEqual:_headOID]);
+	BOOL refsChanged = !PBGitRefMapsEqual(self->refs, previousRefs) || headMoved;
 	if (refsChanged)
 		[self willChangeValueForKey:@"refs"];
 	[self willChangeValueForKey:@"stashes"];

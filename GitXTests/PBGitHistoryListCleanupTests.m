@@ -112,4 +112,24 @@
 	XCTAssertFalse(list.isUpdating, @"stopping the list also drops the deferred update");
 }
 
+- (void)testANonSimpleRevIsNotRewalkedWhenRefsAreUnchanged
+{
+	PBRefMapRepository *repository = [[PBRefMapRepository alloc] init];
+	GTOID *OID = [self OID:@"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"];
+	PBGitRef *ref = [PBGitRef refFromString:@"refs/heads/main"];
+	repository.refs = [@{OID : @[ ref ]} mutableCopy];
+	repository.currentBranch = [PBGitRevSpecifier allBranchesRevSpec];
+
+	PBGitHistoryList *list = [[PBGitHistoryList alloc] initWithRepository:repository];
+	// Seed the "already showing this rev" state without starting a real walk.
+	[list setValue:repository.currentBranch forKey:@"lastNonSimpleRev"];
+	NSMutableArray *held = [NSMutableArray arrayWithObject:[NSNull null]];
+	list.commits = held;
+
+	[list updateHistory];
+
+	XCTAssertEqual(list.commits, held, @"a file save must not empty a file-history list when refs did not move");
+	XCTAssertFalse(list.isUpdating, @"no walk was started");
+}
+
 @end

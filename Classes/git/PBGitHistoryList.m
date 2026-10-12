@@ -16,6 +16,7 @@
 
 @interface PBGitHistoryList () <PBGitHistoryGrapherDelegate> {
 	BOOL historyUpdatePending;
+	PBGitRevSpecifier *lastNonSimpleRev;
 }
 
 - (void)resetGraphing;
@@ -330,9 +331,15 @@
 - (void)updateProjectHistoryForRev:(PBGitRevSpecifier *)rev
 {
 	[self setCurrentRevList:projectRevList];
+	lastNonSimpleRev = nil;
 
 	if ([self haveRefsBeenModified])
 		shouldReloadProjectHistory = YES;
+
+	// reloadRefs may have pruned currentBranch and already started a walk for
+	// the replacement. Continuing with the deleted rev would cancel that walk.
+	if (![repository.currentBranch isEqual:rev])
+		return;
 
 	if (![self selectedBranchNeedsNewGraph:rev] && !shouldReloadProjectHistory)
 		return;
@@ -347,6 +354,8 @@
 				[self finishedGraphing];
 			});
 		}];
+	} else if (projectRevList.commits.count == 0) {
+		[self finishedGraphing];
 	} else {
 		[graphQueue addOperation:[self operationForCommits:projectRevList.commits]];
 	}
@@ -355,6 +364,13 @@
 
 - (void)updateHistoryForRev:(PBGitRevSpecifier *)rev
 {
+	BOOL refsChanged = [self haveRefsBeenModified];
+	BOOL sameRev = [rev isEqual:lastNonSimpleRev];
+	if (sameRev && !refsChanged)
+		return;
+
+	lastNonSimpleRev = rev;
+
 	PBGitRevList *otherRevListParser = [[PBGitRevList alloc] initWithRepository:repository rev:rev shouldGraph:YES];
 
 	[self setCurrentRevList:otherRevListParser];
