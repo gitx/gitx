@@ -27,6 +27,28 @@ For Apple Silicon (M1, M2 processors) please use the `arm64` release.
 
 See also: [How to Build in Xcode](#how-to-build-in-xcode)
 
+### Reftable repositories
+
+GitX reads and writes SHA-1 repositories using either the traditional files
+reference backend or reftable, including bare repositories and linked worktrees.
+Opening a reftable repository does not convert its reference storage.
+SHA-256 repositories are not supported.
+For GitX's command-line operations, select Git 2.45 or newer in Preferences.
+
+The ObjectiveGit dependency uses libgit2 tag `v2.0.0-rc.1`, which includes the
+native reftable backend; libgit2 1.9.7 does not. Keep that tag when updating
+submodules.
+The upstream backend does not yet implement reference transactions or
+namespaces; GitX's stash mutations use the Git executable instead.
+
+The `PBReftableRepositoryTests` integration suite uses Homebrew Git, or the
+executable specified by `GITX_TEST_GIT`, to create real reftable fixtures.
+It skips when no Git 2.45+ is available (an invalid explicit override fails).
+Recent macOS releases bundle a Git new enough via Xcode's Command Line Tools;
+older macOS/Xcode releases may still ship an older Git without reftable
+support, so check `git --version` and install a newer Git (e.g. via Homebrew)
+if needed.
+
 ### Screenshots
 
 ![Staging View](assets/screenshot-stage.png)
