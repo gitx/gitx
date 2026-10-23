@@ -141,6 +141,7 @@ typedef NS_ENUM(NSInteger, PBGitConfigScope) {
 
 - (void)reloadRefs;
 - (void)lazyReload;
+- (void)syncWithWorkingTree;
 - (PBGitRevSpecifier *)headRef;
 - (GTOID *)headOID;
 - (PBGitCommit *)headCommit;

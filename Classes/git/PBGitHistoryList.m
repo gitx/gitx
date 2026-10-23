@@ -14,9 +14,13 @@
 #import "PBGitRef.h"
 #import "PBGitRevSpecifier.h"
 
-@interface PBGitHistoryList () <PBGitHistoryGrapherDelegate>
+@interface PBGitHistoryList () <PBGitHistoryGrapherDelegate> {
+	BOOL historyUpdatePending;
+	PBGitRevSpecifier *lastNonSimpleRev;
+}
 
 - (void)resetGraphing;
+- (void)abandonInFlightUpdate;
 
 - (PBGitHistoryGrapher *)grapher;
 - (NSInvocationOperation *)operationForCommits:(NSArray *)newCommits;
@@ -50,6 +54,8 @@
 	lastBranchFilter = -1;
 
 	shouldReloadProjectHistory = YES;
+	if (repository.refs)
+		lastRefOIDs = [NSSet setWithArray:[repository.refs allKeys]];
 	projectRevList = [[PBGitRevList alloc] initWithRepository:repository rev:[PBGitRevSpecifier allBranchesRevSpec] shouldGraph:NO];
 
 	return self;
@@ -75,6 +81,11 @@
 	if (!rev)
 		return;
 
+	if (self.isUpdating) {
+		historyUpdatePending = YES;
+		return;
+	}
+
 	if ([rev isSimpleRef])
 		[self updateProjectHistoryForRev:rev];
 	else
@@ -90,6 +101,12 @@
 		currentRevList = nil;
 	}
 	[graphQueue cancelAllOperations];
+	[self abandonInFlightUpdate];
+}
+
+- (void)abandonInFlightUpdate
+{
+	historyUpdatePending = NO;
 	self.isUpdating = NO;
 }
 
@@ -134,6 +151,10 @@
 {
 	if (!currentRevList.parsing && ([[graphQueue operations] count] == 0)) {
 		self.isUpdating = NO;
+		if (historyUpdatePending) {
+			historyUpdatePending = NO;
+			[self updateHistory];
+		}
 	}
 }
 
@@ -297,11 +318,11 @@
 {
 	[repository reloadRefs];
 
-	NSMutableSet *currentRefOIDs = [NSMutableSet setWithArray:[repository.refs allKeys]];
-	[currentRefOIDs minusSet:lastRefOIDs];
-	lastRefOIDs = [NSSet setWithArray:[repository.refs allKeys]];
+	NSSet *currentRefOIDs = [NSSet setWithArray:[repository.refs allKeys]];
+	BOOL changed = lastRefOIDs ? ![currentRefOIDs isEqualToSet:lastRefOIDs] : currentRefOIDs.count != 0;
+	lastRefOIDs = currentRefOIDs;
 
-	return [currentRefOIDs count] != 0;
+	return changed;
 }
 
 
@@ -310,9 +331,15 @@
 - (void)updateProjectHistoryForRev:(PBGitRevSpecifier *)rev
 {
 	[self setCurrentRevList:projectRevList];
+	lastNonSimpleRev = nil;
 
 	if ([self haveRefsBeenModified])
 		shouldReloadProjectHistory = YES;
+
+	// reloadRefs may have pruned currentBranch and already started a walk for
+	// the replacement. Continuing with the deleted rev would cancel that walk.
+	if (![repository.currentBranch isEqual:rev])
+		return;
 
 	if (![self selectedBranchNeedsNewGraph:rev] && !shouldReloadProjectHistory)
 		return;
@@ -321,15 +348,14 @@
 
 	if (shouldReloadProjectHistory) {
 		shouldReloadProjectHistory = NO;
-		lastBranchFilter = -1;
-		lastRemoteRef = nil;
-		lastOID = nil;
 		self.commits = [NSMutableArray array];
 		[projectRevList loadRevisionsWithCompletionBlock:^{
 			dispatch_async(dispatch_get_main_queue(), ^{
 				[self finishedGraphing];
 			});
 		}];
+	} else if (projectRevList.commits.count == 0) {
+		[self finishedGraphing];
 	} else {
 		[graphQueue addOperation:[self operationForCommits:projectRevList.commits]];
 	}
@@ -338,6 +364,13 @@
 
 - (void)updateHistoryForRev:(PBGitRevSpecifier *)rev
 {
+	BOOL refsChanged = [self haveRefsBeenModified];
+	BOOL sameRev = [rev isEqual:lastNonSimpleRev];
+	if (sameRev && !refsChanged)
+		return;
+
+	lastNonSimpleRev = rev;
+
 	PBGitRevList *otherRevListParser = [[PBGitRevList alloc] initWithRepository:repository rev:rev shouldGraph:YES];
 
 	[self setCurrentRevList:otherRevListParser];
