@@ -15,6 +15,8 @@ NSString *const PBTaskTerminationOutputKey = @"PBTaskTerminationOutputKey";
 
 const BOOL PBTaskDebugEnable = NO;
 
+static const int64_t PBTaskOutputDrainTimeoutSeconds = 5;
+
 #define PBTaskLog(...)                             \
 	do {                                           \
 		if (PBTaskDebugEnable) NSLog(__VA_ARGS__); \
@@ -24,6 +26,7 @@ const BOOL PBTaskDebugEnable = NO;
 
 @property (retain) NSTask *task;
 @property (retain) NSMutableData *standardOutputData;
+@property (strong) dispatch_semaphore_t outputDrained;
 
 @end
 
@@ -69,6 +72,8 @@ const BOOL PBTaskDebugEnable = NO;
 	[_task setStandardError:pipe];
 
 	_standardOutputData = [NSMutableData data];
+	dispatch_semaphore_t outputDrained = dispatch_semaphore_create(0);
+	_outputDrained = outputDrained;
 	__weak PBTask *weakSelf = self;
 	pipe.fileHandleForReading.readabilityHandler = ^(NSFileHandle *handle) {
 		PBTaskLog(@"task %p: can read %d", weakSelf, handle.fileDescriptor);
@@ -81,6 +86,7 @@ const BOOL PBTaskDebugEnable = NO;
 		} else {
 			PBTaskLog(@"task %p: EOF, closing %d", weakSelf, handle.fileDescriptor);
 			[handle closeFile];
+			dispatch_semaphore_signal(outputDrained);
 		}
 	};
 
@@ -100,8 +106,14 @@ const BOOL PBTaskDebugEnable = NO;
 	NSParameterAssert(terminationHandler != nil);
 
 	__weak PBTask *weakSelf = self;
+	dispatch_semaphore_t outputDrained = self.outputDrained;
 	self.task.terminationHandler = ^(NSTask *task) {
 		NSError *error = nil;
+
+		if (dispatch_semaphore_wait(outputDrained, dispatch_time(DISPATCH_TIME_NOW, PBTaskOutputDrainTimeoutSeconds * NSEC_PER_SEC)) != 0) {
+			NSLog(@"Output of '%@' was not fully read %lld seconds after it exited", task.launchPath, PBTaskOutputDrainTimeoutSeconds);
+		}
+
 		if (task.terminationReason == NSTaskTerminationReasonUncaughtSignal) {
 			PBTaskLog(@"task %p: caught signal", weakSelf);
 
