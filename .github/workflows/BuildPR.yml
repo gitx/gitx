@@ -357,21 +357,35 @@ jobs:
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           KEY_ID: ${{ secrets.APPLE_KEY_ID }}
         run: |
+          set -euo pipefail
+
           APP_PATH="GitX.app"
           ZIP_PATH="GitX.zip"
-          NOTARY_LOG="notary.log"
-          ID_FILE="id.txt"
+          AUTH=(--key-id "$KEY_ID" --apple-id "$APPLE_ID" --team-id "$TEAM_ID" --password "$APPLE_PASSWORD")
 
           ditto -c -k --keepParent "$APP_PATH" "$ZIP_PATH"
 
-          xcrun notarytool submit "$ZIP_PATH" --key-id $KEY_ID --apple-id $APPLE_ID --team-id $TEAM_ID --password $APPLE_PASSWORD --wait | tee "$NOTARY_LOG"
-          echo "print log output"
-          cat "$NOTARY_LOG"
+          SUBMISSION=$(xcrun notarytool submit "$ZIP_PATH" "${AUTH[@]}" --output-format json)
+          echo "$SUBMISSION"
+          ID=$(echo "$SUBMISSION" | plutil -extract id raw -o - -)
+          echo "Submission id is: $ID"
 
-          ID=$(cat "$NOTARY_LOG" | tail -3 | cut -d':' -f2 | head -n 1)
-          echo "Id is: $ID"
+          STATUS=""
+          for attempt in 1 2 3 4 5 6; do
+            xcrun notarytool wait "$ID" "${AUTH[@]}" --timeout 20m || echo "notarytool wait returned early (attempt $attempt)"
+            STATUS=$(xcrun notarytool info "$ID" "${AUTH[@]}" --output-format json | plutil -extract status raw -o - - || echo "unknown")
+            echo "Notarization status: $STATUS"
+            case "$STATUS" in
+              Accepted|Invalid|Rejected) break ;;
+            esac
+            sleep 20
+          done
 
-          xcrun notarytool log $ID --apple-id $APPLE_ID --team-id $TEAM_ID --password $APPLE_PASSWORD
+          xcrun notarytool log "$ID" "${AUTH[@]}"
+          if [ "$STATUS" != "Accepted" ]; then
+            echo "::error::Notarization finished with status '$STATUS'"
+            exit 1
+          fi
       - name: Staple Notarization
         if: ${{ env.variableSet != '' }}
         run: |
