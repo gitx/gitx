@@ -32,6 +32,15 @@ NSString *executablePath(void)
 	return [NSString stringWithUTF8String:resolved];
 }
 
+NSString *enclosingAppPath(void)
+{
+	NSString *appPath = [[[[executablePath() stringByDeletingLastPathComponent] // Resources
+		stringByDeletingLastPathComponent]										// Contents
+		stringByDeletingLastPathComponent]										// GitX.app
+		stringByStandardizingPath];
+	return [[appPath pathExtension] isEqualToString:@"app"] ? appPath : nil;
+}
+
 GitXApplication *gitXApplication(void)
 {
 	// This tool ships inside the app bundle at GitX.app/Contents/Resources/gitx,
@@ -40,11 +49,8 @@ GitXApplication *gitXApplication(void)
 	// identifier (e.g. Sparkle's embedded Updater.app in some releases),
 	// LaunchServices can resolve to a bundle without our scripting definition
 	// and every GitX command crashes with an unrecognized selector.
-	NSString *appPath = [[[[executablePath() stringByDeletingLastPathComponent] // Resources
-		stringByDeletingLastPathComponent] // Contents
-		stringByDeletingLastPathComponent] // GitX.app
-		stringByStandardizingPath];
-	if ([[appPath pathExtension] isEqualToString:@"app"])
+	NSString *appPath = enclosingAppPath();
+	if (appPath)
 		return [SBApplication applicationWithURL:[NSURL fileURLWithPath:appPath]];
 
 	// Not inside an app bundle (e.g. running from the build directory)
@@ -124,7 +130,9 @@ void usage(char const *programName)
 
 void version_info(void)
 {
-	NSString *version = [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
+	NSString *appPath = enclosingAppPath();
+	NSBundle *bundle = appPath ? [NSBundle bundleWithPath:appPath] : [NSBundle mainBundle];
+	NSString *version = [bundle objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
 	printf("GitX version %s\n", [version UTF8String]);
 	exit(1);
 }
