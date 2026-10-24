@@ -87,6 +87,15 @@ NSString *const PBHookNameErrorKey = @"PBHookNameErrorKey";
 		return nil;
 	}
 
+	if (git_repository_oid_type(_gtRepo.git_repository) != GIT_OID_SHA1) {
+		if (error) {
+			*error = [NSError pb_errorWithDescription:NSLocalizedString(@"Unsupported object format", @"")
+										failureReason:NSLocalizedString(@"GitX does not yet support SHA-256 repositories.", @"")
+									  underlyingError:nil];
+		}
+		return nil;
+	}
+
 	revisionList = [[PBGitHistoryList alloc] initWithRepository:self];
 
 	[self reloadRefs];
