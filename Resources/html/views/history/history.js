@@ -488,8 +488,8 @@ var loadCommitDiff = function(jsonData)
 }
 
 function expandDiffstatDetails(obj) {
-	var children = obj.parentNode.childNodes;
-	for (i in children) {
+	var children = obj.parentNode.children;
+	for (var i = 0; i < children.length; i++) {
 		var c = children[i];
 		if (c.classList.contains("details")) {
 			c.classList.remove("hidden");
@@ -499,11 +499,11 @@ function expandDiffstatDetails(obj) {
 }
 
 function collapseDiffstatDetails(obj) {
-	var children = obj.parentNode.childNodes;
-	for (i in children) {
+	var children = obj.parentNode.children;
+	for (var i = 0; i < children.length; i++) {
 		var c = children[i];
 		if (c.classList.contains("details")) {
-			c.classList.remove("hidden");
+			c.classList.add("hidden");
 		}
 	}
 	return true;
