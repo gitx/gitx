@@ -63,24 +63,31 @@ NSString *const PBGitBinaryVersionDidChangeNotification = @"PBGitBinaryVersionDi
 	});
 }
 
-+ (BOOL)acceptBinary:(NSString *)path
++ (NSString *)acceptableVersionForPath:(NSString *)path
 {
 	if (!path)
-		return NO;
+		return nil;
 
 	NSString *version = [self versionForPath:path];
 	if (!version)
-		return NO;
+		return nil;
 
-	NSComparisonResult c = [version compare:@"" MIN_GIT_VERSION options:NSNumericSearch];
-	if (c == NSOrderedSame || c == NSOrderedDescending) {
-		gitPath = path;
-		[self takeVersion:version];
-		return YES;
-	}
+	if ([self version:version isAtLeast:@"" MIN_GIT_VERSION])
+		return version;
 
 	NSLog(@"Found a git binary at %@, but is only version %@", path, version);
-	return NO;
+	return nil;
+}
+
++ (BOOL)acceptBinary:(NSString *)path
+{
+	NSString *version = [self acceptableVersionForPath:path];
+	if (!version)
+		return NO;
+
+	gitPath = path;
+	[self takeVersion:version];
+	return YES;
 }
 
 + (void)showInvalidGitPathAlert:(NSString *)path
@@ -99,50 +106,82 @@ NSString *const PBGitBinaryVersionDidChangeNotification = @"PBGitBinaryVersionDi
 	[alert runModal];
 }
 
-+ (void)findDefaultBinary
++ (NSString *)findDefaultBinaryVersion:(NSString **)foundVersion
 {
+	NSString * (^accepted)(NSString *) = ^NSString *(NSString *candidate) {
+		NSString *version = [self acceptableVersionForPath:candidate];
+		if (!version)
+			return nil;
+
+		*foundVersion = version;
+		return candidate;
+	};
+
 	// Try to find the path of the Git binary
-	char *path = getenv("GIT_PATH");
-	if (path && [self acceptBinary:[NSString stringWithUTF8String:path]])
-		return;
+	char *envPath = getenv("GIT_PATH");
+	if (envPath) {
+		NSString *found = accepted([NSString stringWithUTF8String:envPath]);
+		if (found)
+			return found;
+	}
 
 	// No explicit path.
 
 	// Try to find git with "which"
 	NSString *whichPath = [PBTask outputForCommand:@"/usr/bin/which" arguments:@[ @"git" ] error:NULL];
-	if ([self acceptBinary:whichPath])
-		return;
+	NSString *found = accepted(whichPath);
+	if (found)
+		return found;
 
 	// Still no path. Let's try some default locations.
 	for (NSString *location in [PBGitBinary searchLocations]) {
-		if ([self acceptBinary:location])
-			return;
+		found = accepted(location);
+		if (found)
+			return found;
 	}
 
 	// Lastly, try `xcrun git`
 	NSString *xcrunPath = [PBTask outputForCommand:@"/usr/bin/xcrun" arguments:@[ @"-f", @"git" ] error:NULL];
-	if ([self acceptBinary:xcrunPath]) {
-		return;
-	}
+	found = accepted(xcrunPath);
+	if (found)
+		return found;
 
 	NSLog(@"Could not find a git binary higher than version " MIN_GIT_VERSION);
+	return nil;
+}
+
++ (void)findDefaultBinary
+{
+	NSString *version = nil;
+	NSString *found = [self findDefaultBinaryVersion:&version];
+	if (!found)
+		return;
+
+	gitPath = found;
+	[self takeVersion:version];
 }
 
 + (void)validateConfiguredPath:(NSString *)path
 {
 	dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
-		NSString *version = [self versionForPath:path];
-		BOOL accepted = [self version:version isAtLeast:@"" MIN_GIT_VERSION];
+		NSString *version = [self acceptableVersionForPath:path];
+		if (version) {
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[self takeVersion:version];
+			});
+			return;
+		}
+
+		NSLog(@"The configured git path %@ failed validation, falling back to the default search", path);
+		NSString *fallbackVersion = nil;
+		NSString *fallbackPath = [self findDefaultBinaryVersion:&fallbackVersion];
 
 		dispatch_async(dispatch_get_main_queue(), ^{
-			if (accepted) {
-				[self takeVersion:version];
-				return;
+			if (fallbackPath) {
+				NSLog(@"Using the git binary %@ (version %@) instead of %@", fallbackPath, fallbackVersion, path);
+				gitPath = fallbackPath;
+				[self takeVersion:fallbackVersion];
 			}
-
-			NSLog(@"The configured git path %@ failed validation (version: %@), falling back to the default search", path, version);
-			gitPath = nil;
-			[self findDefaultBinary];
 			[self showInvalidGitPathAlert:path];
 		});
 	});
@@ -176,7 +215,8 @@ static NSMutableArray *locations = nil;
 
 + (NSArray *)searchLocations
 {
-	if (!locations) {
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
 		locations = [[NSMutableArray alloc] initWithObjects:
 												@"/opt/homebrew/bin/git",
 												@"/opt/local/bin/git",
@@ -188,7 +228,7 @@ static NSMutableArray *locations = nil;
 
 		[locations addObject:[@"~/bin/git" stringByExpandingTildeInPath]];
 		[locations addObject:@"/usr/bin/git"];
-	}
+	});
 	return locations;
 }
 
