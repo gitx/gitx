@@ -12,6 +12,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ !contains(github.event.pull_request.labels.*.name, 'pipeline') }}
 
+permissions:
+  contents: write # push screenshot diffs to the screenshot-assets branch
+  pull-requests: write # post/update the PR comment with the diff results
+
 env:
   # Commit the screenshot UI tests check out as the repo they browse.
   FIXTURE_COMMIT: 52ff1051d0c8e5cf3ee5
@@ -301,13 +305,14 @@ jobs:
       - name: Compare screenshots
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.stage-baseline.outcome == 'success' }}
         env:
-          # Screenshot diffs are hosted on GitHub's own attachment API
-          # (uploads.github.com/user-attachments) instead of a privately-run
-          # upload server. That endpoint rejects the default GITHUB_TOKEN
-          # (a GitHub App installation token) with a 404, so the existing
-          # CLASSIC_TOKEN secret (a classic PAT) is still needed for it and
-          # for posting/deleting the PR comment.
-          CLASSIC_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
+          # Screenshot diffs are hosted by committing them to a dedicated
+          # screenshot-assets branch and embedding the resulting
+          # raw.githubusercontent.com URL in the PR comment. Unlike GitHub's
+          # undocumented uploads.github.com/user-attachments/assets API
+          # (which rejects the default GITHUB_TOKEN with a 404), a plain git
+          # push only cares whether the token can write, so GITHUB_TOKEN is
+          # enough here and no privately-run server or classic PAT is needed.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           emulatorApi: ${{ matrix.abi }}
         run: |
           ls -ls ./scripts/Screenshots-${{ matrix.abi }}
