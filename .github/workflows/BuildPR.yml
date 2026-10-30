@@ -301,9 +301,13 @@ jobs:
       - name: Compare screenshots
         if: ${{ env.variableSet != '' && matrix.abi == 'arm64' && github.event_name == 'pull_request' && steps.stage-baseline.outcome == 'success' }}
         env:
+          # Screenshot diffs are hosted on GitHub's own attachment API
+          # (uploads.github.com/user-attachments) instead of a privately-run
+          # upload server. That endpoint rejects the default GITHUB_TOKEN
+          # (a GitHub App installation token) with a 404, so the existing
+          # CLASSIC_TOKEN secret (a classic PAT) is still needed for it and
+          # for posting/deleting the PR comment.
           CLASSIC_TOKEN: ${{ secrets.CLASSIC_TOKEN }}
-          SCREENSHOT_USER: ${{ secrets.SCREENSHOT_USER }}
-          SCREENSHOT_PASSWORD: ${{ secrets.SCREENSHOT_PASSWORD }}
           emulatorApi: ${{ matrix.abi }}
         run: |
           ls -ls ./scripts/Screenshots-${{ matrix.abi }}
