@@ -75,13 +75,18 @@ jobs:
       - name: Show openssl version
         run: |
           openssl version
-          # Fully remove any pre-existing openssl kegs/config first so the
-          # reinstall below has a clean slate. Otherwise `brew install`
-          # finds leftover files at the link destination (etc config,
-          # opt symlink, Cellar keg) and prints noisy
-          # "have not been removed!" / "overwritten during the `brew link`
-          # step" warnings.
-          brew uninstall --ignore-dependencies --force openssl@1.1 openssl@3 openssl || true
+          # Fully remove any pre-existing openssl@1.1/openssl@3 kegs/config
+          # first so the reinstall below has a clean slate. Otherwise
+          # `brew install` finds leftover files at the link destination (etc
+          # config, opt symlink, Cellar keg) and prints noisy "have not been
+          # removed!" / "overwritten during the `brew link` step" warnings.
+          #
+          # Deliberately leave the bare "openssl" formula alone: Homebrew now
+          # aliases it to openssl@4, which curl (and brew's own bottle
+          # downloads) link against. Uninstalling it deletes that keg and
+          # breaks curl's dyld lookup for libssl.4.dylib, taking down every
+          # later `brew` command on this runner.
+          brew uninstall --ignore-dependencies --force openssl@1.1 openssl@3 || true
           rm -rf /usr/local/etc/openssl@1.1 /usr/local/etc/openssl@3
           rm -rf /usr/local/opt/openssl@1.1 /usr/local/opt/openssl@3
           rm -rf /usr/local/Cellar/openssl@1.1 /usr/local/Cellar/openssl@3
