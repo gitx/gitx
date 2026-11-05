@@ -120,13 +120,16 @@
 				  @"the real index write after the lock is what the sync has to see");
 }
 
-- (void)testAFolderOnlyPathWithoutFileEventsWouldHaveBeenInteresting
+- (void)testTheStreamIsCreatedWithFileEvents
 {
-	// Regression guard: without FileEvents the stream only reports the folder.
-	// That path must still count as interesting once FileEvents is on for other
-	// reasons, and must not be mistaken for a lock.
-	XCTAssertTrue([self.watcher eventPathsContainInterestingChange:@[ @"/tmp/repo/.git" ]],
-				  @"a .git directory event is a real change when no lock path is present");
+	FSEventStreamCreateFlags flags = PBGitRepositoryWatcherStreamCreateFlags();
+
+	XCTAssertTrue((flags & kFSEventStreamCreateFlagFileEvents) != 0,
+				  @"without FileEvents the stream only reports folders and the .lock filter never matches");
+	XCTAssertTrue((flags & kFSEventStreamCreateFlagIgnoreSelf) != 0,
+				  @"IgnoreSelf keeps this process's own writes from looping");
+	XCTAssertTrue((flags & kFSEventStreamCreateFlagUseCFTypes) != 0,
+				  @"the callback expects CFArray paths");
 }
 
 @end

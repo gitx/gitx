@@ -9,11 +9,16 @@
 //
 
 
+#import <CoreServices/CoreServices.h>
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class PBGitRepository;
+
+// Flags the watcher creates its stream with. Tests assert FileEvents stays set
+// so the .lock / objects/ path filters keep seeing real file paths.
+FSEventStreamCreateFlags PBGitRepositoryWatcherStreamCreateFlags(void);
 
 @interface PBGitRepositoryWatcher : NSObject
 

@@ -15,8 +15,35 @@
 static const NSTimeInterval PBGitRepositoryWatcherDefaultCoalesceInterval = 0.35;
 static const NSTimeInterval PBGitRepositoryWatcherDefaultMaxCoalesceInterval = 1.5;
 
+// Exposed for tests: dropping FileEvents would make the .lock filter dead again.
+FSEventStreamCreateFlags PBGitRepositoryWatcherStreamCreateFlags(void)
+{
+	return kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf | kFSEventStreamCreateFlagFileEvents;
+}
+
+// FSEvents keeps an unretained client info pointer. A queued callback after
+// the watcher is freed would use a dangling pointer; this target is retained
+// by the stream and only weakly holds the watcher.
+@interface PBGitRepositoryWatcherEventTarget : NSObject
+@property (nonatomic, weak) PBGitRepositoryWatcher *watcher;
+@end
+
+@implementation PBGitRepositoryWatcherEventTarget
+@end
+
+static const void *PBGitRepositoryWatcherContextRetain(const void *info)
+{
+	return CFBridgingRetain((__bridge id)info);
+}
+
+static void PBGitRepositoryWatcherContextRelease(const void *info)
+{
+	CFBridgingRelease(info);
+}
+
 @interface PBGitRepositoryWatcher () {
 	FSEventStreamRef eventStream;
+	PBGitRepositoryWatcherEventTarget *_eventTarget;
 	BOOL _running;
 	NSUInteger _coalesceGeneration;
 	NSDate *_coalesceStartedAt;
@@ -46,7 +73,11 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 
 	// Paths are not git semantics. With FileEvents they name the file that
 	// moved, so .lock and objects/ churn can be dropped without reading git.
-	PBGitRepositoryWatcher *watcher = (__bridge PBGitRepositoryWatcher *)clientCallBackInfo;
+	PBGitRepositoryWatcherEventTarget *target = (__bridge PBGitRepositoryWatcherEventTarget *)clientCallBackInfo;
+	PBGitRepositoryWatcher *watcher = target.watcher;
+	if (!watcher)
+		return;
+
 	NSArray *eventPaths = (__bridge NSArray *)_eventPaths;
 	if (![watcher eventPathsContainInterestingChange:eventPaths])
 		return;
@@ -83,12 +114,20 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[self stop];
+	_coalesceGeneration++;
+	_coalesceStartedAt = nil;
+
+	// Invalidate while the stream is still scheduled. Clearing the queue first
+	// (as stop used to) makes Invalidate an FSEvents API error.
 	if (eventStream) {
+		if (_running)
+			FSEventStreamStop(eventStream);
 		FSEventStreamInvalidate(eventStream);
 		FSEventStreamRelease(eventStream);
 		eventStream = NULL;
 	}
+	_running = NO;
+	_eventTarget = nil;
 }
 
 - (NSString *)gitDir
@@ -140,12 +179,20 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 	if (!array.count)
 		return;
 
-	FSEventStreamContext context = {0, (__bridge void *)(self), NULL, NULL, NULL};
+	_eventTarget = [[PBGitRepositoryWatcherEventTarget alloc] init];
+	_eventTarget.watcher = self;
+
+	FSEventStreamContext context = {
+		0,
+		(__bridge void *)_eventTarget,
+		PBGitRepositoryWatcherContextRetain,
+		PBGitRepositoryWatcherContextRelease,
+		NULL};
 	// FileEvents so paths name files (index.lock) rather than only the folder.
 	eventStream = FSEventStreamCreate(kCFAllocatorDefault, PBGitRepositoryWatcherCallback, &context,
 									  (__bridge CFArrayRef)array,
 									  kFSEventStreamEventIdSinceNow, 0.1,
-									  kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagIgnoreSelf | kFSEventStreamCreateFlagFileEvents);
+									  PBGitRepositoryWatcherStreamCreateFlags());
 }
 
 - (void)start
@@ -171,11 +218,11 @@ void PBGitRepositoryWatcherCallback(ConstFSEventStreamRef streamRef,
 	if (!_running)
 		return;
 
-	if (eventStream) {
+	if (eventStream)
 		FSEventStreamStop(eventStream);
-		FSEventStreamSetDispatchQueue(eventStream, NULL);
-	}
 
+	// Leave the stream scheduled so dealloc can Invalidate safely. start will
+	// SetDispatchQueue again (same queue) before the next Start.
 	_running = NO;
 }
 

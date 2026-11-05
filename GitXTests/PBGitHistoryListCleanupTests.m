@@ -132,4 +132,44 @@
 	XCTAssertFalse(list.isUpdating, @"no walk was started");
 }
 
+- (void)testARefChangeWhileShowingANonSimpleRevMarksProjectHistoryStale
+{
+	PBRefMapRepository *repository = [[PBRefMapRepository alloc] init];
+	GTOID *oldOID = [self OID:@"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"];
+	GTOID *newOID = [self OID:@"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"];
+	PBGitRef *ref = [PBGitRef refFromString:@"refs/heads/main"];
+	repository.refs = [@{oldOID : @[ ref ]} mutableCopy];
+	repository.currentBranch = [PBGitRevSpecifier allBranchesRevSpec];
+
+	PBGitHistoryList *list = [[PBGitHistoryList alloc] initWithRepository:repository];
+	[list setValue:repository.currentBranch forKey:@"lastNonSimpleRev"];
+	[list setValue:@NO forKey:@"shouldReloadProjectHistory"];
+
+	repository.refs = [@{newOID : @[ ref ]} mutableCopy];
+	[list updateHistory];
+
+	XCTAssertTrue([[list valueForKey:@"shouldReloadProjectHistory"] boolValue],
+				  @"leaving file history for a branch tip after a terminal commit must re-walk project history");
+	[list cleanup];
+}
+
+- (void)testForceUpdateRewalksANonSimpleRevWhenRefsAreUnchanged
+{
+	PBRefMapRepository *repository = [[PBRefMapRepository alloc] init];
+	GTOID *OID = [self OID:@"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"];
+	PBGitRef *ref = [PBGitRef refFromString:@"refs/heads/main"];
+	repository.refs = [@{OID : @[ ref ]} mutableCopy];
+	repository.currentBranch = [PBGitRevSpecifier allBranchesRevSpec];
+
+	PBGitHistoryList *list = [[PBGitHistoryList alloc] initWithRepository:repository];
+	[list setValue:repository.currentBranch forKey:@"lastNonSimpleRev"];
+	NSMutableArray *held = [NSMutableArray arrayWithObject:[NSNull null]];
+	list.commits = held;
+
+	[list forceUpdate];
+
+	XCTAssertNotEqual(list.commits, held, @"Refresh must re-walk a file history even when refs did not move");
+	[list cleanup];
+}
+
 @end

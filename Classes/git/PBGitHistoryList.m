@@ -70,6 +70,10 @@
 {
 	if ([repository.currentBranch isSimpleRef])
 		shouldReloadProjectHistory = YES;
+	else
+		// Drop the save-time skip so Refresh / setHasChanged: re-walk a
+		// file history or -S search even when refs did not move.
+		lastNonSimpleRev = nil;
 
 	[self updateHistory];
 }
@@ -354,9 +358,8 @@
 				[self finishedGraphing];
 			});
 		}];
-	} else if (projectRevList.commits.count == 0) {
-		[self finishedGraphing];
 	} else {
+		// An empty list still goes through the grapher so finishedGraphing runs.
 		[graphQueue addOperation:[self operationForCommits:projectRevList.commits]];
 	}
 }
@@ -368,6 +371,11 @@
 	BOOL sameRev = [rev isEqual:lastNonSimpleRev];
 	if (sameRev && !refsChanged)
 		return;
+
+	// haveRefsBeenModified advanced lastRefOIDs; project history still has to
+	// re-walk when the user leaves this non-simple rev for a branch tip.
+	if (refsChanged)
+		shouldReloadProjectHistory = YES;
 
 	lastNonSimpleRev = rev;
 

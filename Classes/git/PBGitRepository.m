@@ -320,7 +320,11 @@ static BOOL PBGitRefMapsEqual(NSDictionary *left, NSDictionary *right)
 
 	// Checkout to another branch at the same commit leaves the OID-to-name map
 	// unchanged, but the sidebar still has to redraw which ref is HEAD.
-	BOOL headMoved = (previousHeadName != nil || _headRef != nil) && (![previousHeadName isEqualToString:_headRef.simpleRef] || ![previousHeadOID isEqual:_headOID]);
+	// Nil-safe: ![nil isEqual:nil] is YES, which would fire refs KVO on every
+	// reload in a freshly git init-ed repo (unborn HEAD).
+	BOOL headNameChanged = (previousHeadName != nil || _headRef.simpleRef != nil) && ![previousHeadName isEqualToString:_headRef.simpleRef];
+	BOOL headOIDChanged = !(previousHeadOID == _headOID || [previousHeadOID isEqual:_headOID]);
+	BOOL headMoved = headNameChanged || headOIDChanged;
 	BOOL refsChanged = !PBGitRefMapsEqual(self->refs, previousRefs) || headMoved;
 	if (refsChanged)
 		[self willChangeValueForKey:@"refs"];
